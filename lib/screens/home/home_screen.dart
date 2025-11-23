@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/user_preferences.dart';
 import '../../models/exhibit.dart';
-import '../../core/services/mock_data.dart'; // To get exhibits data
+import '../../core/services/mock_data.dart';
 import '../../app/router.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -29,7 +29,27 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     exhibits = MockDataService.getAllExhibits();
     
-    // Start a fake timer to make the dashboard feel "Alive"
+    // --- 1. Privacy Check (Feature 52) ---
+    Future.delayed(Duration.zero, () {
+      if (mounted) {
+        _showPrivacyDialog();
+      }
+    });
+
+    // --- 2. Simulate Notification (Feature 28) ---
+    Future.delayed(const Duration(seconds: 5), () {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("🔔 Alert: Tour starting in Hall A in 5 mins!"),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.blueAccent,
+          )
+        );
+      }
+    });
+    
+    // --- 3. Dashboard Animation Timer ---
     _simTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
       if (mounted) {
         setState(() {
@@ -47,6 +67,32 @@ class _HomeScreenState extends State<HomeScreen> {
   void dispose() {
     _simTimer?.cancel();
     super.dispose();
+  }
+
+  void _showPrivacyDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text("Privacy & Permissions"),
+        content: const Text(
+          "We use Bluetooth and Location to guide you.\n\n"
+          "• Data is anonymous (GDPR compliant).\n"
+          "• Heatmaps are used for analytics.\n\n"
+          "Do you allow us to use your location?"
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context), 
+            child: const Text("Deny")
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context), 
+            child: const Text("Allow")
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -96,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- 1. Welcome Card ---
+            // --- Welcome Card ---
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
@@ -151,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
             
             const SizedBox(height: 16),
 
-            // --- 2. Quick Stats ---
+            // --- Quick Stats ---
             Row(
               children: [
                 Expanded(child: _buildStatCard(Icons.map, "${exhibits.length}", isArabic ? "المعروضات" : "Total Exhibits", Colors.blue)),
@@ -164,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 16),
 
-            // --- 3. Map Preview ---
+            // --- Map Preview ---
             Card(
               elevation: 2,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -201,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 24),
 
-            // --- 4. Navigation Grid ---
+            // --- Navigation Grid (Features) ---
             Text(
               isArabic ? "اكتشف الميزات" : "Explore Features",
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -216,9 +262,11 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisSpacing: 12,
               children: [
                 _buildNavButton(context, AppRoutes.map, Icons.map, isArabic ? "الخريطة" : "Map", Colors.blue),
-                _buildNavButton(context, AppRoutes.exhibits, Icons.search, isArabic ? "بحث" : "Search", Colors.orange),
+                _buildNavButton(context, AppRoutes.search, Icons.search, isArabic ? "بحث" : "Search", Colors.orange),
                 _buildNavButton(context, AppRoutes.chat, Icons.chat, isArabic ? "المحادثة" : "Chat", Colors.green),
-                _buildNavButton(context, AppRoutes.quiz, Icons.school, isArabic ? "اختبار" : "Quiz", Colors.red), // Placeholder route
+                _buildNavButton(context, AppRoutes.quiz, Icons.school, isArabic ? "اختبار" : "Quiz", Colors.red),
+                _buildNavButton(context, AppRoutes.feedback, Icons.feedback, isArabic ? "رأيك" : "Feedback", Colors.purple),
+                _buildNavButton(context, AppRoutes.progress, Icons.trending_up, isArabic ? "التقدم" : "Progress", Colors.teal),
                 _buildNavButton(context, AppRoutes.settings, Icons.settings, isArabic ? "الإعدادات" : "Settings", Colors.grey),
               ],
             )
@@ -243,7 +291,8 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           CircleAvatar(
             radius: 16,
-            backgroundColor: color.withOpacity(0.1),
+            // Updated for newer Flutter versions
+            backgroundColor: color.withValues(alpha: 0.1),
             child: Icon(icon, color: color, size: 18),
           ),
           const SizedBox(height: 8),
@@ -270,7 +319,8 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                // Updated for newer Flutter versions
+                color: color.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: color, size: 28),
@@ -290,7 +340,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             // Exhibits Dots
             ...exhibits.map((e) {
-              double dx = (e.x / 400) * constraints.maxWidth; // Scale mock coords to fit box
+              double dx = (e.x / 400) * constraints.maxWidth; 
               double dy = (e.y / 600) * constraints.maxHeight;
               return Positioned(
                 left: dx.clamp(0, constraints.maxWidth - 20),
