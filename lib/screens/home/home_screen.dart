@@ -218,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 _buildNavButton(context, AppRoutes.map, Icons.map, isArabic ? "الخريطة" : "Map", Colors.blue),
                 _buildNavButton(context, AppRoutes.exhibits, Icons.search, isArabic ? "بحث" : "Search", Colors.orange),
                 _buildNavButton(context, AppRoutes.chat, Icons.chat, isArabic ? "المحادثة" : "Chat", Colors.green),
-                _buildNavButton(context, AppRoutes.settings, Icons.school, isArabic ? "اختبار" : "Quiz", Colors.red), // Placeholder route
+                _buildNavButton(context, AppRoutes.quiz, Icons.school, isArabic ? "اختبار" : "Quiz", Colors.red), // Placeholder route
                 _buildNavButton(context, AppRoutes.settings, Icons.settings, isArabic ? "الإعدادات" : "Settings", Colors.grey),
               ],
             )

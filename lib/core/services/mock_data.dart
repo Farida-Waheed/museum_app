@@ -1,6 +1,8 @@
 import '../../models/exhibit.dart';
+import '../../models/quiz.dart'; // Import Quiz Model
 
 class MockDataService {
+  // --- Exhibits ---
   static final List<Exhibit> exhibits = [
     Exhibit(
       id: '1',
@@ -8,7 +10,7 @@ class MockDataService {
       nameAr: 'مزهرية قديمة',
       descriptionEn: 'A rare Greek vase from 300 BC, depicting the battle of Troy.',
       descriptionAr: 'مزهرية يونانية نادرة من عام 300 قبل الميلاد تصور معركة طروادة.',
-      imageAsset: 'assets/images/vase.png', // We will handle missing images later
+      imageAsset: 'assets/images/vase.png',
       x: 50.0,
       y: 100.0,
     ),
@@ -34,11 +36,35 @@ class MockDataService {
     ),
   ];
 
-  static List<Exhibit> getAllExhibits() {
-    return exhibits;
-  }
-  
-  static Exhibit getExhibitById(String id) {
-    return exhibits.firstWhere((e) => e.id == id, orElse: () => exhibits[0]);
-  }
+  static List<Exhibit> getAllExhibits() => exhibits;
+
+  // --- Quiz Questions (NEW) ---
+  static final List<QuizQuestion> questions = [
+    QuizQuestion(
+      id: 'q1',
+      questionEn: 'Which era is the Ancient Vase from?',
+      questionAr: 'إلى أي حقبة تعود المزهرية القديمة؟',
+      optionsEn: ['1000 AD', '300 BC', '1990', '500 BC'],
+      optionsAr: ['1000 م', '300 ق.م', '1990', '500 ق.م'],
+      correctAnswerIndex: 1,
+    ),
+    QuizQuestion(
+      id: 'q2',
+      questionEn: 'What dinosaur does the bone belong to?',
+      questionAr: 'لأي ديناصور ينتمي هذا العظم؟',
+      optionsEn: ['T-Rex', 'Stegosaurus', 'Raptor', 'Triceratops'],
+      optionsAr: ['تي ريكس', 'ستيغوسورس', 'رابتور', 'تريسيراتوبس'],
+      correctAnswerIndex: 0,
+    ),
+    QuizQuestion(
+      id: 'q3',
+      questionEn: 'Which mission used the Space Suit?',
+      questionAr: 'أي مهمة استخدمت بدلة الفضاء؟',
+      optionsEn: ['Apollo 13', 'Mars Rover', 'Apollo 11', 'Gemini'],
+      optionsAr: ['أبولو 13', 'مركبة المريخ', 'أبولو 11', 'جيميني'],
+      correctAnswerIndex: 2,
+    ),
+  ];
+
+  static List<QuizQuestion> getAllQuestions() => questions;
 }
