@@ -1,30 +1,39 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 
-import 'package:museum_app/main.dart';
+// Make sure these match your project name
+import 'package:museum_app/app/app.dart'; 
+import 'package:museum_app/models/user_preferences.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Museum App loads and settings work', (WidgetTester tester) async {
+    // 1. Build the app
+    // We must wrap MuseumApp in a Provider to mock the data
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => UserPreferencesModel()),
+        ],
+        child: const MuseumApp(),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // 2. Verify the Home Screen appears
+    // We look for the title defined in your HomeScreen
+    expect(find.text('Museum Guide'), findsOneWidget);
+    
+    // Verify the Settings placeholder controls exist
+    expect(find.text('High Contrast Mode'), findsOneWidget);
+    expect(find.text('Switch Language (AR/EN)'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    // 3. Test Interaction: Tap the "Switch Language" button
+    await tester.tap(find.text('Switch Language (AR/EN)'));
+    
+    // Trigger a frame update (rebuild the UI)
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // 4. Verify the language changed
+    // The initial text was "Current Language: EN", now it should be "AR"
+    expect(find.text('Current Language: AR'), findsOneWidget);
   });
 }
