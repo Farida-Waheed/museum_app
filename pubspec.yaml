@@ -36,6 +36,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # To add assets (images) later, uncomment lines below:
-  # assets:
-  #   - assets/images/
+  assets:
+    - assets/images/
+    - assets/icons/
