@@ -13,7 +13,7 @@ class TourProgressScreen extends StatelessWidget {
     final exhibits = MockDataService.getAllExhibits();
 
     // Simulating that the first 2 exhibits are "Visited"
-    final visitedCount = 2; 
+    const visitedCount = 2; 
 
     return Scaffold(
       appBar: AppBar(title: Text(isArabic ? "ملخص الجولة" : "Tour Summary")),

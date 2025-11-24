@@ -38,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     Future.delayed(Duration.zero, () {
       if (mounted) _showPrivacyDialog();
+      if (mounted) _showPrivacyDialog();
     });
 
     Future.delayed(const Duration(seconds: 5), () {
@@ -83,6 +84,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           "Do you allow us to use your location?"
         ),
         actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Deny")),
+          ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text("Allow")),
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Deny")),
           ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text("Allow")),
         ],
@@ -134,6 +137,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ],
         ),
         actions: [
+          // --- NEW: Settings Button in AppBar ---
+          IconButton(
+            icon: const Icon(Icons.settings, color: Colors.grey),
+            tooltip: isArabic ? "الإعدادات" : "Settings",
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.settings),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Chip(
