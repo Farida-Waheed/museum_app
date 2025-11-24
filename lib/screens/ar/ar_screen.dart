@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-// Removed 'package:camera/camera.dart' because we are using a mock feed
+import '../../widgets/bottom_nav.dart';
 
 class ArScreen extends StatefulWidget {
   const ArScreen({super.key});
@@ -19,7 +19,6 @@ class _ArScreenState extends State<ArScreen> {
   }
 
   Future<void> _checkPermission() async {
-    // Request camera permission (even for mock, it adds realism)
     final status = await Permission.camera.request();
     setState(() {
       _hasPermission = status.isGranted;
@@ -29,22 +28,23 @@ class _ArScreenState extends State<ArScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,                         // <-- FIXED (makes nav bar visible)
+      backgroundColor: Colors.black,            // <-- FIXED
+      bottomNavigationBar: const BottomNav(currentIndex: 2),
+
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // 1. Camera Feed / Placeholder
           _hasPermission 
             ? _buildMockCameraFeed() 
             : _buildPermissionError(),
 
-          // 2. AR Overlays (Floating Data Points)
           if (_hasPermission) ...[
             _buildArPoint(100, 150, "Ancient Vase", "300 BC"),
             _buildArPoint(300, 400, "Golden Mask", "Tutankhamun"),
             _buildArPoint(200, 300, "Robot Guide", "Moving to Hall B"),
           ],
 
-          // 3. UI Overlay (Back button & Header)
           Positioned(
             top: 50,
             left: 20,
@@ -56,6 +56,7 @@ class _ArScreenState extends State<ArScreen> {
               ),
             ),
           ),
+
           const Positioned(
             top: 60,
             right: 20,
@@ -67,9 +68,8 @@ class _ArScreenState extends State<ArScreen> {
             ),
           ),
           
-          // 4. Bottom Hint
           Positioned(
-            bottom: 40,
+            bottom: 80,   // <-- LIFTED UP so it doesn't hit the nav bar
             left: 0,
             right: 0,
             child: Center(
@@ -92,11 +92,10 @@ class _ArScreenState extends State<ArScreen> {
   }
 
   Widget _buildMockCameraFeed() {
-    // Using an image to simulate the camera view for the emulator
     return Image.asset(
       "assets/images/museum_interior.jpg", 
       fit: BoxFit.cover,
-      color: Colors.black.withValues(alpha: 0.1), // Slight dim for text visibility
+      color: Colors.black.withValues(alpha: 0.1),
       colorBlendMode: BlendMode.darken,
       errorBuilder: (c, e, s) => Container(color: Colors.grey[800]),
     );
@@ -129,7 +128,9 @@ class _ArScreenState extends State<ArScreen> {
       left: left,
       child: GestureDetector(
         onTap: () {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Scanned: $title")));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Scanned: $title")),
+          );
         },
         child: Column(
           children: [
@@ -138,7 +139,12 @@ class _ArScreenState extends State<ArScreen> {
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.9),
                 borderRadius: BorderRadius.circular(8),
-                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.2), blurRadius: 4)],
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 4
+                  )
+                ],
               ),
               child: Column(
                 children: [
@@ -147,11 +153,7 @@ class _ArScreenState extends State<ArScreen> {
                 ],
               ),
             ),
-            Container(
-              width: 2,
-              height: 20,
-              color: Colors.white,
-            ),
+            Container(width: 2, height: 20, color: Colors.white),
             Container(
               width: 12,
               height: 12,

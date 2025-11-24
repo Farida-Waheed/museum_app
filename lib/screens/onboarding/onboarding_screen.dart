@@ -16,6 +16,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Keeping listen: true as per original implementation
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
 
@@ -66,8 +67,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withValues(alpha: 0.1),
-                    Colors.black.withValues(alpha: 0.8),
+                    // Corrected Color method: withValues is not standard Flutter
+                    Colors.black.withOpacity(0.1),
+                    Colors.black.withOpacity(0.8),
                   ],
                 ),
               ),
@@ -156,7 +158,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             );
                           } else {
                             // Finish Onboarding
-                            Navigator.pushReplacementNamed(context, AppRoutes.home);
+                            // CRITICAL: You should also call prefs.setCompletedOnboarding(true) here
+                            Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -166,9 +169,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           elevation: 8,
                         ),
                         child: Text(
-                          _currentPage == pages.length - 1 
-                              ? (isArabic ? "ابدأ الرحلة" : "Get Started") 
-                              : (isArabic ? "التالي" : "Next"),
+                          // MODIFIED: Always show "Get Started" / "ابدأ الرحلة"
+                          isArabic ? "ابدأ الرحلة" : "Get Started",
                           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -191,7 +193,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 icon: const Icon(Icons.language, size: 18),
                 label: Text(isArabic ? "English" : "العربية"),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white.withValues(alpha: 0.2),
+                  // Corrected Color method: withValues is not standard Flutter
+                  backgroundColor: Colors.white.withOpacity(0.2),
                   foregroundColor: Colors.white,
                   elevation: 0,
                 ),

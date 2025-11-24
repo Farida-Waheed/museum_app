@@ -15,11 +15,13 @@ import '../screens/tickets/ticket_screen.dart';
 import '../screens/tickets/my_tickets_screen.dart';
 import '../screens/tickets/qr_scanner_screen.dart';
 import '../screens/ar/ar_screen.dart';
-import '../screens/onboarding/onboarding_screen.dart'; // Ensure this is imported
+import '../screens/onboarding/onboarding_screen.dart'; 
+import '../screens/intro/intro_screen.dart';
 
 class AppRoutes {
   // --- Route Constants ---
-  static const String home = '/';
+  static const String intro = '/';
+  static const String mainHome = '/home';
   static const String onboarding = '/onboarding'; // Fixed: Added this back
   static const String map = '/map';
   static const String exhibits = '/exhibits';
@@ -40,7 +42,8 @@ class AppRoutes {
   // --- Route Generator ---
   static Map<String, WidgetBuilder> getRoutes() {
     return {
-      home: (context) => const HomeScreen(),
+      intro: (context) => const IntroScreen(),
+      mainHome: (context) => const HomeScreen(),
       onboarding: (context) => const OnboardingScreen(), // Fixed: Registered here
       map: (context) => const MapScreen(),
       exhibits: (context) => const ExhibitListScreen(),

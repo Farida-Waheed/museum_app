@@ -37,7 +37,7 @@ class MuseumApp extends StatelessWidget {
           
           // 4. Navigation Routes
           // We start at 'onboarding' so users see the tutorial first
-          initialRoute: AppRoutes.onboarding, // This will now find the definition
+          initialRoute: AppRoutes.intro, // This will now find the definition
           routes: AppRoutes.getRoutes(),
         );
       },

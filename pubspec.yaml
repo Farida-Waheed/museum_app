@@ -41,3 +41,11 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/fonts/
+
+  fonts:
+    - family: Playfair Display 
+      fonts:
+        - asset: assets/fonts/static/PlayfairDisplay-Regular.ttf
+        - asset: assets/fonts/static/PlayfairDisplay-Bold.ttf 
+          weight: 700

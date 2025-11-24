@@ -1,6 +1,8 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/user_preferences.dart';
+import '../../widgets/bottom_nav.dart';
 
 class FeedbackScreen extends StatefulWidget {
   const FeedbackScreen({super.key});
@@ -10,7 +12,6 @@ class FeedbackScreen extends StatefulWidget {
 }
 
 class _FeedbackScreenState extends State<FeedbackScreen> {
-  // State Variables
   int _rating = 0;
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -28,206 +29,259 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   void _handleSubmit() {
     setState(() => _submitted = true);
 
-    // Simulate backend delay
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _submitted = false;
-          _rating = 0;
-          _nameController.clear();
-          _emailController.clear();
-          _commentController.clear();
-        });
-      }
+    Future.delayed(const Duration(seconds: 2), () {
+      if (!mounted) return;
+      setState(() {
+        _submitted = false;
+        _rating = 0;
+        _nameController.clear();
+        _emailController.clear();
+        _commentController.clear();
+      });
     });
   }
 
-  // Helper for Star Labels
+  // Rating Labels
   String _getRatingLabel(int star, bool isArabic) {
     switch (star) {
-      case 5: return isArabic ? "ممتاز!" : "Excellent!";
-      case 4: return isArabic ? "عظيم!" : "Great!";
-      case 3: return isArabic ? "جيد" : "Good";
-      case 2: return isArabic ? "مقبول" : "Fair";
-      case 1: return isArabic ? "سيء" : "Poor";
-      default: return "";
+      case 5:
+        return isArabic ? "ممتاز!" : "Excellent!";
+      case 4:
+        return isArabic ? "عظيم!" : "Great!";
+      case 3:
+        return isArabic ? "جيد" : "Good";
+      case 2:
+        return isArabic ? "مقبول" : "Fair";
+      case 1:
+        return isArabic ? "سيء" : "Poor";
+      default:
+        return "";
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
-    final isArabic = prefs.language == 'ar';
+    final isArabic = prefs.language == "ar";
 
     return Scaffold(
+      backgroundColor: Colors.grey[100],
+
+      // ✅ USE GLOBAL NAVBAR — NO DUPLICATE CODE
+      bottomNavigationBar: const BottomNav(currentIndex: 4),
+
       appBar: AppBar(
-        title: Text(isArabic ? "الملاحظات" : "Feedback"),
-        backgroundColor: Colors.white,
+        title: Text(isArabic ? "الملاحظات" : "Feedback",
+            style: const TextStyle(color: Colors.black)),
         elevation: 0,
+        backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.black),
-        titleTextStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
       ),
-      body: SingleChildScrollView(
+
+      body: ListView(
         padding: const EdgeInsets.all(16),
-        child: _submitted 
-          ? _buildSuccessCard(isArabic) 
-          : _buildFormCard(isArabic),
+        children: [
+          _submitted ? _buildSuccessCard(isArabic) : _buildFormCard(isArabic),
+        ],
       ),
     );
   }
 
-  // --- 1. Success View ---
+  // SUCCESS CARD ------------------------------------
   Widget _buildSuccessCard(bool isArabic) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.green[50],
-                shape: BoxShape.circle,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(22),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          padding: const EdgeInsets.all(32),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(.7),
+            borderRadius: BorderRadius.circular(22),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(.1),
+                blurRadius: 20,
+                offset: const Offset(0, 6),
+              )
+            ],
+          ),
+          child: Column(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.green.withOpacity(.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.check_circle, color: Colors.green, size: 50),
               ),
-              child: const Icon(Icons.check_circle, color: Colors.green, size: 48),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              isArabic ? "شكراً لك!" : "Thank You!",
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              isArabic 
-                ? "تم استلام ملاحظاتك بنجاح. نحن نقدر وقتك!"
-                : "Your feedback has been submitted successfully. We appreciate your time!",
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.grey),
-            ),
-          ],
+              const SizedBox(height: 20),
+              Text(
+                isArabic ? "شكراً لك!" : "Thank You!",
+                style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                isArabic
+                    ? "تم استلام ملاحظاتك. نحن نقدر وقتك!"
+                    : "Your feedback was received. We appreciate your time!",
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.black54, fontSize: 15),
+              )
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // --- 2. Form View ---
+  // FORM CARD ------------------------------------
   Widget _buildFormCard(bool isArabic) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header
-            Text(
-              isArabic ? "أرسل ملاحظاتك" : "Submit Feedback",
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              isArabic 
-                ? "ساعدنا في تحسين تجربة المتحف من خلال مشاركة أفكارك."
-                : "Help us improve your museum experience by sharing your thoughts.",
-              style: TextStyle(color: Colors.grey[600]),
-            ),
-            
-            const SizedBox(height: 24),
-
-            // Star Rating
-            Text(isArabic ? "التقييم" : "Rating", style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Row(
-              children: List.generate(5, (index) {
-                final starIndex = index + 1;
-                return IconButton(
-                  icon: Icon(
-                    starIndex <= _rating ? Icons.star : Icons.star_border,
-                    color: starIndex <= _rating ? Colors.amber : Colors.grey[300],
-                    size: 32,
-                  ),
-                  onPressed: () => setState(() => _rating = starIndex),
-                );
-              }),
-            ),
-            if (_rating > 0)
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(22),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(.75),
+            borderRadius: BorderRadius.circular(22),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(.08),
+                blurRadius: 18,
+                offset: const Offset(0, 6),
+              )
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment:
+                isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            children: [
               Text(
-                _getRatingLabel(_rating, isArabic),
-                style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                isArabic ? "أرسل ملاحظاتك" : "Submit Feedback",
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                isArabic
+                    ? "ساعدنا في تحسين تجربتك في المتحف."
+                    : "Help us improve your museum experience.",
+                style: const TextStyle(color: Colors.black54),
               ),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-            // Inputs
-            _buildTextField(
-              controller: _nameController,
-              label: isArabic ? "الاسم (اختياري)" : "Your Name (Optional)",
-              icon: Icons.person_outline,
-            ),
-            const SizedBox(height: 16),
-            _buildTextField(
-              controller: _emailController,
-              label: isArabic ? "البريد الإلكتروني (اختياري)" : "Your Email (Optional)",
-              icon: Icons.email_outlined,
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 16),
-            _buildTextField(
-              controller: _commentController,
-              label: isArabic ? "التعليقات" : "Comments",
-              icon: Icons.comment_outlined,
-              maxLines: 4,
-            ),
+              // STAR RATING
+              Text(
+                isArabic ? "التقييم" : "Rating",
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
 
-            const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment:
+                    isArabic ? MainAxisAlignment.end : MainAxisAlignment.start,
+                children: List.generate(5, (index) {
+                  final s = index + 1;
+                  return IconButton(
+                    icon: Icon(
+                      s <= _rating ? Icons.star : Icons.star_border,
+                      color: s <= _rating ? Colors.amber : Colors.grey[300],
+                      size: 32,
+                    ),
+                    onPressed: () => setState(() => _rating = s),
+                  );
+                }),
+              ),
 
-            // Submit Button
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton.icon(
-                onPressed: _rating == 0 ? null : _handleSubmit,
-                icon: const Icon(Icons.send, size: 18),
-                label: Text(isArabic ? "إرسال" : "Submit"),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              if (_rating > 0)
+                Text(
+                  _getRatingLabel(_rating, isArabic),
+                  style: const TextStyle(color: Colors.black54),
+                ),
+
+              const SizedBox(height: 24),
+
+              _buildTextField(
+                controller: _nameController,
+                label: isArabic ? "الاسم (اختياري)" : "Name (Optional)",
+                icon: Icons.person_outline,
+              ),
+              const SizedBox(height: 16),
+
+              _buildTextField(
+                controller: _emailController,
+                label: isArabic ? "البريد الإلكتروني (اختياري)" : "Email (Optional)",
+                icon: Icons.email_outlined,
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 16),
+
+              _buildTextField(
+                controller: _commentController,
+                label: isArabic ? "التعليقات" : "Comments",
+                icon: Icons.comment_outlined,
+                maxLines: 4,
+              ),
+
+              const SizedBox(height: 24),
+
+              // SUBMIT BUTTON
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton.icon(
+                  onPressed: _rating == 0 ? null : _handleSubmit,
+                  icon: const Icon(Icons.send),
+                  label: Text(isArabic ? "إرسال" : "Submit"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
                 ),
               ),
-            ),
 
-            const SizedBox(height: 32),
-            const Divider(),
-            const SizedBox(height: 24),
+              const SizedBox(height: 30),
+              const Divider(),
 
-            // --- 3. Post-Visit Resources ---
-            Text(
-              isArabic ? "مصادر ما بعد الزيارة" : "Post-Visit Resources",
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            _buildResourceButton(
-              icon: Icons.download,
-              label: isArabic ? "تحميل ملخص الزيارة" : "Download Visit Summary",
-            ),
-            const SizedBox(height: 12),
-            _buildResourceButton(
-              icon: Icons.menu_book,
-              label: isArabic ? "مواد قراءة إضافية" : "Additional Reading Materials",
-            ),
-            const SizedBox(height: 12),
-            _buildResourceButton(
-              icon: Icons.school,
-              label: isArabic ? "موارد تعليمية" : "Educational Resources",
-            ),
-          ],
+              // RESOURCES
+              const SizedBox(height: 20),
+
+              Text(
+                isArabic ? "مصادر إضافية" : "Extra Resources",
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+
+              const SizedBox(height: 16),
+
+              _buildResourceButton(
+                icon: Icons.download,
+                label: isArabic ? "تحميل ملخص الزيارة" : "Download Visit Summary",
+              ),
+              const SizedBox(height: 12),
+
+              _buildResourceButton(
+                icon: Icons.menu_book,
+                label: isArabic ? "قراءة إضافية" : "Additional Reading",
+              ),
+              const SizedBox(height: 12),
+
+              _buildResourceButton(
+                icon: Icons.school,
+                label: isArabic ? "مواد تعليمية" : "Educational Resources",
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+
+  // CUSTOM WIDGETS ------------------------------------
 
   Widget _buildTextField({
     required TextEditingController controller,
@@ -243,10 +297,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: Colors.grey),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         filled: true,
-        fillColor: Colors.grey[50],
+        fillColor: Colors.white,
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
       ),
     );
   }
@@ -254,20 +310,18 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   Widget _buildResourceButton({required IconData icon, required String label}) {
     return OutlinedButton(
       onPressed: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Downloading resource..."))
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(label)));
       },
       style: OutlinedButton.styleFrom(
         padding: const EdgeInsets.all(16),
-        alignment: Alignment.centerLeft,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
       child: Row(
         children: [
           Icon(icon, size: 20),
           const SizedBox(width: 12),
-          Expanded(child: Text(label, style: const TextStyle(color: Colors.black87))),
+          Text(label, style: const TextStyle(color: Colors.black87)),
         ],
       ),
     );

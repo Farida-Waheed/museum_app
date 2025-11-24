@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../models/user_preferences.dart';
+import '../../widgets/bottom_nav.dart'; // ADD NAV BAR
 
 class AccessibilityScreen extends StatelessWidget {
   const AccessibilityScreen({super.key});
@@ -10,17 +12,34 @@ class AccessibilityScreen extends StatelessWidget {
     final prefs = Provider.of<UserPreferencesModel>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Settings & Accessibility")),
+      backgroundColor: Colors.grey[100],
+
+      // 🔥 Add global bottom navigation bar
+      bottomNavigationBar: const BottomNav(currentIndex: 4),
+
+      appBar: AppBar(
+        title: const Text(
+          "Settings & Accessibility",
+          style: TextStyle(color: Colors.black),
+        ),
+        elevation: 0,
+        backgroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.black),
+      ),
+
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // VISUAL SETTINGS
           _buildSectionHeader("Visual"),
+
           SwitchListTile(
             title: const Text("High Contrast Mode"),
-            subtitle: const Text("Increases visibility for low vision"),
+            subtitle: const Text("Increases visibility for low vision users"),
             value: prefs.isHighContrast,
             onChanged: (val) => prefs.toggleHighContrast(val),
           ),
+
           ListTile(
             title: const Text("Font Size"),
             subtitle: Slider(
@@ -32,8 +51,12 @@ class AccessibilityScreen extends StatelessWidget {
               onChanged: (val) => prefs.setFontScale(val),
             ),
           ),
-          
+
+          const SizedBox(height: 20),
+
+          // LANGUAGE SETTINGS
           _buildSectionHeader("Language"),
+
           ListTile(
             title: const Text("App Language"),
             trailing: DropdownButton<String>(
@@ -57,7 +80,11 @@ class AccessibilityScreen extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Text(
         title,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blue),
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.blue,
+        ),
       ),
     );
   }
