@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../models/exhibit.dart';
 import '../../core/services/mock_data.dart';
@@ -14,35 +15,33 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
   final TransformationController _transformController = TransformationController();
   late List<Exhibit> exhibits;
   
-  // Robot Simulation State
-  int currentTargetIndex = 0;
-  late AnimationController _robotAnimController;
-  late Animation<Offset> _robotAnimation;
+  // Robot Animation State
+  late AnimationController _pulseController;
+  late Animation<double> _pulseAnimation;
+
+  // Map Dimensions
+  final double mapWidth = 600;
+  final double mapHeight = 500;
 
   @override
   void initState() {
     super.initState();
     exhibits = MockDataService.getAllExhibits();
     
-    // Setup Robot Animation (Patrols between exhibits)
-    _robotAnimController = AnimationController(
-      duration: const Duration(seconds: 5),
+    // Setup Pulsing Animation for Robot
+    _pulseController = AnimationController(
+      duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat(reverse: true);
 
-    // Create a tween that moves through the exhibits mock positions
-    // Note: In a real app, this would update based on live MQTT data
-    _robotAnimation = TweenSequence<Offset>([
-      TweenSequenceItem(tween: Tween(begin: const Offset(100, 100), end: const Offset(50, 100)), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: const Offset(50, 100), end: const Offset(50, 300)), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: const Offset(50, 300), end: const Offset(200, 300)), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: const Offset(200, 300), end: const Offset(200, 150)), weight: 1),
-    ]).animate(_robotAnimController);
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.4).animate(
+      CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
+    );
   }
 
   @override
   void dispose() {
-    _robotAnimController.dispose();
+    _pulseController.dispose();
     _transformController.dispose();
     super.dispose();
   }
@@ -51,208 +50,240 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Digital Map"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.center_focus_strong),
-            onPressed: () {
-              // Reset Zoom
-              _transformController.value = Matrix4.identity();
-            },
-          )
-        ],
+        title: const Text("Museum Map", style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.black),
+        elevation: 0,
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // Instructions Banner
+          // 1. The Interactive Map Area
           Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(8),
-            color: Colors.blue[50],
-            child: const Text(
-              "Pinch to zoom • Tap icons for details",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.blue, fontSize: 12),
-            ),
-          ),
-          
-          // The Map Area
-          Expanded(
-            child: Container(
-              color: Colors.grey[200], // Map Background
-              child: InteractiveViewer(
-                transformationController: _transformController,
-                boundaryMargin: const EdgeInsets.all(100),
-                minScale: 0.5,
-                maxScale: 3.0,
-                child: Stack(
-                  children: [
-                    // 1. The Map Image/Grid (Size: 500x600)
-                    Container(
-                      width: 500,
-                      height: 600,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.grey[300]!),
+            color: const Color(0xFFF5F7FA), // Light blue-grey background
+            child: InteractiveViewer(
+              transformationController: _transformController,
+              boundaryMargin: const EdgeInsets.all(50),
+              minScale: 0.5,
+              maxScale: 2.5,
+              constrained: false, // Allows map to be larger than screen
+              child: Padding(
+                padding: const EdgeInsets.all(50.0),
+                child: Container(
+                  width: mapWidth,
+                  height: mapHeight,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.blueGrey.shade200, width: 2),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, spreadRadius: 5)
+                    ],
+                  ),
+                  child: Stack(
+                    children: [
+                      // A. Grid Lines
+                      CustomPaint(
+                        size: Size(mapWidth, mapHeight),
+                        painter: MapGridPainter(),
                       ),
-                      child: CustomPaint(
-                        painter: GridPainter(), // Draws grid lines
-                      ),
-                    ),
 
-                    // 2. The Path (Lines connecting exhibits)
-                    CustomPaint(
-                      size: const Size(500, 600),
-                      painter: PathPainter(exhibits),
-                    ),
-
-                    // 3. The Exhibits (Clickable Icons)
-                    ...exhibits.map((e) => Positioned(
-                      left: e.x - 20, // Center the icon (40px width / 2)
-                      top: e.y - 40, // Pin bottom of icon to location
-                      child: GestureDetector(
-                        onTap: () => _showExhibitPreview(context, e),
-                        child: Column(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(2),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(4),
-                                boxShadow: const [BoxShadow(blurRadius: 2, color: Colors.black26)]
-                              ),
-                              child: Text(e.nameEn, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                            ),
-                            const Icon(Icons.location_on, color: Colors.red, size: 40),
-                          ],
+                      // B. Entrance Label
+                      const Align(
+                        alignment: Alignment.topCenter,
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 8.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text("Entrance", style: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold)),
+                              SizedBox(height: 2, width: 40, child: ColoredBox(color: Colors.teal)),
+                            ],
+                          ),
                         ),
                       ),
-                    )),
 
-                    // 4. The Animated Robot
-                    AnimatedBuilder(
-                      animation: _robotAnimation,
-                      builder: (context, child) {
-                        return Positioned(
-                          left: _robotAnimation.value.dx - 15,
-                          top: _robotAnimation.value.dy - 15,
-                          child: child!,
-                        );
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
-                          boxShadow: const [BoxShadow(blurRadius: 5, color: Colors.black26)]
-                        ),
-                        child: const Icon(Icons.smart_toy, color: Colors.white, size: 20),
-                      ),
-                    ),
-                  ],
+                      // C. Exhibits (Green Circles)
+                      ...exhibits.map((e) => _buildExhibitMarker(e)),
+
+                      // D. The Robot (Animated)
+                      _buildRobotMarker(150, 200), // Mock position (matches "Egyptian" area roughly)
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
+
+          // 2. The Legend Card (Floating Bottom Left)
+          Positioned(
+            left: 16,
+            bottom: 30,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 4))],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildLegendItem(Colors.blue, "Robot Location"),
+                  const SizedBox(height: 8),
+                  _buildLegendItem(Colors.red, "Your Location"),
+                  const SizedBox(height: 8),
+                  _buildLegendItem(Colors.teal, "Visited"),
+                  const SizedBox(height: 8),
+                  _buildLegendItem(Colors.grey, "Not Visited"),
+                ],
+              ),
+            ),
+          )
         ],
-      ),
-      
-      // Floating Action Button to Recenter on Robot
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Locating Robot...")));
-        },
-        icon: const Icon(Icons.my_location),
-        label: const Text("Find Robot"),
       ),
     );
   }
 
-  void _showExhibitPreview(BuildContext context, Exhibit e) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        height: 200,
-        child: Row(
+  // --- Marker Widgets ---
+
+  Widget _buildExhibitMarker(Exhibit e) {
+    // Scale coordinates to fit our fixed map size
+    final double x = (e.x / 400) * mapWidth;
+    final double y = (e.y / 600) * mapHeight;
+
+    return Positioned(
+      left: x - 30, // Center horizontally
+      top: y - 30,
+      child: GestureDetector(
+        onTap: () => Navigator.pushNamed(context, AppRoutes.exhibitDetails, arguments: e),
+        child: Column(
           children: [
             Container(
-              width: 100,
-              height: 100,
-              color: Colors.grey[300],
-              child: const Icon(Icons.image, size: 50, color: Colors.grey),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(e.nameEn, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  Text(e.descriptionEn, maxLines: 2, overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context); // Close sheet
-                      Navigator.pushNamed(context, AppRoutes.exhibitDetails, arguments: e);
-                    },
-                    child: const Text("View Details"),
-                  )
-                ],
+              width: 24,
+              height: 24,
+              decoration: const BoxDecoration(
+                color: Colors.teal, // Green for "Visited" style
+                shape: BoxShape.circle,
               ),
-            )
+            ),
+            const SizedBox(height: 4),
+            Text(
+              e.nameEn,
+              style: TextStyle(fontSize: 10, color: Colors.grey[800], fontWeight: FontWeight.w500),
+            ),
           ],
         ),
       ),
     );
   }
-}
 
-// --- Custom Painters for Map Graphics ---
-
-class GridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.grey[200]!..strokeWidth = 1;
-    // Draw vertical lines
-    for (double i = 0; i <= size.width; i += 50) {
-      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
-    }
-    // Draw horizontal lines
-    for (double i = 0; i <= size.height; i += 50) {
-      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
-    }
+  Widget _buildRobotMarker(double x, double y) {
+    return Positioned(
+      left: x - 40,
+      top: y - 60,
+      child: Column(
+        children: [
+          // "Explaining" Bubble
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            margin: const EdgeInsets.only(bottom: 4),
+            decoration: BoxDecoration(
+              color: Colors.blue[50],
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.blue.shade100),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text("🤖", style: TextStyle(fontSize: 10)),
+                const SizedBox(width: 4),
+                Text("Explaining", style: TextStyle(fontSize: 10, color: Colors.blue[800], fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+          
+          // Pulsing Circle
+          AnimatedBuilder(
+            animation: _pulseAnimation,
+            builder: (context, child) {
+              return Container(
+                width: 60 * _pulseAnimation.value,
+                height: 60 * _pulseAnimation.value,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.orange.withOpacity(0.5 - (_pulseAnimation.value - 1.0)), width: 2),
+                ),
+                child: Center(
+                  child: Container(
+                    width: 16,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                      boxShadow: [BoxShadow(color: Colors.blue.withOpacity(0.4), blurRadius: 8)],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
   }
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+
+  Widget _buildLegendItem(Color color, String label) {
+    return Row(
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
+        const SizedBox(width: 8),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.black87)),
+      ],
+    );
+  }
 }
 
-class PathPainter extends CustomPainter {
-  final List<Exhibit> exhibits;
-  PathPainter(this.exhibits);
+// --- Custom Painter for the Grid Lines ---
 
+class MapGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.blue.withOpacity(0.5)
-      ..strokeWidth = 3
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round;
+      ..color = Colors.grey.shade200
+      ..strokeWidth = 1;
 
-    final path = Path();
-    if (exhibits.isEmpty) return;
+    final dashedPaint = Paint()
+      ..color = Colors.grey.shade400
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
 
-    path.moveTo(exhibits[0].x, exhibits[0].y);
-    for (int i = 1; i < exhibits.length; i++) {
-      path.lineTo(exhibits[i].x, exhibits[i].y);
+    // 1. Draw Light Grid
+    double gridSize = 50;
+    for (double i = 0; i <= size.width; i += gridSize) {
+      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
+    }
+    for (double i = 0; i <= size.height; i += gridSize) {
+      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
     }
 
-    // Draw dashed line effect (Simplified)
-    canvas.drawPath(path, paint);
+    // 2. Draw Center Dashed Axes (Quadrants)
+    Path path = Path();
+    // Vertical Center
+    double cx = size.width / 2;
+    for (double i = 0; i < size.height; i += 10) {
+      if (i % 20 == 0) canvas.drawLine(Offset(cx, i), Offset(cx, i + 5), dashedPaint);
+    }
+    // Horizontal Center
+    double cy = size.height / 2;
+    for (double i = 0; i < size.width; i += 10) {
+      if (i % 20 == 0) canvas.drawLine(Offset(i, cy), Offset(i + 5, cy), dashedPaint);
+    }
   }
+
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

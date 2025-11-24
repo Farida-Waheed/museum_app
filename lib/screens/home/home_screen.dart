@@ -7,7 +7,6 @@ import '../../models/user_preferences.dart';
 import '../../models/exhibit.dart';
 import '../../core/services/mock_data.dart';
 import '../../app/router.dart';
-import '../../widgets/bottom_nav.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -37,7 +36,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     exhibits = MockDataService.getAllExhibits();
 
     Future.delayed(Duration.zero, () {
-      if (mounted) _showPrivacyDialog();
       if (mounted) _showPrivacyDialog();
     });
 
@@ -86,8 +84,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Deny")),
           ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text("Allow")),
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Deny")),
-          ElevatedButton(onPressed: () => Navigator.pop(context), child: const Text("Allow")),
         ],
       ),
     );
@@ -102,11 +98,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final t = Theme.of(context).textTheme;
 
     return Scaffold(
-      bottomNavigationBar: const BottomNav(currentIndex: 0),
-
       floatingActionButton: _RoboFab(
         label: isArabic ? "تحدث مع الروبوت" : "Talk to Robo-Guide",
-        onTap: () => _showGuideDialog(),
+        onTap: () => Navigator.pushNamed(context, AppRoutes.chat),
       ),
 
       appBar: AppBar(
@@ -137,7 +131,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ],
         ),
         actions: [
-          // --- NEW: Settings Button in AppBar ---
+          // --- QR Scanner Shortcut (For Staff/Testing) ---
+          IconButton(
+            icon: const Icon(Icons.qr_code_scanner, color: Colors.black54),
+            tooltip: "Scan Ticket",
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.qrScan),
+          ),
           IconButton(
             icon: const Icon(Icons.settings, color: Colors.grey),
             tooltip: isArabic ? "الإعدادات" : "Settings",
@@ -166,7 +165,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.asset('assets/images/museum_interior.jpg', fit: BoxFit.cover),
+                    Image.asset('assets/images/museum_interior.jpg', fit: BoxFit.cover,
+                      errorBuilder: (c,e,s) => Container(color: Colors.grey.shade300, child: const Icon(Icons.image, size: 50, color: Colors.grey)), 
+                    ),
                     AnimatedBuilder(
                       animation: _grad,
                       builder: (_, __) {
@@ -237,9 +238,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _welcomeCard(isArabic),
-                  const SizedBox(height: 16),
-
                   Row(
                     children: [
                       Expanded(child: _buildStatCard(Icons.map, "${exhibits.length}", isArabic ? "المعروضات" : "Exhibits", Colors.blue)),
@@ -273,6 +271,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
                   const SizedBox(height: 24),
 
+                  // --- Main Navigation Grid ---
                   GridView.count(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -281,35 +280,40 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     crossAxisSpacing: 12,
                     childAspectRatio: 1.05,
                     children: [
+                      // 1. Tour Progress
                       _MiniActionCard(
                         icon: "assets/icons/pyramid.png",
-                        title: isArabic ? "ابدأ الجولة" : "Start Tour",
-                        caption: isArabic ? "مسار مخصص" : "Personal Route",
-                        onTap: () {},
+                        title: isArabic ? "تقدم الجولة" : "Tour Progress",
+                        caption: isArabic ? "تابع تقدمك" : "Check Status",
+                        onTap: () => Navigator.pushNamed(context, AppRoutes.progress),
                       ),
+                      // 2. Map
                       _MiniActionCard(
                         icon: "assets/icons/maps.png",
                         title: isArabic ? "الخريطة" : "Map",
                         caption: isArabic ? "تتبع الروبوت" : "Track Robot",
                         onTap: () => Navigator.pushNamed(context, AppRoutes.map),
                       ),
+                      // 3. AR Scan (LINKED)
                       _MiniActionCard(
                         icon: "assets/icons/pharaoh.png",
                         title: isArabic ? "ماسح AR" : "AR Scan",
                         caption: isArabic ? "كشف القصص" : "Reveal Stories",
-                        onTap: () {},
+                        onTap: () => Navigator.pushNamed(context, AppRoutes.arView),
                       ),
+                      // 4. Buy Tickets
                       _MiniActionCard(
                         icon: "assets/icons/ticket.png",
-                        title: isArabic ? "التذاكر" : "Tickets",
+                        title: isArabic ? "التذاكر" : "Buy Tickets",
                         caption: isArabic ? "تخطي الطابور" : "Skip Queue",
-                        onTap: () {},
+                        onTap: () => Navigator.pushNamed(context, AppRoutes.tickets),
                       ),
                     ],
                   ),
 
                   const SizedBox(height: 24),
 
+                  // Map Preview Card
                   Card(
                     elevation: 2,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -344,37 +348,77 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                   ),
 
+                  const SizedBox(height: 24),
+
+                  // --- Secondary Features Grid ---
+                  Text(
+                    isArabic ? "اكتشف الميزات" : "More Features",
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 12),
+                  GridView.count(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 1.1,
+                    children: [
+                      _buildNavButton(context, AppRoutes.search, Icons.search, isArabic ? "بحث" : "Search", Colors.orange),
+                      _buildNavButton(context, AppRoutes.chat, Icons.chat, isArabic ? "المحادثة" : "Chat", Colors.green),
+                      _buildNavButton(context, AppRoutes.quiz, Icons.school, isArabic ? "اختبار" : "Quiz", Colors.red),
+                      _buildNavButton(context, AppRoutes.feedback, Icons.feedback, isArabic ? "رأيك" : "Feedback", Colors.purple),
+                      _buildNavButton(context, AppRoutes.language, Icons.language, isArabic ? "اللغة" : "Language", Colors.indigo),
+                      _buildNavButton(context, AppRoutes.liveTour, Icons.radio_button_checked, isArabic ? "جولة حية" : "Live Tour", Colors.redAccent),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Separate Settings Area
+                  InkWell(
+                    onTap: () => Navigator.pushNamed(context, AppRoutes.settings),
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: Row(
+                        children: [
+                          const CircleAvatar(
+                            backgroundColor: Colors.white,
+                            child: Icon(Icons.settings, color: Colors.grey),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  isArabic ? "الإعدادات وسهولة الوصول" : "Settings & Accessibility",
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                                Text(
+                                  isArabic ? "خيارات إضافية للتخصيص" : "Additional customization options",
+                                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+                        ],
+                      ),
+                    ),
+                  ),
+
                   const SizedBox(height: 80),
                 ],
               ),
             ),
           )
-        ],
-      ),
-    );
-  }
-
-  Widget _welcomeCard(bool isArabic) {  
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Colors.blue, Colors.purple]),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            isArabic ? "مرحباً بكم في المتحف" : "Welcome to the Museum",
-            style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            isArabic
-                ? "اتبع دليلنا الآلي للحصول على جولة تفاعلية."
-                : "Follow our AI-powered robot guide for an interactive experience.",
-            style: const TextStyle(color: Colors.white70),
-          ),
         ],
       ),
     );
@@ -386,18 +430,45 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
       ),
       child: Column(
         children: [
           CircleAvatar(
             radius: 16,
-            backgroundColor: color.withOpacity(.15),
+            backgroundColor: color.withValues(alpha: .15),
             child: Icon(icon, color: color, size: 18),
           ),
           const SizedBox(height: 8),
           Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
         ],
+      ),
+    );
+  }
+
+  Widget _buildNavButton(BuildContext context, String route, IconData icon, String label, Color color) {
+    return InkWell(
+      onTap: () => Navigator.pushNamed(context, route),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.grey.shade200),
+          boxShadow: [BoxShadow(color: Colors.grey.shade100, blurRadius: 4, offset: const Offset(0, 2))],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(color: color.withValues(alpha: 0.1), shape: BoxShape.circle),
+              child: Icon(icon, color: color, size: 28),
+            ),
+            const SizedBox(height: 12),
+            Text(label, style: TextStyle(color: Colors.blueGrey[800], fontWeight: FontWeight.w600)),
+          ],
+        ),
       ),
     );
   }
@@ -427,69 +498,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       },
     );
   }
-
-  void _showGuideDialog() {
-    final t = Theme.of(context).textTheme;
-    final cs = Theme.of(context).colorScheme;
-
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      transitionDuration: const Duration(milliseconds: 220),
-      pageBuilder: (_, __, ___) => const SizedBox.shrink(),
-      transitionBuilder: (_, anim, __, child) {
-        final scale = Tween(begin: .96, end: 1.0)
-            .animate(CurvedAnimation(parent: anim, curve: Curves.easeOutBack));
-        return FadeTransition(
-          opacity: anim,
-          child: ScaleTransition(
-            scale: scale,
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 420),
-                child: Card(
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 64,
-                          height: 64,
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(18),
-                            gradient: LinearGradient(colors: [
-                              cs.secondary.withOpacity(.2),
-                              cs.tertiary.withOpacity(.2),
-                            ]),
-                          ),
-                          child: Image.asset("assets/icons/ankh.png"),
-                        ),
-                        const SizedBox(height: 12),
-                        Text("Robo-Guide", style: t.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 8),
-                        Text(
-                          "Ask in Arabic or English. Live routes, tips, assistance.",
-                          style: t.bodyMedium?.copyWith(color: cs.onSurface.withOpacity(.7)),
-                        ),
-                        const SizedBox(height: 16),
-                        FilledButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: const Text("Close"),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
 }
 
 class _GlassChip extends StatelessWidget {
@@ -514,7 +522,7 @@ class _GlassChip extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (icon != null) ...[
-                Image.asset(icon!, width: 16, height: 16),
+                Image.asset(icon!, width: 16, height: 16, errorBuilder: (c,e,s)=>const Icon(Icons.star, size: 16)),
                 const SizedBox(width: 6),
               ],
               Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
@@ -566,7 +574,8 @@ class _MiniActionCard extends StatelessWidget {
                     cs.tertiary.withOpacity(.15),
                   ]),
                 ),
-                child: Image.asset(icon, fit: BoxFit.contain),
+                // Fallback to icon if asset missing
+                child: Image.asset(icon, fit: BoxFit.contain, errorBuilder: (c,e,s) => const Icon(Icons.extension)),
               ),
               const Spacer(),
               Text(title, style: t.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
@@ -598,7 +607,7 @@ class _HighlightCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(22),
         child: Stack(
           children: [
-            Positioned.fill(child: Image.asset(image, fit: BoxFit.cover)),
+            Positioned.fill(child: Image.asset(image, fit: BoxFit.cover, errorBuilder: (c,e,s)=>Container(color: Colors.grey))),
             Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(

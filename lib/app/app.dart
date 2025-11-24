@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/user_preferences.dart';
 import 'theme/light_theme.dart';
 import 'theme/high_contrast.dart';
-import 'router.dart'; // Import the router we created
+import 'router.dart'; // Import the router
 
 class MuseumApp extends StatelessWidget {
   const MuseumApp({super.key});
@@ -16,10 +16,10 @@ class MuseumApp extends StatelessWidget {
           title: 'Museum Guide',
           debugShowCheckedModeBanner: false,
           
-          // 1. Theme Logic
+          // 1. Theme Logic (High Contrast vs Light)
           theme: prefs.isHighContrast ? highContrastTheme : lightTheme,
           
-          // 2. Localization Logic
+          // 2. Localization Logic (Arabic vs English)
           locale: Locale(prefs.language),
           
           // 3. Accessibility (Font Scaling)
@@ -36,7 +36,8 @@ class MuseumApp extends StatelessWidget {
           },
           
           // 4. Navigation Routes
-          initialRoute: AppRoutes.home,
+          // We start at 'onboarding' so users see the tutorial first
+          initialRoute: AppRoutes.onboarding, // This will now find the definition
           routes: AppRoutes.getRoutes(),
         );
       },
