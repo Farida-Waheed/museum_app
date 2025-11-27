@@ -16,49 +16,49 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Keeping listen: true as per original implementation
-    final prefs = Provider.of<UserPreferencesModel>(context);
+    final prefs = Provider.of<UserPreferencesModel>(context, listen: true);
     final isArabic = prefs.language == 'ar';
 
     // Onboarding Data
     final List<Map<String, String>> pages = [
       {
         "title": isArabic ? "مرحباً بكم في المستقبل" : "Welcome to the Future",
-        "desc": isArabic 
-            ? "استمتع بتجربة متحف ذكية مع دليلنا الآلي." 
+        "desc": isArabic
+            ? "استمتع بتجربة متحف ذكية مع دليلنا الآلي."
             : "Experience a smart museum tour with our AI Robot Guide.",
-        "image": "assets/images/museum_interior.jpg",
-        "icon": "🤖"
+        "image": "assets/images/Onboarding.jpg",
+        "iconPath": "assets/icons/ankh.png",
       },
       {
         "title": isArabic ? "تتبع موقعك" : "Track Your Location",
-        "desc": isArabic 
-            ? "شاهد موقعك وموقع الروبوت على الخريطة التفاعلية." 
+        "desc": isArabic
+            ? "شاهد موقعك وموقع الروبوت على الخريطة التفاعلية."
             : "See your live location and the robot on the interactive map.",
-        "image": "assets/images/museum_interior.jpg", 
-        "icon": "📍"
+        "image": "assets/images/Onboarding.jpg",
+        "iconPath": "assets/icons/map.png",
       },
       {
         "title": isArabic ? "تعلم واكتشف" : "Learn & Explore",
-        "desc": isArabic 
-            ? "استمع للشرح الصوتي، شارك في الاختبارات، واسأل الروبوت." 
+        "desc": isArabic
+            ? "استمع للشرح الصوتي، شارك في الاختبارات، واسأل الروبوت."
             : "Listen to audio guides, take quizzes, and chat with the robot.",
-        "image": "assets/images/museum_interior.jpg",
-        "icon": "🎓"
+        "image": "assets/images/Onboarding.jpg",
+        "iconPath": "assets/icons/scarab.png",
       },
     ];
 
     return Scaffold(
       body: Stack(
         children: [
-          // --- 1. Background Image ---
+          // --- 1. Background Image (Onboarding.jpg) ---
           Positioned.fill(
             child: Image.asset(
               pages[_currentPage]["image"]!,
               fit: BoxFit.cover,
-              errorBuilder: (c,e,s) => Container(color: Colors.blueGrey),
+              errorBuilder: (c, e, s) => Container(color: Colors.blueGrey),
             ),
           ),
+
           // --- 2. Gradient Overlay ---
           Positioned.fill(
             child: DecoratedBox(
@@ -67,7 +67,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    // Corrected Color method: withValues is not standard Flutter
                     Colors.black.withOpacity(0.1),
                     Colors.black.withOpacity(0.8),
                   ],
@@ -76,13 +75,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
 
-          // --- 3. Content (Moved BEHIND the button) ---
+          // --- 3. Content ---
           Column(
             children: [
               Expanded(
                 child: PageView.builder(
                   controller: _pageController,
-                  onPageChanged: (index) => setState(() => _currentPage = index),
+                  onPageChanged: (index) =>
+                      setState(() => _currentPage = index),
                   itemCount: pages.length,
                   itemBuilder: (context, index) {
                     return Padding(
@@ -90,9 +90,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Text(
-                            pages[index]["icon"]!,
-                            style: const TextStyle(fontSize: 64),
+                          // ICON IMAGE INSTEAD OF EMOJI
+                          Image.asset(
+                            pages[index]["iconPath"]!,
+                            width: 96,
+                            height: 96,
                           ),
                           const SizedBox(height: 24),
                           Text(
@@ -114,7 +116,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                               height: 1.5,
                             ),
                           ),
-                          const SizedBox(height: 40), // Space for dots/button
+                          const SizedBox(height: 40),
                         ],
                       ),
                     );
@@ -137,41 +139,45 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           width: _currentPage == index ? 24 : 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: _currentPage == index ? Colors.blue : Colors.white54,
+                            color: _currentPage == index
+                                ? Colors.blue
+                                : Colors.white54,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         );
                       }),
                     ),
                     const SizedBox(height: 32),
-                    
+
                     // Get Started Button
                     SizedBox(
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (_currentPage < pages.length - 1) {
-                            _pageController.nextPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.ease,
-                            );
-                          } else {
-                            // Finish Onboarding
-                            // CRITICAL: You should also call prefs.setCompletedOnboarding(true) here
-                            Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
-                          }
+                          // optional: mark onboarding as completed
+                          // prefs.setCompletedOnboarding(true);
+
+                          // Always go directly to Home
+                          Navigator.pushReplacementNamed(
+                            context,
+                            AppRoutes.mainHome,
+                          );
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
                           foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                           elevation: 8,
                         ),
                         child: Text(
-                          // MODIFIED: Always show "Get Started" / "ابدأ الرحلة"
                           isArabic ? "ابدأ الرحلة" : "Get Started",
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ),
@@ -181,7 +187,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ],
           ),
 
-          // --- 4. Language Switcher (Moved to LAST position to be ON TOP) ---
+          // --- 4. Language Switcher ---
           Positioned(
             top: 50,
             right: 20,
@@ -193,7 +199,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 icon: const Icon(Icons.language, size: 18),
                 label: Text(isArabic ? "English" : "العربية"),
                 style: ElevatedButton.styleFrom(
-                  // Corrected Color method: withValues is not standard Flutter
                   backgroundColor: Colors.white.withOpacity(0.2),
                   foregroundColor: Colors.white,
                   elevation: 0,
