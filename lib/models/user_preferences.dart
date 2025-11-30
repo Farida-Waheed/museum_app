@@ -5,6 +5,7 @@ class UserPreferencesModel extends ChangeNotifier {
   bool _isHighContrast = false;
   double _fontScale = 1.0;
   bool _hasCompletedOnboarding = false;
+  String themeMode = 'system';
 
   String get language => _language;
   bool get isHighContrast => _isHighContrast;
@@ -13,6 +14,11 @@ class UserPreferencesModel extends ChangeNotifier {
 
   void setLanguage(String lang) {
     _language = lang;
+    notifyListeners();
+  }
+
+  void setThemeMode(String value) {
+    themeMode = value;
     notifyListeners();
   }
 

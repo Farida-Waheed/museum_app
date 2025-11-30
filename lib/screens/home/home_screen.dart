@@ -3,12 +3,14 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../models/user_preferences.dart';
 import '../../models/exhibit.dart';
 import '../../core/services/mock_data.dart';
 import '../../app/router.dart';
 import '../../widgets/bottom_nav.dart';
-import '../chat/chat_screen.dart'; // gives us RoboGuideEntry
+import '../chat/chat_screen.dart'; 
+import '../../widgets/tour_alert.dart'; 
 
 // --- ARABIC TRANSLATION MAPS ---
 const Map<String, String> _highlightTitlesAr = {
@@ -55,30 +57,30 @@ class _HomeScreenState extends State<HomeScreen>
       duration: const Duration(milliseconds: 280),
     );
 
+    // Privacy dialog (currently every app open – can later make it "once only")
     Future.delayed(Duration.zero, () {
       if (mounted) _showPrivacyDialog();
     });
 
-    Future.delayed(const Duration(seconds: 5), () {
+    // 🔔 Use shared tour-alert widget (only shows once per app session)
+    Future.delayed(Duration.zero, () {
       if (!mounted) return;
-
       final prefs =
           Provider.of<UserPreferencesModel>(context, listen: false);
       final isArabic = prefs.language == 'ar';
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            isArabic
-                ? "🔔 تنبيه: تبدأ الجولة في القاعة (أ) خلال 5 دقائق!"
-                : "🔔 Alert: Tour starting in Hall A in 5 mins!",
-          ),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.blueAccent,
-        ),
+      showTourAlertOnce(
+        context,
+        isArabic: isArabic,
+        hallNameEn: 'Hall A',
+        hallNameAr: 'القاعة (أ)',
+        minutes: 5,
+        onViewMap: () =>
+            Navigator.pushNamed(context, AppRoutes.map),
       );
     });
 
+    // Simple simulation: robot + stats move over time
     _simTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
       if (!mounted) return;
 
@@ -112,8 +114,8 @@ class _HomeScreenState extends State<HomeScreen>
         title: Text(isArabic ? "الخصوصية والأذونات" : "Privacy & Permissions"),
         content: Text(
           isArabic
-              ? "نستخدم تقنيتي البلوتوث والموقع لتوجيهك.\n\n• البيانات مجهولة.\n• تُستخدم خرائط الحرارة لأغراض التحليل.\n\nهل تسمح لنا باستخدام موقعك؟"
-              : "We use Bluetooth and Location to guide you.\n\n• Data is anonymous.\n• Heatmaps are for analytics.\n\nDo you allow us to use your location?",
+              ? "أنخو يستخدم البلوتوث والموقع لمرافقتك داخل المتحف.\n\n• البيانات مجهولة الهوية.\n• تُستخدم خرائط الحركة لأغراض التحليل فقط.\n\nهل تسمح باستخدام موقعك؟"
+              : "Ankhu uses Bluetooth and Location to walk with you inside the museum.\n\n• Data is anonymous.\n• Movement heatmaps are only for analytics.\n\nDo you allow us to use your location?",
         ),
         actions: [
           TextButton(
@@ -121,7 +123,10 @@ class _HomeScreenState extends State<HomeScreen>
             child: Text(isArabic ? "رفض" : "Deny"),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              // TODO: store acceptance in UserPreferencesModel if needed
+              Navigator.pop(context);
+            },
             child: Text(isArabic ? "سماح" : "Allow"),
           ),
         ],
@@ -148,13 +153,13 @@ class _HomeScreenState extends State<HomeScreen>
     final t = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
 
-    const Color lightGreyBG = Colors.white; // PURE WHITE BACKGROUND
+    const Color lightGreyBG = Colors.white; // pure white background
 
     return Scaffold(
       backgroundColor: lightGreyBG,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
 
-      // ✅ Reusable Robo-Guide bubble (comes from chat_screen.dart)
+      // Ankhu chat entry on Home
       floatingActionButton: const RoboGuideEntry(),
 
       body: AnimatedBuilder(
@@ -167,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen>
 
           return Stack(
             children: [
-              // WHITE BACKGROUND
+              // Background behind the card
               Container(color: lightGreyBG),
 
               // SIDE MENU
@@ -176,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen>
                 child: const _SideMenuWrapper(),
               ),
 
-              // MAIN CARD
+              // MAIN CONTENT CARD (slides & scales when menu opens)
               Transform.translate(
                 offset: Offset(dx, 0),
                 child: Transform.scale(
@@ -209,10 +214,17 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                           title: Row(
                             children: [
-                              const Text("🤖", style: TextStyle(fontSize: 24)),
-                              const SizedBox(width: 12),
+                              // flat Ankhu icon
+                              Image.asset(
+                                "assets/icons/ankh.png",
+                                width: 26,
+                                height: 26,
+                              ),
+                              const SizedBox(width: 10),
                               Text(
-                                isArabic ? "روبوت المتحف" : "Museum Guide",
+                                isArabic
+                                    ? "أنخو"
+                                    : "Ankhu",
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -222,8 +234,10 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                           actions: [
                             IconButton(
-                              icon: const Icon(Icons.qr_code_scanner,
-                                  color: Colors.black),
+                              icon: const Icon(
+                                Icons.qr_code_scanner,
+                                color: Colors.black,
+                              ),
                               onPressed: () =>
                                   Navigator.pushNamed(context, AppRoutes.qrScan),
                             ),
@@ -234,7 +248,7 @@ class _HomeScreenState extends State<HomeScreen>
 
                         body: CustomScrollView(
                           slivers: [
-                            // HEADER
+                            // ===== HERO HEADER =====
                             SliverToBoxAdapter(
                               child: Container(
                                 height: 240,
@@ -249,6 +263,7 @@ class _HomeScreenState extends State<HomeScreen>
                                         'assets/images/museum_interior.jpg',
                                         fit: BoxFit.cover,
                                       ),
+                                      // Animated gradient wash
                                       AnimatedBuilder(
                                         animation: _grad,
                                         builder: (_, __) {
@@ -267,7 +282,7 @@ class _HomeScreenState extends State<HomeScreen>
                                                       .14 - .06 * gv),
                                                   cs.tertiary.withOpacity(
                                                       .10 + .06 * gv),
-                                                  Colors.black.withOpacity(.45),
+                                                  Colors.black.withOpacity(.55),
                                                 ],
                                               ),
                                             ),
@@ -284,44 +299,65 @@ class _HomeScreenState extends State<HomeScreen>
                                           children: [
                                             Text(
                                               isArabic
-                                                  ? "استكشف مصر مع الدليل الآلي"
-                                                  : "Explore Egypt with Robo-Guide",
+                                                  ? "استكشف مصر مع أنخو"
+                                                  : "Explore Egypt with Ankhu",
                                               style:
                                                   t.headlineSmall?.copyWith(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w800,
                                               ),
                                             ),
-                                            const SizedBox(height: 6),
-                                            Wrap(
-                                              spacing: 8,
-                                              children: [
-                                                _GlassChip(
-                                                  label: isArabic
-                                                      ? "جاهز للواقع المعزز"
-                                                      : "AR Ready",
-                                                  icon:
-                                                      "assets/icons/scarab.png",
-                                                  isArabic: isArabic,
+                                            const SizedBox(height: 10),
+
+                                            // === NEXT STOP CARD ===
+                                            InkWell(
+                                              borderRadius:
+                                                  BorderRadius.circular(14),
+                                              onTap: () => Navigator.pushNamed(
+                                                context,
+                                                AppRoutes.progress,
+                                              ),
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                  horizontal: 12,
+                                                  vertical: 8,
                                                 ),
-                                                _GlassChip(
-                                                  label: isArabic
-                                                      ? "بلغتان"
-                                                      : "Bilingual",
-                                                  icon:
-                                                      "assets/icons/ankh.png",
-                                                  isArabic: isArabic,
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(14),
+                                                  color: Colors.black
+                                                      .withOpacity(0.30),
                                                 ),
-                                                _GlassChip(
-                                                  label: isArabic
-                                                      ? "خريطة مباشرة"
-                                                      : "Live Map",
-                                                  icon:
-                                                      "assets/icons/maps.png",
-                                                  isArabic: isArabic,
+                                                child: Row(
+                                                  children: [
+                                                    const Icon(
+                                                      Icons.route,
+                                                      color: Colors.white,
+                                                      size: 18,
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Expanded(
+                                                      child: Text(
+                                                        isArabic
+                                                            ? "المحطة التالية: قاعة توت عنخ آمون خلال ٥ دقائق"
+                                                            : "Next stop: Tutankhamun Hall in 5 min",
+                                                        style: const TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 12,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const Icon(
+                                                      Icons
+                                                          .chevron_right_rounded,
+                                                      color: Colors.white,
+                                                      size: 18,
+                                                    ),
+                                                  ],
                                                 ),
-                                              ],
-                                            )
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       )
@@ -331,7 +367,7 @@ class _HomeScreenState extends State<HomeScreen>
                               ),
                             ),
 
-                            // CONTENT
+                            // ===== BODY CONTENT =====
                             SliverToBoxAdapter(
                               child: Padding(
                                 padding: const EdgeInsets.all(16),
@@ -339,34 +375,39 @@ class _HomeScreenState extends State<HomeScreen>
                                   crossAxisAlignment:
                                       CrossAxisAlignment.start,
                                   children: [
+                                    // --- STATS ROW ---
                                     Row(
                                       children: [
                                         Expanded(
                                           child: _buildStatCard(
-                                            Icons.map,
-                                            "${exhibits.length}",
-                                            isArabic ? "المعروضات" : "Exhibits",
-                                            Colors.blue,
+                                            icon: Icons.map,
+                                            value: "${exhibits.length}",
+                                            label: isArabic
+                                                ? "المعروضات"
+                                                : "Exhibits",
+                                            color: Colors.blue,
                                           ),
                                         ),
                                         const SizedBox(width: 8),
                                         Expanded(
                                           child: _buildStatCard(
-                                            Icons.trending_up,
-                                            "$visitedCount",
-                                            isArabic
+                                            icon: Icons.trending_up,
+                                            value: "$visitedCount",
+                                            label: isArabic
                                                 ? "تمت زيارتها"
                                                 : "Visited",
-                                            Colors.green,
+                                            color: Colors.green,
                                           ),
                                         ),
                                         const SizedBox(width: 8),
                                         Expanded(
                                           child: _buildStatCard(
-                                            Icons.timer,
-                                            "${durationMinutes}m",
-                                            isArabic ? "المدة" : "Duration",
-                                            Colors.purple,
+                                            icon: Icons.timer,
+                                            value: "${durationMinutes}m",
+                                            label: isArabic
+                                                ? "المدة"
+                                                : "Duration",
+                                            color: Colors.purple,
                                           ),
                                         ),
                                       ],
@@ -374,6 +415,7 @@ class _HomeScreenState extends State<HomeScreen>
 
                                     const SizedBox(height: 24),
 
+                                    // --- TODAY'S HIGHLIGHTS ---
                                     Text(
                                       isArabic
                                           ? "معروضات اليوم"
@@ -424,6 +466,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     _Dots(count: 3, index: pageIndex),
                                     const SizedBox(height: 24),
 
+                                    // --- MAP PREVIEW CARD ---
                                     Card(
                                       elevation: 2,
                                       shape: RoundedRectangleBorder(
@@ -439,14 +482,16 @@ class _HomeScreenState extends State<HomeScreen>
                                                   MainAxisAlignment
                                                       .spaceBetween,
                                               children: [
-                                                Text(
-                                                  isArabic
-                                                      ? "معاينة الخريطة (موقع الروبوت)"
-                                                      : "Map Preview (Robot Location)",
-                                                  style: const TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight:
-                                                        FontWeight.bold,
+                                                Expanded(
+                                                  child: Text(
+                                                    isArabic
+                                                        ? "معاينة الخريطة (موقع أنخو)"
+                                                        : "Map Preview (Ankhu’s Location)",
+                                                    style: const TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
                                                   ),
                                                 ),
                                                 TextButton(
@@ -475,6 +520,32 @@ class _HomeScreenState extends State<HomeScreen>
                                                 child: _buildMiniMap(),
                                               ),
                                             ),
+                                            const SizedBox(height: 8),
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                _LegendDot(
+                                                  color: Colors.blue,
+                                                  label: isArabic
+                                                      ? "أنخو"
+                                                      : "Ankhu",
+                                                ),
+                                                _LegendDot(
+                                                  color: Colors.orange,
+                                                  label: isArabic
+                                                      ? "أنت"
+                                                      : "You",
+                                                ),
+                                                _LegendDot(
+                                                  color: Colors.redAccent,
+                                                  label: isArabic
+                                                      ? "معروض"
+                                                      : "Exhibit",
+                                                ),
+                                              ],
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -499,34 +570,52 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  // SMALL WIDGETS
+  // ===== SMALL WIDGETS =====
 
-  Widget _buildStatCard(
-      IconData icon, String value, String label, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
-      ),
-      child: Column(
-        children: [
-          CircleAvatar(
-            radius: 16,
-            backgroundColor: color.withOpacity(.15),
-            child: Icon(icon, color: color, size: 18),
+  Widget _buildStatCard({
+    required IconData icon,
+    required String value,
+    required String label,
+    required Color color,
+  }) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(14),
+      onTap: () {
+        // Optional: navigate based on label (Exhibits / Visited / Duration)
+      },
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          gradient: LinearGradient(
+            colors: [
+              color.withOpacity(.10),
+              Colors.white,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 10, color: Colors.grey),
-          ),
-        ],
+          border: Border.all(color: Colors.grey.shade200),
+        ),
+        child: Column(
+          children: [
+            CircleAvatar(
+              radius: 16,
+              backgroundColor: color.withOpacity(.15),
+              child: Icon(icon, color: color, size: 18),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style:
+                  const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              label,
+              style: const TextStyle(fontSize: 10, color: Colors.grey),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -536,6 +625,7 @@ class _HomeScreenState extends State<HomeScreen>
       builder: (context, c) {
         return Stack(
           children: [
+            // Exhibits
             ...exhibits.map((e) {
               double dx = (e.x / 400) * c.maxWidth;
               double dy = (e.y / 600) * c.maxHeight;
@@ -550,12 +640,26 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               );
             }),
+            // User static example marker (center-ish)
+            Positioned(
+              left: c.maxWidth * 0.5,
+              top: c.maxHeight * 0.7,
+              child: const Icon(
+                Icons.circle,
+                size: 10,
+                color: Colors.orange,
+              ),
+            ),
+            // Ankhu (robot) animated position
             AnimatedPositioned(
               duration: const Duration(seconds: 1),
               left: (robotX / 400) * c.maxWidth,
               top: (robotY / 600) * c.maxHeight,
-              child: const Icon(Icons.smart_toy,
-                  size: 24, color: Colors.blue),
+              child: const Icon(
+                Icons.smart_toy,
+                size: 24,
+                color: Colors.blue,
+              ),
             ),
           ],
         );
@@ -591,7 +695,16 @@ class _SideMenu extends StatelessWidget {
       child: SizedBox(
         width: width,
         child: Container(
-          color: Colors.white,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.white,
+                Color(0xFFF3F6FB),
+              ],
+            ),
+          ),
           child: SafeArea(
             child: Padding(
               padding:
@@ -616,6 +729,15 @@ class _SideMenu extends StatelessWidget {
                             ? CrossAxisAlignment.end
                             : CrossAxisAlignment.start,
                         children: [
+                          Text(
+                            isArabic ? "استكشف" : "Explore",
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
                           _MenuItem(
                             icon: Icons.map_rounded,
                             label: isArabic ? "الخريطة" : "Map",
@@ -635,6 +757,22 @@ class _SideMenu extends StatelessWidget {
                                 Navigator.pushNamed(context, AppRoutes.quiz),
                           ),
                           _MenuItem(
+                            icon: Icons.radio_button_checked,
+                            label: isArabic ? "جولة حية" : "Live Tour",
+                            onTap: () => Navigator.pushNamed(
+                                context, AppRoutes.liveTour),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            isArabic ? "الإعدادات" : "Settings",
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          _MenuItem(
                             icon: Icons.language,
                             label: isArabic ? "اللغة" : "Language",
                             onTap: () => Navigator.pushNamed(
@@ -645,12 +783,6 @@ class _SideMenu extends StatelessWidget {
                             label: isArabic ? "رأيك" : "Feedback",
                             onTap: () => Navigator.pushNamed(
                                 context, AppRoutes.feedback),
-                          ),
-                          _MenuItem(
-                            icon: Icons.radio_button_checked,
-                            label: isArabic ? "جولة حية" : "Live Tour",
-                            onTap: () => Navigator.pushNamed(
-                                context, AppRoutes.liveTour),
                           ),
                         ],
                       ),
@@ -667,50 +799,6 @@ class _SideMenu extends StatelessWidget {
 }
 
 // ========== UI COMPONENTS ==========
-
-class _GlassChip extends StatelessWidget {
-  final String label;
-  final String? icon;
-  final bool isArabic;
-
-  const _GlassChip({
-    required this.label,
-    this.icon,
-    required this.isArabic,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: cs.surface.withOpacity(.6),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-            children: [
-              if (icon != null) ...[
-                Image.asset(icon!, width: 16, height: 16),
-                const SizedBox(width: 6),
-              ],
-              Text(
-                label,
-                style: const TextStyle(fontWeight: FontWeight.w700),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
 
 class _HighlightCard extends StatelessWidget {
   final String title;
@@ -809,16 +897,47 @@ class _MenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.black87),
-      title: Text(
-        label,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 4),
+      child: ListTile(
+        leading: Icon(icon, color: Colors.black87),
+        title: Text(
+          label,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
         ),
+        onTap: onTap,
       ),
-      onTap: onTap,
+    );
+  }
+}
+
+class _LegendDot extends StatelessWidget {
+  final Color color;
+  final String label;
+
+  const _LegendDot({required this.color, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12, color: Colors.black87),
+        ),
+      ],
     );
   }
 }

@@ -1,6 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../models/user_preferences.dart';
 import '../../widgets/bottom_nav.dart';
 
@@ -27,157 +27,137 @@ class LanguageScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
+    final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.grey[50],
       bottomNavigationBar: const BottomNav(currentIndex: 4),
-
       appBar: AppBar(
-        elevation: 0,
+        elevation: 0.5,
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.black),
         title: Text(
           isArabic ? "اللغة" : "Language",
-          style: const TextStyle(color: Colors.black),
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
-
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // ========= HEADER GLASS HERO =========
-          ClipRRect(
-            borderRadius: BorderRadius.circular(22),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.blue.withOpacity(.25),
-                      Colors.purple.withOpacity(.18),
-                      Colors.black.withOpacity(.05),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(22),
-                ),
-                child: Row(
-                  textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Colors.blue, Colors.purple],
-                        ),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.language, color: Colors.white, size: 30),
+          // Header card (simple, no glass)
+          Card(
+            elevation: 1,
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                textDirection:
+                    isArabic ? TextDirection.rtl : TextDirection.ltr,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: cs.primary.withOpacity(0.1),
+                      shape: BoxShape.circle,
                     ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment:
-                            isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            isArabic ? "اختر لغتك" : "Choose Your Language",
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
+                    child: Icon(
+                      Icons.language,
+                      color: cs.primary,
+                      size: 26,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: isArabic
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isArabic ? "اختر لغتك" : "Choose your language",
+                          style: const TextStyle(
+                            fontSize: 17,
+                            fontWeight: FontWeight.w700,
                           ),
-                          Text(
-                            isArabic
-                                ? "ستُحدث اللغة في جميع شاشات التطبيق"
-                                : "Your language will apply across the app",
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.black.withOpacity(.6)),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          isArabic
+                              ? "سيتم تطبيق اللغة على جميع شاشات التطبيق."
+                              : "Your choice applies across the whole app.",
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.black54,
                           ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
 
-          const SizedBox(height: 26),
+          const SizedBox(height: 20),
 
-          // ========= LANGUAGE SELECTOR GRID =========
+          // language options – grid but calm
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 2.4,
-              crossAxisSpacing: 14,
-              mainAxisSpacing: 14,
+              childAspectRatio: 2.6,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
             ),
             itemCount: languages.length,
             itemBuilder: (context, index) {
               final lang = languages[index];
               final isSelected = prefs.language == lang.code;
 
-              return GestureDetector(
+              return InkWell(
                 onTap: () => prefs.setLanguage(lang.code),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 250),
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                borderRadius: BorderRadius.circular(16),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(18),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: isSelected ? Colors.blue : Colors.grey.shade300,
-                      width: 2,
+                      color: isSelected
+                          ? cs.primary
+                          : Colors.grey.shade300,
+                      width: isSelected ? 2 : 1,
                     ),
-                    gradient: isSelected
-                        ? LinearGradient(
-                            colors: [
-                              Colors.blue.withOpacity(.2),
-                              Colors.blue.withOpacity(.05),
-                            ],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          )
-                        : LinearGradient(
-                            colors: [
-                              Colors.white.withOpacity(.85),
-                              Colors.white.withOpacity(.70),
-                            ],
-                          ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(.06),
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
                   ),
                   child: Row(
-                    textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+                    textDirection:
+                        isArabic ? TextDirection.rtl : TextDirection.ltr,
                     children: [
-                      Text(lang.flag, style: const TextStyle(fontSize: 26)),
-                      const SizedBox(width: 10),
+                      Text(lang.flag, style: const TextStyle(fontSize: 24)),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           lang.name,
-                          textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                          textAlign:
+                              isArabic ? TextAlign.right : TextAlign.left,
                           style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                            color:
-                                isSelected ? Colors.blue.shade900 : Colors.black87,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: isSelected
+                                ? cs.primary
+                                : Colors.black87,
                           ),
                         ),
                       ),
                       if (isSelected)
-                        const Icon(Icons.check_circle, color: Colors.blue, size: 22),
+                        Icon(Icons.check_circle,
+                            size: 20, color: cs.primary),
                     ],
                   ),
                 ),
@@ -185,64 +165,41 @@ class LanguageScreen extends StatelessWidget {
             },
           ),
 
-          const SizedBox(height: 30),
+          const SizedBox(height: 24),
 
-          // ========= LANGUAGE FEATURES (GLASS CARD) =========
-          ClipRRect(
-            borderRadius: BorderRadius.circular(22),
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.blue[50],
-                  borderRadius: BorderRadius.circular(22),
-                  border: Border.all(color: Colors.blue.shade200),
-                ),
-                child: Column(
-                  crossAxisAlignment:
-                      isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      isArabic ? "ميزات اللغة" : "Language Features",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue.shade900,
-                      ),
+          // small info card
+          Card(
+            elevation: 0,
+            color: cs.primary.withOpacity(0.06),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: isArabic
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isArabic ? "ماذا يتغير؟" : "What changes?",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: cs.primary,
                     ),
-                    const SizedBox(height: 14),
-                    _buildFeatureItem(
-                        isArabic ? "ترجمة جميع أوصاف المعروضات" : "All exhibit descriptions translated"),
-                    _buildFeatureItem(
-                        isArabic ? "شرح صوتي باللغة المختارة" : "Audio guides in selected language"),
-                    _buildFeatureItem(
-                        isArabic ? "الروبوت يتحدث لغتك" : "Robot speaks in your chosen language"),
-                    _buildFeatureItem(
-                        isArabic ? "نصوص فورية متاحة" : "Live transcripts available"),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    isArabic
+                        ? "واجهات التطبيق، نصوص المعروضات، والروبوت سيستخدمون اللغة التي تختارها."
+                        : "App screens, exhibit text, and the robot guide will follow your language choice.",
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ),
-
-          const SizedBox(height: 26),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFeatureItem(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        children: [
-          Icon(Icons.check_circle_outline, size: 20, color: Colors.blue[700]),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: TextStyle(fontSize: 15, color: Colors.blue[800]),
             ),
           ),
         ],

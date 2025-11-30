@@ -5,8 +5,6 @@ import '../../models/user_preferences.dart';
 import '../../models/exhibit.dart';
 import '../../core/services/mock_data.dart';
 import '../../app/router.dart';
-
-// 🔥 Reusable Bottom Navigation Bar
 import '../../widgets/bottom_nav.dart';
 
 class TourProgressScreen extends StatefulWidget {
@@ -39,168 +37,102 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
+    final cs = Theme.of(context).colorScheme;
 
-    final visitedExhibits =
+    final visited =
         _allExhibits.where((e) => _visitedExhibitIds.contains(e.id)).toList();
-
-    final unvisitedExhibits =
+    final unvisited =
         _allExhibits.where((e) => !_visitedExhibitIds.contains(e.id)).toList();
 
-    final progressPercentage =
-        _visitedExhibitIds.length / _allExhibits.length;
+    final progress = _allExhibits.isEmpty
+        ? 0.0
+        : _visitedExhibitIds.length / _allExhibits.length;
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-
-      // 🔥 Add bottom navigation here
+      backgroundColor: Colors.grey[50],
       bottomNavigationBar: const BottomNav(currentIndex: 2),
-
       appBar: AppBar(
-        title: Text(isArabic ? "تقدم الجولة" : "Tour Progress"),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-        titleTextStyle: const TextStyle(
-          color: Colors.black,
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+        title: Text(
+          isArabic ? "تقدم الجولة" : "Tour progress",
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
+        backgroundColor: Colors.white,
+        elevation: 0.5,
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
-
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+              isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
-            // ----------------------------------------------------
-            // 1. OVERVIEW CARD
-            // ----------------------------------------------------
+            // overview
             Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              elevation: 1,
+              shape:
+                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(16),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                      isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isArabic ? "الجولة الحالية" : "Current Tour",
+                      isArabic ? "الجولة الحالية" : "Current tour",
                       style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 20),
-
-                    // Progress Row
+                    const SizedBox(height: 14),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           isArabic ? "التقدم" : "Progress",
-                          style: TextStyle(color: Colors.grey[600]),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.black54,
+                          ),
                         ),
                         Text(
-                          "${visitedExhibits.length} / ${_allExhibits.length} "
+                          "${visited.length} / ${_allExhibits.length} "
                           "${isArabic ? 'معروضات' : 'exhibits'}",
+                          style: const TextStyle(fontSize: 13),
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 8),
-
                     LinearProgressIndicator(
-                      value: progressPercentage,
-                      backgroundColor: Colors.grey[200],
-                      color: Colors.blue,
+                      value: progress,
                       minHeight: 8,
+                      backgroundColor: Colors.grey[200],
+                      color: cs.primary,
                       borderRadius: BorderRadius.circular(4),
                     ),
-
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                     const Divider(),
-                    const SizedBox(height: 10),
-
-                    // Stats Row
+                    const SizedBox(height: 8),
                     Row(
                       children: [
-                        // Duration
                         Expanded(
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue[50],
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.access_time,
-                                  color: Colors.blue,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    isArabic ? "المدة" : "Duration",
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  Text(
-                                    _formatDuration(_durationMinutes),
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            ],
+                          child: _statItem(
+                            icon: Icons.access_time,
+                            color: cs.primary,
+                            label: isArabic ? "المدة" : "Duration",
+                            value: _formatDuration(_durationMinutes),
                           ),
                         ),
-
-                        // Completed
+                        const SizedBox(width: 12),
                         Expanded(
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Colors.green[50],
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Icons.check_circle_outline,
-                                  color: Colors.green,
-                                  size: 20,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    isArabic ? "مكتمل" : "Completed",
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                  Text(
-                                    "${visitedExhibits.length} "
-                                    "${isArabic ? 'عنصر' : 'items'}",
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                          child: _statItem(
+                            icon: Icons.check_circle_outline,
+                            color: Colors.green,
+                            label: isArabic ? "مكتمل" : "Completed",
+                            value: "${visited.length}",
                           ),
                         ),
                       ],
@@ -212,48 +144,43 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
 
             const SizedBox(height: 24),
 
-            // ----------------------------------------------------
-            // 2. VISITED EXHIBITS
-            // ----------------------------------------------------
-            if (visitedExhibits.isNotEmpty) ...[
-              _buildSectionHeader(
+            if (visited.isNotEmpty) ...[
+              _sectionHeader(
                 icon: Icons.check_circle,
                 color: Colors.green,
-                title:
-                    "${isArabic ? 'تمت زيارتها' : 'Visited'} (${visitedExhibits.length})",
+                title: isArabic
+                    ? "تمت زيارتها (${visited.length})"
+                    : "Visited (${visited.length})",
               ),
-              const SizedBox(height: 12),
-
-              ...visitedExhibits.map(
-                (e) => _buildExhibitTile(
+              const SizedBox(height: 10),
+              ...visited.map(
+                (e) => _exhibitRow(
                   context,
-                  e,
-                  isVisited: true,
+                  exhibit: e,
                   prefs: prefs,
+                  isArabic: isArabic,
+                  visited: true,
                 ),
               ),
-
               const SizedBox(height: 24),
             ],
 
-            // ----------------------------------------------------
-            // 3. NOT VISITED EXHIBITS
-            // ----------------------------------------------------
-            if (unvisitedExhibits.isNotEmpty) ...[
-              _buildSectionHeader(
-                icon: Icons.location_on,
+            if (unvisited.isNotEmpty) ...[
+              _sectionHeader(
+                icon: Icons.location_on_outlined,
                 color: Colors.grey,
-                title:
-                    "${isArabic ? 'لم تتم زيارتها' : 'Not Visited'} (${unvisitedExhibits.length})",
+                title: isArabic
+                    ? "لم تتم زيارتها (${unvisited.length})"
+                    : "Not visited (${unvisited.length})",
               ),
-              const SizedBox(height: 12),
-
-              ...unvisitedExhibits.map(
-                (e) => _buildExhibitTile(
+              const SizedBox(height: 10),
+              ...unvisited.map(
+                (e) => _exhibitRow(
                   context,
-                  e,
-                  isVisited: false,
+                  exhibit: e,
                   prefs: prefs,
+                  isArabic: isArabic,
+                  visited: false,
                 ),
               ),
             ],
@@ -263,133 +190,134 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
     );
   }
 
-  // ----------------------------------------------------
-  // SECTION HEADER
-  // ----------------------------------------------------
-  Widget _buildSectionHeader({
+  Widget _statItem({
+    required IconData icon,
+    required Color color,
+    required String label,
+    required String value,
+  }) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.08),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, size: 18, color: color),
+        ),
+        const SizedBox(width: 10),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.black54,
+              ),
+            ),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _sectionHeader({
     required IconData icon,
     required Color color,
     required String title,
   }) {
     return Row(
       children: [
-        Icon(icon, size: 20, color: color),
+        Icon(icon, size: 18, color: color),
         const SizedBox(width: 8),
         Text(
           title,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ],
     );
   }
 
-  // ----------------------------------------------------
-  // EXHIBIT TILE
-  // ----------------------------------------------------
-  Widget _buildExhibitTile(
-    BuildContext context,
-    Exhibit exhibit, {
-    required bool isVisited,
+  Widget _exhibitRow(
+    BuildContext context, {
+    required Exhibit exhibit,
     required UserPreferencesModel prefs,
+    required bool isArabic,
+    required bool visited,
   }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
+    final cs = Theme.of(context).colorScheme;
+
+    return Card(
+      elevation: 0,
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
-        onTap: () => Navigator.pushNamed(
-          context,
-          AppRoutes.exhibitDetails,
-          arguments: exhibit,
-        ),
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            AppRoutes.exhibitDetails,
+            arguments: exhibit,
+          );
+        },
         borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: isVisited ? Colors.green[50] : Colors.grey[50],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isVisited
-                  ? Colors.green.shade200
-                  : Colors.grey.shade300,
-            ),
-          ),
+        child: Padding(
+          padding: const EdgeInsets.all(10),
           child: Row(
             children: [
-              // Bullet
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: visited
+                      ? Colors.green.withOpacity(0.08)
+                      : cs.primary.withOpacity(0.04),
                   shape: BoxShape.circle,
-                  border: Border.all(
-                    color: isVisited
-                        ? Colors.green.shade100
-                        : Colors.grey.shade200,
-                  ),
                 ),
                 child: Icon(
-                  isVisited ? Icons.check : Icons.circle_outlined,
+                  visited ? Icons.check : Icons.circle_outlined,
                   size: 16,
-                  color: isVisited ? Colors.green : Colors.grey,
+                  color: visited ? Colors.green : cs.primary,
                 ),
               ),
-
-              const SizedBox(width: 12),
-
-              // Text Info
+              const SizedBox(width: 10),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                      isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                   children: [
                     Text(
                       exhibit.getName(prefs.language),
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
+                    const SizedBox(height: 2),
                     Text(
-                      isVisited ? "Completed" : "Pending",
-                      style: TextStyle(
+                      visited
+                          ? (isArabic ? "تمت الزيارة" : "Visited")
+                          : (isArabic ? "لم تُزر بعد" : "Not visited yet"),
+                      style: const TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: Colors.black54,
                       ),
                     ),
                   ],
                 ),
               ),
-
-              // Action indicator
-              isVisited
-                  ? Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Icon(
-                        Icons.check,
-                        size: 14,
-                        color: Colors.green,
-                      ),
-                    )
-                  : OutlinedButton(
-                      onPressed: () => Navigator.pushNamed(
-                        context,
-                        AppRoutes.exhibitDetails,
-                        arguments: exhibit,
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 8),
-                        minimumSize: Size.zero,
-                        side:
-                            BorderSide(color: Colors.grey.shade400),
-                      ),
-                      child: const Text(
-                        "View",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
+              const SizedBox(width: 6),
+              const Icon(Icons.chevron_right_rounded, size: 18),
             ],
           ),
         ),

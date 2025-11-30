@@ -12,6 +12,17 @@ class MuseumApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<UserPreferencesModel>(
       builder: (context, prefs, child) {
+        ThemeMode themeMode;
+        switch (prefs.themeMode) {
+          case 'light':
+            themeMode = ThemeMode.light;
+            break;
+          case 'dark':
+            themeMode = ThemeMode.dark;
+            break;
+          default:
+            themeMode = ThemeMode.system;
+        }
         return MaterialApp(
           title: 'Museum Guide',
           debugShowCheckedModeBanner: false,
@@ -39,6 +50,9 @@ class MuseumApp extends StatelessWidget {
           // We start at 'onboarding' so users see the tutorial first
           initialRoute: AppRoutes.intro, // This will now find the definition
           routes: AppRoutes.getRoutes(),
+
+          // 5. Which one to use (system / light / dark)
+          themeMode: themeMode,
         );
       },
     );

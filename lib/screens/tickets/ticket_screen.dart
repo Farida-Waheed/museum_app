@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart'; // Needed for modern date formatting
+import 'package:intl/intl.dart';
+import 'package:flutter/services.dart'; // 👈 for sound + haptics
 
 import '../../models/user_preferences.dart';
 import '../../app/router.dart';
-import '../../widgets/bottom_nav.dart'; // <-- USE GLOBAL NAV BAR
-
-// Define a modern primary color for the app
-const Color _kPrimaryColor = Color(0xFF1E88E5); // A vibrant Blue/Indigo
-const Color _kPrimaryLight = Color(0xFF64B5F6);
+import '../../widgets/bottom_nav.dart';
 
 class TicketScreen extends StatefulWidget {
   const TicketScreen({super.key});
@@ -18,6 +15,7 @@ class TicketScreen extends StatefulWidget {
 }
 
 class _TicketScreenState extends State<TicketScreen> {
+  // In a real app these would probably come from an API.
   final Map<String, double> _prices = {
     'Adult': 20.0,
     'Student': 15.0,
@@ -46,25 +44,12 @@ class _TicketScreenState extends State<TicketScreen> {
     return total;
   }
 
-  // UPDATED: Use a modern date picker theme
   Future<void> _selectDate() async {
     final picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)), // Extended range
-      builder: (context, child) {
-        return Theme(
-          data: ThemeData.light().copyWith(
-            primaryColor: _kPrimaryColor,
-            colorScheme: const ColorScheme.light(primary: _kPrimaryColor),
-            buttonTheme: const ButtonThemeData(
-              textTheme: ButtonTextTheme.primary,
-            ),
-          ),
-          child: child!,
-        );
-      },
+      lastDate: DateTime.now().add(const Duration(days: 365)),
     );
     if (picked != null) {
       setState(() => _selectedDate = picked);
@@ -78,54 +63,99 @@ class _TicketScreenState extends State<TicketScreen> {
     }
   }
 
-  void _handleCheckout(bool isArabic) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          isArabic
-              ? "تم الشراء بنجاح! التذاكر محفوظة."
-              : "Purchase successful! Tickets saved.",
+  Future<void> _handleCheckout(bool isArabic) async {
+    if (_totalPrice <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isArabic
+                ? "اختر تذكرة واحدة على الأقل للمتابعة."
+                : "Please select at least one ticket to continue.",
+          ),
         ),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+      );
+      return;
+    }
 
-    // Navigate to My Tickets screen
-    Navigator.pushReplacementNamed(context, AppRoutes.myTickets);
+    // 🔊 Small system feedback so it feels "live"
+    HapticFeedback.mediumImpact();
+    SystemSound.play(SystemSoundType.click);
+
+    final shortDate = DateFormat('d MMM yyyy').format(_selectedDate);
+
+    await showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Ticket confirmation',
+      barrierColor: Colors.black54,
+      transitionDuration: const Duration(milliseconds: 280),
+      pageBuilder: (ctx, anim, secondaryAnim) {
+        return Center(
+          child: _TicketConfirmationDialog(
+            isArabic: isArabic,
+            totalTickets: _totalTickets,
+            totalPrice: _totalPrice,
+            shortDate: shortDate,
+            onGoToTickets: () {
+              Navigator.of(ctx, rootNavigator: true).pop(); // close dialog
+              Navigator.pushReplacementNamed(context, AppRoutes.myTickets);
+            },
+          ),
+        );
+      },
+      transitionBuilder: (ctx, animation, secondary, child) {
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutBack,
+        );
+        return FadeTransition(
+          opacity: animation,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.9, end: 1.0).animate(curved),
+            child: child,
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
+    final theme = Theme.of(context);
+
+    final String formattedDateEn =
+        DateFormat('EEEE, MMM d, yyyy').format(_selectedDate);
+    final String formattedDateAr =
+        DateFormat.yMMMMEEEEd('ar').format(_selectedDate);
+    final String formattedDate =
+        isArabic ? formattedDateAr : formattedDateEn;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50], // Very subtle background tone
-
+      backgroundColor: Colors.grey[50],
       bottomNavigationBar: const BottomNav(currentIndex: 3),
-
       appBar: AppBar(
         title: Text(
-          isArabic ? "شراء التذاكر" : "Buy Tickets",
+          isArabic ? "شراء التذاكر" : "Buy tickets",
           style: const TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
           ),
         ),
-        elevation: 1, // Slight elevation on the AppBar
+        centerTitle: true,
+        elevation: 0.5,
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.black),
         actions: [
           IconButton(
-            icon: const Icon(Icons.wallet, color: _kPrimaryColor),
-            tooltip: isArabic ? "تذاكري" : "My Tickets",
+            icon: const Icon(Icons.confirmation_number_outlined),
+            tooltip: isArabic ? "تذاكري" : "My tickets",
             onPressed: () =>
                 Navigator.pushNamed(context, AppRoutes.myTickets),
-          )
+          ),
         ],
       ),
-
       body: Column(
         children: [
           Expanded(
@@ -136,66 +166,226 @@ class _TicketScreenState extends State<TicketScreen> {
                     ? CrossAxisAlignment.end
                     : CrossAxisAlignment.start,
                 children: [
-                  // --- HERO / INTRO SECTION ---
-                  _buildHeroHeader(isArabic),
+                  // Simple hero / context card (no heavy animation)
+                  Card(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      side: BorderSide(
+                        color: Colors.grey.shade300,
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary
+                                  .withOpacity(0.08),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              Icons.museum_rounded,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: isArabic
+                                  ? CrossAxisAlignment.end
+                                  : CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  isArabic
+                                      ? "تذاكر المتحف"
+                                      : "Museum tickets",
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  isArabic
+                                      ? "احجز دخولك واختر نوع التذاكر قبل الوصول."
+                                      : "Reserve your entry and choose ticket types before you arrive.",
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
                   const SizedBox(height: 24),
 
-                  // --- DATE SELECTION CARD (Modernized) ---
-                  _buildSectionTitle(
-                      isArabic ? "تاريخ الزيارة" : "Visit Date"),
+                  // Visit date
+                  Text(
+                    isArabic ? "تاريخ الزيارة" : "Visit date",
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Card(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      side: BorderSide(
+                        color: Colors.grey.shade300,
+                      ),
+                    ),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(14),
+                      onTap: _selectDate,
+                      child: Padding(
+                        padding: const EdgeInsets.all(14),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.calendar_today_rounded,
+                              color: theme.colorScheme.primary,
+                              size: 22,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                formattedDate,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              isArabic ? "تغيير" : "Change",
+                              style: TextStyle(
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Ticket types
+                  Text(
+                    isArabic ? "أنواع التذاكر" : "Ticket types",
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                   const SizedBox(height: 12),
-                  _buildDateSelectionCard(isArabic),
-
-                  const SizedBox(height: 32),
-
-                  // --- TICKET TYPES (Modernized) ---
-                  _buildSectionTitle(
-                      isArabic ? "أنواع التذاكر" : "Ticket Types"),
-                  const SizedBox(height: 16),
 
                   _ticketRow(
-                    "Adult",
-                    isArabic ? "بالغ" : "Adult",
-                    "\$20",
-                    isArabic,
-                    isPopular: true,
+                    typeKey: "Adult",
+                    label: isArabic ? "بالغ" : "Adult",
+                    subtitle: isArabic
+                        ? "العمر ١٢ سنة فأكثر"
+                        : "Ages 12+",
+                    price: _prices["Adult"]!,
+                    isArabic: isArabic,
                   ),
                   const SizedBox(height: 10),
                   _ticketRow(
-                    "Student",
-                    isArabic ? "طالب" : "Student",
-                    "\$15",
-                    isArabic,
+                    typeKey: "Student",
+                    label: isArabic ? "طالب" : "Student",
+                    subtitle: isArabic
+                        ? "مع بطاقة طالب سارية"
+                        : "With valid student ID",
+                    price: _prices["Student"]!,
+                    isArabic: isArabic,
                   ),
                   const SizedBox(height: 10),
                   _ticketRow(
-                    "Child",
-                    isArabic ? "طفل" : "Child",
-                    "\$10",
-                    isArabic,
+                    typeKey: "Child",
+                    label: isArabic ? "طفل" : "Child",
+                    subtitle: isArabic
+                        ? "العمر من ٥ إلى ١١ سنة"
+                        : "Ages 5–11",
+                    price: _prices["Child"]!,
+                    isArabic: isArabic,
                   ),
 
-                  const SizedBox(height: 24),
-
-                  // SUMMARY CARD
-                  _buildSummaryCard(isArabic),
-                  const SizedBox(height: 16),
-
-                  // INFO + ROBO TIP
-                  _buildInfoCard(
-                    icon: Icons.info_outline,
-                    text: isArabic
-                        ? "الأطفال دون سن 5 سنوات مجاناً."
-                        : "Children under 5 enter for free.",
-                  ),
                   const SizedBox(height: 12),
                   Text(
                     isArabic
-                        ? "🤖 تلميح: يمكن للروبوت مساعدتك في اختيار أفضل وقت للزيارة."
-                        : "🤖 Tip: The Robo-Guide can help you choose the best time to visit.",
+                        ? "الأطفال دون سن ٥ سنوات يدخلون مجاناً مع شخص بالغ."
+                        : "Children under 5 enter for free with an adult.",
                     style: const TextStyle(
-                      color: Colors.black54,
                       fontSize: 12,
+                      color: Colors.black54,
+                    ),
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Summary
+                  Card(
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      side: BorderSide(
+                        color: Colors.grey.shade300,
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(14),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.receipt_long_rounded,
+                            color: theme.colorScheme.primary,
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: isArabic
+                                  ? CrossAxisAlignment.end
+                                  : CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _totalTickets > 0
+                                      ? (isArabic
+                                          ? "$_totalTickets تذكرة محددة"
+                                          : "$_totalTickets ticket(s) selected")
+                                      : (isArabic
+                                          ? "لم يتم اختيار تذاكر بعد"
+                                          : "No tickets selected yet"),
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  isArabic
+                                      ? "يمكنك تعديل العدد في أي وقت قبل الدفع."
+                                      : "You can adjust quantities before checkout.",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -203,51 +393,105 @@ class _TicketScreenState extends State<TicketScreen> {
             ),
           ),
 
-          // --- CHECKOUT BAR ---
-          _buildCheckoutBar(isArabic),
+          // Bottom bar (total + button)
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                top: BorderSide(
+                  color: Colors.grey.shade300,
+                ),
+              ),
+            ),
+            child: SafeArea(
+              top: false,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: isArabic
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          isArabic ? "المجموع" : "Total",
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.black54,
+                          ),
+                        ),
+                        Text(
+                          "\$${_totalPrice.toStringAsFixed(2)}",
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    SizedBox(
+                      height: 48,
+                      child: ElevatedButton(
+                        onPressed: _totalPrice > 0
+                            ? () => _handleCheckout(isArabic)
+                            : null,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        child: Text(
+                          isArabic ? "متابعة" : "Continue",
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  // CUSTOM WIDGETS ---------------------------------------------------
+  // ------------------- UI pieces -------------------
 
-  // Consistent title style
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: Colors.black87,
-      ),
-    );
-  }
+  Widget _ticketRow({
+    required String typeKey,
+    required String label,
+    required String subtitle,
+    required double price,
+    required bool isArabic,
+  }) {
+    final theme = Theme.of(context);
+    final int qty = _quantities[typeKey]!;
 
-  // HERO HEADER -----------------------------------------
-  Widget _buildHeroHeader(bool isArabic) {
     return Card(
-      elevation: 2,
+      elevation: 0,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(
+          color: qty > 0
+              ? theme.colorScheme.primary.withOpacity(0.7)
+              : Colors.grey.shade300,
+        ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: _kPrimaryColor.withValues(alpha: 0.10),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: const Icon(
-                Icons.confirmation_number_rounded,
-                color: _kPrimaryColor,
-                size: 26,
-              ),
-            ),
-            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: isArabic
@@ -255,291 +499,62 @@ class _TicketScreenState extends State<TicketScreen> {
                     : CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isArabic ? "خطط زيارتك" : "Plan Your Visit",
+                    label,
                     style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Colors.black54,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    isArabic
-                        ? "اختر التاريخ وعدد التذاكر لجولتك في المتحف."
-                        : "Choose your visit date and ticket types for the museum tour.",
+                    "\$${price.toStringAsFixed(2)}",
                     style: const TextStyle(
                       fontSize: 13,
-                      color: Colors.black54,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // UPDATED: Modern Date Selection Card (Arabic-aware)
-  Widget _buildDateSelectionCard(bool isArabic) {
-    final String formattedDateEn =
-        DateFormat('EEEE, MMM d, yyyy').format(_selectedDate);
-    final String formattedDateAr =
-        DateFormat.yMMMMEEEEd('ar').format(_selectedDate);
-
-    final String formattedDate =
-        isArabic ? formattedDateAr : formattedDateEn;
-
-    return Card(
-      elevation: 2, // Subtle elevation
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: InkWell(
-        onTap: _selectDate,
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              const Icon(
-                Icons.calendar_today_rounded,
-                color: _kPrimaryColor,
-                size: 24,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  formattedDate,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              // Use a TextButton for a cleaner look than a bordered button
-              TextButton(
-                onPressed: _selectDate,
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: const Size(60, 30),
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
-                child: Text(
-                  isArabic ? "تغيير" : "Change",
-                  style: const TextStyle(
-                    color: _kPrimaryColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  // UPDATED: Ticket Row - cleaner, with “Most popular” and selected tint
-  Widget _ticketRow(
-    String typeKey,
-    String label,
-    String price,
-    bool isArabic, {
-    bool isPopular = false,
-  }) {
-    final int qty = _quantities[typeKey]!;
-    final bool isSelected = qty > 0;
-
-    return Card(
-      elevation: isSelected ? 2 : 1, // Slightly more lift when selected
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      color: isSelected
-          ? _kPrimaryColor.withValues(alpha: 0.04)
-          : Colors.white,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          children: [
-            // LABEL + PRICE + OPTIONAL CHIP
-            Expanded(
-              child: Column(
-                crossAxisAlignment: isArabic
-                    ? CrossAxisAlignment.end
-                    : CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: isArabic
-                        ? MainAxisAlignment.end
-                        : MainAxisAlignment.start,
-                    children: [
-                      Text(
-                        label,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      if (isPopular) ...[
-                        const SizedBox(width: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _kPrimaryLight.withValues(alpha: 0.20),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            isArabic ? "الأكثر شهرة" : "Most popular",
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: _kPrimaryColor,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    price,
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 14,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
             const SizedBox(width: 8),
-
-            // UPDATED: SLEEK COUNTER
             Container(
               decoration: BoxDecoration(
-                color: Colors.grey[100], // Slight contrast
+                color: Colors.grey[100],
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _buildCounterButton(
-                    icon: Icons.remove,
+                  IconButton(
+                    icon: const Icon(Icons.remove, size: 18),
                     onPressed: qty > 0
                         ? () => _updateQuantity(typeKey, -1)
                         : null,
-                    isMinus: true,
+                    color: qty > 0 ? Colors.black87 : Colors.grey[400],
                   ),
-                  Container(
-                    width: 30,
-                    alignment: Alignment.center,
+                  SizedBox(
+                    width: 28,
                     child: Text(
                       "$qty",
+                      textAlign: TextAlign.center,
                       style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
-                  _buildCounterButton(
-                    icon: Icons.add,
+                  IconButton(
+                    icon: const Icon(Icons.add, size: 18),
                     onPressed: () => _updateQuantity(typeKey, 1),
-                    isMinus: false,
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  // Helper for the modern counter button style
-  Widget _buildCounterButton({
-    required IconData icon,
-    VoidCallback? onPressed,
-    required bool isMinus,
-  }) {
-    return IconButton(
-      icon: Icon(icon, size: 18),
-      onPressed: onPressed,
-      color: onPressed == null
-          ? Colors.grey[400]
-          : (isMinus ? Colors.black87 : _kPrimaryColor),
-    );
-  }
-
-  // SUMMARY CARD ------------------------------------------------
-  Widget _buildSummaryCard(bool isArabic) {
-    final String shortDate =
-        DateFormat('d MMM yyyy').format(_selectedDate);
-
-    final String summaryText = _totalTickets > 0
-        ? (isArabic
-            ? "$_totalTickets تذكرة • $shortDate"
-            : "$_totalTickets ticket(s) • $shortDate")
-        : (isArabic
-            ? "لم تقم باختيار أي تذاكر بعد."
-            : "No tickets selected yet.");
-
-    final String hintText = _totalTickets > 0
-        ? (isArabic
-            ? "جاهز للدفع عندما تكون مستعداً."
-            : "You’re ready to checkout when you’re ready.")
-        : (isArabic
-            ? "اختر نوعاً واحداً على الأقل من التذاكر للمتابعة."
-            : "Select at least one ticket type to continue.");
-
-    return Card(
-      elevation: 1,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: _kPrimaryColor.withValues(alpha: 0.07),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Icon(
-                _totalTickets > 0
-                    ? Icons.check_circle_rounded
-                    : Icons.pending_rounded,
-                color: _totalTickets > 0 ? Colors.green : _kPrimaryColor,
-                size: 20,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: isArabic
-                    ? CrossAxisAlignment.end
-                    : CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    summaryText,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    hintText,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.black54,
-                    ),
+                    color: theme.colorScheme.primary,
                   ),
                 ],
               ),
@@ -549,109 +564,124 @@ class _TicketScreenState extends State<TicketScreen> {
       ),
     );
   }
+}
 
-  // UPDATED: Info Card - Slightly refined style
-  Widget _buildInfoCard({required IconData icon, required String text}) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: _kPrimaryColor.withValues(alpha: 0.08), // Use primary color accent
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: _kPrimaryColor.withValues(alpha: 0.15),
-        ), // Subtle border
-      ),
-      child: Row(
-        children: [
-          Icon(icon, color: _kPrimaryColor),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                color: _kPrimaryColor,
-                fontSize: 14,
+// ================== Confirmation Dialog ===================
+
+class _TicketConfirmationDialog extends StatelessWidget {
+  final bool isArabic;
+  final int totalTickets;
+  final double totalPrice;
+  final String shortDate;
+  final VoidCallback onGoToTickets;
+
+  const _TicketConfirmationDialog({
+    required this.isArabic,
+    required this.totalTickets,
+    required this.totalPrice,
+    required this.shortDate,
+    required this.onGoToTickets,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 32),
+        padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(.2),
+              blurRadius: 24,
+              offset: const Offset(0, 10),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: isArabic
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: CircleAvatar(
+                radius: 30,
+                backgroundColor: Colors.green.withOpacity(0.1),
+                child: const Icon(
+                  Icons.check_rounded,
+                  color: Colors.green,
+                  size: 32,
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // CHECKOUT BAR - Refined Total display + subtle animation
-  Widget _buildCheckoutBar(bool isArabic) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.08),
-            blurRadius: 15,
-            offset: const Offset(0, -5),
-          )
-        ],
-      ),
-      child: SafeArea(
-        top: false, // Ensure button is not padded by the top of the safe area
-        child: Row(
-          children: [
-            Column(
-              crossAxisAlignment: isArabic
-                  ? CrossAxisAlignment.end
-                  : CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isArabic ? "المجموع" : "Total",
-                  style: const TextStyle(
-                    color: Colors.grey,
-                    fontSize: 14,
+            const SizedBox(height: 16),
+            Center(
+              child: Text(
+                isArabic ? "تم تأكيد التذاكر" : "Tickets confirmed",
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Center(
+              child: Text(
+                isArabic
+                    ? "حجزنا لك $totalTickets تذكرة ليوم $shortDate."
+                    : "We’ve reserved $totalTickets ticket(s) for $shortDate.",
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Center(
+              child: Text(
+                (isArabic ? "المجموع: " : "Total: ") +
+                    "\$${totalPrice.toStringAsFixed(2)}",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: onGoToTickets,
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                Text(
-                  "\$${_totalPrice.toStringAsFixed(2)}",
+                child: Text(
+                  isArabic ? "عرض تذاكري" : "View my tickets",
                   style: const TextStyle(
-                    fontSize: 26, // Larger total price
                     fontWeight: FontWeight.bold,
-                    color: _kPrimaryColor,
                   ),
-                )
-              ],
+                ),
+              ),
             ),
-            const Spacer(),
-            AnimatedOpacity(
-              duration: const Duration(milliseconds: 200),
-              opacity: _totalPrice > 0 ? 1.0 : 0.5,
-              child: SizedBox(
-                height: 54, // Consistent button height
-                child: ElevatedButton.icon(
-                  onPressed: _totalPrice > 0
-                      ? () => _handleCheckout(isArabic)
-                      : null,
-                  icon: const Icon(
-                    Icons.arrow_forward_ios_rounded,
-                    size: 18,
-                  ),
-                  label: Text(
-                    isArabic ? "دفع الآن" : "Checkout",
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: _kPrimaryColor,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 28,
-                      vertical: 14,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    elevation: 5,
-                  ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context, rootNavigator: true).pop();
+              },
+              child: Center(
+                child: Text(
+                  isArabic ? "إغلاق" : "Close",
+                  style: const TextStyle(color: Colors.black54),
                 ),
               ),
             ),

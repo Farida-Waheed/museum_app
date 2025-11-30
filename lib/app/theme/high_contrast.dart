@@ -2,29 +2,60 @@ import 'package:flutter/material.dart';
 
 final ThemeData highContrastTheme = ThemeData(
   useMaterial3: true,
+  brightness: Brightness.dark,
+
   scaffoldBackgroundColor: Colors.black,
+
   colorScheme: const ColorScheme.dark(
     primary: Colors.yellow,
     secondary: Colors.white,
-    surface: Colors.black, // 'surface' now handles the background color
+    surface: Colors.black,
     onSurface: Colors.white,
-    // background: Colors.black, <--- REMOVED THIS LINE
   ),
-  textTheme: const TextTheme(
-    bodyMedium: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-    titleLarge: TextStyle(color: Colors.yellow, fontWeight: FontWeight.w900, fontSize: 26),
-  ),
-  iconTheme: const IconThemeData(color: Colors.yellow, size: 32),
+
   appBarTheme: const AppBarTheme(
     backgroundColor: Colors.black,
+    elevation: 0,
     iconTheme: IconThemeData(color: Colors.yellow),
-    titleTextStyle: TextStyle(color: Colors.yellow, fontSize: 24, fontWeight: FontWeight.bold),
+    titleTextStyle: TextStyle(
+      color: Colors.yellow,
+      fontSize: 24,
+      fontWeight: FontWeight.w900,
+    ),
   ),
+
+  textTheme: const TextTheme(
+    bodyLarge: TextStyle(
+      color: Colors.white,
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+      height: 1.5,
+    ),
+    bodyMedium: TextStyle(
+      color: Colors.white,
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+    ),
+    titleLarge: TextStyle(
+      color: Colors.yellow,
+      fontSize: 28,
+      fontWeight: FontWeight.w900,
+    ),
+  ),
+
+  iconTheme: const IconThemeData(
+    color: Colors.yellow,
+    size: 34,
+  ),
+
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: Colors.yellow,
       foregroundColor: Colors.black,
-      textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+      textStyle: const TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold,
+      ),
     ),
   ),
 );

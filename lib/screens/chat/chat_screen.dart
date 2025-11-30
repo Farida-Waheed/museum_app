@@ -1,12 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../models/user_preferences.dart';
 import '../../widgets/bottom_nav.dart';
 
-// =============================================================
-// Chat Screen (Supports Popup Floating Chat Window)
-// =============================================================
+// ======================= Chat Screen ==========================
 class ChatScreen extends StatefulWidget {
   final bool isPopup;
   const ChatScreen({super.key, this.isPopup = false});
@@ -15,9 +14,7 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
-// =============================================================
-// Message Entry Animator (Slide + Fade)
-// =============================================================
+// ================== Message Entry Animator ====================
 class MessageEntryAnimator extends StatefulWidget {
   final Widget child;
   final bool isUser;
@@ -42,17 +39,25 @@ class _MessageEntryAnimatorState extends State<MessageEntryAnimator>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 220),
     );
 
     _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
 
     _slide = Tween<Offset>(
-      begin: widget.isUser ? const Offset(0.3, 0) : const Offset(-0.3, 0),
+      begin: widget.isUser
+          ? const Offset(0.1, 0)
+          : const Offset(-0.1, 0),
       end: Offset.zero,
     ).animate(_fade);
 
     _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -64,11 +69,10 @@ class _MessageEntryAnimatorState extends State<MessageEntryAnimator>
   }
 }
 
-// =============================================================
-// Typing Indicator (3 animated dots)
-// =============================================================
+// ===================== Typing Indicator =======================
 class _TypingIndicator extends StatefulWidget {
-  const _TypingIndicator();
+  final bool isArabic;
+  const _TypingIndicator({required this.isArabic});
 
   @override
   State<_TypingIndicator> createState() => _TypingIndicatorState();
@@ -99,12 +103,20 @@ class _TypingIndicatorState extends State<_TypingIndicator>
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final text = widget.isArabic ? "آنخو يكتب..." : "Ankhu is typing...";
+
     return Row(
       children: [
-        const Text(
-          "Robot is typing...",
-          style: TextStyle(color: Colors.grey),
+        Text(
+          text,
+          style: const TextStyle(color: Colors.grey, fontSize: 12),
         ),
         const SizedBox(width: 4),
         ..._dots.map(
@@ -127,9 +139,7 @@ class _TypingIndicatorState extends State<_TypingIndicator>
   }
 }
 
-// =============================================================
-// Chat Message Bubble
-// =============================================================
+// ===================== Chat Message Bubble ====================
 class ChatMessage extends StatelessWidget {
   final Map<String, dynamic> msg;
   final bool isTyping;
@@ -144,47 +154,30 @@ class ChatMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     final isUser = msg['isUser'] as bool;
     final text = msg['text'] as String;
+    final theme = Theme.of(context);
 
     final bubble = Container(
       constraints: BoxConstraints(
         maxWidth: MediaQuery.of(context).size.width * 0.75,
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: isUser ? Colors.blue.shade600 : null,
-        gradient: !isUser
-            ? LinearGradient(
-                colors: [
-                  Colors.blue.shade50.withAlpha(220),
-                  Colors.white,
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              )
-            : null,
+        color: isUser
+            ? theme.colorScheme.primary
+            : Colors.grey.shade100,
         borderRadius: BorderRadius.only(
           topLeft: const Radius.circular(18),
           topRight: const Radius.circular(18),
           bottomLeft: Radius.circular(isUser ? 18 : 6),
           bottomRight: Radius.circular(isUser ? 6 : 18),
         ),
-        boxShadow: [
-          const BoxShadow(
-            color: Colors.black12,
-            blurRadius: 8,
-            offset: Offset(0, 3),
-          ),
-          if (!isUser)
-            BoxShadow(
-              color: Colors.blue.withAlpha(isTyping ? 150 : 50),
-              blurRadius: isTyping ? 14 : 8,
-            ),
-        ],
       ),
       child: Text(
         text,
         style: TextStyle(
           color: isUser ? Colors.white : Colors.black87,
+          fontSize: 14,
+          height: 1.4,
         ),
       ),
     );
@@ -192,10 +185,11 @@ class ChatMessage extends StatelessWidget {
     final avatar = CircleAvatar(
       radius: 14,
       backgroundColor:
-          isUser ? Colors.blue.shade100 : Colors.blueGrey.shade100,
+          isUser ? theme.colorScheme.primary.withOpacity(0.1) : Colors.blueGrey.shade100,
       child: Icon(
         isUser ? Icons.person : Icons.smart_toy,
         size: 16,
+        color: isUser ? theme.colorScheme.primary : Colors.black87,
       ),
     );
 
@@ -212,9 +206,7 @@ class ChatMessage extends StatelessWidget {
   }
 }
 
-// =============================================================
-// MAIN CHAT SCREEN
-// =============================================================
+// ======================== MAIN CHAT ==========================
 class _ChatScreenState extends State<ChatScreen>
     with TickerProviderStateMixin {
   final TextEditingController _controller = TextEditingController();
@@ -232,18 +224,29 @@ class _ChatScreenState extends State<ChatScreen>
 
     _popupAnim = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 280),
+      duration: const Duration(milliseconds: 220),
     )..forward();
 
     _scroll.addListener(_scrollChecker);
 
+    // First welcome message from Ankhu (localized)
     Future.delayed(const Duration(milliseconds: 400), () {
-      _add(false,
-          "Hello! I am your AI Guide. Ask me anything about the museum!");
+      if (!mounted) return;
+      final prefs =
+          Provider.of<UserPreferencesModel>(context, listen: false);
+      final isArabic = prefs.language == 'ar';
+
+      _add(
+        false,
+        isArabic
+            ? "مرحباً، أنا آنخو، مرشدك الرقمي داخل المتحف. يمكنني مساعدتك في العثور على القاعات، المعروضات وأوقات العمل."
+            : "Hi, I’m Ankhu, the museum’s digital guide. I can help you with halls, exhibits, opening times, and more.",
+      );
     });
   }
 
   void _scrollChecker() {
+    if (!_scroll.hasClients) return;
     final atBottom =
         _scroll.position.pixels >= _scroll.position.maxScrollExtent - 200;
     if (_showScrollBtn == atBottom) {
@@ -252,9 +255,10 @@ class _ChatScreenState extends State<ChatScreen>
   }
 
   void _scrollToBottom() {
+    if (!_scroll.hasClients) return;
     _scroll.animateTo(
       _scroll.position.maxScrollExtent,
-      duration: const Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 220),
       curve: Curves.easeOut,
     );
   }
@@ -268,44 +272,69 @@ class _ChatScreenState extends State<ChatScreen>
       });
     });
 
-    Future.delayed(const Duration(milliseconds: 100), () {
+    Future.delayed(const Duration(milliseconds: 80), () {
       if (!_showScrollBtn) _scrollToBottom();
     });
   }
 
-  String _reply(String q) {
+  String _reply(String q, bool isArabic) {
     final t = q.toLowerCase();
-    if (t.contains("bathroom") || t.contains("toilet")) {
-      return "🚻 Restrooms are on the ground floor near the entrance.";
+
+    if (!isArabic) {
+      if (t.contains("bathroom") || t.contains("toilet") || t.contains("restroom")) {
+        return "Restrooms are on the ground floor near the main entrance.";
+      }
+      if (t.contains("ticket") || t.contains("price")) {
+        return "You can view ticket prices and buy tickets from the Tickets section in the app or at the main ticket desk.";
+      }
+      if (t.contains("open") || t.contains("time") || t.contains("hours")) {
+        return "The museum is usually open from 9:00 AM to 6:00 PM. Please check the Tickets or Info section for today’s exact hours.";
+      }
+      if (t.contains("cafe") || t.contains("food")) {
+        return "The museum café is located near the central hall. Look for the Café icon on the map.";
+      }
+      return "I’m Ankhu. I can help with directions, ticket information, opening hours, and exhibits. Try asking about a specific hall or artifact.";
+    } else {
+      final lowerAr = q; // simple check, we won’t lowercase Arabic here.
+
+      if (lowerAr.contains("حمام") || lowerAr.contains("دورة")) {
+        return "دورات المياه موجودة في الدور الأرضي بجوار المدخل الرئيسي.";
+      }
+      if (lowerAr.contains("تذكرة") || lowerAr.contains("تذاكر") || lowerAr.contains("سعر")) {
+        return "يمكنك معرفة أسعار التذاكر وشرائها من قسم التذاكر في التطبيق أو من شباك التذاكر بالمتحف.";
+      }
+      if (lowerAr.contains("مواعيد") || lowerAr.contains("فتح") || lowerAr.contains("إغلاق")) {
+        return "يعمل المتحف عادة من ٩ صباحاً حتى ٦ مساءً. من الأفضل التأكد من قسم التذاكر أو المعلومات لجدول اليوم.";
+      }
+      if (lowerAr.contains("كافيه") || lowerAr.contains("مطعم") || lowerAr.contains("أكل")) {
+        return "الكافيه موجود بالقرب من القاعة الرئيسية. يمكنك العثور عليه على الخريطة داخل التطبيق.";
+      }
+      return "أنا آنخو. أستطيع مساعدتك في الاتجاهات، معلومات التذاكر، مواعيد العمل والمعروضات. جرّب أن تسأل عن قاعة أو قطعة محددة.";
     }
-    if (t.contains("ticket") || t.contains("price")) {
-      return "🎟 Tickets cost 15\$ for adults and free for children under 12.";
-    }
-    if (t.contains("open") || t.contains("time")) {
-      return "🕒 We are open daily from 9 AM to 6 PM.";
-    }
-    if (t.contains("cafe") || t.contains("food")) {
-      return "☕ The museum café is on the 2nd floor!";
-    }
-    return "I'm not totally sure, but I can help with tickets, maps, hours, or exhibits!";
   }
 
   void _submit(String text) {
     if (text.trim().isEmpty) return;
+
+    final prefs =
+        Provider.of<UserPreferencesModel>(context, listen: false);
+    final isArabic = prefs.language == 'ar';
 
     _controller.clear();
     _add(true, text);
     setState(() => _isTyping = true);
 
     Future.delayed(const Duration(milliseconds: 900), () {
+      if (!mounted) return;
       setState(() => _isTyping = false);
-      _add(false, _reply(text));
+      _add(false, _reply(text, isArabic));
     });
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _scroll.removeListener(_scrollChecker);
     _scroll.dispose();
     _popupAnim.dispose();
     super.dispose();
@@ -315,6 +344,35 @@ class _ChatScreenState extends State<ChatScreen>
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == "ar";
+    final Color primary = Theme.of(context).colorScheme.primary;
+
+    final chatBody = Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            controller: _scroll,
+            padding: const EdgeInsets.all(16),
+            itemCount: _messages.length,
+            itemBuilder: (context, i) => MessageEntryAnimator(
+              isUser: _messages[i]['isUser'] as bool,
+              child: ChatMessage(
+                msg: _messages[i],
+                isTyping: _isTyping,
+              ),
+            ),
+          ),
+        ),
+        if (_isTyping)
+          Padding(
+            padding: const EdgeInsets.only(
+              left: 16,
+              bottom: 6,
+            ),
+            child: _TypingIndicator(isArabic: isArabic),
+          ),
+        const SizedBox(height: 70),
+      ],
+    );
 
     return Scaffold(
       backgroundColor:
@@ -323,7 +381,9 @@ class _ChatScreenState extends State<ChatScreen>
       appBar: widget.isPopup
           ? null
           : AppBar(
-              title: const Text("Ask Robot"),
+              title: Text(
+                isArabic ? "اسأل آنخو" : "Ask Ankhu",
+              ),
               backgroundColor: Colors.white,
               elevation: 1,
               foregroundColor: Colors.black,
@@ -331,7 +391,7 @@ class _ChatScreenState extends State<ChatScreen>
 
       body: Center(
         child: ScaleTransition(
-          scale: Tween(begin: 0.92, end: 1.0).animate(
+          scale: Tween(begin: 0.96, end: 1.0).animate(
             CurvedAnimation(
               parent: _popupAnim,
               curve: Curves.easeOutBack,
@@ -347,11 +407,12 @@ class _ChatScreenState extends State<ChatScreen>
             decoration: widget.isPopup
                 ? BoxDecoration(
                     borderRadius: BorderRadius.circular(22),
+                    color: Colors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.blue.withOpacity(.20),
-                        blurRadius: 28,
-                        spreadRadius: 4,
+                        color: Colors.black.withOpacity(.15),
+                        blurRadius: 24,
+                        offset: const Offset(0, 12),
                       )
                     ],
                   )
@@ -362,39 +423,9 @@ class _ChatScreenState extends State<ChatScreen>
                   : BorderRadius.zero,
               child: Stack(
                 children: [
-                  BackdropFilter(
-                    filter: widget.isPopup
-                        ? ImageFilter.blur(sigmaX: 7, sigmaY: 7)
-                        : ImageFilter.blur(),
-                    child: Column(
-                      children: [
-                        Expanded(
-                          child: ListView.builder(
-                            controller: _scroll,
-                            padding: const EdgeInsets.all(16),
-                            itemCount: _messages.length,
-                            itemBuilder: (context, i) =>
-                                MessageEntryAnimator(
-                              isUser: _messages[i]['isUser'] as bool,
-                              child: ChatMessage(
-                                msg: _messages[i],
-                                isTyping: _isTyping,
-                              ),
-                            ),
-                          ),
-                        ),
-                        if (_isTyping)
-                          const Padding(
-                            padding: EdgeInsets.only(
-                              left: 16,
-                              bottom: 6,
-                            ),
-                            child: _TypingIndicator(),
-                          ),
-                        const SizedBox(height: 70),
-                      ],
-                    ),
-                  ),
+                  // For popup we already blur the background in RoboGuideEntry,
+                  // so here we just show a normal white chat.
+                  chatBody,
 
                   if (widget.isPopup)
                     Positioned(
@@ -405,7 +436,7 @@ class _ChatScreenState extends State<ChatScreen>
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(.7),
+                            color: Colors.white,
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
@@ -441,8 +472,9 @@ class _ChatScreenState extends State<ChatScreen>
                 controller: _controller,
                 onSubmitted: _submit,
                 decoration: InputDecoration(
-                  hintText:
-                      isArabic ? "اكتب سؤالك..." : "Type your question...",
+                  hintText: isArabic
+                      ? "اكتب سؤالك لآنخو..."
+                      : "Ask Ankhu anything...",
                   fillColor: Colors.grey.shade100,
                   filled: true,
                   border: OutlineInputBorder(
@@ -458,7 +490,7 @@ class _ChatScreenState extends State<ChatScreen>
             ),
             const SizedBox(width: 8),
             CircleAvatar(
-              backgroundColor: Colors.blue,
+              backgroundColor: primary,
               child: IconButton(
                 onPressed: () => _submit(_controller.text),
                 icon: const Icon(Icons.send, color: Colors.white),
@@ -471,11 +503,11 @@ class _ChatScreenState extends State<ChatScreen>
       bottomNavigationBar:
           widget.isPopup ? null : const BottomNav(currentIndex: 0),
 
-      floatingActionButton: _showScrollBtn
+      floatingActionButton: _showScrollBtn && !widget.isPopup
           ? FloatingActionButton(
               mini: true,
               onPressed: _scrollToBottom,
-              backgroundColor: Colors.blue,
+              backgroundColor: primary,
               child: const Icon(Icons.arrow_downward),
             )
           : null,
@@ -483,9 +515,7 @@ class _ChatScreenState extends State<ChatScreen>
   }
 }
 
-// =============================================================
-// REUSABLE ROBO-GUIDE FLOATING BUBBLE (UI ONLY)
-// =============================================================
+// ================= RoboGuide Bubble & Entry ===================
 class RoboGuideBubble extends StatelessWidget {
   final VoidCallback onTap;
   final String label;
@@ -498,9 +528,7 @@ class RoboGuideBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // use same blue as app primary (Home tab color)
-    final Color bubbleColor =
-        Theme.of(context).colorScheme.primary; // falls back to theme
+    final Color bubbleColor = Theme.of(context).colorScheme.primary;
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -535,9 +563,6 @@ class RoboGuideBubble extends StatelessWidget {
   }
 }
 
-// =============================================================
-// GLOBAL ENTRY WIDGET TO USE ON ANY SCREEN
-// =============================================================
 class RoboGuideEntry extends StatelessWidget {
   const RoboGuideEntry({super.key});
 
@@ -567,7 +592,7 @@ class RoboGuideEntry extends StatelessWidget {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
-    final label = isArabic ? "تحدث مع الروبوت" : "Talk to Robo-Guide";
+    final label = isArabic ? "تحدث مع آنخو" : "Talk to Ankhu";
 
     return RoboGuideBubble(
       label: label,

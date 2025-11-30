@@ -1,13 +1,10 @@
 import 'dart:async';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/user_preferences.dart';
 import '../../models/exhibit.dart';
 import '../../core/services/mock_data.dart';
-
-// 🔥 USE THE REUSABLE GLOBAL NAV BAR
 import '../../widgets/bottom_nav.dart';
 
 class LiveTourScreen extends StatefulWidget {
@@ -24,25 +21,22 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   Timer? _simTimer;
 
   final Map<String, String> _imageMap = {
-    '1': 'https://images.unsplash.com/photo-1728245029370-a47e535921da?q=80&w=1080',
-    '2': 'https://images.unsplash.com/photo-1683918891762-ed43ae8d0da4?q=80&w=1080',
-    '3': 'https://images.unsplash.com/photo-1611188513835-f4b58670d580?q=80&w=1080',
+    '1': 'assets/images/Grand Hall.jpg',
+    '2': 'assets/images/Colossal Seated Statues.jpg',
+    '3': 'assets/images/Gold-Covered Sandals.jpg',
   };
 
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final args = ModalRoute.of(context)?.settings.arguments;
-
       if (args is Exhibit) {
-        setState(() => _currentExhibit = args);
+        _currentExhibit = args;
       } else {
-        setState(() =>
-            _currentExhibit = MockDataService.getAllExhibits().first);
+        _currentExhibit = MockDataService.getAllExhibits().first;
       }
-
+      setState(() {});
       _startSimulation();
     });
   }
@@ -55,30 +49,27 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       _currentExhibit!.descriptionEn,
       "This artifact is extremely significant to our history.",
       "Notice the intricate details on the surface.",
-      "It was discovered during a major excavation in the late 20th century.",
+      "It was discovered during a major excavation.",
       "Let's move closer to observe the craftsmanship.",
-      "Any questions before we move to the next stop?"
     ];
 
     int index = 0;
 
     _simTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
       if (!mounted) return;
-
-      if (index < sentences.length) {
-        setState(() => _transcript.add(sentences[index]));
-
-        if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent + 100,
-            duration: const Duration(milliseconds: 400),
-            curve: Curves.easeOut,
-          );
-        }
-
-        index++;
-      } else {
+      if (index >= sentences.length) {
         timer.cancel();
+        return;
+      }
+      setState(() => _transcript.add(sentences[index]));
+      index++;
+
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent + 80,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
       }
     });
   }
@@ -94,160 +85,166 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
+    final cs = Theme.of(context).colorScheme;
 
     if (_currentExhibit == null) {
-      return Scaffold(
-        appBar: AppBar(title: const Text("Live Tour")),
-        body: const Center(child: CircularProgressIndicator()),
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-
-      // 🔥 USE NAV BAR WITHOUT REPEATING CODE
+      backgroundColor: Colors.grey[50],
       bottomNavigationBar: const BottomNav(currentIndex: 2),
-
       appBar: AppBar(
         title: Text(
-          isArabic ? "جولة حية" : "Live Tour",
-          style: const TextStyle(color: Colors.black),
+          isArabic ? "جولة حية" : "Live tour",
+          style: const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
         ),
-        elevation: 0,
+        elevation: 0.5,
         backgroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.black),
       ),
-
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // LIVE STATUS BANNER
+            // live banner – softer red
             Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                    colors: [Colors.redAccent, Colors.red]),
+                color: Colors.redAccent.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.redAccent.withOpacity(0.4)),
               ),
               child: Row(
                 children: [
-                  _PulsingDot(),
-                  const SizedBox(width: 12),
-                  const Text(
+                  _PulsingDot(color: Colors.redAccent),
+                  const SizedBox(width: 10),
+                  Text(
                     "LIVE",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 1.2),
+                    style: const TextStyle(
+                      color: Colors.redAccent,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: 1.1,
+                    ),
                   ),
-                  const SizedBox(width: 12),
-                  Container(
-                    width: 1,
-                    height: 20,
-                    color: Colors.white.withOpacity(0.5),
-                  ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
+                  const VerticalDivider(width: 1.0),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      isArabic ? "الروبوت يتحدث الآن..." : "Robot is saying...",
+                      isArabic
+                          ? "الروبوت يشرح هذه القطعة الآن."
+                          : "The robot is currently describing this exhibit.",
                       style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500),
+                        fontSize: 13,
+                        color: Colors.black87,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
-            // CURRENT EXHIBIT CARD
+            // current exhibit
             Card(
-              elevation: 3,
+              elevation: 2,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
-              clipBehavior: Clip.hardEdge,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              clipBehavior: Clip.antiAlias,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Image.network(
-                    _imageMap[_currentExhibit!.id] ??
-                        "https://via.placeholder.com/400x250",
-                    height: 250,
+                  // if you don't have asset images for all, you can
+                  // fall back to a placeholder.
+                  SizedBox(
+                    height: 220,
                     width: double.infinity,
-                    fit: BoxFit.cover,
+                    child: Image.asset(
+                      _imageMap[_currentExhibit!.id] ??
+                          'assets/images/museum_interior.jpg',
+                      fit: BoxFit.cover,
+                    ),
                   ),
-
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Text(
                       _currentExhibit!.getName(prefs.language),
                       style: const TextStyle(
-                          fontSize: 22, fontWeight: FontWeight.bold),
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
-            // TRANSCRIPT SECTION
+            // transcript
             Card(
               elevation: 1,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
+                borderRadius: BorderRadius.circular(16),
+              ),
               child: Padding(
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(16),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: isArabic
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.chat_bubble_outline,
-                            color: Colors.blue),
+                        Icon(Icons.chat_bubble_outline, color: cs.primary),
                         const SizedBox(width: 8),
                         Text(
-                          isArabic ? "النص المباشر" : "Live Transcript",
+                          isArabic ? "النص المباشر" : "Live transcript",
                           style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 16),
-
+                    const SizedBox(height: 12),
                     SizedBox(
-                      height: 250,
+                      height: 220,
                       child: ListView.builder(
                         controller: _scrollController,
                         itemCount: _transcript.length,
                         itemBuilder: (context, index) {
                           final isLast = index == _transcript.length - 1;
-
                           return Container(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            padding: const EdgeInsets.all(12),
+                            margin: const EdgeInsets.only(bottom: 8),
+                            padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               color: isLast
-                                  ? Colors.blue[50]
+                                  ? cs.primary.withOpacity(0.05)
                                   : Colors.white,
-                              border: Border(
-                                left: BorderSide(
-                                  color: isLast
-                                      ? Colors.blue
-                                      : Colors.grey.shade300,
-                                  width: 4,
-                                ),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: isLast
+                                    ? cs.primary
+                                    : Colors.grey.shade300,
                               ),
                             ),
                             child: Text(
                               _transcript[index],
                               style: TextStyle(
+                                fontSize: 13,
                                 fontWeight: isLast
-                                    ? FontWeight.bold
-                                    : FontWeight.w500,
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
                               ),
                             ),
                           );
@@ -259,32 +256,31 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
               ),
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
 
-            // ACCESSIBILITY FEATURES
-            Container(
-              padding: const EdgeInsets.all(16),
+            // accessibility note
+            Container
+            (
+              padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: Colors.blue[50],
-                borderRadius: BorderRadius.circular(16),
+                color: cs.primary.withOpacity(0.06),
+                borderRadius: BorderRadius.circular(14),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
                 children: [
-                  Text(
-                    isArabic ? "ميزات سهولة الوصول" : "Accessibility Features",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.blue[900]),
+                  Icon(Icons.hearing, color: cs.primary, size: 18),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      isArabic
+                          ? "يمكنك إيقاف الصوت والاعتماد على النص في أي وقت."
+                          : "You can mute the robot and follow only the text at any time.",
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Colors.black87,
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 12),
-                  _buildFeature(Icons.hearing,
-                      isArabic ? "وصف صوتي مباشر" : "Real-time audio"),
-                  _buildFeature(Icons.closed_caption,
-                      isArabic ? "نص مباشر" : "Live captions"),
-                  _buildFeature(Icons.wifi,
-                      isArabic ? "متزامن عبر الواي فاي" : "Wi-Fi synced"),
                 ],
               ),
             ),
@@ -293,29 +289,12 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       ),
     );
   }
-
-  Widget _buildFeature(IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: Colors.blue),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(text,
-                style:
-                    TextStyle(fontSize: 14, color: Colors.blue.shade900)),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
-// ----------------------------------------------------------
-// PULSING LIVE DOT
-// ----------------------------------------------------------
 class _PulsingDot extends StatefulWidget {
+  final Color color;
+  const _PulsingDot({required this.color});
+
   @override
   State<_PulsingDot> createState() => _PulsingDotState();
 }
@@ -329,9 +308,9 @@ class _PulsingDotState extends State<_PulsingDot>
   void initState() {
     super.initState();
     _controller = AnimationController(
-        vsync: this, duration: const Duration(seconds: 1))
-      ..repeat(reverse: true);
-
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat(reverse: true);
     _fade = Tween(begin: 0.3, end: 1.0).animate(_controller);
   }
 
@@ -348,8 +327,10 @@ class _PulsingDotState extends State<_PulsingDot>
       child: Container(
         width: 10,
         height: 10,
-        decoration: const BoxDecoration(
-            color: Colors.white, shape: BoxShape.circle),
+        decoration: BoxDecoration(
+          color: widget.color,
+          shape: BoxShape.circle,
+        ),
       ),
     );
   }
