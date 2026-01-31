@@ -187,8 +187,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                 const SizedBox(height: 4),
                                 Text(
                                   isArabic
-                                      ? "قيّم تجربتك مع المتحف وأنخو."
-                                      : "Rate your experience with the museum and Ankhu.",
+                                      ? "قيّم تجربتك مع المتحف وحوروس."
+                                      : "Rate your experience with the museum and Horus-Bot.",
                                   style: const TextStyle(
                                     fontSize: 13,
                                     color: Colors.black54,
@@ -533,8 +533,8 @@ class _FeedbackThankYouDialog extends StatelessWidget {
             Center(
               child: Text(
                 isArabic
-                    ? "شكراً لمساعدتك في تحسين أنخو وتجربة المتحف."
-                    : "Thanks for helping us improve Ankhu and the museum visit.",
+                    ? "شكراً لمساعدتك في تحسين حوروس وتجربة المتحف."
+                    : "Thanks for helping us improve Horus-Bot and the museum visit.",
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 13,

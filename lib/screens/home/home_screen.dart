@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -9,8 +8,7 @@ import '../../models/exhibit.dart';
 import '../../core/services/mock_data.dart';
 import '../../app/router.dart';
 import '../../widgets/bottom_nav.dart';
-import '../chat/chat_screen.dart'; 
-import '../../widgets/tour_alert.dart'; 
+import '../chat/chat_screen.dart';
 
 // --- ARABIC TRANSLATION MAPS ---
 const Map<String, String> _highlightTitlesAr = {
@@ -25,8 +23,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with TickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late List<Exhibit> exhibits;
   int visitedCount = 0;
   int durationMinutes = 0;
@@ -38,9 +35,10 @@ class _HomeScreenState extends State<HomeScreen>
   int pageIndex = 0;
   final PageController _pageCtrl = PageController(viewportFraction: .9);
 
-  late final AnimationController _grad =
-      AnimationController(vsync: this, duration: const Duration(seconds: 10))
-        ..repeat(reverse: true);
+  late final AnimationController _grad = AnimationController(
+    vsync: this,
+    duration: const Duration(seconds: 10),
+  )..repeat(reverse: true);
 
   // side menu animation
   late final AnimationController _menuController;
@@ -65,19 +63,8 @@ class _HomeScreenState extends State<HomeScreen>
     // 🔔 Use shared tour-alert widget (only shows once per app session)
     Future.delayed(Duration.zero, () {
       if (!mounted) return;
-      final prefs =
-          Provider.of<UserPreferencesModel>(context, listen: false);
+      final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
       final isArabic = prefs.language == 'ar';
-
-      showTourAlertOnce(
-        context,
-        isArabic: isArabic,
-        hallNameEn: 'Hall A',
-        hallNameAr: 'القاعة (أ)',
-        minutes: 5,
-        onViewMap: () =>
-            Navigator.pushNamed(context, AppRoutes.map),
-      );
     });
 
     // Simple simulation: robot + stats move over time
@@ -114,8 +101,8 @@ class _HomeScreenState extends State<HomeScreen>
         title: Text(isArabic ? "الخصوصية والأذونات" : "Privacy & Permissions"),
         content: Text(
           isArabic
-              ? "أنخو يستخدم البلوتوث والموقع لمرافقتك داخل المتحف.\n\n• البيانات مجهولة الهوية.\n• تُستخدم خرائط الحركة لأغراض التحليل فقط.\n\nهل تسمح باستخدام موقعك؟"
-              : "Ankhu uses Bluetooth and Location to walk with you inside the museum.\n\n• Data is anonymous.\n• Movement heatmaps are only for analytics.\n\nDo you allow us to use your location?",
+              ? "حوروس يستخدم البلوتوث والموقع لمرافقتك داخل المتحف.\n\n• البيانات مجهولة الهوية.\n• تُستخدم خرائط الحركة لأغراض التحليل فقط.\n\nهل تسمح باستخدام موقعك؟"
+              : "Horus-Bot uses Bluetooth and Location to walk with you inside the museum.\n\n• Data is anonymous.\n• Movement heatmaps are only for analytics.\n\nDo you allow us to use your location?",
         ),
         actions: [
           TextButton(
@@ -159,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen>
       backgroundColor: lightGreyBG,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
 
-      // Ankhu chat entry on Home
+      // Horus-Bot chat entry on Home
       floatingActionButton: const RoboGuideEntry(),
 
       body: AnimatedBuilder(
@@ -214,7 +201,7 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                           title: Row(
                             children: [
-                              // flat Ankhu icon
+                              // flat Horus-Bot icon
                               Image.asset(
                                 "assets/icons/ankh.png",
                                 width: 26,
@@ -222,9 +209,7 @@ class _HomeScreenState extends State<HomeScreen>
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                isArabic
-                                    ? "أنخو"
-                                    : "Ankhu",
+                                isArabic ? "حوروس" : "Horus-Bot",
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -238,8 +223,10 @@ class _HomeScreenState extends State<HomeScreen>
                                 Icons.qr_code_scanner,
                                 color: Colors.black,
                               ),
-                              onPressed: () =>
-                                  Navigator.pushNamed(context, AppRoutes.qrScan),
+                              onPressed: () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.qrScan,
+                              ),
                             ),
                           ],
                           backgroundColor: Colors.white,
@@ -252,8 +239,12 @@ class _HomeScreenState extends State<HomeScreen>
                             SliverToBoxAdapter(
                               child: Container(
                                 height: 240,
-                                margin:
-                                    const EdgeInsets.fromLTRB(12, 12, 12, 4),
+                                margin: const EdgeInsets.fromLTRB(
+                                  12,
+                                  12,
+                                  12,
+                                  4,
+                                ),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(22),
                                   child: Stack(
@@ -274,14 +265,18 @@ class _HomeScreenState extends State<HomeScreen>
                                                 begin: Alignment.topLeft,
                                                 end: Alignment.bottomRight,
                                                 transform: GradientRotation(
-                                                    pi * (.05 + .15 * gv)),
+                                                  pi * (.05 + .15 * gv),
+                                                ),
                                                 colors: [
                                                   cs.secondary.withOpacity(
-                                                      .12 + .10 * gv),
+                                                    .12 + .10 * gv,
+                                                  ),
                                                   cs.primary.withOpacity(
-                                                      .14 - .06 * gv),
+                                                    .14 - .06 * gv,
+                                                  ),
                                                   cs.tertiary.withOpacity(
-                                                      .10 + .06 * gv),
+                                                    .10 + .06 * gv,
+                                                  ),
                                                   Colors.black.withOpacity(.55),
                                                 ],
                                               ),
@@ -299,10 +294,9 @@ class _HomeScreenState extends State<HomeScreen>
                                           children: [
                                             Text(
                                               isArabic
-                                                  ? "استكشف مصر مع أنخو"
-                                                  : "Explore Egypt with Ankhu",
-                                              style:
-                                                  t.headlineSmall?.copyWith(
+                                                  ? "استكشف مصر مع حوروس"
+                                                  : "Explore Egypt with Horus-Bot",
+                                              style: t.headlineSmall?.copyWith(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w800,
                                               ),
@@ -320,9 +314,9 @@ class _HomeScreenState extends State<HomeScreen>
                                               child: Container(
                                                 padding:
                                                     const EdgeInsets.symmetric(
-                                                  horizontal: 12,
-                                                  vertical: 8,
-                                                ),
+                                                      horizontal: 12,
+                                                      vertical: 8,
+                                                    ),
                                                 decoration: BoxDecoration(
                                                   borderRadius:
                                                       BorderRadius.circular(14),
@@ -360,7 +354,7 @@ class _HomeScreenState extends State<HomeScreen>
                                             ),
                                           ],
                                         ),
-                                      )
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -372,8 +366,7 @@ class _HomeScreenState extends State<HomeScreen>
                               child: Padding(
                                 padding: const EdgeInsets.all(16),
                                 child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     // --- STATS ROW ---
                                     Row(
@@ -436,24 +429,21 @@ class _HomeScreenState extends State<HomeScreen>
                                         children: [
                                           _HighlightCard(
                                             title: isArabic
-                                                ? _highlightTitlesAr[
-                                                    "Tutankhamun Mask"]!
+                                                ? _highlightTitlesAr["Tutankhamun Mask"]!
                                                 : "Tutankhamun Mask",
                                             image:
                                                 "assets/images/pharaoh_head.jpg",
                                           ),
                                           _HighlightCard(
                                             title: isArabic
-                                                ? _highlightTitlesAr[
-                                                    "Golden Hieroglyphs"]!
+                                                ? _highlightTitlesAr["Golden Hieroglyphs"]!
                                                 : "Golden Hieroglyphs",
                                             image:
                                                 "assets/images/hieroglyphs.jpg",
                                           ),
                                           _HighlightCard(
                                             title: isArabic
-                                                ? _highlightTitlesAr[
-                                                    "Canopic Jars"]!
+                                                ? _highlightTitlesAr["Canopic Jars"]!
                                                 : "Canopic Jars",
                                             image:
                                                 "assets/images/canopic_jars.jpg",
@@ -470,8 +460,7 @@ class _HomeScreenState extends State<HomeScreen>
                                     Card(
                                       elevation: 2,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(16),
+                                        borderRadius: BorderRadius.circular(16),
                                       ),
                                       child: Padding(
                                         padding: const EdgeInsets.all(16),
@@ -485,8 +474,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                 Expanded(
                                                   child: Text(
                                                     isArabic
-                                                        ? "معاينة الخريطة (موقع أنخو)"
-                                                        : "Map Preview (Ankhu’s Location)",
+                                                        ? "معاينة الخريطة (موقع حوروس)"
+                                                        : "Map Preview (Horus-Bot’s Location)",
                                                     style: const TextStyle(
                                                       fontSize: 18,
                                                       fontWeight:
@@ -497,8 +486,9 @@ class _HomeScreenState extends State<HomeScreen>
                                                 TextButton(
                                                   onPressed: () =>
                                                       Navigator.pushNamed(
-                                                          context,
-                                                          AppRoutes.map),
+                                                        context,
+                                                        AppRoutes.map,
+                                                      ),
                                                   child: Text(
                                                     isArabic
                                                         ? "عرض كامل"
@@ -529,8 +519,8 @@ class _HomeScreenState extends State<HomeScreen>
                                                 _LegendDot(
                                                   color: Colors.blue,
                                                   label: isArabic
-                                                      ? "أنخو"
-                                                      : "Ankhu",
+                                                      ? "حوروس"
+                                                      : "Horus-Bot",
                                                 ),
                                                 _LegendDot(
                                                   color: Colors.orange,
@@ -588,10 +578,7 @@ class _HomeScreenState extends State<HomeScreen>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
           gradient: LinearGradient(
-            colors: [
-              color.withOpacity(.10),
-              Colors.white,
-            ],
+            colors: [color.withOpacity(.10), Colors.white],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -607,8 +594,7 @@ class _HomeScreenState extends State<HomeScreen>
             const SizedBox(height: 8),
             Text(
               value,
-              style:
-                  const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             Text(
               label,
@@ -644,22 +630,14 @@ class _HomeScreenState extends State<HomeScreen>
             Positioned(
               left: c.maxWidth * 0.5,
               top: c.maxHeight * 0.7,
-              child: const Icon(
-                Icons.circle,
-                size: 10,
-                color: Colors.orange,
-              ),
+              child: const Icon(Icons.circle, size: 10, color: Colors.orange),
             ),
-            // Ankhu (robot) animated position
+            // Horus-Bot (robot) animated position
             AnimatedPositioned(
               duration: const Duration(seconds: 1),
               left: (robotX / 400) * c.maxWidth,
               top: (robotY / 600) * c.maxHeight,
-              child: const Icon(
-                Icons.smart_toy,
-                size: 24,
-                color: Colors.blue,
-              ),
+              child: const Icon(Icons.smart_toy, size: 24, color: Colors.blue),
             ),
           ],
         );
@@ -699,16 +677,12 @@ class _SideMenu extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [
-                Colors.white,
-                Color(0xFFF3F6FB),
-              ],
+              colors: [Colors.white, Color(0xFFF3F6FB)],
             ),
           ),
           child: SafeArea(
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               child: Column(
                 crossAxisAlignment: isArabic
                     ? CrossAxisAlignment.end
@@ -760,7 +734,9 @@ class _SideMenu extends StatelessWidget {
                             icon: Icons.radio_button_checked,
                             label: isArabic ? "جولة حية" : "Live Tour",
                             onTap: () => Navigator.pushNamed(
-                                context, AppRoutes.liveTour),
+                              context,
+                              AppRoutes.liveTour,
+                            ),
                           ),
                           const SizedBox(height: 16),
                           Text(
@@ -776,13 +752,17 @@ class _SideMenu extends StatelessWidget {
                             icon: Icons.language,
                             label: isArabic ? "اللغة" : "Language",
                             onTap: () => Navigator.pushNamed(
-                                context, AppRoutes.language),
+                              context,
+                              AppRoutes.language,
+                            ),
                           ),
                           _MenuItem(
                             icon: Icons.feedback_outlined,
                             label: isArabic ? "رأيك" : "Feedback",
                             onTap: () => Navigator.pushNamed(
-                                context, AppRoutes.feedback),
+                              context,
+                              AppRoutes.feedback,
+                            ),
                           ),
                         ],
                       ),
@@ -816,22 +796,14 @@ class _HighlightCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(22),
         child: Stack(
           children: [
-            Positioned.fill(
-              child: Image.asset(
-                image,
-                fit: BoxFit.cover,
-              ),
-            ),
+            Positioned.fill(child: Image.asset(image, fit: BoxFit.cover)),
             Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
-                    colors: [
-                      Colors.black.withOpacity(.45),
-                      Colors.transparent,
-                    ],
+                    colors: [Colors.black.withOpacity(.45), Colors.transparent],
                   ),
                 ),
               ),
@@ -903,10 +875,7 @@ class _MenuItem extends StatelessWidget {
         leading: Icon(icon, color: Colors.black87),
         title: Text(
           label,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-          ),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
         onTap: onTap,
       ),
@@ -927,10 +896,7 @@ class _LegendDot extends StatelessWidget {
         Container(
           width: 10,
           height: 10,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 6),
         Text(

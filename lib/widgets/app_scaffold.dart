@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../core/constants/text_styles.dart';
-import '../widgets/custom_appbar.dart';
-import '../widgets/app_drawer.dart';
-import '../widgets/bottom_nav.dart';
+import 'custom_appbar.dart';
+import 'app_drawer.dart';
+import 'bottom_nav.dart';
 
 class AppScaffold extends StatelessWidget {
   final String title;

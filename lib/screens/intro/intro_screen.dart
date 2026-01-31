@@ -36,10 +36,7 @@ class _IntroScreenState extends State<IntroScreen>
     );
 
     _scaleAnimation = Tween<double>(begin: 0.96, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animController,
-        curve: Curves.easeOutBack,
-      ),
+      CurvedAnimation(parent: _animController, curve: Curves.easeOutBack),
     );
 
     _animController.forward();
@@ -51,8 +48,7 @@ class _IntroScreenState extends State<IntroScreen>
     Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
 
-      final prefs =
-          Provider.of<UserPreferencesModel>(context, listen: false);
+      final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
 
       if (prefs.hasCompletedOnboarding) {
         // Go directly to main home
@@ -67,15 +63,12 @@ class _IntroScreenState extends State<IntroScreen>
                 const OnboardingScreen(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
-              final curved = CurvedAnimation(
-                parent: animation,
-                curve: Curves.easeOutCubic,
-              );
-              return FadeTransition(
-                opacity: curved,
-                child: child,
-              );
-            },
+                  final curved = CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  );
+                  return FadeTransition(opacity: curved, child: child);
+                },
           ),
         );
       }
@@ -168,23 +161,15 @@ class _IntroScreenState extends State<IntroScreen>
                       text: const TextSpan(
                         style: mainTitleStyle,
                         children: <TextSpan>[
-                          TextSpan(
-                            text: 'The ',
-                            style: smallTheStyle,
-                          ),
-                          TextSpan(
-                            text: 'Egyptian',
-                          ),
+                          TextSpan(text: 'The ', style: smallTheStyle),
+                          TextSpan(text: 'Egyptian'),
                         ],
                       ),
                     ),
-                    const Text(
-                      'Museums',
-                      style: mainTitleStyle,
-                    ),
+                    const Text('Museums', style: mainTitleStyle),
                     const SizedBox(height: 12),
                     const Text(
-                      'Explore Egypt with your Ankhu and its app.',
+                      'Explore Egypt with your Horus-Bot and its app.',
                       style: taglineStyle,
                     ),
                   ],

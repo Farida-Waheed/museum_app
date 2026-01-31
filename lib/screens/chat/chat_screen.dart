@@ -45,9 +45,7 @@ class _MessageEntryAnimatorState extends State<MessageEntryAnimator>
     _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOut);
 
     _slide = Tween<Offset>(
-      begin: widget.isUser
-          ? const Offset(0.1, 0)
-          : const Offset(-0.1, 0),
+      begin: widget.isUser ? const Offset(0.1, 0) : const Offset(-0.1, 0),
       end: Offset.zero,
     ).animate(_fade);
 
@@ -110,14 +108,11 @@ class _TypingIndicatorState extends State<_TypingIndicator>
 
   @override
   Widget build(BuildContext context) {
-    final text = widget.isArabic ? "آنخو يكتب..." : "Ankhu is typing...";
+    final text = widget.isArabic ? "حوروس يكتب..." : "Horus-Bot is typing...";
 
     return Row(
       children: [
-        Text(
-          text,
-          style: const TextStyle(color: Colors.grey, fontSize: 12),
-        ),
+        Text(text, style: const TextStyle(color: Colors.grey, fontSize: 12)),
         const SizedBox(width: 4),
         ..._dots.map(
           (ani) => AnimatedBuilder(
@@ -128,8 +123,9 @@ class _TypingIndicatorState extends State<_TypingIndicator>
               margin: const EdgeInsets.symmetric(horizontal: 2),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color:
-                    Colors.grey.shade600.withAlpha((ani.value * 255).round()),
+                color: Colors.grey.shade600.withAlpha(
+                  (ani.value * 255).round(),
+                ),
               ),
             ),
           ),
@@ -144,11 +140,7 @@ class ChatMessage extends StatelessWidget {
   final Map<String, dynamic> msg;
   final bool isTyping;
 
-  const ChatMessage({
-    super.key,
-    required this.msg,
-    required this.isTyping,
-  });
+  const ChatMessage({super.key, required this.msg, required this.isTyping});
 
   @override
   Widget build(BuildContext context) {
@@ -162,9 +154,7 @@ class ChatMessage extends StatelessWidget {
       ),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: isUser
-            ? theme.colorScheme.primary
-            : Colors.grey.shade100,
+        color: isUser ? theme.colorScheme.primary : Colors.grey.shade100,
         borderRadius: BorderRadius.only(
           topLeft: const Radius.circular(18),
           topRight: const Radius.circular(18),
@@ -184,8 +174,9 @@ class ChatMessage extends StatelessWidget {
 
     final avatar = CircleAvatar(
       radius: 14,
-      backgroundColor:
-          isUser ? theme.colorScheme.primary.withOpacity(0.1) : Colors.blueGrey.shade100,
+      backgroundColor: isUser
+          ? theme.colorScheme.primary.withOpacity(0.1)
+          : Colors.blueGrey.shade100,
       child: Icon(
         isUser ? Icons.person : Icons.smart_toy,
         size: 16,
@@ -196,8 +187,9 @@ class ChatMessage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
-        mainAxisAlignment:
-            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isUser
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         children: isUser
             ? [bubble, const SizedBox(width: 8), avatar]
             : [avatar, const SizedBox(width: 8), bubble],
@@ -207,8 +199,7 @@ class ChatMessage extends StatelessWidget {
 }
 
 // ======================== MAIN CHAT ==========================
-class _ChatScreenState extends State<ChatScreen>
-    with TickerProviderStateMixin {
+class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scroll = ScrollController();
 
@@ -217,6 +208,9 @@ class _ChatScreenState extends State<ChatScreen>
   bool _showScrollBtn = false;
 
   late AnimationController _popupAnim;
+
+  // For context-aware replies
+  String? _lastUserMessage;
 
   @override
   void initState() {
@@ -229,19 +223,23 @@ class _ChatScreenState extends State<ChatScreen>
 
     _scroll.addListener(_scrollChecker);
 
-    // First welcome message from Ankhu (localized)
+    // First welcome message from Horus-Bot (localized, randomized)
     Future.delayed(const Duration(milliseconds: 400), () {
       if (!mounted) return;
-      final prefs =
-          Provider.of<UserPreferencesModel>(context, listen: false);
+      final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
       final isArabic = prefs.language == 'ar';
-
-      _add(
-        false,
-        isArabic
-            ? "مرحباً، أنا آنخو، مرشدك الرقمي داخل المتحف. يمكنني مساعدتك في العثور على القاعات، المعروضات وأوقات العمل."
-            : "Hi, I’m Ankhu, the museum’s digital guide. I can help you with halls, exhibits, opening times, and more.",
-      );
+      final greetings = isArabic
+          ? [
+              "مرحباً، أنا حوروس، مرشدك الرقمي داخل المتحف. كيف يمكنني مساعدتك اليوم؟",
+              "أهلاً بك! أنا حوروس بوت، اسألني عن أي شيء في المتحف.",
+              "مرحباً بك في المتحف! أنا هنا لمساعدتك في جولتك.",
+            ]
+          : [
+              "Hi, I’m Horus-Bot, your digital guide. How can I help you today?",
+              "Welcome! I’m Horus-Bot. Ask me anything about the museum.",
+              "Hello! I’m here to help you explore the museum.",
+            ];
+      _add(false, (greetings..shuffle()).first);
     });
   }
 
@@ -278,57 +276,176 @@ class _ChatScreenState extends State<ChatScreen>
   }
 
   String _reply(String q, bool isArabic) {
+    // Context-aware, randomized, and more flexible AI-like responses
     final t = q.toLowerCase();
+    _lastUserMessage = q;
 
     if (!isArabic) {
-      if (t.contains("bathroom") || t.contains("toilet") || t.contains("restroom")) {
-        return "Restrooms are on the ground floor near the main entrance.";
+      if (t.contains("bathroom") ||
+          t.contains("toilet") ||
+          t.contains("restroom")) {
+        final responses = [
+          "Restrooms are on the ground floor near the main entrance.",
+          "You’ll find the bathrooms by the main entrance on the ground floor.",
+          "The nearest restroom is just past the main entrance.",
+        ];
+        return (responses..shuffle()).first;
       }
       if (t.contains("ticket") || t.contains("price")) {
-        return "You can view ticket prices and buy tickets from the Tickets section in the app or at the main ticket desk.";
+        final responses = [
+          "You can view ticket prices and buy tickets from the Tickets section in the app or at the main ticket desk.",
+          "Ticket prices are available in the Tickets section. Would you like to see them now?",
+          "You can purchase tickets in the app or at the museum’s main desk.",
+        ];
+        return (responses..shuffle()).first;
       }
       if (t.contains("open") || t.contains("time") || t.contains("hours")) {
-        return "The museum is usually open from 9:00 AM to 6:00 PM. Please check the Tickets or Info section for today’s exact hours.";
+        final responses = [
+          "The museum is usually open from 9:00 AM to 6:00 PM. Please check the Tickets or Info section for today’s exact hours.",
+          "We’re open daily from 9 AM to 6 PM. Let me know if you need more details!",
+          "Opening hours are 9:00 AM to 6:00 PM, but check the app for special events.",
+        ];
+        return (responses..shuffle()).first;
       }
       if (t.contains("cafe") || t.contains("food")) {
-        return "The museum café is located near the central hall. Look for the Café icon on the map.";
+        final responses = [
+          "The museum café is located near the central hall. Look for the Café icon on the map.",
+          "You can grab a snack at the café near the central hall.",
+          "The café is close to the main exhibition area.",
+        ];
+        return (responses..shuffle()).first;
       }
-      return "I’m Ankhu. I can help with directions, ticket information, opening hours, and exhibits. Try asking about a specific hall or artifact.";
+      if (t.contains("hello") || t.contains("hi") || t.contains("hey")) {
+        final responses = [
+          "Hello! How can I assist you today?",
+          "Hi there! Need help with anything in the museum?",
+          "Hey! I’m here to answer your questions.",
+        ];
+        return (responses..shuffle()).first;
+      }
+      if (t.contains("thank")) {
+        final responses = [
+          "You’re welcome! Let me know if you have more questions.",
+          "Happy to help!",
+          "Anytime!",
+        ];
+        return (responses..shuffle()).first;
+      }
+      // Fallback: generic AI-like answer
+      final generic = [
+        "I’m Horus-Bot. I can help with directions, ticket information, opening hours, and exhibits. Try asking about a specific hall or artifact.",
+        "I’m here to help you explore the museum. Ask me about exhibits, tickets, or anything else!",
+        "If you need directions or info about the museum, just ask!",
+      ];
+      return (generic..shuffle()).first;
     } else {
       final lowerAr = q; // simple check, we won’t lowercase Arabic here.
 
       if (lowerAr.contains("حمام") || lowerAr.contains("دورة")) {
-        return "دورات المياه موجودة في الدور الأرضي بجوار المدخل الرئيسي.";
+        final responses = [
+          "دورات المياه موجودة في الدور الأرضي بجوار المدخل الرئيسي.",
+          "ستجد الحمامات بجوار المدخل الرئيسي في الدور الأرضي.",
+          "أقرب دورة مياه بعد المدخل الرئيسي مباشرة.",
+        ];
+        return (responses..shuffle()).first;
       }
-      if (lowerAr.contains("تذكرة") || lowerAr.contains("تذاكر") || lowerAr.contains("سعر")) {
-        return "يمكنك معرفة أسعار التذاكر وشرائها من قسم التذاكر في التطبيق أو من شباك التذاكر بالمتحف.";
+      if (lowerAr.contains("تذكرة") ||
+          lowerAr.contains("تذاكر") ||
+          lowerAr.contains("سعر")) {
+        final responses = [
+          "يمكنك معرفة أسعار التذاكر وشرائها من قسم التذاكر في التطبيق أو من شباك التذاكر بالمتحف.",
+          "أسعار التذاكر متوفرة في قسم التذاكر. هل ترغب في الاطلاع عليها الآن؟",
+          "يمكنك شراء التذاكر من التطبيق أو من شباك المتحف الرئيسي.",
+        ];
+        return (responses..shuffle()).first;
       }
-      if (lowerAr.contains("مواعيد") || lowerAr.contains("فتح") || lowerAr.contains("إغلاق")) {
-        return "يعمل المتحف عادة من ٩ صباحاً حتى ٦ مساءً. من الأفضل التأكد من قسم التذاكر أو المعلومات لجدول اليوم.";
+      if (lowerAr.contains("مواعيد") ||
+          lowerAr.contains("فتح") ||
+          lowerAr.contains("إغلاق")) {
+        final responses = [
+          "يعمل المتحف عادة من ٩ صباحاً حتى ٦ مساءً. من الأفضل التأكد من قسم التذاكر أو المعلومات لجدول اليوم.",
+          "ساعات العمل من ٩ صباحاً حتى ٦ مساءً يومياً. إذا كنت بحاجة لمزيد من التفاصيل أخبرني!",
+          "مواعيد الافتتاح من ٩ صباحاً حتى ٦ مساءً، ويمكنك التأكد من التطبيق في حالة وجود فعاليات خاصة.",
+        ];
+        return (responses..shuffle()).first;
       }
-      if (lowerAr.contains("كافيه") || lowerAr.contains("مطعم") || lowerAr.contains("أكل")) {
-        return "الكافيه موجود بالقرب من القاعة الرئيسية. يمكنك العثور عليه على الخريطة داخل التطبيق.";
+      if (lowerAr.contains("كافيه") ||
+          lowerAr.contains("مطعم") ||
+          lowerAr.contains("أكل")) {
+        final responses = [
+          "الكافيه موجود بالقرب من القاعة الرئيسية. يمكنك العثور عليه على الخريطة داخل التطبيق.",
+          "يمكنك تناول وجبة خفيفة في الكافيه بجوار القاعة الرئيسية.",
+          "الكافيه قريب من منطقة المعارض الرئيسية.",
+        ];
+        return (responses..shuffle()).first;
       }
-      return "أنا آنخو. أستطيع مساعدتك في الاتجاهات، معلومات التذاكر، مواعيد العمل والمعروضات. جرّب أن تسأل عن قاعة أو قطعة محددة.";
+      if (lowerAr.contains("مرحبا") ||
+          lowerAr.contains("أهلاً") ||
+          lowerAr.contains("السلام")) {
+        final responses = [
+          "مرحباً! كيف يمكنني مساعدتك اليوم؟",
+          "أهلاً بك! هل تحتاج مساعدة في شيء بالمتحف؟",
+          "مرحباً! أنا هنا للإجابة على أسئلتك.",
+        ];
+        return (responses..shuffle()).first;
+      }
+      if (lowerAr.contains("شكراً") || lowerAr.contains("شكر")) {
+        final responses = [
+          "على الرحب والسعة! إذا كان لديك أي سؤال آخر أخبرني.",
+          "سعيد بمساعدتك!",
+          "في أي وقت!",
+        ];
+        return (responses..shuffle()).first;
+      }
+      // Fallback: generic AI-like answer
+      final generic = [
+        "أنا حوروس بوت. أستطيع مساعدتك في الاتجاهات، معلومات التذاكر، مواعيد العمل والمعروضات. جرّب أن تسأل عن قاعة أو قطعة محددة.",
+        "أنا هنا لمساعدتك في استكشاف المتحف. اسألني عن المعروضات أو التذاكر أو أي شيء آخر!",
+        "إذا كنت بحاجة لمعلومات أو اتجاهات داخل المتحف فقط اسألني!",
+      ];
+      return (generic..shuffle()).first;
     }
   }
 
   void _submit(String text) {
     if (text.trim().isEmpty) return;
 
-    final prefs =
-        Provider.of<UserPreferencesModel>(context, listen: false);
+    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
     final isArabic = prefs.language == 'ar';
 
     _controller.clear();
     _add(true, text);
     setState(() => _isTyping = true);
 
-    Future.delayed(const Duration(milliseconds: 900), () {
-      if (!mounted) return;
-      setState(() => _isTyping = false);
-      _add(false, _reply(text, isArabic));
-    });
+    // Simulate AI "thinking" delay and streaming effect
+    final aiReply = _reply(text, isArabic);
+    Future.delayed(
+      Duration(milliseconds: 700 + (aiReply.length * 8)),
+      () async {
+        if (!mounted) return;
+        setState(() => _isTyping = false);
+
+        // Simulate streaming: add one char at a time
+        String display = "";
+        for (int i = 0; i < aiReply.length; i++) {
+          display += aiReply[i];
+          if (i == 0 || i % 3 == 0 || i == aiReply.length - 1) {
+            if (!mounted) return;
+            setState(() {
+              if (_messages.isNotEmpty && !_messages.last['isUser']) {
+                _messages.removeLast();
+              }
+              _messages.add({
+                "text": display,
+                "isUser": false,
+                "timestamp": DateTime.now(),
+              });
+            });
+            await Future.delayed(const Duration(milliseconds: 12));
+          }
+        }
+      },
+    );
   }
 
   @override
@@ -355,19 +472,13 @@ class _ChatScreenState extends State<ChatScreen>
             itemCount: _messages.length,
             itemBuilder: (context, i) => MessageEntryAnimator(
               isUser: _messages[i]['isUser'] as bool,
-              child: ChatMessage(
-                msg: _messages[i],
-                isTyping: _isTyping,
-              ),
+              child: ChatMessage(msg: _messages[i], isTyping: _isTyping),
             ),
           ),
         ),
         if (_isTyping)
           Padding(
-            padding: const EdgeInsets.only(
-              left: 16,
-              bottom: 6,
-            ),
+            padding: const EdgeInsets.only(left: 16, bottom: 6),
             child: _TypingIndicator(isArabic: isArabic),
           ),
         const SizedBox(height: 70),
@@ -375,15 +486,12 @@ class _ChatScreenState extends State<ChatScreen>
     );
 
     return Scaffold(
-      backgroundColor:
-          widget.isPopup ? Colors.transparent : Colors.white,
+      backgroundColor: widget.isPopup ? Colors.transparent : Colors.white,
 
       appBar: widget.isPopup
           ? null
           : AppBar(
-              title: Text(
-                isArabic ? "اسأل آنخو" : "Ask Ankhu",
-              ),
+              title: Text(isArabic ? "اسأل حوروس" : "Ask Horus-Bot"),
               backgroundColor: Colors.white,
               elevation: 1,
               foregroundColor: Colors.black,
@@ -392,10 +500,7 @@ class _ChatScreenState extends State<ChatScreen>
       body: Center(
         child: ScaleTransition(
           scale: Tween(begin: 0.96, end: 1.0).animate(
-            CurvedAnimation(
-              parent: _popupAnim,
-              curve: Curves.easeOutBack,
-            ),
+            CurvedAnimation(parent: _popupAnim, curve: Curves.easeOutBack),
           ),
           child: Container(
             width: widget.isPopup
@@ -413,7 +518,7 @@ class _ChatScreenState extends State<ChatScreen>
                         color: Colors.black.withOpacity(.15),
                         blurRadius: 24,
                         offset: const Offset(0, 12),
-                      )
+                      ),
                     ],
                   )
                 : null,
@@ -442,7 +547,7 @@ class _ChatScreenState extends State<ChatScreen>
                               BoxShadow(
                                 color: Colors.black.withOpacity(.15),
                                 blurRadius: 10,
-                              )
+                              ),
                             ],
                           ),
                           child: const Icon(
@@ -474,7 +579,7 @@ class _ChatScreenState extends State<ChatScreen>
                 decoration: InputDecoration(
                   hintText: isArabic
                       ? "اكتب سؤالك لآنخو..."
-                      : "Ask Ankhu anything...",
+                      : "Ask Horus-Bot anything...",
                   fillColor: Colors.grey.shade100,
                   filled: true,
                   border: OutlineInputBorder(
@@ -500,8 +605,9 @@ class _ChatScreenState extends State<ChatScreen>
         ),
       ),
 
-      bottomNavigationBar:
-          widget.isPopup ? null : const BottomNav(currentIndex: 0),
+      bottomNavigationBar: widget.isPopup
+          ? null
+          : const BottomNav(currentIndex: 0),
 
       floatingActionButton: _showScrollBtn && !widget.isPopup
           ? FloatingActionButton(
@@ -520,11 +626,7 @@ class RoboGuideBubble extends StatelessWidget {
   final VoidCallback onTap;
   final String label;
 
-  const RoboGuideBubble({
-    super.key,
-    required this.onTap,
-    required this.label,
-  });
+  const RoboGuideBubble({super.key, required this.onTap, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -592,11 +694,8 @@ class RoboGuideEntry extends StatelessWidget {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
-    final label = isArabic ? "تحدث مع آنخو" : "Talk to Ankhu";
+    final label = isArabic ? "تحدث مع حوروس" : "Talk to Horus-Bot";
 
-    return RoboGuideBubble(
-      label: label,
-      onTap: () => _openChatPopup(context),
-    );
+    return RoboGuideBubble(label: label, onTap: () => _openChatPopup(context));
   }
 }

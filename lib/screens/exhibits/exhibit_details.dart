@@ -69,8 +69,12 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
       SnackBar(
         content: Text(
           _isBookmarked
-              ? (isArabic ? "تمت إضافة المعروض إلى قائمتك." : "Exhibit added to your list.")
-              : (isArabic ? "تمت إزالة المعروض من قائمتك." : "Exhibit removed from your list."),
+              ? (isArabic
+                    ? "تمت إضافة المعروض إلى قائمتك."
+                    : "Exhibit added to your list.")
+              : (isArabic
+                    ? "تمت إزالة المعروض من قائمتك."
+                    : "Exhibit removed from your list."),
         ),
         duration: const Duration(milliseconds: 900),
       ),
@@ -88,7 +92,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      // detail screen usually has no bottom nav, but we keep Ankhu entry
+      // detail screen usually has no bottom nav, but we keep Horus-Bot entry
       bottomNavigationBar: const BottomNav(currentIndex: 0),
       floatingActionButton: const RoboGuideEntry(),
       body: CustomScrollView(
@@ -96,11 +100,14 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
           _buildSliverAppBar(exhibit, prefs.language, cs, isArabic),
           SliverToBoxAdapter(
             child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 24.0,
+              ),
               child: Column(
-                crossAxisAlignment:
-                    isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                crossAxisAlignment: isArabic
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
                 children: [
                   _buildAudioCard(exhibit, isArabic, cs),
                   const SizedBox(height: 24),
@@ -144,7 +151,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
     return SliverAppBar(
       expandedHeight: 320,
       pinned: true,
-      backgroundColor: cs.background,
+      backgroundColor: cs.surface,
       iconTheme: const IconThemeData(color: Colors.white),
       actions: [
         IconButton(
@@ -157,8 +164,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
       ],
       flexibleSpace: FlexibleSpaceBar(
         centerTitle: false,
-        titlePadding:
-            const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+        titlePadding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
         title: Text(
           exhibit.getName(language),
           textAlign: isArabic ? TextAlign.right : TextAlign.left,
@@ -173,10 +179,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
           children: [
             // TODO: replace with Exhibit image if you add an imagePath field.
             // e.g. Image.asset(exhibit.imagePath, fit: BoxFit.cover)
-            Image.asset(
-              'assets/images/museum_interior.jpg',
-              fit: BoxFit.cover,
-            ),
+            Image.asset('assets/images/museum_interior.jpg', fit: BoxFit.cover),
             Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -197,11 +200,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
 
   // ---------- AUDIO CARD ----------
 
-  Widget _buildAudioCard(
-    Exhibit exhibit,
-    bool isArabic,
-    ColorScheme cs,
-  ) {
+  Widget _buildAudioCard(Exhibit exhibit, bool isArabic, ColorScheme cs) {
     return Card(
       elevation: 3,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
@@ -230,8 +229,9 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
             const SizedBox(width: 14),
             Expanded(
               child: Column(
-                crossAxisAlignment:
-                    isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                crossAxisAlignment: isArabic
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
                 children: [
                   Text(
                     isArabic ? "الشرح الصوتي" : "Audio guide",
@@ -245,10 +245,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                     isArabic
                         ? "اضغط للاستماع إلى شرح قصير."
                         : "Tap to listen to a short narration.",
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: Colors.black54,
-                    ),
+                    style: const TextStyle(fontSize: 12, color: Colors.black54),
                   ),
                 ],
               ),
@@ -261,11 +258,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
 
   // ---------- FACT CHIPS ----------
 
-  Widget _buildFactChips(
-    Exhibit exhibit,
-    bool isArabic,
-    ColorScheme cs,
-  ) {
+  Widget _buildFactChips(Exhibit exhibit, bool isArabic, ColorScheme cs) {
     // You can later replace these with real fields from Exhibit
     final facts = <Map<String, dynamic>>[
       {
@@ -292,11 +285,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
       children: facts
           .map(
             (f) => Chip(
-              avatar: Icon(
-                f['icon'] as IconData,
-                size: 18,
-                color: cs.primary,
-              ),
+              avatar: Icon(f['icon'] as IconData, size: 18, color: cs.primary),
               label: Text(
                 '${f['label']}: ${f['value']}',
                 style: const TextStyle(fontSize: 12),
@@ -335,8 +324,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
           style: OutlinedButton.styleFrom(
             foregroundColor: cs.primary,
             side: BorderSide(color: cs.primary.withOpacity(0.4)),
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
             ),
@@ -358,9 +346,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
           },
           icon: const Icon(Icons.map_outlined),
           label: Text(isArabic ? "عرض على الخريطة" : "View on map"),
-          style: TextButton.styleFrom(
-            foregroundColor: cs.primary,
-          ),
+          style: TextButton.styleFrom(foregroundColor: cs.primary),
         ),
       ],
     );
