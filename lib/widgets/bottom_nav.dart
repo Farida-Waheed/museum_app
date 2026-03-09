@@ -22,12 +22,11 @@ class BottomNav extends StatelessWidget {
     final isArabic = prefs.language == 'ar';
 
     final theme = Theme.of(context);
-    final primary = theme.colorScheme.primary;
 
     // Theme-safe colors (works for light/dark/high-contrast)
     final surface = theme.colorScheme.surface;
-    final shadowColor = theme.colorScheme.shadow.withOpacity(0.10);
-    final unselected = theme.colorScheme.onSurface.withOpacity(0.55);
+    final shadowColor = theme.colorScheme.shadow.withOpacity(0.05);
+    final unselected = theme.colorScheme.onSurface.withOpacity(0.4);
 
     String getLabel(String key) => isArabic ? (_navLabelsAr[key] ?? key) : key;
 
@@ -72,13 +71,14 @@ class BottomNav extends StatelessWidget {
         currentIndex: currentIndex,
         onTap: handleTap,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: primary,
+        selectedItemColor: const Color(0xFFD4AF37), // Gold accent
         unselectedItemColor: unselected,
         showUnselectedLabels: true,
         selectedFontSize: 12,
         unselectedFontSize: 11,
         elevation: 0,
         backgroundColor: surface,
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w700),
         items: [
           BottomNavigationBarItem(
             icon: const Icon(Icons.home_outlined),

@@ -5,11 +5,15 @@ final ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
 
   colorScheme: ColorScheme.fromSeed(
-    seedColor: Colors.blue,
+    seedColor: const Color(0xFF0F172A),
+    primary: const Color(0xFF0F172A),
+    secondary: const Color(0xFFD4AF37),
+    surface: Colors.white,
+    background: const Color(0xFFF8FAFC),
     brightness: Brightness.light,
   ),
 
-  scaffoldBackgroundColor: const Color(0xFFF7F7F9),
+  scaffoldBackgroundColor: const Color(0xFFF8FAFC),
 
   appBarTheme: const AppBarTheme(
     backgroundColor: Colors.white,

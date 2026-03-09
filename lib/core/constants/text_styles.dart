@@ -9,9 +9,10 @@ class AppTextStyles {
     return TextStyle(
       fontFamily: _fontFamily,
       fontWeight: FontWeight.w700,
-      fontSize: 22,
+      fontSize: 28,
       color: _textColor(context),
       height: 1.2,
+      letterSpacing: -0.5,
     );
   }
 
@@ -19,7 +20,7 @@ class AppTextStyles {
     return TextStyle(
       fontFamily: _fontFamily,
       fontWeight: FontWeight.w700,
-      fontSize: 18,
+      fontSize: 20,
       color: _textColor(context),
       height: 1.25,
     );
@@ -27,21 +28,19 @@ class AppTextStyles {
 
   static TextStyle body(BuildContext context) {
     return TextStyle(
-      fontFamily: _fontFamily,
       fontWeight: FontWeight.w400,
-      fontSize: 14,
+      fontSize: 16,
       color: _textColor(context),
-      height: 1.35,
+      height: 1.5,
     );
   }
 
   static TextStyle caption(BuildContext context) {
     return TextStyle(
-      fontFamily: _fontFamily,
       fontWeight: FontWeight.w400,
-      fontSize: 12,
+      fontSize: 14,
       color: _textSecondaryColor(context),
-      height: 1.3,
+      height: 1.4,
     );
   }
 

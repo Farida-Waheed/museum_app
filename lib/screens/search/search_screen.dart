@@ -6,6 +6,7 @@ import '../../core/services/mock_data.dart';
 import '../../models/exhibit.dart';
 import '../../app/router.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../widgets/app_card.dart';
 import '../chat/chat_screen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -203,64 +204,55 @@ class _SearchResultTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
-    return Card(
-      elevation: 1,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      child: InkWell(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: AppCard(
+        padding: const EdgeInsets.all(12),
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Container(
-                  width: 56,
-                  height: 56,
-                  color: cs.primary.withOpacity(0.08),
-                  child: const Icon(
-                    Icons.museum_outlined,
-                    size: 28,
-                    color: Colors.black54,
+        child: Row(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                width: 60,
+                height: 60,
+                color: const Color(0xFFF1F5F9),
+                child: const Icon(
+                  Icons.museum_outlined,
+                  size: 26,
+                  color: Color(0xFF64748B),
+                ),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment:
+                    isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    exhibit.getName(prefs.language),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 15,
+                      color: Color(0xFF0F172A),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment:
-                      isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      exhibit.getName(prefs.language),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                  const SizedBox(height: 4),
+                  Text(
+                    isArabic ? "اضغط للتفاصيل" : "Tap for details",
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF64748B),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      isArabic
-                          ? "اضغط لعرض تفاصيل المعروض"
-                          : "Tap to view details and audio guide",
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black54,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 4),
-              const Icon(Icons.chevron_right_rounded, size: 20),
-            ],
-          ),
+            ),
+            const Icon(Icons.chevron_right_rounded, color: Color(0xFF94A3B8)),
+          ],
         ),
       ),
     );

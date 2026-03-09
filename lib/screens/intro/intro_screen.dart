@@ -137,11 +137,11 @@ class _IntroScreenState extends State<IntroScreen>
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black.withValues(alpha: 0.65),
-                  Colors.black.withValues(alpha: 0.25),
-                  Colors.black.withValues(alpha: 0.70),
+                  Colors.black.withOpacity(0.8),
+                  Colors.black.withOpacity(0.4),
+                  Colors.black.withOpacity(0.8),
                 ],
-                stops: const [0.0, 0.4, 1.0],
+                stops: const [0.0, 0.5, 1.0],
               ),
             ),
           ),
@@ -168,9 +168,12 @@ class _IntroScreenState extends State<IntroScreen>
                     ),
                     const Text('Museums', style: mainTitleStyle),
                     const SizedBox(height: 12),
-                    const Text(
-                      'Explore Egypt with your Horus-Bot and its app.',
-                      style: taglineStyle,
+                    Text(
+                      'The Ultimate Egyptian Museum Guide.',
+                      style: taglineStyle.copyWith(
+                        color: Colors.white.withOpacity(0.8),
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ],
                 ),

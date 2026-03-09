@@ -1,14 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
-// Make sure these match your project name
 import 'package:museum_app/app/app.dart'; 
 import 'package:museum_app/models/user_preferences.dart';
 
 void main() {
-  testWidgets('Museum App loads and settings work', (WidgetTester tester) async {
+  testWidgets('Museum App basic flow works', (WidgetTester tester) async {
     // 1. Build the app
-    // We must wrap MuseumApp in a Provider to mock the data
     await tester.pumpWidget(
       MultiProvider(
         providers: [
@@ -18,22 +16,26 @@ void main() {
       ),
     );
 
-    // 2. Verify the Home Screen appears
-    // We look for the title defined in your HomeScreen
-    expect(find.text('Museum Guide'), findsOneWidget);
+    // 2. Verify the Intro Screen appears
+    expect(find.text('Museums'), findsOneWidget);
     
-    // Verify the Settings placeholder controls exist
-    expect(find.text('High Contrast Mode'), findsOneWidget);
-    expect(find.text('Switch Language (AR/EN)'), findsOneWidget);
+    // 3. Advance past Intro (2s timer)
+    await tester.pump(const Duration(seconds: 3));
+    await tester.pumpAndSettle();
 
-    // 3. Test Interaction: Tap the "Switch Language" button
-    await tester.tap(find.text('Switch Language (AR/EN)'));
-    
-    // Trigger a frame update (rebuild the UI)
-    await tester.pump();
+    // 4. Verify Onboarding Screen
+    expect(find.text('Meet Horus-Bot'), findsOneWidget);
 
-    // 4. Verify the language changed
-    // The initial text was "Current Language: EN", now it should be "AR"
-    expect(find.text('Current Language: AR'), findsOneWidget);
+    // 5. Test Language Switch
+    await tester.tap(find.text('العربية'));
+    await tester.pumpAndSettle();
+    expect(find.text('تعرف على حوروس'), findsOneWidget);
+
+    // 6. Complete onboarding
+    await tester.tap(find.text('ابدأ مع حوروس'));
+    await tester.pumpAndSettle();
+
+    // 7. Verify Home Screen loaded (at least one Horus title)
+    expect(find.text('حوروس'), findsWidgets);
   });
 }

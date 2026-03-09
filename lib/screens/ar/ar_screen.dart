@@ -95,7 +95,7 @@ class _ArScreenState extends State<ArScreen> {
     return Image.asset(
       "assets/images/museum_interior.jpg", 
       fit: BoxFit.cover,
-      color: Colors.black.withValues(alpha: 0.1),
+      color: Colors.black.withOpacity(0.1),
       colorBlendMode: BlendMode.darken,
       errorBuilder: (c, e, s) => Container(color: Colors.grey[800]),
     );
@@ -137,11 +137,11 @@ class _ArScreenState extends State<ArScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.9),
+                color: Colors.white.withOpacity(0.9),
                 borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
+                    color: Colors.black.withOpacity(0.2),
                     blurRadius: 4
                   )
                 ],

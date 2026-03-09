@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -140,8 +139,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
 
-    final cs = Theme.of(context).colorScheme;
-    final t = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
 
     const Color lightGreyBG = Colors.white;
@@ -228,79 +225,69 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             // ===== HERO HEADER =====
                             SliverToBoxAdapter(
                               child: Container(
-                                height: 240,
-                                margin: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+                                height: 280,
+                                margin: const EdgeInsets.fromLTRB(16, 12, 16, 8),
                                 child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(22),
+                                  borderRadius: BorderRadius.circular(24),
                                   child: Stack(
                                     fit: StackFit.expand,
                                     children: [
-                                      Image.asset('assets/images/museum_interior.jpg', fit: BoxFit.cover),
+                                      Image.asset('assets/images/Grand Hall.jpg', fit: BoxFit.cover),
 
-                                      // Animated gradient wash
-                                      AnimatedBuilder(
-                                        animation: _grad,
-                                        builder: (_, __) {
-                                          final gv = _grad.value;
-                                          return DecoratedBox(
-                                            decoration: BoxDecoration(
-                                              gradient: LinearGradient(
-                                                begin: Alignment.topLeft,
-                                                end: Alignment.bottomRight,
-                                                transform: GradientRotation(pi * (.05 + .15 * gv)),
-                                                colors: [
-                                                  cs.secondary.withOpacity(.12 + .10 * gv),
-                                                  cs.primary.withOpacity(.14 - .06 * gv),
-                                                  cs.tertiary.withOpacity(.10 + .06 * gv),
-                                                  Colors.black.withOpacity(.55),
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        },
+                                      // Refined gradient
+                                      DecoratedBox(
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter,
+                                            colors: [
+                                              Colors.black.withOpacity(0.1),
+                                              Colors.black.withOpacity(0.8),
+                                            ],
+                                          ),
+                                        ),
                                       ),
 
                                       Positioned(
-                                        left: 16,
-                                        right: 16,
-                                        bottom: 16,
+                                        left: 20,
+                                        right: 20,
+                                        bottom: 20,
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment: isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              isArabic ? "استكشف مصر مع حوروس" : "Explore Egypt with Horus-Bot",
-                                              style: t.headlineSmall?.copyWith(
+                                              isArabic ? "استكشف مصر مع حوروس" : "Explore Ancient Egypt",
+                                              style: AppTextStyles.headline(context).copyWith(
                                                 color: Colors.white,
-                                                fontWeight: FontWeight.w800,
+                                                fontSize: 32,
                                               ),
                                             ),
-                                            const SizedBox(height: 10),
+                                            const SizedBox(height: 12),
 
-                                            // === NEXT STOP CARD ===
-                                            InkWell(
-                                              borderRadius: BorderRadius.circular(14),
-                                              onTap: () => Navigator.pushNamed(context, AppRoutes.progress),
-                                              child: Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(14),
-                                                  color: Colors.black.withOpacity(0.30),
-                                                ),
-                                                child: Row(
-                                                  children: [
-                                                    const Icon(Icons.route, color: Colors.white, size: 18),
-                                                    const SizedBox(width: 8),
-                                                    Expanded(
-                                                      child: Text(
-                                                        isArabic
-                                                            ? "المحطة التالية: قاعة توت عنخ آمون خلال ٥ دقائق"
-                                                            : "Next stop: Tutankhamun Hall in 5 min",
-                                                        style: const TextStyle(color: Colors.white, fontSize: 12),
-                                                      ),
+                                            // === NEXT STOP CHIP ===
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(12),
+                                                color: Colors.white.withOpacity(0.15),
+                                                border: Border.all(color: Colors.white.withOpacity(0.2)),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(Icons.bolt, color: Color(0xFFD4AF37), size: 20),
+                                                  const SizedBox(width: 8),
+                                                  Text(
+                                                    isArabic
+                                                        ? "المحطة التالية: قاعة توت عنخ آمون"
+                                                        : "Live: Tutankhamun Hall",
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 14,
+                                                      fontWeight: FontWeight.w600,
                                                     ),
-                                                    const Icon(Icons.chevron_right_rounded, color: Colors.white, size: 18),
-                                                  ],
-                                                ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ],
@@ -463,32 +450,42 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     required String label,
     required Color color,
   }) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(14),
-      onTap: () {},
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          gradient: LinearGradient(
-            colors: [color.withOpacity(.10), Colors.white],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFE2E8F0)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
-          border: Border.all(color: Colors.grey.shade200),
-        ),
-        child: Column(
-          children: [
-            CircleAvatar(
-              radius: 16,
-              backgroundColor: color.withOpacity(.15),
-              child: Icon(icon, color: color, size: 18),
+        ],
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 28),
+          const SizedBox(height: 12),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF0F172A),
             ),
-            const SizedBox(height: 8),
-            Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
-          ],
-        ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              color: Color(0xFF64748B),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -724,41 +721,56 @@ class _HighlightCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(22),
-        child: Stack(
-          children: [
-            Positioned.fill(child: Image.asset(image, fit: BoxFit.cover)),
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [Colors.black.withOpacity(.45), Colors.transparent],
+      padding: const EdgeInsets.symmetric(horizontal: 6),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: Stack(
+            children: [
+              Positioned.fill(child: Image.asset(image, fit: BoxFit.cover)),
+              Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Colors.black.withOpacity(0.8),
+                        Colors.black.withOpacity(0.0),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              left: isArabic ? null : 14,
-              right: isArabic ? 14 : null,
-              bottom: 12,
-              child: Text(
-                title,
-                style: t.titleMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+              Positioned(
+                left: 16,
+                right: 16,
+                bottom: 16,
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                  textAlign: isArabic ? TextAlign.right : TextAlign.left,
                 ),
-                textAlign: isArabic ? TextAlign.right : TextAlign.left,
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -773,18 +785,17 @@ class _Dots extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(count, (i) {
         final active = i == index;
         return AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
+          duration: const Duration(milliseconds: 300),
           margin: const EdgeInsets.symmetric(horizontal: 4),
-          width: active ? 22 : 8,
-          height: 8,
+          width: active ? 24 : 8,
+          height: 6,
           decoration: BoxDecoration(
-            color: active ? cs.secondary : cs.onSurface.withOpacity(.3),
+            color: active ? const Color(0xFFD4AF37) : const Color(0xFFE2E8F0),
             borderRadius: BorderRadius.circular(10),
           ),
         );

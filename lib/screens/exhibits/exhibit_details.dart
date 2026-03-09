@@ -201,57 +201,69 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
   // ---------- AUDIO CARD ----------
 
   Widget _buildAudioCard(Exhibit exhibit, bool isArabic, ColorScheme cs) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      margin: EdgeInsets.zero,
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          children: [
-            InkWell(
-              onTap: () => _toggleAudio(exhibit, isArabic),
-              borderRadius: BorderRadius.circular(30),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: cs.primary.withOpacity(0.08),
-                  shape: BoxShape.circle,
-                ),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cs.primary,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: cs.primary.withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => _toggleAudio(exhibit, isArabic),
+            child: Container(
+              width: 56,
+              height: 56,
+              decoration: const BoxDecoration(
+                color: Color(0xFFD4AF37), // Gold
+                shape: BoxShape.circle,
+              ),
+              child: Center(
                 child: AnimatedIcon(
                   icon: AnimatedIcons.play_pause,
                   progress: _playController,
-                  size: 32,
-                  color: cs.primary,
+                  size: 28,
+                  color: Colors.white,
                 ),
               ),
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: isArabic
-                    ? CrossAxisAlignment.end
-                    : CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isArabic ? "الشرح الصوتي" : "Audio guide",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                    ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isArabic ? "الشرح الصوتي" : "Audio Guide",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    isArabic
-                        ? "اضغط للاستماع إلى شرح قصير."
-                        : "Tap to listen to a short narration.",
-                    style: const TextStyle(fontSize: 12, color: Colors.black54),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  isArabic
+                      ? "استمع لقصة هذا المعلم."
+                      : "Listen to the story of this artifact.",
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.7),
+                    fontSize: 13,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 8),
+          Icon(Icons.graphic_eq, color: Colors.white.withOpacity(0.4), size: 24),
+        ],
       ),
     );
   }
@@ -259,7 +271,6 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
   // ---------- FACT CHIPS ----------
 
   Widget _buildFactChips(Exhibit exhibit, bool isArabic, ColorScheme cs) {
-    // You can later replace these with real fields from Exhibit
     final facts = <Map<String, dynamic>>[
       {
         'icon': Icons.public,
@@ -267,36 +278,46 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
         'value': 'Ancient Egypt',
       },
       {
-        'icon': Icons.calendar_today,
+        'icon': Icons.history_toggle_off,
         'label': isArabic ? 'الفترة' : 'Period',
         'value': 'New Kingdom',
       },
       {
-        'icon': Icons.location_on,
+        'icon': Icons.place_outlined,
         'label': isArabic ? 'المعرض' : 'Gallery',
         'value': 'Hall A',
       },
     ];
 
     return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+      spacing: 12,
+      runSpacing: 12,
       alignment: isArabic ? WrapAlignment.end : WrapAlignment.start,
-      children: facts
-          .map(
-            (f) => Chip(
-              avatar: Icon(f['icon'] as IconData, size: 18, color: cs.primary),
-              label: Text(
+      children: facts.map((f) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(f['icon'] as IconData, size: 16, color: const Color(0xFFD4AF37)),
+              const SizedBox(width: 8),
+              Text(
                 '${f['label']}: ${f['value']}',
-                style: const TextStyle(fontSize: 12),
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF475569),
+                ),
               ),
-              backgroundColor: cs.primary.withOpacity(0.05),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          )
-          .toList(),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 

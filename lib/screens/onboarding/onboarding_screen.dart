@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../models/user_preferences.dart';
 import '../../app/router.dart';
+import '../../widgets/primary_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -57,16 +58,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // --- 1. Background image (per page) ---
-          Positioned.fill(
+          // --- 1. Animated Background ---
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 600),
             child: Image.asset(
               pages[_currentPage]["image"]!,
+              key: ValueKey<int>(_currentPage),
               fit: BoxFit.cover,
-              errorBuilder: (c, e, s) => Container(color: Colors.blueGrey),
+              width: double.infinity,
+              height: double.infinity,
+              errorBuilder: (c, e, s) => Container(color: const Color(0xFF0F172A)),
             ),
           ),
 
-          // --- 2. Gradient overlay to improve readability ---
+          // --- 2. Refined gradient overlay ---
           Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
@@ -155,36 +160,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     const SizedBox(height: 28),
 
-                    // "Start with Horus-Bot" – always visible
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          // mark onboarding as completed (if your model has this)
-                          prefs.setCompletedOnboarding(true);
-                          // go to main home
-                          Navigator.pushReplacementNamed(
-                            context,
-                            AppRoutes.mainHome,
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueAccent,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          elevation: 8,
-                        ),
-                        child: Text(
-                          isArabic ? "ابدأ مع حوروس" : "Start with Horus-Bot",
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
+                    // "Start with Horus-Bot"
+                    PrimaryButton(
+                      label: isArabic ? "ابدأ مع حوروس" : "Start Experience",
+                      backgroundColor: const Color(0xFFD4AF37), // Gold
+                      foregroundColor: Colors.white,
+                      onPressed: () {
+                        prefs.setCompletedOnboarding(true);
+                        Navigator.pushReplacementNamed(
+                          context,
+                          AppRoutes.mainHome,
+                        );
+                      },
                     ),
                   ],
                 ),
