@@ -32,7 +32,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get todaysHighlights => 'معروضات اليوم';
 
   @override
-  String get mapPreview => 'معاينة الخريطة (موقع حوروس)';
+  String get mapPreview => 'معاينة الخريطة';
 
   @override
   String get fullView => 'عرض كامل';
@@ -86,11 +86,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settings => 'الإعدادات';
 
   @override
-  String get privacyPermissions => 'الخصوصية والأذونات';
+  String get privacyPermissions => 'إذن الموقع';
 
   @override
   String get privacyText =>
-      'حوروس يستخدم البلوتوث والموقع لمرافقتك داخل المتحف.\n\n• البيانات مجهولة الهوية.\n• تُستخدم خرائط الحركة لأغراض التحليل فقط.\n\nهل تسمح باستخدام موقعك؟';
+      'حوروس يستخدم البلوتوث والموقع لإرشادك داخل المتحف.';
 
   @override
   String get deny => 'رفض';
@@ -341,4 +341,93 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get tickets => 'التذاكر';
+
+  @override
+  String get onboarding1Title => 'مرحباً بك في حوروس';
+
+  @override
+  String get onboarding1Desc =>
+      'دليلك الذكي لاستكشاف المتحف. تصفح المعروضات، اتبع الروبوت، واكتشف القصص وراء كل قطعة أثرية.';
+
+  @override
+  String get onboarding2Title => 'تعرف على حوروس';
+
+  @override
+  String get onboarding2Desc =>
+      'حوروس هو مرشدك المتحفي الذكي. اطرح الأسئلة، استمع للشروحات، واستكشف المعروضات خلال زيارتك.';
+
+  @override
+  String get onboarding3Title => 'وضع الجولة الموجهة';
+
+  @override
+  String get onboarding3Desc =>
+      'عند بدء جولتك، يقوم التطبيق تلقائياً بإرشادك عبر المعروضات ويبقيك على اتصال بحوروس.';
+
+  @override
+  String get onboarding4Title => 'استكشف وتعلّم';
+
+  @override
+  String get onboarding4Desc =>
+      'اكتشف المعروضات، اسأل حوروس، واستمتع باختبارات المتحف التفاعلية.';
+
+  @override
+  String get next => 'التالي';
+
+  @override
+  String get startExploring => 'ابدأ الاستكشاف';
+
+  @override
+  String get recommendedForYou => 'مقترح لك';
+
+  @override
+  String get talkToHorusBot => 'تحدث مع حوروس';
+
+  @override
+  String get mapSub => 'ابحث عن المعروضات والمسارات';
+
+  @override
+  String get exhibitsSub => 'تصفح القطع الأثرية القريبة';
+
+  @override
+  String get quizSub => 'اختبر معلوماتك';
+
+  @override
+  String get liveTourSub => 'اتبع حوروس';
+
+  @override
+  String get scanExhibitsAR => 'افحص المعروضات بالواقع المعزز';
+
+  @override
+  String get visit => 'الزيارة';
+
+  @override
+  String get accountPreferences => 'الحساب والتفضيلات';
+
+  @override
+  String get extras => 'إضافات';
+
+  @override
+  String get liveTourActive => 'جولة حية نشطة';
+
+  @override
+  String currentlyVisiting(Object location) {
+    return 'تزور حالياً: $location';
+  }
+
+  @override
+  String get followHorusBot => 'اتبع حوروس';
+
+  @override
+  String get startNavigation => 'بدء الملاحة';
+
+  @override
+  String robotHeadingTo(Object location) {
+    return 'الروبوت يتجه إلى: $location';
+  }
+
+  @override
+  String get exploreTheMuseum => 'استكشف المتحف';
+
+  @override
+  String get followAndDiscover => 'اتبع حوروس واكتشف مصر القديمة';
 }

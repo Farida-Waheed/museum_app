@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 
 import '../../models/user_preferences.dart';
 import '../../app/router.dart';
@@ -21,34 +22,42 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.dispose();
   }
 
+  void _completeOnboarding(UserPreferencesModel prefs) {
+    prefs.setCompletedOnboarding(true);
+    Navigator.pushReplacementNamed(
+      context,
+      AppRoutes.mainHome,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
 
-    // --- Onboarding pages (short text, Horus-Bot + app modes) ---
-    final List<Map<String, String>> pages = [
+    final List<Map<String, dynamic>> pages = [
       {
-        "title": isArabic ? "تعرف على حوروس" : "Meet Horus-Bot",
-        "desc": isArabic
-            ? "حوروس هو مرشدك الروبوتي، يعمل مع التطبيق قبل الجولة وأثناءها وبعدها."
-            : "Horus-Bot is your Robo-Guide, working with the app before, during, and after the tour.",
+        "title": l10n.onboarding1Title,
+        "desc": l10n.onboarding1Desc,
         "image": "assets/images/Onboarding.jpg",
-        "iconPath": "assets/icons/ankh.png",
+        "iconPath": "assets/icons/pyramid.png",
       },
       {
-        "title": isArabic ? "وضع الجولة التلقائي" : "Automatic Tour Mode",
-        "desc": isArabic
-            ? "عند بدء الجولة، يبدأ وضع حوروس تلقائياً ويضيف مميزات خاصة بالجولة."
-            : "When the tour starts, Horus-Bot mode turns on automatically with extra tour features.",
+        "title": l10n.onboarding2Title,
+        "desc": l10n.onboarding2Desc,
+        "image": "assets/images/Onboarding.jpg",
+        "iconPath": "assets/icons/pharaoh.png",
+      },
+      {
+        "title": l10n.onboarding3Title,
+        "desc": l10n.onboarding3Desc,
         "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/map.png",
       },
       {
-        "title": isArabic ? "استكشف وتعلّم" : "Explore & Learn",
-        "desc": isArabic
-            ? "استمع للشرح، اسأل حوروس، وشارك في الاختبارات من خلال التطبيق."
-            : "Listen to explanations, ask Horus-Bot questions, and take quizzes in the app.",
+        "title": l10n.onboarding4Title,
+        "desc": l10n.onboarding4Desc,
         "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/scarab.png",
       },
@@ -74,9 +83,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.15),
-                    Colors.black.withOpacity(0.85),
+                    Colors.black.withOpacity(0.3),
+                    Colors.black.withOpacity(0.5),
+                    Colors.black.withOpacity(0.9),
                   ],
+                  stops: const [0.0, 0.4, 1.0],
                 ),
               ),
             ),
@@ -93,37 +104,57 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   itemCount: pages.length,
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          // Icon instead of emoji
-                          Image.asset(
-                            pages[index]["iconPath"]!,
-                            width: 96,
-                            height: 96,
+                          // Icon with glow
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Container(
+                                width: 120,
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.white.withOpacity(0.15),
+                                      blurRadius: 30,
+                                      spreadRadius: 10,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Image.asset(
+                                pages[index]["iconPath"]!,
+                                width: 106,
+                                height: 106,
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 40),
                           Text(
                             pages[index]["title"]!,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 26,
+                              fontSize: 28,
                               fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
                             ),
                           ),
-                          const SizedBox(height: 14),
+                          const SizedBox(height: 18),
                           Text(
                             pages[index]["desc"]!,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 15,
-                              height: 1.5,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.85),
+                              fontSize: 16,
+                              height: 1.6,
                             ),
                           ),
-                          const SizedBox(height: 60),
+                          const SizedBox(height: 100),
                         ],
                       ),
                     );
@@ -131,9 +162,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
 
-              // --- Dots + "Start with Horus" button ---
+              // --- Dots + Primary button ---
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 48),
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 60),
                 child: Column(
                   children: [
                     // Dots indicator
@@ -142,43 +173,46 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       children: List.generate(pages.length, (index) {
                         final bool active = _currentPage == index;
                         return AnimatedContainer(
-                          duration: const Duration(milliseconds: 250),
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          width: active ? 22 : 8,
-                          height: 8,
+                          duration: const Duration(milliseconds: 300),
+                          margin: const EdgeInsets.symmetric(horizontal: 6),
+                          width: active ? 28 : 10,
+                          height: 10,
                           decoration: BoxDecoration(
-                            color: active ? Colors.white : Colors.white54,
-                            borderRadius: BorderRadius.circular(4),
+                            color: active ? Colors.white : Colors.white.withOpacity(0.4),
+                            borderRadius: BorderRadius.circular(5),
                           ),
                         );
                       }),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 32),
 
-                    // "Start with Horus-Bot" – always visible
+                    // Navigation Button
                     SizedBox(
                       width: double.infinity,
-                      height: 56,
+                      height: 60,
                       child: ElevatedButton(
                         onPressed: () {
-                          // mark onboarding as completed (if your model has this)
-                          prefs.setCompletedOnboarding(true);
-                          // go to main home
-                          Navigator.pushReplacementNamed(
-                            context,
-                            AppRoutes.mainHome,
-                          );
+                          if (_currentPage < pages.length - 1) {
+                            _pageController.nextPage(
+                              duration: const Duration(milliseconds: 400),
+                              curve: Curves.easeInOut,
+                            );
+                          } else {
+                            _completeOnboarding(prefs);
+                          }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueAccent,
-                          foregroundColor: Colors.white,
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(18),
                           ),
-                          elevation: 8,
+                          elevation: 0,
                         ),
                         child: Text(
-                          isArabic ? "ابدأ مع حوروس" : "Start with Horus-Bot",
+                          _currentPage == pages.length - 1
+                              ? l10n.startExploring
+                              : l10n.next,
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -192,21 +226,56 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ],
           ),
 
-          // --- 4. Language switcher (top-right) ---
+          // --- 4. Language switcher (top-left/right) ---
           Positioned(
-            top: 50,
-            right: 20,
+            top: 60,
+            left: isArabic ? 20 : null,
+            right: isArabic ? null : 20,
             child: SafeArea(
-              child: ElevatedButton.icon(
+              child: TextButton(
                 onPressed: () {
                   prefs.setLanguage(isArabic ? 'en' : 'ar');
                 },
-                icon: const Icon(Icons.language, size: 18),
-                label: Text(isArabic ? "English" : "العربية"),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white.withOpacity(0.2),
+                style: TextButton.styleFrom(
                   foregroundColor: Colors.white,
-                  elevation: 0,
+                  backgroundColor: Colors.black.withOpacity(0.3),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.language, size: 18),
+                    const SizedBox(width: 8),
+                    Text(
+                      "العربية / English",
+                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // --- 5. Skip button (top-right/left) ---
+          Positioned(
+            top: 60,
+            left: isArabic ? null : 20,
+            right: isArabic ? 20 : null,
+            child: SafeArea(
+              child: TextButton(
+                onPressed: () => _completeOnboarding(prefs),
+                style: TextButton.styleFrom(
+                  foregroundColor: Colors.white.withOpacity(0.7),
+                ),
+                child: Text(
+                  l10n.skip,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
             ),

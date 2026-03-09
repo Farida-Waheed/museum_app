@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/tour_provider.dart';
@@ -21,12 +22,12 @@ class RobotStatusBanner extends StatelessWidget {
 
     switch (state) {
       case RobotState.moving:
-        statusColor = Colors.orange;
+        statusColor = Colors.blue;
         statusIcon = Icons.directions_walk;
         isPulsing = true;
         break;
       case RobotState.speaking:
-        statusColor = Colors.blue;
+        statusColor = Colors.green;
         statusIcon = Icons.volume_up;
         break;
       case RobotState.thinking:
@@ -49,7 +50,7 @@ class RobotStatusBanner extends StatelessWidget {
         isPulsing = true;
         break;
       case RobotState.listening:
-        statusColor = Colors.green;
+        statusColor = Colors.orange;
         statusIcon = Icons.mic;
         isPulsing = true;
         break;
@@ -60,51 +61,59 @@ class RobotStatusBanner extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: statusColor.withOpacity(0.08),
-        border: Border(
-          bottom: BorderSide(color: statusColor.withOpacity(0.2), width: 1),
-        ),
+        color: Colors.white.withOpacity(0.9),
       ),
-      child: Row(
-        children: [
-          _StatusIndicator(
-            color: statusColor,
-            icon: statusIcon,
-            isPulsing: isPulsing,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+      child: ClipRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            decoration: BoxDecoration(
+              border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
+            ),
+            child: Row(
               children: [
-                Text(
-                  isArabic ? "حالة حوروس" : "HORUS-BOT STATUS",
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.2,
-                    color: statusColor.withOpacity(0.8),
+                _StatusIndicator(
+                  color: statusColor,
+                  icon: statusIcon,
+                  isPulsing: isPulsing,
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        (isArabic ? "حالة حوروس" : "HORUS-BOT STATUS").toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.2,
+                          color: Colors.grey.shade500,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        statusMsg,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
                 ),
-                Text(
-                  statusMsg,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                if (state == RobotState.moving && tourProvider.nextExhibitId != null)
+                  _EstimatedArrival(seconds: tourProvider.estimatedTimeToNext, isArabic: isArabic, color: statusColor),
               ],
             ),
           ),
-          if (state == RobotState.moving && tourProvider.nextExhibitId != null)
-            _EstimatedArrival(seconds: tourProvider.estimatedTimeToNext, isArabic: isArabic),
-        ],
+        ),
       ),
     );
   }
@@ -166,8 +175,8 @@ class _StatusIndicatorState extends State<_StatusIndicator>
           FadeTransition(
             opacity: _animation,
             child: Container(
-              width: 32,
-              height: 32,
+              width: 36,
+              height: 36,
               decoration: BoxDecoration(
                 color: widget.color.withOpacity(0.2),
                 shape: BoxShape.circle,
@@ -178,8 +187,9 @@ class _StatusIndicatorState extends State<_StatusIndicator>
           width: 28,
           height: 28,
           decoration: BoxDecoration(
-            color: widget.color.withOpacity(0.15),
+            color: widget.color.withOpacity(0.1),
             shape: BoxShape.circle,
+            border: Border.all(color: widget.color.withOpacity(0.2), width: 1),
           ),
           child: Icon(widget.icon, size: 16, color: widget.color),
         ),
@@ -191,7 +201,8 @@ class _StatusIndicatorState extends State<_StatusIndicator>
 class _EstimatedArrival extends StatelessWidget {
   final double seconds;
   final bool isArabic;
-  const _EstimatedArrival({required this.seconds, required this.isArabic});
+  final Color color;
+  const _EstimatedArrival({required this.seconds, required this.isArabic, required this.color});
 
   @override
   Widget build(BuildContext context) {
@@ -201,14 +212,15 @@ class _EstimatedArrival extends StatelessWidget {
     final label = isArabic ? "وصول خلال $timeStr" : "Arrival in $timeStr";
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(12),
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.2)),
       ),
       child: Text(
         label,
-        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: color),
       ),
     );
   }

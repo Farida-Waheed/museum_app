@@ -1,4 +1,6 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -9,15 +11,32 @@ class QrScannerScreen extends StatefulWidget {
   State<QrScannerScreen> createState() => _QrScannerScreenState();
 }
 
-class _QrScannerScreenState extends State<QrScannerScreen> {
+class _QrScannerScreenState extends State<QrScannerScreen> with TickerProviderStateMixin {
   bool _isScanned = false;
+  late final AnimationController _scanAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _scanAnim = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _scanAnim.dispose();
+    super.dispose();
+  }
 
   void _handleScan(BarcodeCapture capture) {
-    if (_isScanned) return; // Prevent multiple scans
+    if (_isScanned) return;
     final List<Barcode> barcodes = capture.barcodes;
 
     for (final barcode in barcodes) {
       if (barcode.rawValue != null) {
+        HapticFeedback.heavyImpact();
         setState(() => _isScanned = true);
         _showResultDialog(barcode.rawValue!);
         break;
@@ -27,48 +46,38 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
 
   void _showResultDialog(String code) {
     final l10n = AppLocalizations.of(context)!;
-    // Simulate verifying ticket logic
     bool isValid = code.startsWith("TKT-"); 
 
-    showDialog(
+    showGeneralDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              isValid ? Icons.check_circle : Icons.error,
-              color: isValid ? Colors.green : Colors.red,
-              size: 60,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              isValid ? l10n.ticketVerified : l10n.invalidQr,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text("Code: $code", style: const TextStyle(color: Colors.grey)),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
+      barrierLabel: 'Scan result',
+      barrierColor: Colors.black87,
+      transitionDuration: const Duration(milliseconds: 300),
+      pageBuilder: (ctx, anim, secondaryAnim) {
+        return Center(
+          child: _ResultPopup(
+            isValid: isValid,
+            code: code,
+            l10n: l10n,
+            onClose: () {
               Navigator.pop(context); // Close Dialog
               Navigator.pop(context); // Close Scanner
             },
-            child: Text(l10n.done),
-          ),
-          TextButton(
-            onPressed: () {
+            onRetry: () {
               Navigator.pop(context); // Close Dialog
               setState(() => _isScanned = false); // Reset for next scan
             },
-            child: Text(l10n.scanAnother),
           ),
-        ],
-      ),
+        );
+      },
+      transitionBuilder: (ctx, animation, secondary, child) {
+        final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutBack);
+        return ScaleTransition(
+          scale: Tween<double>(begin: 0.8, end: 1.0).animate(curved),
+          child: FadeTransition(opacity: animation, child: child),
+        );
+      },
     );
   }
 
@@ -76,46 +85,174 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.scanTicket),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      extendBodyBehindAppBar: true,
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
+          // 1. Camera Feed
           MobileScanner(
             onDetect: _handleScan,
           ),
-          // Overlay Design
+
+          // 2. Blurred Overlay with cutout
           const IgnorePointer(
-            child: Center(
-              child: QrScannerOverlayWidget(
-                borderColor: Colors.blue,
-                borderRadius: 10,
-                borderLength: 30,
-                borderWidth: 10,
-                cutOutSize: 300,
-              ),
+            child: QrScannerOverlayWidget(
+              borderColor: Colors.white,
+              borderRadius: 24,
+              borderLength: 40,
+              borderWidth: 4,
+              cutOutSize: 280,
             ),
           ),
+
+          // 3. Header
           Positioned(
-            bottom: 50,
+            top: MediaQuery.of(context).padding.top + 10,
+            left: 16,
+            right: 16,
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: Colors.black45,
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Text(
+                  l10n.scanTicket,
+                  style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+
+          // 4. Footer Instructions
+          Positioned(
+            bottom: 60,
             left: 0,
             right: 0,
             child: Center(
-              child: Text(
-                l10n.alignQr,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  backgroundColor: Colors.black54,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.black45,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white10),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.qr_code_2_rounded, color: Colors.white70, size: 20),
+                        const SizedBox(width: 12),
+                        Text(
+                          l10n.alignQr,
+                          style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
           )
         ],
+      ),
+    );
+  }
+}
+
+class _ResultPopup extends StatelessWidget {
+  final bool isValid;
+  final String code;
+  final AppLocalizations l10n;
+  final VoidCallback onClose;
+  final VoidCallback onRetry;
+
+  const _ResultPopup({
+    required this.isValid,
+    required this.code,
+    required this.l10n,
+    required this.onClose,
+    required this.onRetry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.8,
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(32),
+          boxShadow: [
+            BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 40, spreadRadius: 10),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: (isValid ? Colors.green : Colors.red).withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                isValid ? Icons.check_circle_rounded : Icons.error_rounded,
+                color: isValid ? Colors.green : Colors.red,
+                size: 72,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              isValid ? l10n.ticketVerified : l10n.invalidQr,
+              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              "Ref: $code",
+              style: TextStyle(color: Colors.grey.shade500, fontSize: 13, fontStyle: FontStyle.italic),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: onRetry,
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                    child: Text(l10n.scanAnother, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: onClose,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                    child: Text(l10n.done, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -133,7 +270,7 @@ class QrScannerOverlayWidget extends StatelessWidget {
     super.key,
     this.borderColor = Colors.blue,
     this.borderWidth = 10.0,
-    this.overlayColor = const Color.fromRGBO(0, 0, 0, 0.5),
+    this.overlayColor = const Color.fromRGBO(0, 0, 0, 0.6),
     this.borderRadius = 10,
     this.borderLength = 40,
     this.cutOutSize = 250,

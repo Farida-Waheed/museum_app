@@ -143,7 +143,7 @@ abstract class AppLocalizations {
   /// No description provided for @mapPreview.
   ///
   /// In en, this message translates to:
-  /// **'Map Preview (Horus-Bot\'s Location)'**
+  /// **'Map Preview'**
   String get mapPreview;
 
   /// No description provided for @fullView.
@@ -251,13 +251,13 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPermissions.
   ///
   /// In en, this message translates to:
-  /// **'Privacy & Permissions'**
+  /// **'Location Permission'**
   String get privacyPermissions;
 
   /// No description provided for @privacyText.
   ///
   /// In en, this message translates to:
-  /// **'Horus-Bot uses Bluetooth and Location to walk with you inside the museum.\n\n• Data is anonymous.\n• Movement heatmaps are only for analytics.\n\nDo you allow us to use your location?'**
+  /// **'Horus-Bot uses Bluetooth and Location to guide you inside the museum.'**
   String get privacyText;
 
   /// No description provided for @deny.
@@ -751,6 +751,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tickets'**
   String get tickets;
+
+  /// No description provided for @onboarding1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Horus-Bot'**
+  String get onboarding1Title;
+
+  /// No description provided for @onboarding1Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Your smart guide for exploring the museum. Navigate exhibits, follow the robot, and discover stories behind every artifact.'**
+  String get onboarding1Desc;
+
+  /// No description provided for @onboarding2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Meet Horus-Bot'**
+  String get onboarding2Title;
+
+  /// No description provided for @onboarding2Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot is your intelligent museum guide. Ask questions, listen to explanations, and explore exhibits during your visit.'**
+  String get onboarding2Desc;
+
+  /// No description provided for @onboarding3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Guided Tour Mode'**
+  String get onboarding3Title;
+
+  /// No description provided for @onboarding3Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'When your tour begins, the app automatically guides you through exhibits and keeps you connected to Horus-Bot.'**
+  String get onboarding3Desc;
+
+  /// No description provided for @onboarding4Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore & Learn'**
+  String get onboarding4Title;
+
+  /// No description provided for @onboarding4Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover exhibits, ask Horus-Bot questions, and enjoy interactive museum quizzes.'**
+  String get onboarding4Desc;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @startExploring.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Exploring'**
+  String get startExploring;
+
+  /// No description provided for @recommendedForYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended for You'**
+  String get recommendedForYou;
+
+  /// No description provided for @talkToHorusBot.
+  ///
+  /// In en, this message translates to:
+  /// **'Talk to Horus-Bot'**
+  String get talkToHorusBot;
+
+  /// No description provided for @mapSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Find exhibits and routes'**
+  String get mapSub;
+
+  /// No description provided for @exhibitsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse nearby artifacts'**
+  String get exhibitsSub;
+
+  /// No description provided for @quizSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Test your knowledge'**
+  String get quizSub;
+
+  /// No description provided for @liveTourSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow Horus-Bot'**
+  String get liveTourSub;
+
+  /// No description provided for @scanExhibitsAR.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Exhibits with AR'**
+  String get scanExhibitsAR;
+
+  /// No description provided for @visit.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit'**
+  String get visit;
+
+  /// No description provided for @accountPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Account & Preferences'**
+  String get accountPreferences;
+
+  /// No description provided for @extras.
+  ///
+  /// In en, this message translates to:
+  /// **'Extras'**
+  String get extras;
+
+  /// No description provided for @liveTourActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Tour Active'**
+  String get liveTourActive;
+
+  /// No description provided for @currentlyVisiting.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently Visiting: {location}'**
+  String currentlyVisiting(Object location);
+
+  /// No description provided for @followHorusBot.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow Horus-Bot'**
+  String get followHorusBot;
+
+  /// No description provided for @startNavigation.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Navigation'**
+  String get startNavigation;
+
+  /// No description provided for @robotHeadingTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Robot heading to: {location}'**
+  String robotHeadingTo(Object location);
+
+  /// No description provided for @exploreTheMuseum.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore the Museum'**
+  String get exploreTheMuseum;
+
+  /// No description provided for @followAndDiscover.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow Horus-Bot and discover ancient Egypt'**
+  String get followAndDiscover;
 }
 
 class _AppLocalizationsDelegate

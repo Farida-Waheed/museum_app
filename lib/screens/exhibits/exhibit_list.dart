@@ -6,6 +6,8 @@ import '../../core/services/mock_data.dart';
 import '../../models/exhibit.dart';
 import '../../models/user_preferences.dart';
 import '../../app/router.dart';
+import '../../widgets/app_menu_shell.dart';
+import '../../widgets/bottom_nav.dart';
 
 class ExhibitListScreen extends StatelessWidget {
   const ExhibitListScreen({super.key});
@@ -16,21 +18,12 @@ class ExhibitListScreen extends StatelessWidget {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: Text(
-          l10n.exhibits,
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
+    return AppMenuShell(
+      title: l10n.exhibits,
+      bottomNavigationBar: const BottomNav(currentIndex: 0),
+      backgroundColor: const Color(0xFFF8FAFC),
       body: ListView.builder(
+        padding: const EdgeInsets.symmetric(vertical: 16),
         itemCount: exhibits.length,
         itemBuilder: (context, index) {
           final exhibit = exhibits[index];
@@ -66,33 +59,44 @@ class _ExhibitListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
+    final isArabic = prefs.language == 'ar';
 
-    return Card(
-      elevation: 1,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
-        child: Padding(
-          padding: const EdgeInsets.all(10),
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.grey.shade100),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.02),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
           child: Row(
             children: [
-              // Thumbnail (placeholder – replace with real asset later)
+              // Thumbnail
               ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(14),
                 child: Container(
-                  width: 60,
-                  height: 60,
-                  color: cs.primary.withOpacity(0.08),
+                  width: 72,
+                  height: 72,
+                  color: cs.primary.withOpacity(0.05),
                   child: const Icon(
                     Icons.museum_outlined,
-                    size: 30,
+                    size: 32,
                     color: Colors.black54,
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,25 +104,33 @@ class _ExhibitListTile extends StatelessWidget {
                     Text(
                       exhibit.getName(prefs.language),
                       style: const TextStyle(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w900,
                         fontSize: 16,
+                        color: Colors.black,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n.mainGallery,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black54,
-                      ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(Icons.location_on_outlined, size: 12, color: Colors.grey.shade500),
+                        const SizedBox(width: 4),
+                        Text(
+                          l10n.mainGallery,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 4),
-              const Icon(Icons.chevron_right_rounded, size: 20),
+              const SizedBox(width: 8),
+              Icon(isArabic ? Icons.chevron_left_rounded : Icons.chevron_right_rounded, color: Colors.grey.shade400),
             ],
           ),
         ),
