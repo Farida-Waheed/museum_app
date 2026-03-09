@@ -53,8 +53,10 @@ void showTourAlertOnce(
     final hallName = isArabic ? hallNameAr : hallNameEn;
 
     final bodyText = isArabic
-        ? "تبدأ الجولة في $hallName خلال $minutes دقائق.\nيرجى التوجه لنقطة البداية."
+        ? "تبدأ الجولة في $hallName خلال $minutes دقائق.\nيرجى التوجه لنوقة البداية."
         : "The tour in $hallName begins in $minutes minutes.\nPlease head to the starting point.";
+
+    if (!navigator.context.mounted) return;
 
     showGeneralDialog(
       context: navigator.context,

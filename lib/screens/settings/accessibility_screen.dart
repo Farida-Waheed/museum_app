@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 
 import '../../models/user_preferences.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../widgets/app_menu_shell.dart';
 
 class AccessibilityScreen extends StatelessWidget {
   const AccessibilityScreen({super.key});
@@ -10,30 +12,16 @@ class AccessibilityScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
-    final isArabic = prefs.language == 'ar';
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
+    return AppMenuShell(
+      title: l10n.settingsAccessibility,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
-      appBar: AppBar(
-        title: Text(
-          isArabic ? "الإعدادات وإمكانية الوصول" : "Settings & Accessibility",
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        elevation: 0.5,
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment:
-              isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Hero / context card (matches Ticket / Feedback style)
             Card(
@@ -60,14 +48,10 @@ class AccessibilityScreen extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
-                        crossAxisAlignment: isArabic
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            isArabic
-                                ? "اجعل التطبيق مريحاً لك"
-                                : "Make the app comfortable for you",
+                            l10n.comfortableApp,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w700,
@@ -75,9 +59,7 @@ class AccessibilityScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            isArabic
-                                ? "عدّل حجم الخط والتباين واللغة لتناسب احتياجاتك."
-                                : "Adjust text size, contrast, and language to suit your needs.",
+                            l10n.adjustSettings,
                             style: const TextStyle(
                               fontSize: 13,
                               color: Colors.black54,
@@ -94,8 +76,7 @@ class AccessibilityScreen extends StatelessWidget {
             const SizedBox(height: 24),
 
             _SectionTitle(
-              title: isArabic ? "العرض والنص" : "Display & text",
-              isArabic: isArabic,
+              title: l10n.displayText,
             ),
 
             const SizedBox(height: 8),
@@ -113,14 +94,9 @@ class AccessibilityScreen extends StatelessWidget {
                   children: [
                     // High contrast toggle
                     _SettingRowSwitch(
-                      isArabic: isArabic,
                       icon: Icons.contrast_rounded,
-                      title: isArabic
-                          ? "وضع تباين عالٍ"
-                          : "High contrast mode",
-                      subtitle: isArabic
-                          ? "زيادة وضوح الألوان والعناصر للنظر الضعيف أو الإضاءة المنخفضة."
-                          : "Increase color and element contrast for low vision or low light.",
+                      title: l10n.highContrast,
+                      subtitle: l10n.highContrastSubtitle,
                       value: prefs.isHighContrast,
                       onChanged: prefs.toggleHighContrast,
                     ),
@@ -129,7 +105,6 @@ class AccessibilityScreen extends StatelessWidget {
 
                     // THEME MODE (System / Light / Dark)
                     _ThemeModeSetting(
-                      isArabic: isArabic,
                       themeMode: prefs.themeMode,      // <-- uses your prefs
                       onChanged: prefs.setThemeMode,   // <-- uses your prefs
                     ),
@@ -138,7 +113,6 @@ class AccessibilityScreen extends StatelessWidget {
 
                     // Font size
                     _FontSizeSetting(
-                      isArabic: isArabic,
                       fontScale: prefs.fontScale,
                       onChanged: prefs.setFontScale,
                     ),
@@ -150,8 +124,7 @@ class AccessibilityScreen extends StatelessWidget {
             const SizedBox(height: 24),
 
             _SectionTitle(
-              title: isArabic ? "اللغة" : "Language",
-              isArabic: isArabic,
+              title: l10n.language,
             ),
 
             const SizedBox(height: 8),
@@ -175,12 +148,10 @@ class AccessibilityScreen extends StatelessWidget {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
-                        crossAxisAlignment: isArabic
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            isArabic ? "لغة التطبيق" : "App language",
+                            l10n.appLanguage,
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
@@ -188,9 +159,7 @@ class AccessibilityScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            isArabic
-                                ? "اختر اللغة المفضلة لواجهة التطبيق والمحتوى."
-                                : "Choose your preferred language for the app UI and content.",
+                            l10n.appLanguageSubtitle,
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.black54,
@@ -242,14 +211,11 @@ class AccessibilityScreen extends StatelessWidget {
 
             // Small note
             Text(
-              isArabic
-                  ? "يتم حفظ هذه الإعدادات على هذا الجهاز فقط."
-                  : "These settings are saved on this device only.",
+              l10n.saveNote,
               style: const TextStyle(
                 fontSize: 11,
                 color: Colors.black45,
               ),
-              textAlign: isArabic ? TextAlign.right : TextAlign.left,
             ),
           ],
         ),
@@ -262,18 +228,15 @@ class AccessibilityScreen extends StatelessWidget {
 
 class _SectionTitle extends StatelessWidget {
   final String title;
-  final bool isArabic;
 
   const _SectionTitle({
     required this.title,
-    required this.isArabic,
   });
 
   @override
   Widget build(BuildContext context) {
     return Text(
       title,
-      textAlign: isArabic ? TextAlign.right : TextAlign.left,
       style: const TextStyle(
         fontSize: 15,
         fontWeight: FontWeight.w700,
@@ -284,7 +247,6 @@ class _SectionTitle extends StatelessWidget {
 }
 
 class _SettingRowSwitch extends StatelessWidget {
-  final bool isArabic;
   final IconData icon;
   final String title;
   final String subtitle;
@@ -292,7 +254,6 @@ class _SettingRowSwitch extends StatelessWidget {
   final ValueChanged<bool> onChanged;
 
   const _SettingRowSwitch({
-    required this.isArabic,
     required this.icon,
     required this.title,
     required this.subtitle,
@@ -310,8 +271,7 @@ class _SettingRowSwitch extends StatelessWidget {
         const SizedBox(width: 12),
         Expanded(
           child: Column(
-            crossAxisAlignment:
-                isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
@@ -344,12 +304,10 @@ class _SettingRowSwitch extends StatelessWidget {
 
 /// NEW: Theme mode row (System / Light / Dark)
 class _ThemeModeSetting extends StatelessWidget {
-  final bool isArabic;
   final String themeMode; // 'system' | 'light' | 'dark'
   final ValueChanged<String> onChanged;
 
   const _ThemeModeSetting({
-    required this.isArabic,
     required this.themeMode,
     required this.onChanged,
   });
@@ -357,15 +315,14 @@ class _ThemeModeSetting extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     Widget buildChip({
       required String value,
       required IconData icon,
-      required String labelEn,
-      required String labelAr,
+      required String label,
     }) {
       final bool selected = themeMode == value;
-      final label = isArabic ? labelAr : labelEn;
 
       return Expanded(
         child: InkWell(
@@ -418,11 +375,10 @@ class _ThemeModeSetting extends StatelessWidget {
     }
 
     return Column(
-      crossAxisAlignment:
-          isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          isArabic ? "وضع المظهر" : "Appearance mode",
+          l10n.appearanceMode,
           style: const TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w600,
@@ -434,22 +390,19 @@ class _ThemeModeSetting extends StatelessWidget {
             buildChip(
               value: 'system',
               icon: Icons.phone_iphone_rounded,
-              labelEn: 'System',
-              labelAr: 'حسب النظام',
+              label: l10n.system,
             ),
             const SizedBox(width: 6),
             buildChip(
               value: 'light',
               icon: Icons.light_mode_rounded,
-              labelEn: 'Light',
-              labelAr: 'فاتح',
+              label: l10n.light,
             ),
             const SizedBox(width: 6),
             buildChip(
               value: 'dark',
               icon: Icons.dark_mode_rounded,
-              labelEn: 'Dark',
-              labelAr: 'داكن',
+              label: l10n.dark,
             ),
           ],
         ),
@@ -459,12 +412,10 @@ class _ThemeModeSetting extends StatelessWidget {
 }
 
 class _FontSizeSetting extends StatelessWidget {
-  final bool isArabic;
   final double fontScale;
   final ValueChanged<double> onChanged;
 
   const _FontSizeSetting({
-    required this.isArabic,
     required this.fontScale,
     required this.onChanged,
   });
@@ -473,17 +424,15 @@ class _FontSizeSetting extends StatelessWidget {
   Widget build(BuildContext context) {
     // Clamp value just in case
     final clamped = fontScale.clamp(0.8, 1.4);
+    final l10n = AppLocalizations.of(context)!;
 
     return Column(
-      crossAxisAlignment:
-          isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment:
-              isArabic ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
             Text(
-              isArabic ? "حجم النص" : "Text size",
+              l10n.textSize,
               style: const TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
@@ -524,16 +473,14 @@ class _FontSizeSetting extends StatelessWidget {
         ),
         const SizedBox(height: 2),
         Row(
-          mainAxisAlignment:
-              isArabic ? MainAxisAlignment.end : MainAxisAlignment.start,
           children: [
             Text(
-              isArabic ? "أصغر" : "Smaller",
+              l10n.smaller,
               style: const TextStyle(fontSize: 11, color: Colors.black45),
             ),
             const Spacer(),
             Text(
-              isArabic ? "أكبر" : "Larger",
+              l10n.larger,
               style: const TextStyle(fontSize: 11, color: Colors.black45),
             ),
           ],

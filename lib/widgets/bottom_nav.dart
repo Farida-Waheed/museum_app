@@ -1,16 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../app/router.dart';
-import '../models/user_preferences.dart';
-
-// --- ARABIC TRANSLATION MAP ---
-const Map<String, String> _navLabelsAr = {
-  "Home": "الرئيسية",
-  "Map": "الخريطة",
-  "Tour": "الجولة",
-  "Tickets": "التذاكر",
-  "Settings": "الإعدادات",
-};
+import '../l10n/app_localizations.dart';
 
 class BottomNav extends StatelessWidget {
   final int currentIndex;
@@ -18,18 +8,14 @@ class BottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final prefs = Provider.of<UserPreferencesModel>(context);
-    final isArabic = prefs.language == 'ar';
-
     final theme = Theme.of(context);
     final primary = theme.colorScheme.primary;
+    final l10n = AppLocalizations.of(context)!;
 
     // Theme-safe colors (works for light/dark/high-contrast)
     final surface = theme.colorScheme.surface;
     final shadowColor = theme.colorScheme.shadow.withOpacity(0.10);
     final unselected = theme.colorScheme.onSurface.withOpacity(0.55);
-
-    String getLabel(String key) => isArabic ? (_navLabelsAr[key] ?? key) : key;
 
     void handleTap(int index) {
       if (index == currentIndex) return;
@@ -83,27 +69,27 @@ class BottomNav extends StatelessWidget {
           BottomNavigationBarItem(
             icon: const Icon(Icons.home_outlined),
             activeIcon: const Icon(Icons.home),
-            label: getLabel("Home"),
+            label: l10n.home,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.map_outlined),
             activeIcon: const Icon(Icons.map),
-            label: getLabel("Map"),
+            label: l10n.map,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.timeline_outlined),
             activeIcon: const Icon(Icons.timeline),
-            label: getLabel("Tour"),
+            label: l10n.tour,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.confirmation_num_outlined),
             activeIcon: const Icon(Icons.confirmation_num),
-            label: getLabel("Tickets"),
+            label: l10n.tickets,
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.settings_outlined),
             activeIcon: const Icon(Icons.settings),
-            label: getLabel("Settings"),
+            label: l10n.settings,
           ),
         ],
       ),

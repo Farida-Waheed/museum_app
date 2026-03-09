@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 
-import '../../models/user_preferences.dart';
-import '../../models/exhibit.dart';
+import '../../models/tour_provider.dart';
 import '../../core/services/mock_data.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../widgets/app_menu_shell.dart';
+import '../../widgets/primary_button.dart';
 
 class LiveTourScreen extends StatefulWidget {
   const LiveTourScreen({super.key});
@@ -15,10 +17,11 @@ class LiveTourScreen extends StatefulWidget {
 }
 
 class _LiveTourScreenState extends State<LiveTourScreen> {
-  Exhibit? _currentExhibit;
   final List<String> _transcript = [];
   final ScrollController _scrollController = ScrollController();
   Timer? _simTimer;
+  bool _isGuided = true;
+  bool _isPaused = false;
 
   final Map<String, String> _imageMap = {
     '1': 'assets/images/Grand Hall.jpg',
@@ -30,23 +33,25 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final args = ModalRoute.of(context)?.settings.arguments;
-      if (args is Exhibit) {
-        _currentExhibit = args;
-      } else {
-        _currentExhibit = MockDataService.getAllExhibits().first;
+      final tourProvider = Provider.of<TourProvider>(context, listen: false);
+      if (tourProvider.currentExhibitId == null) {
+        tourProvider.setCurrentExhibit(MockDataService.getAllExhibits().first.id);
       }
-      setState(() {});
       _startSimulation();
     });
   }
 
   void _startSimulation() {
-    if (_currentExhibit == null) return;
+    final tourProvider = Provider.of<TourProvider>(context, listen: false);
+    final exhibitId = tourProvider.currentExhibitId;
+    if (exhibitId == null) return;
+
+    final allExhibits = MockDataService.getAllExhibits();
+    final exhibit = allExhibits.firstWhere((e) => e.id == exhibitId, orElse: () => allExhibits.first);
 
     final sentences = [
-      "Welcome to the ${_currentExhibit!.nameEn}.",
-      _currentExhibit!.descriptionEn,
+      "Welcome to the ${exhibit.nameEn}.",
+      exhibit.descriptionEn,
       "This artifact is extremely significant to our history.",
       "Notice the intricate details on the surface.",
       "It was discovered during a major excavation.",
@@ -55,8 +60,9 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
 
     int index = 0;
 
+    _simTimer?.cancel();
     _simTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      if (!mounted) return;
+      if (!mounted || _isPaused) return;
       if (index >= sentences.length) {
         timer.cancel();
         return;
@@ -81,209 +87,260 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     super.dispose();
   }
 
+  void _toggleMode() {
+    setState(() => _isGuided = !_isGuided);
+  }
+
+  void _togglePause() {
+    setState(() => _isPaused = !_isPaused);
+  }
+
+  void _skipExhibit() {
+    final tourProvider = Provider.of<TourProvider>(context, listen: false);
+    final all = MockDataService.getAllExhibits();
+    final currentIdx = all.indexWhere((e) => e.id == tourProvider.currentExhibitId);
+    if (currentIdx < all.length - 1) {
+      tourProvider.setCurrentExhibit(all[currentIdx + 1].id);
+      setState(() {
+        _transcript.clear();
+      });
+      _startSimulation();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final prefs = Provider.of<UserPreferencesModel>(context);
-    final isArabic = prefs.language == 'ar';
-    final cs = Theme.of(context).colorScheme;
+    final tourProvider = Provider.of<TourProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
-    if (_currentExhibit == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
+    final allExhibits = MockDataService.getAllExhibits();
+    final currentExhibit = allExhibits.firstWhere((e) => e.id == tourProvider.currentExhibitId, orElse: () => allExhibits.first);
+    final currentIdx = allExhibits.indexWhere((e) => e.id == currentExhibit.id);
+    final nextExhibit = currentIdx < allExhibits.length - 1 ? allExhibits[currentIdx + 1] : null;
 
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
+    return AppMenuShell(
+      title: l10n.liveTour,
       bottomNavigationBar: const BottomNav(currentIndex: 2),
-      appBar: AppBar(
-        title: Text(
-          isArabic ? "جولة حية" : "Live tour",
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        elevation: 0.5,
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // live banner – softer red
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: Colors.redAccent.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.redAccent.withOpacity(0.4)),
-              ),
-              child: Row(
-                children: [
-                  const _PulsingDot(color: Colors.redAccent),
-                  const SizedBox(width: 10),
-                  const Text(
-                    "LIVE",
-                    style: TextStyle(
-                      color: Colors.redAccent,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 1.1,
-                    ),
-                  ),
-                  const SizedBox(width: 10),
-                  const VerticalDivider(width: 1.0),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      isArabic
-                          ? "الروبوت يشرح هذه القطعة الآن."
-                          : "The robot is currently describing this exhibit.",
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            // --- TOP STATUS BAR ---
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _StatusChip(
+                  label: _isGuided ? l10n.guidedMode : l10n.selfPacedMode,
+                  icon: _isGuided ? Icons.auto_awesome : Icons.person_outline,
+                  color: Colors.blue,
+                  onTap: _toggleMode,
+                ),
+                _StatusChip(
+                  label: l10n.live,
+                  icon: Icons.radio_button_checked,
+                  color: Colors.red,
+                  isPulsing: true,
+                ),
+              ],
             ),
-
             const SizedBox(height: 16),
 
-            // current exhibit
+            // --- PROGRESS TIMELINE ---
+            _TourProgressTimeline(
+              currentIndex: currentIdx,
+              total: allExhibits.length,
+              label: l10n.tourProgress,
+            ),
+            const SizedBox(height: 24),
+
+            // --- CURRENT STOP CARD ---
+            Text(l10n.currentStop, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+            const SizedBox(height: 8),
             Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
               clipBehavior: Clip.antiAlias,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // if you don't have asset images for all, you can
-                  // fall back to a placeholder.
-                  SizedBox(
-                    height: 220,
-                    width: double.infinity,
-                    child: Image.asset(
-                      _imageMap[_currentExhibit!.id] ??
-                          'assets/images/museum_interior.jpg',
-                      fit: BoxFit.cover,
-                    ),
+                  Stack(
+                    children: [
+                      SizedBox(
+                        height: 180,
+                        width: double.infinity,
+                        child: Image.asset(
+                          _imageMap[currentExhibit.id] ?? 'assets/images/museum_interior.jpg',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+                            ),
+                          ),
+                          child: Text(
+                            currentExhibit.getName(Localizations.localeOf(context).languageCode),
+                            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Text(
-                      _currentExhibit!.getName(prefs.language),
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // transcript
-            Card(
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: isArabic
-                      ? CrossAxisAlignment.end
-                      : CrossAxisAlignment.start,
-                  children: [
-                    Row(
+                    child: Column(
                       children: [
-                        Icon(Icons.chat_bubble_outline, color: cs.primary),
-                        const SizedBox(width: 8),
-                        Text(
-                          isArabic ? "النص المباشر" : "Live transcript",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
+                        Row(
+                          children: [
+                            const Icon(Icons.smart_toy, color: Colors.blue, size: 20),
+                            const SizedBox(width: 8),
+                            Expanded(child: Text(l10n.robotDescribing, style: const TextStyle(fontSize: 13))),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            _ControlButton(
+                              icon: _isPaused ? Icons.play_arrow : Icons.pause,
+                              label: _isPaused ? l10n.resume : l10n.pause,
+                              onTap: _togglePause,
+                            ),
+                            _ControlButton(
+                              icon: Icons.skip_next,
+                              label: l10n.skip,
+                              onTap: _skipExhibit,
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    SizedBox(
-                      height: 220,
-                      child: ListView.builder(
-                        controller: _scrollController,
-                        itemCount: _transcript.length,
-                        itemBuilder: (context, index) {
-                          final isLast = index == _transcript.length - 1;
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 8),
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: isLast
-                                  ? cs.primary.withOpacity(0.05)
-                                  : Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color: isLast
-                                    ? cs.primary
-                                    : Colors.grey.shade300,
-                              ),
-                            ),
-                            child: Text(
-                              _transcript[index],
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: isLast
-                                    ? FontWeight.w600
-                                    : FontWeight.w400,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // accessibility note
-            Container
-            (
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: cs.primary.withOpacity(0.06),
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.hearing, color: cs.primary, size: 18),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      isArabic
-                          ? "يمكنك إيقاف الصوت والاعتماد على النص في أي وقت."
-                          : "You can mute the robot and follow only the text at any time.",
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: Colors.black87,
-                      ),
-                    ),
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 24),
+
+            // --- LIVE TRANSCRIPT ---
+            Row(
+              children: [
+                const Icon(Icons.subject, color: Colors.grey),
+                const SizedBox(width: 8),
+                Text(l10n.liveTranscript, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Container(
+              height: 200,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: ListView.builder(
+                controller: _scrollController,
+                padding: const EdgeInsets.all(12),
+                itemCount: _transcript.length,
+                itemBuilder: (context, index) {
+                  final isLast = index == _transcript.length - 1;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Text(
+                      _transcript[index],
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: isLast ? Colors.black : Colors.grey,
+                        fontWeight: isLast ? FontWeight.w600 : FontWeight.normal,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // --- NEXT UP ---
+            if (nextExhibit != null) ...[
+               Text(l10n.nextStopLabel, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+               const SizedBox(height: 8),
+               Card(
+                 elevation: 0,
+                 shape: RoundedRectangleBorder(
+                   borderRadius: BorderRadius.circular(12),
+                   side: BorderSide(color: Colors.grey.shade200),
+                 ),
+                 child: ListTile(
+                   leading: ClipRRect(
+                     borderRadius: BorderRadius.circular(8),
+                     child: Image.asset(
+                       _imageMap[nextExhibit.id] ?? 'assets/images/museum_interior.jpg',
+                       width: 50,
+                       height: 50,
+                       fit: BoxFit.cover,
+                     ),
+                   ),
+                   title: Text(nextExhibit.getName(Localizations.localeOf(context).languageCode)),
+                   subtitle: Text(l10n.robotWaiting, style: const TextStyle(fontSize: 12)),
+                   trailing: const Icon(Icons.chevron_right),
+                   onTap: _skipExhibit,
+                 ),
+               ),
+            ] else ...[
+               PrimaryButton(
+                 label: l10n.endTour,
+                 onPressed: () => Navigator.pushReplacementNamed(context, '/summary'),
+                 fullWidth: true,
+               ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusChip extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+  final bool isPulsing;
+  final VoidCallback? onTap;
+
+  const _StatusChip({
+    required this.label,
+    required this.icon,
+    required this.color,
+    this.isPulsing = false,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            isPulsing ? _PulsingDot(color: color) : Icon(icon, size: 16, color: color),
+            const SizedBox(width: 8),
+            Text(label, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12)),
           ],
         ),
       ),
@@ -299,19 +356,15 @@ class _PulsingDot extends StatefulWidget {
   State<_PulsingDot> createState() => _PulsingDotState();
 }
 
-class _PulsingDotState extends State<_PulsingDot>
-    with SingleTickerProviderStateMixin {
+class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _fade;
+  late Animation<double> _opacity;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 900),
-    )..repeat(reverse: true);
-    _fade = Tween(begin: 0.3, end: 1.0).animate(_controller);
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000))..repeat(reverse: true);
+    _opacity = Tween<double>(begin: 0.3, end: 1.0).animate(_controller);
   }
 
   @override
@@ -323,15 +376,77 @@ class _PulsingDotState extends State<_PulsingDot>
   @override
   Widget build(BuildContext context) {
     return FadeTransition(
-      opacity: _fade,
+      opacity: _opacity,
       child: Container(
-        width: 10,
-        height: 10,
-        decoration: BoxDecoration(
-          color: widget.color,
-          shape: BoxShape.circle,
-        ),
+        width: 8,
+        height: 8,
+        decoration: BoxDecoration(color: widget.color, shape: BoxShape.circle),
       ),
+    );
+  }
+}
+
+class _ControlButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _ControlButton({required this.icon, required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        IconButton.filledTonal(
+          onPressed: onTap,
+          icon: Icon(icon),
+          iconSize: 28,
+        ),
+        const SizedBox(height: 4),
+        Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+      ],
+    );
+  }
+}
+
+class _TourProgressTimeline extends StatelessWidget {
+  final int currentIndex;
+  final int total;
+  final String label;
+
+  const _TourProgressTimeline({required this.currentIndex, required this.total, required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text("${currentIndex + 1} / $total", style: const TextStyle(color: Colors.grey)),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: List.generate(total, (index) {
+            final isCompleted = index < currentIndex;
+            final isCurrent = index == currentIndex;
+
+            return Expanded(
+              child: Container(
+                height: 6,
+                margin: const EdgeInsets.symmetric(horizontal: 2),
+                decoration: BoxDecoration(
+                  color: isCompleted ? Colors.blue : (isCurrent ? Colors.blue.withOpacity(0.3) : Colors.grey.shade200),
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+            );
+          }),
+        ),
+      ],
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import '../../l10n/app_localizations.dart';
 
 class QrScannerScreen extends StatefulWidget {
   const QrScannerScreen({super.key});
@@ -25,6 +26,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   }
 
   void _showResultDialog(String code) {
+    final l10n = AppLocalizations.of(context)!;
     // Simulate verifying ticket logic
     bool isValid = code.startsWith("TKT-"); 
 
@@ -43,7 +45,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              isValid ? "Ticket Verified" : "Invalid QR Code",
+              isValid ? l10n.ticketVerified : l10n.invalidQr,
               style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -56,14 +58,14 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
               Navigator.pop(context); // Close Dialog
               Navigator.pop(context); // Close Scanner
             },
-            child: const Text("Done"),
+            child: Text(l10n.done),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context); // Close Dialog
               setState(() => _isScanned = false); // Reset for next scan
             },
-            child: const Text("Scan Another"),
+            child: Text(l10n.scanAnother),
           ),
         ],
       ),
@@ -72,25 +74,24 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text("Scan Ticket"), backgroundColor: Colors.transparent, elevation: 0),
+      appBar: AppBar(
+        title: Text(l10n.scanTicket),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
           MobileScanner(
             onDetect: _handleScan,
-            overlayBuilder: (context, constraints) {
-              return Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blueAccent.withOpacity(0.5), width: 2),
-                ),
-              );
-            },
           ),
           // Overlay Design
-          Container(
-            decoration: const ShapeDecoration(
-              shape: QrScannerOverlayShape(
+          const IgnorePointer(
+            child: Center(
+              child: QrScannerOverlayWidget(
                 borderColor: Colors.blue,
                 borderRadius: 10,
                 borderLength: 30,
@@ -99,14 +100,18 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
               ),
             ),
           ),
-          const Positioned(
+          Positioned(
             bottom: 50,
             left: 0,
             right: 0,
             child: Center(
               child: Text(
-                "Align QR Code within the frame",
-                style: TextStyle(color: Colors.white, fontSize: 16, backgroundColor: Colors.black54),
+                l10n.alignQr,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  backgroundColor: Colors.black54,
+                ),
               ),
             ),
           )
@@ -116,8 +121,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
   }
 }
 
-// Helper for the dark overlay with a hole
-class QrScannerOverlayShape extends ShapeBorder {
+class QrScannerOverlayWidget extends StatelessWidget {
   final Color borderColor;
   final double borderWidth;
   final Color overlayColor;
@@ -125,88 +129,117 @@ class QrScannerOverlayShape extends ShapeBorder {
   final double borderLength;
   final double cutOutSize;
 
-  const QrScannerOverlayShape({
-    this.borderColor = Colors.red,
+  const QrScannerOverlayWidget({
+    super.key,
+    this.borderColor = Colors.blue,
     this.borderWidth = 10.0,
-    this.overlayColor = const Color.fromRGBO(0, 0, 0, 80),
-    this.borderRadius = 0,
+    this.overlayColor = const Color.fromRGBO(0, 0, 0, 0.5),
+    this.borderRadius = 10,
     this.borderLength = 40,
     this.cutOutSize = 250,
   });
 
   @override
-  EdgeInsetsGeometry get dimensions => EdgeInsets.zero;
-
-  @override
-  Path getInnerPath(Rect rect, {TextDirection? textDirection}) {
-    return Path()
-      ..fillType = PathFillType.evenOdd
-      ..addPath(getOuterPath(rect), Offset.zero)
-      ..addRect(
-        Rect.fromCenter(
-          center: rect.center,
-          width: cutOutSize,
-          height: cutOutSize,
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        ColorFiltered(
+          colorFilter: ColorFilter.mode(
+            overlayColor,
+            BlendMode.srcOut,
+          ),
+          child: Stack(
+            children: [
+              Container(
+                decoration: const BoxDecoration(
+                  color: Colors.black,
+                  backgroundBlendMode: BlendMode.dstOut,
+                ),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: Container(
+                  width: cutOutSize,
+                  height: cutOutSize,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(borderRadius),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      );
+        Align(
+          alignment: Alignment.center,
+          child: CustomPaint(
+            size: Size(cutOutSize, cutOutSize),
+            painter: _ScannerBorderPainter(
+              borderColor: borderColor,
+              borderWidth: borderWidth,
+              borderRadius: borderRadius,
+              borderLength: borderLength,
+            ),
+          ),
+        ),
+      ],
+    );
   }
+}
+
+class _ScannerBorderPainter extends CustomPainter {
+  final Color borderColor;
+  final double borderWidth;
+  final double borderRadius;
+  final double borderLength;
+
+  _ScannerBorderPainter({
+    required this.borderColor,
+    required this.borderWidth,
+    required this.borderRadius,
+    required this.borderLength,
+  });
 
   @override
-  Path getOuterPath(Rect rect, {TextDirection? textDirection}) {
-    return Path()..addRect(rect);
-  }
-
-  @override
-  void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {
-    final width = rect.width;
-    final borderWidthSize = width / 2;
-    final height = rect.height;
-    final borderOffset = borderWidth / 2;
-    final borderLength = borderLength > cutOutSize / 2 + borderWidth * 2
-        ? borderWidthSize / 2
-        : borderLength;
-    final cutOutSize = cutOutSize < 0 ? width : cutOutSize;
-
-    final backgroundPaint = Paint()
-      ..color = overlayColor
-      ..style = PaintingStyle.fill;
-
-    final borderPaint = Paint()
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
       ..color = borderColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = borderWidth;
 
-    final boxPaint = Paint()
-      ..color = borderColor
-      ..style = PaintingStyle.fill;
+    final path = Path();
+    final w = size.width;
+    final h = size.height;
+    final r = borderRadius;
+    final l = borderLength;
 
-    final cutOutRect = Rect.fromCenter(
-      center: rect.center,
-      width: cutOutSize,
-      height: cutOutSize,
-    );
+    // Top Left
+    path.moveTo(0, l);
+    path.lineTo(0, r);
+    path.quadraticBezierTo(0, 0, r, 0);
+    path.lineTo(l, 0);
 
-    canvas
-      ..saveLayer(rect, backgroundPaint)
-      ..drawRect(rect, backgroundPaint)
-      ..drawRect(cutOutRect, Paint()..blendMode = BlendMode.clear)
-      ..restore();
+    // Top Right
+    path.moveTo(w - l, 0);
+    path.lineTo(w - r, 0);
+    path.quadraticBezierTo(w, 0, w, r);
+    path.lineTo(w, l);
 
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        cutOutRect,
-        Radius.circular(borderRadius),
-      ),
-      borderPaint,
-    );
+    // Bottom Right
+    path.moveTo(w, h - l);
+    path.lineTo(w, h - r);
+    path.quadraticBezierTo(w, h, w - r, h);
+    path.lineTo(w - l, h);
+
+    // Bottom Left
+    path.moveTo(l, h);
+    path.lineTo(r, h);
+    path.quadraticBezierTo(0, h, 0, h - r);
+    path.lineTo(0, h - l);
+
+    canvas.drawPath(path, paint);
   }
 
   @override
-  ShapeBorder scale(double t) {
-    return QrScannerOverlayShape(
-      borderColor: borderColor,
-      borderWidth: borderWidth * t,
-      overlayColor: overlayColor,
-    );
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

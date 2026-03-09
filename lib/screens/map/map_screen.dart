@@ -1,9 +1,13 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../models/exhibit.dart';
+import '../../models/tour_provider.dart';
 import '../../core/services/mock_data.dart';
 import '../../app/router.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../widgets/app_menu_shell.dart';
+import '../../l10n/app_localizations.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -47,19 +51,16 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF2F4F7),
+    final l10n = AppLocalizations.of(context)!;
+    final tourProvider = Provider.of<TourProvider>(context);
 
-      // 🌍 USE GLOBAL NAV BAR (NO DUPLICATION)
+    final currentExhibit = exhibits.firstWhere((e) => e.id == tourProvider.currentExhibitId, orElse: () => exhibits.first);
+    final robotX = (currentExhibit.x / 400) * mapWidth;
+    final robotY = (currentExhibit.y / 600) * mapHeight;
+
+    return AppMenuShell(
+      title: l10n.map,
       bottomNavigationBar: const BottomNav(currentIndex: 1),
-
-      appBar: AppBar(
-        title: const Text("Museum Map", style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
-
       body: Stack(
         children: [
           // --- INTERACTIVE MAP AREA ---
@@ -99,6 +100,15 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                           painter: MapGridPainter(),
                         ),
 
+                        // ROUTE TO NEXT STOP
+                        CustomPaint(
+                          size: Size(mapWidth, mapHeight),
+                          painter: RoutePainter(
+                            visitorPos: Offset(mapWidth * 0.5, mapHeight * 0.7),
+                            robotPos: Offset(robotX, robotY),
+                          ),
+                        ),
+
                         // ENTRANCE LABEL
                         const Align(
                           alignment: Alignment.topCenter,
@@ -115,10 +125,13 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                         ),
 
                         // EXHIBITS
-                        ...exhibits.map((e) => _buildExhibitMarker(e)),
+                        ...exhibits.map((e) => _buildExhibitMarker(e, tourProvider.hasVisited(e.id))),
+
+                        // VISITOR
+                        _buildVisitorMarker(mapWidth * 0.5, mapHeight * 0.7),
 
                         // ROBOT
-                        _buildRobotMarker(150, 200),
+                        _buildRobotMarker(robotX, robotY, l10n),
                       ],
                     ),
                   ),
@@ -151,13 +164,13 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildLegendItem(Colors.blue, "Robot Location"),
+                      _buildLegendItem(Colors.blue, l10n.horusBot),
                       const SizedBox(height: 8),
-                      _buildLegendItem(Colors.red, "Your Location"),
+                      _buildLegendItem(Colors.orange, l10n.you),
                       const SizedBox(height: 8),
-                      _buildLegendItem(Colors.teal, "Visited Exhibit"),
+                      _buildLegendItem(Colors.teal, l10n.visited),
                       const SizedBox(height: 8),
-                      _buildLegendItem(Colors.grey, "Not Visited"),
+                      _buildLegendItem(Colors.grey, l10n.exhibit),
                     ],
                   ),
                 ),
@@ -171,7 +184,7 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
 
   // MARKERS ------------------------------------------------------
 
-  Widget _buildExhibitMarker(Exhibit e) {
+  Widget _buildExhibitMarker(Exhibit e, bool isVisited) {
     final double x = (e.x / 400) * mapWidth;
     final double y = (e.y / 600) * mapHeight;
 
@@ -183,18 +196,19 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
         child: Column(
           children: [
             Container(
-              width: 22,
-              height: 22,
-              decoration: const BoxDecoration(
-                color: Colors.teal,
+              width: 18,
+              height: 18,
+              decoration: BoxDecoration(
+                color: isVisited ? Colors.teal : Colors.grey.shade400,
                 shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 2),
               ),
             ),
             const SizedBox(height: 4),
             Text(
-              e.nameEn,
+              e.getName(Localizations.localeOf(context).languageCode),
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 9,
                 color: Colors.grey[800],
                 fontWeight: FontWeight.w600,
               ),
@@ -205,7 +219,26 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
     );
   }
 
-  Widget _buildRobotMarker(double x, double y) {
+  Widget _buildVisitorMarker(double x, double y) {
+    return Positioned(
+      left: x - 10,
+      top: y - 10,
+      child: Container(
+        width: 20,
+        height: 20,
+        decoration: BoxDecoration(
+          color: Colors.orange,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white, width: 3),
+          boxShadow: [
+            BoxShadow(color: Colors.orange.withOpacity(0.4), blurRadius: 10, spreadRadius: 2),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRobotMarker(double x, double y, AppLocalizations l10n) {
     return Positioned(
       left: x - 40,
       top: y - 60,
@@ -226,7 +259,7 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                 const Text("🤖", style: TextStyle(fontSize: 10)),
                 const SizedBox(width: 4),
                 Text(
-                  "Explaining",
+                  l10n.live,
                   style: TextStyle(
                     fontSize: 10,
                     color: Colors.blue[800],
@@ -247,7 +280,7 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Colors.orange.withOpacity(0.4 - (_pulseAnimation.value - 1.0)),
+                    color: Colors.orange.withOpacity((0.4 - (_pulseAnimation.value - 1.0)).clamp(0, 1)),
                     width: 2,
                   ),
                 ),
@@ -329,4 +362,44 @@ class MapGridPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
+}
+
+class RoutePainter extends CustomPainter {
+  final Offset visitorPos;
+  final Offset robotPos;
+
+  RoutePainter({required this.visitorPos, required this.robotPos});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.blue.withOpacity(0.3)
+      ..strokeWidth = 3
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final path = Path();
+    path.moveTo(visitorPos.dx, visitorPos.dy);
+
+    // Simple L-shaped route for museum feel
+    path.lineTo(robotPos.dx, visitorPos.dy);
+    path.lineTo(robotPos.dx, robotPos.dy);
+
+    canvas.drawPath(path, paint);
+
+    // Draw dots along the path
+    final dashPaint = Paint()
+      ..color = Colors.blue
+      ..strokeWidth = 2;
+
+    for (double i = 0; i < 1.0; i += 0.1) {
+       // Manual interpolation for L-shape is complex, just draw a direct dashed line for now
+       double dx = visitorPos.dx + (robotPos.dx - visitorPos.dx) * i;
+       double dy = visitorPos.dy + (robotPos.dy - visitorPos.dy) * i;
+       canvas.drawCircle(Offset(dx, dy), 2, dashPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

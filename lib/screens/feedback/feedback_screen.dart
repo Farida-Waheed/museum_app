@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 
 import '../../models/user_preferences.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../widgets/app_menu_shell.dart';
 import '../chat/chat_screen.dart'; // RoboGuideEntry
 
 class FeedbackScreen extends StatefulWidget {
@@ -114,35 +116,21 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == "ar";
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     final tags = isArabic ? _tagsAr : _tagsEn;
 
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
+    return AppMenuShell(
+      title: l10n.feedback,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       floatingActionButton: const RoboGuideEntry(),
-      appBar: AppBar(
-        title: Text(
-          isArabic ? "الملاحظات" : "Feedback",
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        elevation: 0.5,
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
       body: Column(
         children: [
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
-                crossAxisAlignment: isArabic
-                    ? CrossAxisAlignment.end
-                    : CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // HEADER CARD (matches TicketScreen style)
                   Card
@@ -171,9 +159,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Column(
-                              crossAxisAlignment: isArabic
-                                  ? CrossAxisAlignment.end
-                                  : CrossAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   isArabic
@@ -214,9 +200,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
                       child: Column(
-                        crossAxisAlignment: isArabic
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             isArabic ? "التقييم العام" : "Overall rating",
@@ -255,8 +239,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                   color: Colors.black54,
                                   fontStyle: FontStyle.italic,
                                 ),
-                                textAlign:
-                                    isArabic ? TextAlign.right : TextAlign.left,
                               ),
                             ),
                           const SizedBox(height: 12),
@@ -273,9 +255,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                           Wrap(
                             spacing: 8,
                             runSpacing: 8,
-                            alignment: isArabic
-                                ? WrapAlignment.end
-                                : WrapAlignment.start,
                             children: List.generate(tags.length, (i) {
                               final selected =
                                   _selectedTagIndexes.contains(i);
@@ -329,9 +308,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
-                        crossAxisAlignment: isArabic
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             isArabic
@@ -356,8 +333,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                           TextField(
                             controller: _commentController,
                             maxLines: 4,
-                            textAlign:
-                                isArabic ? TextAlign.right : TextAlign.left,
                             decoration: InputDecoration(
                               hintText: isArabic
                                   ? "اكتب ملاحظاتك هنا..."
@@ -397,7 +372,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       fontSize: 11,
                       color: Colors.black45,
                     ),
-                    textAlign: isArabic ? TextAlign.right : TextAlign.left,
                   ),
 
                   const SizedBox(height: 80), // space above bottom button
