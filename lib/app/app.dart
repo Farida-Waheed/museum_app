@@ -29,25 +29,25 @@ class MuseumApp extends StatelessWidget {
         return MaterialApp(
           title: 'Museum Guide',
           debugShowCheckedModeBanner: false,
-          
+
           // 1. Theme Logic (High Contrast vs Light)
           theme: prefs.isHighContrast ? highContrastTheme : lightTheme,
-          
+
           // 2. Localization
           locale: Locale(prefs.language),
           supportedLocales: AppLocalizations.supportedLocales,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
-          
+
           // 3. Accessibility (Font Scaling)
           builder: (context, child) {
             return MediaQuery(
-              data: MediaQuery.of(context).copyWith(
-                textScaler: TextScaler.linear(prefs.fontScale),
-              ),
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: TextScaler.linear(prefs.fontScale)),
               child: child!,
             );
           },
-          
+
           initialRoute: AppRoutes.intro,
           routes: AppRoutes.getRoutes(),
           themeMode: themeMode,
