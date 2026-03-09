@@ -49,6 +49,9 @@ void showTourAlertOnce(
     await SystemSound.play(SystemSoundType.alert);
     HapticFeedback.mediumImpact();
 
+    // Check again after async gap
+    if (!navigator.mounted) return;
+
     final title = isArabic ? "تنبيه الجولة" : "Tour Starting Soon";
     final hallName = isArabic ? hallNameAr : hallNameEn;
 
