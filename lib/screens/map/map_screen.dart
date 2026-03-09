@@ -7,6 +7,7 @@ import '../../core/services/mock_data.dart';
 import '../../app/router.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
+import '../../widgets/robot_status_banner.dart';
 import '../../l10n/app_localizations.dart';
 
 class MapScreen extends StatefulWidget {
@@ -60,6 +61,7 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
 
     return AppMenuShell(
       title: l10n.map,
+      subHeader: const RobotStatusBanner(),
       bottomNavigationBar: const BottomNav(currentIndex: 1),
       body: Stack(
         children: [
@@ -137,6 +139,37 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                   ),
                 ),
               ),
+            ),
+          ),
+
+          // --- MAP ACTIONS (Recenter) ---
+          Positioned(
+            right: 16,
+            top: 16,
+            child: Column(
+              children: [
+                FloatingActionButton.small(
+                  heroTag: 'recenter_robot',
+                  onPressed: () {
+                    final tourProvider = Provider.of<TourProvider>(context, listen: false);
+                    final currentExhibit = exhibits.firstWhere((e) => e.id == tourProvider.currentExhibitId, orElse: () => exhibits.first);
+                    final robotX = (currentExhibit.x / 400) * mapWidth;
+                    final robotY = (currentExhibit.y / 600) * mapHeight;
+                    _transformController.value = Matrix4.identity()..translate(-robotX + 150, -robotY + 200);
+                  },
+                  backgroundColor: Colors.white,
+                  child: const Icon(Icons.smart_toy, color: Colors.blue),
+                ),
+                const SizedBox(height: 8),
+                FloatingActionButton.small(
+                  heroTag: 'recenter_me',
+                  onPressed: () {
+                    _transformController.value = Matrix4.identity()..translate(-mapWidth * 0.5 + 150, -mapHeight * 0.7 + 200);
+                  },
+                  backgroundColor: Colors.white,
+                  child: const Icon(Icons.my_location, color: Colors.orange),
+                ),
+              ],
             ),
           ),
 

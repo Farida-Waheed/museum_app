@@ -14,36 +14,56 @@ class MockDataService {
   static final List<Exhibit> exhibits = [
     Exhibit(
       id: '1',
-      nameEn: 'Ancient Vase',
-      nameAr: 'مزهرية قديمة',
+      nameEn: 'Grand Hall / Tutankhamun Hall',
+      nameAr: 'القاعة الكبرى / قاعة توت عنخ آمون',
       descriptionEn:
-          'A rare Greek vase from 300 BC, depicting the battle of Troy.',
+          'This hall contains the world-famous treasures of Tutankhamun, discovered in 1922.',
       descriptionAr:
-          'مزهرية يونانية نادرة من عام 300 قبل الميلاد تصور معركة طروادة.',
-      imageAsset: 'assets/images/vase.png',
-      x: 50.0,
-      y: 100.0,
+          'تحتوي هذه القاعة على كنوز توت عنخ آمون المشهورة عالمياً، والتي تم اكتشافها في عام 1922.',
+      imageAsset: 'assets/images/Grand Hall.jpg',
+      x: 100.0,
+      y: 120.0,
     ),
     Exhibit(
       id: '2',
-      nameEn: 'Dinosaur Bone',
-      nameAr: 'عظم ديناصور',
+      nameEn: 'Colossal Seated Statues',
+      nameAr: 'التماثيل الجالسة الضخمة',
       descriptionEn:
-          'The femur bone of a Tyrannosaurus Rex discovered in 1995.',
-      descriptionAr: 'عظم فخذ التيرانوصور ريكس الذي تم اكتشافه عام 1995.',
-      imageAsset: 'assets/images/dino.png',
-      x: 200.0,
-      y: 300.0,
+          'Massive statues representing Pharaohs from the New Kingdom era.',
+      descriptionAr: 'تماثيل ضخمة تمثل الفراعنة من عصر الدولة الحديثة.',
+      imageAsset: 'assets/images/Colossal Seated Statues.jpg',
+      x: 250.0,
+      y: 280.0,
     ),
     Exhibit(
       id: '3',
-      nameEn: 'Space Suit',
-      nameAr: 'بدلة فضاء',
-      descriptionEn: 'An original Apollo 11 space suit replica.',
-      descriptionAr: 'نسخة طبق الأصل من بدلة فضاء أبولو 11.',
-      imageAsset: 'assets/images/space.png',
-      x: 300.0,
+      nameEn: 'Gold-Covered Sandals',
+      nameAr: 'صندل مغطى بالذهب',
+      descriptionEn: 'Exquisite sandals belonging to a Pharaoh, covered in pure gold leaf.',
+      descriptionAr: 'صندل رائع يخص أحد الفراعنة، مغطى بورق الذهب الخالص.',
+      imageAsset: 'assets/images/Gold-Covered Sandals.jpg',
+      x: 400.0,
       y: 150.0,
+    ),
+    Exhibit(
+      id: '4',
+      nameEn: 'Canopic Jars',
+      nameAr: 'الأواني الكانوبية',
+      descriptionEn: 'Used during the mummification process to store internal organs.',
+      descriptionAr: 'استخدمت خلال عملية التحنيط لتخزين الأعضاء الداخلية.',
+      imageAsset: 'assets/images/canopic_jars.jpg',
+      x: 150.0,
+      y: 450.0,
+    ),
+    Exhibit(
+      id: '5',
+      nameEn: 'Hieroglyphic Wall',
+      nameAr: 'جدار هيروغليفي',
+      descriptionEn: 'A section of a temple wall featuring intricate hieroglyphic inscriptions.',
+      descriptionAr: 'جزء من جدار معبد يتميز بنقوش هيروغليفية معقدة.',
+      imageAsset: 'assets/images/hieroglyphs.jpg',
+      x: 480.0,
+      y: 380.0,
     ),
   ];
 
@@ -55,8 +75,10 @@ class MockDataService {
   /// Map exhibitId -> tags
   static final Map<String, List<String>> exhibitTags = {
     '1': ['History', 'Highlights'],
-    '2': ['History', 'Kids-friendly'],
+    '2': ['History', 'Statues'],
     '3': ['Highlights', 'History'],
+    '4': ['History', 'Mummies'],
+    '5': ['History', 'Statues'],
   };
 
   /// Interests shown in Tour Planner chips
@@ -74,26 +96,26 @@ class MockDataService {
   static final List<QuizQuestion> questions = [
     QuizQuestion(
       id: 'q1',
-      questionEn: 'Which era is the Ancient Vase from?',
-      questionAr: 'إلى أي حقبة تعود المزهرية القديمة؟',
-      optionsEn: ['1000 AD', '300 BC', '1990', '500 BC'],
-      optionsAr: ['1000 م', '300 ق.م', '1990', '500 ق.م'],
+      questionEn: 'In what year was Tutankhamun\'s tomb discovered?',
+      questionAr: 'في أي عام تم اكتشاف مقبرة توت عنخ آمون؟',
+      optionsEn: ['1900', '1922', '1950', '1890'],
+      optionsAr: ['1900', '1922', '1950', '1890'],
       correctAnswerIndex: 1,
     ),
     QuizQuestion(
       id: 'q2',
-      questionEn: 'What dinosaur does the bone belong to?',
-      questionAr: 'لأي ديناصور ينتمي هذا العظم؟',
-      optionsEn: ['T-Rex', 'Stegosaurus', 'Raptor', 'Triceratops'],
-      optionsAr: ['تي ريكس', 'ستيغوسورس', 'رابتور', 'تريسيراتوبس'],
-      correctAnswerIndex: 0,
+      questionEn: 'What were Canopic Jars used for?',
+      questionAr: 'فيما كانت تستخدم الأواني الكانوبية؟',
+      optionsEn: ['Drinking water', 'Storing organs', 'Cooking food', 'Storing jewelry'],
+      optionsAr: ['شرب الماء', 'تخزين الأعضاء', 'طهي الطعام', 'تخزين المجوهرات'],
+      correctAnswerIndex: 1,
     ),
     QuizQuestion(
       id: 'q3',
-      questionEn: 'Which mission used the Space Suit?',
-      questionAr: 'أي مهمة استخدمت بدلة الفضاء؟',
-      optionsEn: ['Apollo 13', 'Mars Rover', 'Apollo 11', 'Gemini'],
-      optionsAr: ['أبولو 13', 'مركبة المريخ', 'أبولو 11', 'جيميني'],
+      questionEn: 'What is the material used to cover the royal sandals?',
+      questionAr: 'ما هي المادة المستخدمة لتغطية الصنادل الملكية؟',
+      optionsEn: ['Silver', 'Bronze', 'Gold', 'Iron'],
+      optionsAr: ['الفضة', 'البرونز', 'الذهب', 'الحديد'],
       correctAnswerIndex: 2,
     ),
   ];
@@ -101,26 +123,38 @@ class MockDataService {
   static List<QuizQuestion> getAllQuestions() => questions;
 
   // -------------------------
-  // Events
+  // Events (Happening Now / Today focus)
   // -------------------------
   static final List<MockEvent> events = [
     MockEvent(
-      title: 'Guided Tour: Ancient Egypt Highlights',
-      dateTime: DateTime.now().add(const Duration(hours: 2)),
-      location: 'Main Entrance',
-      description: 'A 45-min guided tour covering the most iconic artifacts.',
+      titleEn: 'LIVE: Ancient Egypt Highlights Tour',
+      titleAr: 'مباشر: جولة أبرز معالم مصر القديمة',
+      dateTime: DateTime.now().add(const Duration(minutes: 15)),
+      locationEn: 'Main Entrance Hall',
+      locationAr: 'ردهة المدخل الرئيسي',
+      descriptionEn: 'A live guided tour led by Horus-Bot and a museum specialist.',
+      descriptionAr: 'جولة إرشادية حية بقيادة حوروس-بوت وأخصائي متحف.',
+      isLive: true,
     ),
     MockEvent(
-      title: 'Kids Workshop: Build a Pyramid',
-      dateTime: DateTime.now().add(const Duration(days: 1, hours: 3)),
-      location: 'Education Hall',
-      description: 'Interactive workshop for kids (ages 7–12).',
+      titleEn: 'Kids Workshop: Scribe School',
+      titleAr: 'ورشة أطفال: مدرسة الكاتب',
+      dateTime: DateTime.now().add(const Duration(hours: 1)),
+      locationEn: 'Education Wing',
+      locationAr: 'جناح التعليم',
+      descriptionEn: 'Learn how to write your name in hieroglyphs!',
+      descriptionAr: 'تعلم كيف تكتب اسمك بالهيروغليفية!',
+      isLive: false,
     ),
     MockEvent(
-      title: 'Talk: Secrets of Mummification',
-      dateTime: DateTime.now().add(const Duration(days: 4, hours: 1)),
-      location: 'Auditorium',
-      description: 'A short talk + Q&A with a museum specialist.',
+      titleEn: 'Curator Talk: Tutankhamun\'s Secrets',
+      titleAr: 'حديث المنسق: أسرار توت عنخ آمون',
+      dateTime: DateTime.now().add(const Duration(hours: 3)),
+      locationEn: 'Auditorium',
+      locationAr: 'الأوديتوريوم',
+      descriptionEn: 'Deep dive into the latest findings from the Valley of the Kings.',
+      descriptionAr: 'غوص عميق في أحدث النتائج من وادي الملوك.',
+      isLive: false,
     ),
   ];
 
@@ -161,17 +195,29 @@ class MockDataService {
 
 /// Keep these simple models here for now (no backend yet).
 class MockEvent {
-  final String title;
+  final String titleEn;
+  final String titleAr;
   final DateTime dateTime;
-  final String location;
-  final String description;
+  final String locationEn;
+  final String locationAr;
+  final String descriptionEn;
+  final String descriptionAr;
+  final bool isLive;
 
   MockEvent({
-    required this.title,
+    required this.titleEn,
+    required this.titleAr,
     required this.dateTime,
-    required this.location,
-    required this.description,
+    required this.locationEn,
+    required this.locationAr,
+    required this.descriptionEn,
+    required this.descriptionAr,
+    this.isLive = false,
   });
+
+  String getTitle(String lang) => lang == 'ar' ? titleAr : titleEn;
+  String getLocation(String lang) => lang == 'ar' ? locationAr : locationEn;
+  String getDescription(String lang) => lang == 'ar' ? descriptionAr : descriptionEn;
 }
 
 class MockBadge {

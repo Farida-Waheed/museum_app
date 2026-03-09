@@ -8,6 +8,8 @@ import '../../models/exhibit_provider.dart';
 import '../../models/tour_provider.dart';
 import '../../core/utils/audio_player.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../widgets/app_menu_shell.dart';
+import '../../widgets/robot_status_banner.dart';
 import '../chat/chat_screen.dart'; // RoboGuideEntry
 
 class ExhibitDetailScreen extends StatefulWidget {
@@ -91,8 +93,8 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
       tourProvider.setCurrentExhibit(exhibit.id);
     });
 
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
+    return AppMenuShell(
+      subHeader: const RobotStatusBanner(),
       bottomNavigationBar: const BottomNav(currentIndex: 0),
       floatingActionButton: const RoboGuideEntry(),
       body: CustomScrollView(
