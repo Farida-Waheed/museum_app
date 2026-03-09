@@ -7,6 +7,7 @@ import '../../models/tour_provider.dart';
 import '../../core/services/mock_data.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
+import '../../widgets/robot_status_banner.dart';
 import '../../widgets/primary_button.dart';
 
 class LiveTourScreen extends StatefulWidget {
@@ -120,6 +121,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
 
     return AppMenuShell(
       title: l10n.liveTour,
+      subHeader: const RobotStatusBanner(),
       bottomNavigationBar: const BottomNav(currentIndex: 2),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
