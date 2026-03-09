@@ -334,7 +334,7 @@ class _SettingRowSwitch extends StatelessWidget {
         const SizedBox(width: 8),
         Switch.adaptive(
           value: value,
-          activeTrackColor: theme.colorScheme.primary,
+          activeColor: theme.colorScheme.primary,
           onChanged: onChanged,
         ),
       ],

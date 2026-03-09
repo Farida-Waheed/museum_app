@@ -159,7 +159,13 @@ class QrScannerOverlayShape extends ShapeBorder {
   @override
   void paint(Canvas canvas, Rect rect, {TextDirection? textDirection}) {
     final width = rect.width;
-    final double actualCutOutSize = cutOutSize < 0 ? width : cutOutSize;
+    final borderWidthSize = width / 2;
+    final height = rect.height;
+    final borderOffset = borderWidth / 2;
+    final borderLength = borderLength > cutOutSize / 2 + borderWidth * 2
+        ? borderWidthSize / 2
+        : borderLength;
+    final cutOutSize = cutOutSize < 0 ? width : cutOutSize;
 
     final backgroundPaint = Paint()
       ..color = overlayColor
@@ -170,10 +176,14 @@ class QrScannerOverlayShape extends ShapeBorder {
       ..style = PaintingStyle.stroke
       ..strokeWidth = borderWidth;
 
+    final boxPaint = Paint()
+      ..color = borderColor
+      ..style = PaintingStyle.fill;
+
     final cutOutRect = Rect.fromCenter(
       center: rect.center,
-      width: actualCutOutSize,
-      height: actualCutOutSize,
+      width: cutOutSize,
+      height: cutOutSize,
     );
 
     canvas
