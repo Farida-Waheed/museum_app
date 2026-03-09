@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 
 import '../../core/services/mock_data.dart';
 import '../../models/exhibit.dart';
@@ -13,15 +14,13 @@ class ExhibitListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final exhibits = MockDataService.getAllExhibits();
     final prefs = Provider.of<UserPreferencesModel>(context);
-    final isArabic = prefs.language == 'ar';
-
-    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: Text(
-          isArabic ? "المعروضات" : "Exhibits",
+          l10n.exhibits,
           style: const TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
@@ -38,7 +37,6 @@ class ExhibitListScreen extends StatelessWidget {
           return _ExhibitListTile(
             exhibit: exhibit,
             prefs: prefs,
-            isArabic: isArabic,
             onTap: () {
               Navigator.pushNamed(
                 context,
@@ -56,19 +54,18 @@ class ExhibitListScreen extends StatelessWidget {
 class _ExhibitListTile extends StatelessWidget {
   final Exhibit exhibit;
   final UserPreferencesModel prefs;
-  final bool isArabic;
   final VoidCallback onTap;
 
   const _ExhibitListTile({
     required this.exhibit,
     required this.prefs,
-    required this.isArabic,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Card(
       elevation: 1,
@@ -98,8 +95,7 @@ class _ExhibitListTile extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       exhibit.getName(prefs.language),
@@ -112,9 +108,7 @@ class _ExhibitListTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      isArabic
-                          ? "المعرض الرئيسي"
-                          : "Main exhibition gallery",
+                      l10n.mainGallery,
                       style: const TextStyle(
                         fontSize: 12,
                         color: Colors.black54,

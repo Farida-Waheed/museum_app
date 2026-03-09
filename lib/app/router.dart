@@ -13,6 +13,7 @@ import '../screens/search/search_screen.dart';
 
 import '../screens/tour/tour_progress.dart';
 import '../screens/tour/live_tour_screen.dart';
+import '../screens/tour/visit_summary_screen.dart';
 
 import '../screens/tickets/ticket_screen.dart';
 import '../screens/tickets/my_tickets_screen.dart';
@@ -24,9 +25,9 @@ import '../screens/settings/accessibility_screen.dart';
 import '../screens/ar/ar_screen.dart';
 
 import '../screens/profile/profile_screen.dart';
-// import '../screens/planner/tour_planner_screen.dart';
-// import '../screens/events/events_screen.dart';
-// import '../screens/achievements/achievements_screen.dart';
+import '../screens/planner/tour_planner_screen.dart';
+import '../screens/events/events_screen.dart';
+import '../screens/achievements/achievements_screen.dart';
 
 class AppRoutes {
   static const String intro = '/';
@@ -42,6 +43,7 @@ class AppRoutes {
 
   static const String progress = '/progress';
   static const String liveTour = '/live_tour';
+  static const String summary = '/summary';
 
   static const String tickets = '/tickets';
   static const String myTickets = '/my_tickets';
@@ -73,6 +75,7 @@ class AppRoutes {
 
       progress: (context) => const TourProgressScreen(),
       liveTour: (context) => const LiveTourScreen(),
+      summary: (context) => const VisitSummaryScreen(),
 
       tickets: (context) => const TicketScreen(),
       myTickets: (context) => const MyTicketsScreen(),
@@ -84,11 +87,10 @@ class AppRoutes {
       language: (context) => const LanguageScreen(),
       arView: (context) => const ArScreen(),
 
-      // IMPORTANT: no const here (avoids constructor mismatch forever)
       profile: (context) => const ProfileScreen(),
-      // tourPlanner: (context) => TourPlannerScreen(),
-      // events: (context) => EventsScreen(),
-      // achievements: (context) => AchievementsScreen(),
+      tourPlanner: (context) => const TourPlannerScreen(),
+      events: (context) => const EventsScreen(),
+      achievements: (context) => const AchievementsScreen(),
     };
   }
 }

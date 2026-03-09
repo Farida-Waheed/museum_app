@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
 
   # Default Icon font
   cupertino_icons: ^1.0.8
@@ -22,20 +24,23 @@ dependencies:
   shared_preferences: ^2.2.3
 
   # 3. Localization (Handles Arabic/English logic)
-  intl: ^0.19.0
+  intl: ^0.20.2
 
   # 4. Audio (Plays the robot voice narration)
   audioplayers: ^6.0.0
+
+  # 5. Scanner and Permissions (Moved from dev_dependencies)
+  mobile_scanner: ^5.2.3
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   
   flutter_lints: ^3.0.0 # Note: Downgraded slightly to ensure compatibility with sdk 3.10.1
-  mobile_scanner: ^5.2.3
-  permission_handler: ^11.3.1
 
 flutter:
+  generate: true # Added for l10n
   uses-material-design: true
 
   assets:

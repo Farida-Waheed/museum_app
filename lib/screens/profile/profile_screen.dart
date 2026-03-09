@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-
-// import '../../widgets/app_scaffold.dart';
-import '../../widgets/app_card.dart';
-
-import '../../core/constants/sizes.dart';
-import '../../core/constants/text_styles.dart';
-
-import '../../core/services/progress_store.dart';
+import '../../widgets/app_menu_shell.dart';
+import '../../l10n/app_localizations.dart';
+import '../../widgets/bottom_nav.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -18,6 +13,11 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Text('Profile'));
+    final l10n = AppLocalizations.of(context)!;
+    return AppMenuShell(
+      title: l10n.profile,
+      bottomNavigationBar: const BottomNav(currentIndex: 4),
+      body: Center(child: Text(l10n.profile)),
+    );
   }
 }

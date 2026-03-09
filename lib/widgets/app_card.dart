@@ -1,38 +1,39 @@
 import 'package:flutter/material.dart';
-import '../core/constants/colors.dart';
 import '../core/constants/sizes.dart';
 
 class AppCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
   final VoidCallback? onTap;
+  final Color? color;
+  final double? elevation;
+  final ShapeBorder? shape;
 
   const AppCard({
     super.key,
     required this.child,
     this.padding,
     this.onTap,
+    this.color,
+    this.elevation,
+    this.shape,
   });
 
   @override
   Widget build(BuildContext context) {
-    final content = Padding(
-      padding: padding ?? const EdgeInsets.all(AppSizes.md),
-      child: child,
-    );
+    final theme = Theme.of(context);
 
-    return Material(
-      color: Theme.of(context).cardColor,
-      borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+    return Card(
+      color: color ?? theme.cardTheme.color,
+      elevation: elevation ?? theme.cardTheme.elevation,
+      shape: shape ?? theme.cardTheme.shape,
+      clipBehavior: Clip.antiAlias,
+      margin: EdgeInsets.zero,
       child: InkWell(
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         onTap: onTap,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: content,
+        child: Padding(
+          padding: padding ?? const EdgeInsets.all(AppSizes.md),
+          child: child,
         ),
       ),
     );

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import '../l10n/app_localizations.dart';
+
 import '../models/user_preferences.dart';
 import 'theme/light_theme.dart';
 import 'theme/high_contrast.dart';
-import 'router.dart'; // Import the router
+import 'router.dart';
 
 class MuseumApp extends StatelessWidget {
   const MuseumApp({super.key});
@@ -30,8 +33,10 @@ class MuseumApp extends StatelessWidget {
           // 1. Theme Logic (High Contrast vs Light)
           theme: prefs.isHighContrast ? highContrastTheme : lightTheme,
           
-          // 2. Localization Logic (Arabic vs English)
+          // 2. Localization
           locale: Locale(prefs.language),
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           
           // 3. Accessibility (Font Scaling)
           builder: (context, child) {
@@ -39,19 +44,12 @@ class MuseumApp extends StatelessWidget {
               data: MediaQuery.of(context).copyWith(
                 textScaler: TextScaler.linear(prefs.fontScale),
               ),
-              child: Directionality(
-                textDirection: prefs.language == 'ar' ? TextDirection.rtl : TextDirection.ltr,
-                child: child!,
-              ),
+              child: child!,
             );
           },
           
-          // 4. Navigation Routes
-          // We start at 'onboarding' so users see the tutorial first
-          initialRoute: AppRoutes.intro, // This will now find the definition
+          initialRoute: AppRoutes.intro,
           routes: AppRoutes.getRoutes(),
-
-          // 5. Which one to use (system / light / dark)
           themeMode: themeMode,
         );
       },
