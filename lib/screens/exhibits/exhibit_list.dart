@@ -15,6 +15,8 @@ class ExhibitListScreen extends StatelessWidget {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
 
+    final theme = Theme.of(context);
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(

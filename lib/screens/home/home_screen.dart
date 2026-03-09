@@ -572,6 +572,11 @@ class _SideMenu extends StatelessWidget {
       Navigator.pushReplacementNamed(context, route);
     }
 
+    void goPush(String route) {
+      onClose();
+      Navigator.pushNamed(context, route);
+    }
+
     return Align(
       alignment: Alignment.centerLeft,
       child: SizedBox(

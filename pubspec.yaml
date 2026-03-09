@@ -26,14 +26,14 @@ dependencies:
 
   # 4. Audio (Plays the robot voice narration)
   audioplayers: ^6.0.0
-  mobile_scanner: ^5.2.3
-  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   
   flutter_lints: ^3.0.0 # Note: Downgraded slightly to ensure compatibility with sdk 3.10.1
+  mobile_scanner: ^5.2.3
+  permission_handler: ^11.3.1
 
 flutter:
   uses-material-design: true
