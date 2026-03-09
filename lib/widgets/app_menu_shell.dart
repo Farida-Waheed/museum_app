@@ -132,6 +132,7 @@ class AppMenuShell extends StatefulWidget {
   final List<Widget>? actions;
   final Widget? floatingActionButton;
   final Widget? bottomNavigationBar;
+  final Widget? subHeader;
   final Color backgroundColor;
 
   const AppMenuShell({
@@ -141,6 +142,7 @@ class AppMenuShell extends StatefulWidget {
     this.actions,
     this.floatingActionButton,
     this.bottomNavigationBar,
+    this.subHeader,
     this.backgroundColor = Colors.white,
   });
 
@@ -271,6 +273,12 @@ class _AppMenuShellState extends State<AppMenuShell>
                           actions: widget.actions,
                           backgroundColor: Colors.white,
                           elevation: 0,
+                          bottom: widget.subHeader != null
+                              ? PreferredSize(
+                                  preferredSize: const Size.fromHeight(48),
+                                  child: widget.subHeader!,
+                                )
+                              : null,
                         ),
                         body: widget.body,
                       ),
