@@ -89,7 +89,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> {
           ),
           // Overlay Design
           Container(
-            decoration: ShapeDecoration(
+            decoration: const ShapeDecoration(
               shape: QrScannerOverlayShape(
                 borderColor: Colors.blue,
                 borderRadius: 10,
@@ -162,10 +162,10 @@ class QrScannerOverlayShape extends ShapeBorder {
     final borderWidthSize = width / 2;
     final height = rect.height;
     final borderOffset = borderWidth / 2;
-    final _borderLength = borderLength > cutOutSize / 2 + borderWidth * 2
+    final borderLength = borderLength > cutOutSize / 2 + borderWidth * 2
         ? borderWidthSize / 2
         : borderLength;
-    final _cutOutSize = cutOutSize < 0 ? width : cutOutSize;
+    final cutOutSize = cutOutSize < 0 ? width : cutOutSize;
 
     final backgroundPaint = Paint()
       ..color = overlayColor
@@ -182,8 +182,8 @@ class QrScannerOverlayShape extends ShapeBorder {
 
     final cutOutRect = Rect.fromCenter(
       center: rect.center,
-      width: _cutOutSize,
-      height: _cutOutSize,
+      width: cutOutSize,
+      height: cutOutSize,
     );
 
     canvas

@@ -646,8 +646,7 @@ class _TicketConfirmationDialog extends StatelessWidget {
             const SizedBox(height: 12),
             Center(
               child: Text(
-                (isArabic ? "المجموع: " : "Total: ") +
-                    "\$${totalPrice.toStringAsFixed(2)}",
+                "${isArabic ? "المجموع: " : "Total: "}\$${totalPrice.toStringAsFixed(2)}",
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,

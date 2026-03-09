@@ -292,7 +292,7 @@ class MyTicketsScreen extends StatelessWidget {
                 // QR placeholder
                 Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.qr_code_2,
                       size: 28,
                       color: Colors.black87,

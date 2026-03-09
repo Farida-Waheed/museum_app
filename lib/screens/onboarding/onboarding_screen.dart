@@ -26,29 +26,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
 
-    // --- Onboarding pages (short text, Ankhu + app modes) ---
+    // --- Onboarding pages (short text, Horus-Bot + app modes) ---
     final List<Map<String, String>> pages = [
       {
-        "title": isArabic ? "تعرف على آنخو" : "Meet Ankhu",
+        "title": isArabic ? "تعرف على حوروس" : "Meet Horus-Bot",
         "desc": isArabic
-            ? "آنخو هو مرشدك الروبوتي، يعمل مع التطبيق قبل الجولة وأثناءها وبعدها."
-            : "Ankhu is your Robo-Guide, working with the app before, during, and after the tour.",
+            ? "حوروس هو مرشدك الروبوتي، يعمل مع التطبيق قبل الجولة وأثناءها وبعدها."
+            : "Horus-Bot is your Robo-Guide, working with the app before, during, and after the tour.",
         "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/ankh.png",
       },
       {
         "title": isArabic ? "وضع الجولة التلقائي" : "Automatic Tour Mode",
         "desc": isArabic
-            ? "عند بدء الجولة، يبدأ وضع آنخو تلقائياً ويضيف مميزات خاصة بالجولة."
-            : "When the tour starts, Ankhu mode turns on automatically with extra tour features.",
+            ? "عند بدء الجولة، يبدأ وضع حوروس تلقائياً ويضيف مميزات خاصة بالجولة."
+            : "When the tour starts, Horus-Bot mode turns on automatically with extra tour features.",
         "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/map.png",
       },
       {
         "title": isArabic ? "استكشف وتعلّم" : "Explore & Learn",
         "desc": isArabic
-            ? "استمع للشرح، اسأل آنخو، وشارك في الاختبارات من خلال التطبيق."
-            : "Listen to explanations, ask Ankhu questions, and take quizzes in the app.",
+            ? "استمع للشرح، اسأل حوروس، وشارك في الاختبارات من خلال التطبيق."
+            : "Listen to explanations, ask Horus-Bot questions, and take quizzes in the app.",
         "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/scarab.png",
       },
@@ -131,7 +131,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
 
-              // --- Dots + "Start with Ankhu" button ---
+              // --- Dots + "Start with Horus" button ---
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 48),
                 child: Column(
@@ -155,7 +155,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     const SizedBox(height: 28),
 
-                    // "Start with Ankhu" – always visible
+                    // "Start with Horus-Bot" – always visible
                     SizedBox(
                       width: double.infinity,
                       height: 56,
@@ -178,7 +178,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           elevation: 8,
                         ),
                         child: Text(
-                          isArabic ? "ابدأ مع آنخو" : "Start with Ankhu",
+                          isArabic ? "ابدأ مع حوروس" : "Start with Horus-Bot",
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

@@ -123,11 +123,11 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
               ),
               child: Row(
                 children: [
-                  _PulsingDot(color: Colors.redAccent),
+                  const _PulsingDot(color: Colors.redAccent),
                   const SizedBox(width: 10),
-                  Text(
+                  const Text(
                     "LIVE",
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.redAccent,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 1.1,

@@ -21,14 +21,18 @@ class BottomNav extends StatelessWidget {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
 
-    // Use app primary color from theme
-    final Color primary = Theme.of(context).colorScheme.primary;
-    final Color unselected = Colors.grey.shade500;
+    final theme = Theme.of(context);
+    final primary = theme.colorScheme.primary;
+
+    // Theme-safe colors (works for light/dark/high-contrast)
+    final surface = theme.colorScheme.surface;
+    final shadowColor = theme.colorScheme.shadow.withOpacity(0.10);
+    final unselected = theme.colorScheme.onSurface.withOpacity(0.55);
 
     String getLabel(String key) => isArabic ? (_navLabelsAr[key] ?? key) : key;
 
     void handleTap(int index) {
-      if (index == currentIndex) return; // already on this tab
+      if (index == currentIndex) return;
 
       String route;
       switch (index) {
@@ -55,11 +59,11 @@ class BottomNav extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 15,
+            color: shadowColor,
+            blurRadius: 16,
             offset: const Offset(0, -4),
           ),
         ],
@@ -73,7 +77,8 @@ class BottomNav extends StatelessWidget {
         showUnselectedLabels: true,
         selectedFontSize: 12,
         unselectedFontSize: 11,
-        elevation: 0, // shadow handled by parent container
+        elevation: 0,
+        backgroundColor: surface,
         items: [
           BottomNavigationBarItem(
             icon: const Icon(Icons.home_outlined),

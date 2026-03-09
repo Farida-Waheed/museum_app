@@ -10,6 +10,11 @@ import '../../app/router.dart';
 import '../../widgets/bottom_nav.dart';
 import '../chat/chat_screen.dart';
 
+// ✅ AppDrawer constants/styles
+import '../../core/constants/sizes.dart';
+import '../../core/constants/strings.dart';
+import '../../core/constants/text_styles.dart';
+
 // --- ARABIC TRANSLATION MAPS ---
 const Map<String, String> _highlightTitlesAr = {
   "Tutankhamun Mask": "قناع توت عنخ آمون",
@@ -55,16 +60,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 280),
     );
 
-    // Privacy dialog (currently every app open – can later make it "once only")
+    // Privacy dialog
     Future.delayed(Duration.zero, () {
       if (mounted) _showPrivacyDialog();
-    });
-
-    // 🔔 Use shared tour-alert widget (only shows once per app session)
-    Future.delayed(Duration.zero, () {
-      if (!mounted) return;
-      final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
-      final isArabic = prefs.language == 'ar';
     });
 
     // Simple simulation: robot + stats move over time
@@ -111,7 +109,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           ElevatedButton(
             onPressed: () {
-              // TODO: store acceptance in UserPreferencesModel if needed
               Navigator.pop(context);
             },
             child: Text(isArabic ? "سماح" : "Allow"),
@@ -131,6 +128,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     setState(() => _isMenuOpen = !_isMenuOpen);
   }
 
+  // ✅ close menu helper (so menu closes when tapping items)
+  void _closeMenu() {
+    if (!_isMenuOpen) return;
+    _menuController.reverse();
+    setState(() => _isMenuOpen = false);
+  }
+
   @override
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
@@ -140,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final t = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
 
-    const Color lightGreyBG = Colors.white; // pure white background
+    const Color lightGreyBG = Colors.white;
 
     return Scaffold(
       backgroundColor: lightGreyBG,
@@ -162,10 +166,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               // Background behind the card
               Container(color: lightGreyBG),
 
-              // SIDE MENU
+              // ✅ SIDE MENU (same UI + now has all AppDrawer features)
               Transform.translate(
                 offset: Offset(-(size.width * 0.30 * (1 - v)), 0),
-                child: const _SideMenuWrapper(),
+                child: _SideMenuWrapper(onClose: _closeMenu),
               ),
 
               // MAIN CONTENT CARD (slides & scales when menu opens)
@@ -201,32 +205,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           ),
                           title: Row(
                             children: [
-                              // flat Horus-Bot icon
-                              Image.asset(
-                                "assets/icons/ankh.png",
-                                width: 26,
-                                height: 26,
-                              ),
+                              Image.asset("assets/icons/ankh.png", width: 26, height: 26),
                               const SizedBox(width: 10),
                               Text(
                                 isArabic ? "حوروس" : "Horus-Bot",
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                               ),
                             ],
                           ),
                           actions: [
                             IconButton(
-                              icon: const Icon(
-                                Icons.qr_code_scanner,
-                                color: Colors.black,
-                              ),
-                              onPressed: () => Navigator.pushNamed(
-                                context,
-                                AppRoutes.qrScan,
-                              ),
+                              icon: const Icon(Icons.qr_code_scanner, color: Colors.black),
+                              onPressed: () => Navigator.pushNamed(context, AppRoutes.qrScan),
                             ),
                           ],
                           backgroundColor: Colors.white,
@@ -239,21 +229,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             SliverToBoxAdapter(
                               child: Container(
                                 height: 240,
-                                margin: const EdgeInsets.fromLTRB(
-                                  12,
-                                  12,
-                                  12,
-                                  4,
-                                ),
+                                margin: const EdgeInsets.fromLTRB(12, 12, 12, 4),
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(22),
                                   child: Stack(
                                     fit: StackFit.expand,
                                     children: [
-                                      Image.asset(
-                                        'assets/images/museum_interior.jpg',
-                                        fit: BoxFit.cover,
-                                      ),
+                                      Image.asset('assets/images/museum_interior.jpg', fit: BoxFit.cover),
+
                                       // Animated gradient wash
                                       AnimatedBuilder(
                                         animation: _grad,
@@ -264,19 +247,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                               gradient: LinearGradient(
                                                 begin: Alignment.topLeft,
                                                 end: Alignment.bottomRight,
-                                                transform: GradientRotation(
-                                                  pi * (.05 + .15 * gv),
-                                                ),
+                                                transform: GradientRotation(pi * (.05 + .15 * gv)),
                                                 colors: [
-                                                  cs.secondary.withOpacity(
-                                                    .12 + .10 * gv,
-                                                  ),
-                                                  cs.primary.withOpacity(
-                                                    .14 - .06 * gv,
-                                                  ),
-                                                  cs.tertiary.withOpacity(
-                                                    .10 + .06 * gv,
-                                                  ),
+                                                  cs.secondary.withOpacity(.12 + .10 * gv),
+                                                  cs.primary.withOpacity(.14 - .06 * gv),
+                                                  cs.tertiary.withOpacity(.10 + .06 * gv),
                                                   Colors.black.withOpacity(.55),
                                                 ],
                                               ),
@@ -284,18 +259,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                           );
                                         },
                                       ),
+
                                       Positioned(
                                         left: 16,
                                         right: 16,
                                         bottom: 16,
                                         child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              isArabic
-                                                  ? "استكشف مصر مع حوروس"
-                                                  : "Explore Egypt with Horus-Bot",
+                                              isArabic ? "استكشف مصر مع حوروس" : "Explore Egypt with Horus-Bot",
                                               style: t.headlineSmall?.copyWith(
                                                 color: Colors.white,
                                                 fontWeight: FontWeight.w800,
@@ -305,49 +278,27 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
                                             // === NEXT STOP CARD ===
                                             InkWell(
-                                              borderRadius:
-                                                  BorderRadius.circular(14),
-                                              onTap: () => Navigator.pushNamed(
-                                                context,
-                                                AppRoutes.progress,
-                                              ),
+                                              borderRadius: BorderRadius.circular(14),
+                                              onTap: () => Navigator.pushNamed(context, AppRoutes.progress),
                                               child: Container(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                      horizontal: 12,
-                                                      vertical: 8,
-                                                    ),
+                                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                                 decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(14),
-                                                  color: Colors.black
-                                                      .withOpacity(0.30),
+                                                  borderRadius: BorderRadius.circular(14),
+                                                  color: Colors.black.withOpacity(0.30),
                                                 ),
                                                 child: Row(
                                                   children: [
-                                                    const Icon(
-                                                      Icons.route,
-                                                      color: Colors.white,
-                                                      size: 18,
-                                                    ),
+                                                    const Icon(Icons.route, color: Colors.white, size: 18),
                                                     const SizedBox(width: 8),
                                                     Expanded(
                                                       child: Text(
                                                         isArabic
                                                             ? "المحطة التالية: قاعة توت عنخ آمون خلال ٥ دقائق"
                                                             : "Next stop: Tutankhamun Hall in 5 min",
-                                                        style: const TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 12,
-                                                        ),
+                                                        style: const TextStyle(color: Colors.white, fontSize: 12),
                                                       ),
                                                     ),
-                                                    const Icon(
-                                                      Icons
-                                                          .chevron_right_rounded,
-                                                      color: Colors.white,
-                                                      size: 18,
-                                                    ),
+                                                    const Icon(Icons.chevron_right_rounded, color: Colors.white, size: 18),
                                                   ],
                                                 ),
                                               ),
@@ -375,9 +326,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                           child: _buildStatCard(
                                             icon: Icons.map,
                                             value: "${exhibits.length}",
-                                            label: isArabic
-                                                ? "المعروضات"
-                                                : "Exhibits",
+                                            label: isArabic ? "المعروضات" : "Exhibits",
                                             color: Colors.blue,
                                           ),
                                         ),
@@ -386,9 +335,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                           child: _buildStatCard(
                                             icon: Icons.trending_up,
                                             value: "$visitedCount",
-                                            label: isArabic
-                                                ? "تمت زيارتها"
-                                                : "Visited",
+                                            label: isArabic ? "تمت زيارتها" : "Visited",
                                             color: Colors.green,
                                           ),
                                         ),
@@ -397,9 +344,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                           child: _buildStatCard(
                                             icon: Icons.timer,
                                             value: "${durationMinutes}m",
-                                            label: isArabic
-                                                ? "المدة"
-                                                : "Duration",
+                                            label: isArabic ? "المدة" : "Duration",
                                             color: Colors.purple,
                                           ),
                                         ),
@@ -410,13 +355,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
                                     // --- TODAY'S HIGHLIGHTS ---
                                     Text(
-                                      isArabic
-                                          ? "معروضات اليوم"
-                                          : "Today’s Highlights",
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w800,
-                                      ),
+                                      isArabic ? "معروضات اليوم" : "Today’s Highlights",
+                                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800),
                                     ),
                                     const SizedBox(height: 10),
 
@@ -424,29 +364,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       height: 180,
                                       child: PageView(
                                         controller: _pageCtrl,
-                                        onPageChanged: (i) =>
-                                            setState(() => pageIndex = i),
+                                        onPageChanged: (i) => setState(() => pageIndex = i),
                                         children: [
                                           _HighlightCard(
-                                            title: isArabic
-                                                ? _highlightTitlesAr["Tutankhamun Mask"]!
-                                                : "Tutankhamun Mask",
-                                            image:
-                                                "assets/images/pharaoh_head.jpg",
+                                            title: isArabic ? _highlightTitlesAr["Tutankhamun Mask"]! : "Tutankhamun Mask",
+                                            image: "assets/images/pharaoh_head.jpg",
                                           ),
                                           _HighlightCard(
-                                            title: isArabic
-                                                ? _highlightTitlesAr["Golden Hieroglyphs"]!
-                                                : "Golden Hieroglyphs",
-                                            image:
-                                                "assets/images/hieroglyphs.jpg",
+                                            title: isArabic ? _highlightTitlesAr["Golden Hieroglyphs"]! : "Golden Hieroglyphs",
+                                            image: "assets/images/hieroglyphs.jpg",
                                           ),
                                           _HighlightCard(
-                                            title: isArabic
-                                                ? _highlightTitlesAr["Canopic Jars"]!
-                                                : "Canopic Jars",
-                                            image:
-                                                "assets/images/canopic_jars.jpg",
+                                            title: isArabic ? _highlightTitlesAr["Canopic Jars"]! : "Canopic Jars",
+                                            image: "assets/images/canopic_jars.jpg",
                                           ),
                                         ],
                                       ),
@@ -459,41 +389,25 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     // --- MAP PREVIEW CARD ---
                                     Card(
                                       elevation: 2,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
+                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                       child: Padding(
                                         padding: const EdgeInsets.all(16),
                                         child: Column(
                                           children: [
                                             Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
                                                 Expanded(
                                                   child: Text(
                                                     isArabic
                                                         ? "معاينة الخريطة (موقع حوروس)"
                                                         : "Map Preview (Horus-Bot’s Location)",
-                                                    style: const TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                    ),
+                                                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                                   ),
                                                 ),
                                                 TextButton(
-                                                  onPressed: () =>
-                                                      Navigator.pushNamed(
-                                                        context,
-                                                        AppRoutes.map,
-                                                      ),
-                                                  child: Text(
-                                                    isArabic
-                                                        ? "عرض كامل"
-                                                        : "Full View",
-                                                  ),
+                                                  onPressed: () => Navigator.pushNamed(context, AppRoutes.map),
+                                                  child: Text(isArabic ? "عرض كامل" : "Full View"),
                                                 ),
                                               ],
                                             ),
@@ -501,39 +415,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                               height: 180,
                                               decoration: BoxDecoration(
                                                 color: Colors.grey[100],
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
+                                                borderRadius: BorderRadius.circular(12),
                                               ),
                                               child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(12),
+                                                borderRadius: BorderRadius.circular(12),
                                                 child: _buildMiniMap(),
                                               ),
                                             ),
                                             const SizedBox(height: 8),
                                             Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
-                                                _LegendDot(
-                                                  color: Colors.blue,
-                                                  label: isArabic
-                                                      ? "حوروس"
-                                                      : "Horus-Bot",
-                                                ),
-                                                _LegendDot(
-                                                  color: Colors.orange,
-                                                  label: isArabic
-                                                      ? "أنت"
-                                                      : "You",
-                                                ),
-                                                _LegendDot(
-                                                  color: Colors.redAccent,
-                                                  label: isArabic
-                                                      ? "معروض"
-                                                      : "Exhibit",
-                                                ),
+                                                _LegendDot(color: Colors.blue, label: isArabic ? "حوروس" : "Horus-Bot"),
+                                                _LegendDot(color: Colors.orange, label: isArabic ? "أنت" : "You"),
+                                                _LegendDot(color: Colors.redAccent, label: isArabic ? "معروض" : "Exhibit"),
                                               ],
                                             ),
                                           ],
@@ -570,9 +465,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }) {
     return InkWell(
       borderRadius: BorderRadius.circular(14),
-      onTap: () {
-        // Optional: navigate based on label (Exhibits / Visited / Duration)
-      },
+      onTap: () {},
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
@@ -592,14 +485,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               child: Icon(icon, color: color, size: 18),
             ),
             const SizedBox(height: 8),
-            Text(
-              value,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            Text(
-              label,
-              style: const TextStyle(fontSize: 10, color: Colors.grey),
-            ),
+            Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text(label, style: const TextStyle(fontSize: 10, color: Colors.grey)),
           ],
         ),
       ),
@@ -611,7 +498,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       builder: (context, c) {
         return Stack(
           children: [
-            // Exhibits
             ...exhibits.map((e) {
               double dx = (e.x / 400) * c.maxWidth;
               double dy = (e.y / 600) * c.maxHeight;
@@ -619,20 +505,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               return Positioned(
                 left: dx.clamp(0, c.maxWidth - 5),
                 top: dy.clamp(0, c.maxHeight - 5),
-                child: const Icon(
-                  Icons.circle,
-                  size: 8,
-                  color: Colors.redAccent,
-                ),
+                child: const Icon(Icons.circle, size: 8, color: Colors.redAccent),
               );
             }),
-            // User static example marker (center-ish)
             Positioned(
               left: c.maxWidth * 0.5,
               top: c.maxHeight * 0.7,
               child: const Icon(Icons.circle, size: 10, color: Colors.orange),
             ),
-            // Horus-Bot (robot) animated position
             AnimatedPositioned(
               duration: const Duration(seconds: 1),
               left: (robotX / 400) * c.maxWidth,
@@ -648,25 +528,54 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
 // ========== SIDE MENU WRAPPER ==========
 class _SideMenuWrapper extends StatelessWidget {
-  const _SideMenuWrapper();
+  final VoidCallback onClose;
+  const _SideMenuWrapper({required this.onClose});
 
   @override
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
     final isArabic = prefs.language == 'ar';
-    return _SideMenu(isArabic: isArabic);
+    return _SideMenu(isArabic: isArabic, onClose: onClose);
   }
 }
 
-// ========== SIDE MENU ==========
+// ========== SIDE MENU (Home UI + Drawer Features) ==========
 class _SideMenu extends StatelessWidget {
   final bool isArabic;
-  const _SideMenu({required this.isArabic});
+  final VoidCallback onClose;
+  const _SideMenu({required this.isArabic, required this.onClose});
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final double width = size.width * 0.70;
+
+    String t({required String en, required String ar}) => isArabic ? ar : en;
+
+    Widget item({
+      required IconData icon,
+      required String title,
+      required VoidCallback onTap,
+    }) {
+      return _MenuItem(
+        icon: icon,
+        label: title,
+        onTap: () {
+          onClose();
+          onTap();
+        },
+      );
+    }
+
+    void goReplace(String route) {
+      onClose();
+      Navigator.pushReplacementNamed(context, route);
+    }
+
+    void goPush(String route) {
+      onClose();
+      Navigator.pushNamed(context, route);
+    }
 
     return Align(
       alignment: Alignment.centerLeft,
@@ -684,88 +593,121 @@ class _SideMenu extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               child: Column(
-                crossAxisAlignment: isArabic
-                    ? CrossAxisAlignment.end
-                    : CrossAxisAlignment.start,
+                crossAxisAlignment: isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: Image.asset(
-                      "assets/icons/ankh.png",
-                      width: 90,
-                      height: 90,
+                    child: Image.asset("assets/icons/ankh.png", width: 90, height: 90),
+                  ),
+
+                  // ✅ Header same as AppDrawer
+                  Padding(
+                    padding: const EdgeInsets.all(AppSizes.md),
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 22,
+                          child: Text('G', style: AppTextStyles.title(context)),
+                        ),
+                        const SizedBox(width: AppSizes.md),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                t(en: 'Guest User', ar: 'زائر'),
+                                style: AppTextStyles.title(context),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                t(en: 'Explore the museum', ar: 'استكشف المتحف'),
+                                style: AppTextStyles.caption(context),
+                              ),
+                            ],
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () => goReplace('/profile'),
+                          child: Text(t(en: 'Profile', ar: 'الملف الشخصي')),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 20),
+
+                  const Divider(height: 1),
+
                   Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: isArabic
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            isArabic ? "استكشف" : "Explore",
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          _MenuItem(
-                            icon: Icons.map_rounded,
-                            label: isArabic ? "الخريطة" : "Map",
-                            onTap: () =>
-                                Navigator.pushNamed(context, AppRoutes.map),
-                          ),
-                          _MenuItem(
-                            icon: Icons.museum_outlined,
-                            label: isArabic ? "المعارض" : "Exhibits",
-                            onTap: () =>
-                                Navigator.pushNamed(context, AppRoutes.search),
-                          ),
-                          _MenuItem(
-                            icon: Icons.quiz_outlined,
-                            label: isArabic ? "الاختبار" : "Quiz",
-                            onTap: () =>
-                                Navigator.pushNamed(context, AppRoutes.quiz),
-                          ),
-                          _MenuItem(
-                            icon: Icons.radio_button_checked,
-                            label: isArabic ? "جولة حية" : "Live Tour",
-                            onTap: () => Navigator.pushNamed(
-                              context,
-                              AppRoutes.liveTour,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            isArabic ? "الإعدادات" : "Settings",
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          _MenuItem(
-                            icon: Icons.language,
-                            label: isArabic ? "اللغة" : "Language",
-                            onTap: () => Navigator.pushNamed(
-                              context,
-                              AppRoutes.language,
-                            ),
-                          ),
-                          _MenuItem(
-                            icon: Icons.feedback_outlined,
-                            label: isArabic ? "رأيك" : "Feedback",
-                            onTap: () => Navigator.pushNamed(
-                              context,
-                              AppRoutes.feedback,
-                            ),
-                          ),
-                        ],
-                      ),
+                    child: ListView(
+                      padding: EdgeInsets.zero,
+                      children: [
+                        // ✅ Keep existing Home menu items
+                        item(
+                          icon: Icons.map_rounded,
+                          title: isArabic ? "الخريطة" : "Map",
+                          onTap: () => Navigator.pushNamed(context, AppRoutes.map),
+                        ),
+                        item(
+                          icon: Icons.museum_outlined,
+                          title: isArabic ? "المعارض" : "Exhibits",
+                          onTap: () => Navigator.pushNamed(context, AppRoutes.search),
+                        ),
+                        item(
+                          icon: Icons.quiz_outlined,
+                          title: isArabic ? "الاختبار" : "Quiz",
+                          onTap: () => Navigator.pushNamed(context, AppRoutes.quiz),
+                        ),
+                        item(
+                          icon: Icons.radio_button_checked,
+                          title: isArabic ? "جولة حية" : "Live Tour",
+                          onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
+                        ),
+
+                        const Divider(),
+
+                        // ✅ Add ALL AppDrawer items
+                        item(
+                          icon: Icons.person_outline,
+                          title: AppStrings.profile,
+                          onTap: () => goReplace('/profile'),
+                        ),
+                        item(
+                          icon: Icons.route_outlined,
+                          title: AppStrings.tourPlanner,
+                          onTap: () => goReplace('/tour-planner'),
+                        ),
+                        item(
+                          icon: Icons.event_outlined,
+                          title: AppStrings.events,
+                          onTap: () => goReplace('/events'),
+                        ),
+                        item(
+                          icon: Icons.emoji_events_outlined,
+                          title: AppStrings.achievements,
+                          onTap: () => goReplace('/achievements'),
+                        ),
+
+                        const Divider(),
+
+                        item(
+                          icon: Icons.language,
+                          title: AppStrings.language,
+                          onTap: () => goReplace('/language'),
+                        ),
+                        item(
+                          icon: Icons.accessibility_new,
+                          title: AppStrings.accessibility,
+                          onTap: () => goReplace('/accessibility'),
+                        ),
+                        item(
+                          icon: Icons.feedback_outlined,
+                          title: AppStrings.feedback,
+                          onTap: () => goReplace('/feedback'),
+                        ),
+                        item(
+                          icon: Icons.settings_outlined,
+                          title: AppStrings.settings,
+                          onTap: () => goReplace('/settings'),
+                        ),
+                      ],
                     ),
                   ),
                 ],
