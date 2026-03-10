@@ -23,16 +23,19 @@ void main() {
     await tester.pump(const Duration(seconds: 3));
     await tester.pumpAndSettle();
 
-    // 4. Verify Onboarding Screen
-    expect(find.text('Meet Horus-Bot'), findsOneWidget);
+    // 4. Verify Onboarding Screen (New refined text)
+    expect(find.text('Explore Museums'), findsOneWidget);
 
     // 5. Test Language Switch
+    await tester.tap(find.text('English')); // Tap current language to open popup
+    await tester.pumpAndSettle();
+
     await tester.tap(find.text('العربية'));
     await tester.pumpAndSettle();
-    expect(find.text('تعرف على حوروس'), findsOneWidget);
+    expect(find.text('استكشف المتاحف'), findsOneWidget);
 
     // 6. Complete onboarding
-    await tester.tap(find.text('ابدأ مع حوروس'));
+    await tester.tap(find.text('ابدأ الاستكشاف'));
     await tester.pumpAndSettle();
 
     // 7. Verify Home Screen loaded (at least one Horus title)
