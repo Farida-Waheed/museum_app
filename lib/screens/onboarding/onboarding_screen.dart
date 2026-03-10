@@ -166,31 +166,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
                                 child: child,
                               );
                             },
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Container(
-                                  width: 90,
-                                  height: 90,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: const Color(0xFFE6C068).withOpacity(0.12),
-                                        blurRadius: 20,
-                                        spreadRadius: 4,
-                                      ),
-                                    ],
+                            child: Container(
+                              width: 90,
+                              height: 90,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(0xFFE6C068).withOpacity(0.12),
+                                    blurRadius: 20,
+                                    spreadRadius: 4,
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: ClipOval(
+                                  child: Image.asset(
+                                    pages[index]["iconPath"]!,
+                                    width: 72,
+                                    height: 72,
+                                    color: const Color(0xFFE6C068),
+                                    colorBlendMode: BlendMode.srcIn,
                                   ),
                                 ),
-                                Image.asset(
-                                  pages[index]["iconPath"]!,
-                                  width: 72,
-                                  height: 72,
-                                  color: const Color(0xFFE6C068),
-                                  colorBlendMode: BlendMode.color,
-                                ),
-                              ],
+                              ),
                             ),
                           ),
                           const SizedBox(height: 28),
