@@ -83,9 +83,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.3),
-                    Colors.black.withOpacity(0.5),
-                    Colors.black.withOpacity(0.9),
+                    Colors.black.withOpacity(0.2),
+                    Colors.black.withOpacity(0.4),
+                    Colors.black.withOpacity(0.85),
                   ],
                   stops: const [0.0, 0.4, 1.0],
                 ),
@@ -108,53 +108,53 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          // Icon with glow
+                          // Icon with subtle glow
                           Stack(
                             alignment: Alignment.center,
                             children: [
                               Container(
-                                width: 120,
-                                height: 120,
+                                width: 90,
+                                height: 90,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.white.withOpacity(0.15),
-                                      blurRadius: 30,
-                                      spreadRadius: 10,
+                                      color: Colors.white.withOpacity(0.1),
+                                      blurRadius: 20,
+                                      spreadRadius: 5,
                                     ),
                                   ],
                                 ),
                               ),
                               Image.asset(
                                 pages[index]["iconPath"]!,
-                                width: 106,
-                                height: 106,
+                                width: 88,
+                                height: 88,
                               ),
                             ],
                           ),
-                          const SizedBox(height: 40),
+                          const SizedBox(height: 32),
                           Text(
                             pages[index]["title"]!,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 28,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 0.5,
                             ),
                           ),
-                          const SizedBox(height: 18),
+                          const SizedBox(height: 14),
                           Text(
                             pages[index]["desc"]!,
                             textAlign: TextAlign.center,
                             style: TextStyle(
                               color: Colors.white.withOpacity(0.85),
-                              fontSize: 16,
-                              height: 1.6,
+                              fontSize: 15,
+                              height: 1.5,
                             ),
                           ),
-                          const SizedBox(height: 100),
+                          const SizedBox(height: 60),
                         ],
                       ),
                     );
@@ -164,57 +164,70 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
               // --- Dots + Primary button ---
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 60),
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 48),
                 child: Column(
                   children: [
-                    // Dots indicator
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(pages.length, (index) {
-                        final bool active = _currentPage == index;
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          margin: const EdgeInsets.symmetric(horizontal: 6),
-                          width: active ? 28 : 10,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            color: active ? Colors.white : Colors.white.withOpacity(0.4),
-                            borderRadius: BorderRadius.circular(5),
+                    // Dots indicator with optional Next affordance
+                    SizedBox(
+                      height: 40,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(pages.length, (index) {
+                              final bool active = _currentPage == index;
+                              return AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                margin: const EdgeInsets.symmetric(horizontal: 6),
+                                width: active ? 22 : 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: active ? Colors.white : Colors.white.withOpacity(0.4),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              );
+                            }),
                           ),
-                        );
-                      }),
+                          if (_currentPage < pages.length - 1)
+                            Positioned(
+                              right: isArabic ? null : 0,
+                              left: isArabic ? 0 : null,
+                              child: IconButton(
+                                onPressed: () => _pageController.nextPage(
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                ),
+                                icon: Icon(
+                                  isArabic ? Icons.chevron_left : Icons.chevron_right,
+                                  color: Colors.white.withOpacity(0.5),
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 28),
 
-                    // Navigation Button
+                    // Navigation Button - "Start Exploring" on every slide
                     SizedBox(
                       width: double.infinity,
-                      height: 60,
+                      height: 56,
                       child: ElevatedButton(
-                        onPressed: () {
-                          if (_currentPage < pages.length - 1) {
-                            _pageController.nextPage(
-                              duration: const Duration(milliseconds: 400),
-                              curve: Curves.easeInOut,
-                            );
-                          } else {
-                            _completeOnboarding(prefs);
-                          }
-                        },
+                        onPressed: () => _completeOnboarding(prefs),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
+                            borderRadius: BorderRadius.circular(16),
                           ),
                           elevation: 0,
                         ),
                         child: Text(
-                          _currentPage == pages.length - 1
-                              ? l10n.startExploring
-                              : l10n.next,
+                          l10n.startExploring,
                           style: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -226,11 +239,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ],
           ),
 
-          // --- 4. Language switcher (top-left/right) ---
+          // --- 4. Language switcher (Top Start) ---
           Positioned(
             top: 60,
-            left: isArabic ? 20 : null,
-            right: isArabic ? null : 20,
+            left: isArabic ? null : 20,
+            right: isArabic ? 20 : null,
             child: SafeArea(
               child: TextButton(
                 onPressed: () {
@@ -238,32 +251,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: Colors.black.withOpacity(0.3),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  backgroundColor: Colors.white.withOpacity(0.15),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.language, size: 18),
-                    const SizedBox(width: 8),
-                    Text(
-                      "العربية / English",
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
-                    ),
-                  ],
+                child: const Text(
+                  "🌐 العربية / English",
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
                 ),
               ),
             ),
           ),
 
-          // --- 5. Skip button (top-right/left) ---
+          // --- 5. Skip button (Top End) ---
           Positioned(
             top: 60,
-            left: isArabic ? null : 20,
-            right: isArabic ? 20 : null,
+            left: isArabic ? 20 : null,
+            right: isArabic ? null : 20,
             child: SafeArea(
               child: TextButton(
                 onPressed: () => _completeOnboarding(prefs),
