@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
@@ -12,13 +13,24 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerProviderStateMixin {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  late final AnimationController _floatController;
+
+  @override
+  void initState() {
+    super.initState();
+    _floatController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    )..repeat(reverse: true);
+  }
 
   @override
   void dispose() {
     _pageController.dispose();
+    _floatController.dispose();
     super.dispose();
   }
 
@@ -56,11 +68,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
     // Material B - Primary CTA Surface
     final primaryCtaButtonStyle = ElevatedButton.styleFrom(
-      backgroundColor: const Color(0xFFF6F0E6),
-      foregroundColor: const Color(0xFF1B1B1B),
+      backgroundColor: const Color(0xFFE6C068),
+      foregroundColor: const Color(0xFF1E1912),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: Color(0xFFD4AF37), width: 1.5),
+        side: const BorderSide(color: Color(0xFFE6C068), width: 1.5),
       ),
       elevation: 6,
       shadowColor: Colors.black.withOpacity(0.25),
@@ -119,11 +131,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.15),
-                    Colors.black.withOpacity(0.4),
-                    const Color(0xFF1B1B1B).withOpacity(0.95),
+                    Colors.black.withOpacity(0.6),
+                    Colors.black.withOpacity(0.8),
                   ],
-                  stops: const [0.0, 0.4, 1.0],
+                  stops: const [0.0, 1.0],
                 ),
               ),
             ),
@@ -146,32 +157,41 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         children: [
                           const SizedBox(height: 40), // Top spacing adjustment
                           // Unified Icon treatment
-                          Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Container(
-                                width: 90,
-                                height: 90,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(0xFFD4AF37).withOpacity(0.12),
-                                      blurRadius: 20,
-                                      spreadRadius: 4,
-                                    ),
-                                  ],
+                          AnimatedBuilder(
+                            animation: _floatController,
+                            builder: (context, child) {
+                              final double floatOffset = 8 * math.sin(_floatController.value * 2 * math.pi);
+                              return Transform.translate(
+                                offset: Offset(0, floatOffset),
+                                child: child,
+                              );
+                            },
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Container(
+                                  width: 90,
+                                  height: 90,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: const Color(0xFFE6C068).withOpacity(0.12),
+                                        blurRadius: 20,
+                                        spreadRadius: 4,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Image.asset(
-                                pages[index]["iconPath"]!,
-                                width: 84,
-                                height: 84,
-                                // Apply a subtle gold tint to unify mixed icon styles if needed
-                                // color: const Color(0xFFD4AF37).withOpacity(0.1),
-                                // colorBlendMode: BlendMode.srcATop,
-                              ),
-                            ],
+                                Image.asset(
+                                  pages[index]["iconPath"]!,
+                                  width: 84,
+                                  height: 84,
+                                  color: const Color(0xFFE6C068),
+                                  colorBlendMode: BlendMode.srcIn,
+                                ),
+                              ],
+                            ),
                           ),
                           const SizedBox(height: 28),
                           Text(
@@ -217,12 +237,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           width: active ? 26 : 8,
                           height: 6,
                           decoration: BoxDecoration(
-                            color: active ? const Color(0xFFD4AF37) : Colors.white.withOpacity(0.25),
+                            color: active ? const Color(0xFFE6C068) : const Color(0xFF666666),
                             borderRadius: BorderRadius.circular(10),
                             boxShadow: [
                               if (active)
                                 BoxShadow(
-                                  color: const Color(0xFFD4AF37).withOpacity(0.4),
+                                  color: const Color(0xFFE6C068).withOpacity(0.4),
                                   blurRadius: 8,
                                 ),
                             ],
@@ -264,13 +284,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: PopupMenuButton<String>(
                 onSelected: (lang) => prefs.setLanguage(lang),
                 offset: const Offset(0, 48),
-                color: const Color(0xFF1B1B1B).withOpacity(0.85), // Keep dark for legibility
+                color: const Color(0xFF1E1912).withOpacity(0.9), // Keep dark for legibility
                 elevation: 8,
                 constraints: const BoxConstraints(minWidth: 160),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                   side: BorderSide(
-                    color: const Color(0xFFD4AF37).withOpacity(0.35),
+                    color: const Color(0xFFE6C068).withOpacity(0.4),
                     width: 1,
                   ),
                 ),

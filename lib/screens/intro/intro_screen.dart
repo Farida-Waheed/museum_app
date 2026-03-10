@@ -169,7 +169,7 @@ class _IntroScreenState extends State<IntroScreen>
                     const Text('Museums', style: mainTitleStyle),
                     const SizedBox(height: 12),
                     const Text(
-                      'Explore Egypt with your Horus-Bot and its app.',
+                      'Explore Egyptian museums with Horus-Bot.',
                       style: taglineStyle,
                     ),
                   ],
