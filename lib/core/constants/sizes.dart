@@ -13,7 +13,7 @@ class AppSizes {
   static const double radiusXl = 32;
 
   // Components
-  static const double buttonHeight = 56;
+  static const double buttonHeight = 52;
   static const double iconTapSize = 48; // accessibility-friendly
   static const double cardElevation = 0;
 }

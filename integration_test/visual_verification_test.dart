@@ -17,15 +17,15 @@ void main() {
     expect(find.byType(OnboardingScreen), findsOneWidget);
     await tester.takeScreenshot('onboarding_1');
 
-    // 2. Click Next
-    await tester.tap(find.text('Next'));
+    // 2. Swipe through onboarding
+    await tester.drag(find.byType(PageView), const Offset(-400, 0));
     await tester.pumpAndSettle();
-    await tester.takeScreenshot('onboarding_2');
+    await tester.takeScreenshot('onboarding_swiped');
 
-    // 3. Skip to Home
-    final skipBtn = find.text('Skip');
-    if (skipBtn.evaluate().isNotEmpty) {
-       await tester.tap(skipBtn);
+    // 3. Start Exploring
+    final startExploringBtn = find.text('Start Exploring');
+    if (startExploringBtn.evaluate().isNotEmpty) {
+       await tester.tap(startExploringBtn);
        await tester.pumpAndSettle();
     }
 
