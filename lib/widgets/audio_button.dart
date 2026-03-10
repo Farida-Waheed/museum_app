@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
+import '../l10n/app_localizations.dart';
 
 class AudioButton extends StatefulWidget {
   final String assetPath;
@@ -53,6 +54,8 @@ class _AudioButtonState extends State<AudioButton> {
         if (!mounted) return;
         setState(() => _isPlaying = true);
       }
+    } catch (e) {
+      debugPrint("Audio play error: $e");
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -60,7 +63,8 @@ class _AudioButtonState extends State<AudioButton> {
 
   @override
   Widget build(BuildContext context) {
-    final text = widget.label ?? (_isPlaying ? 'Stop Audio' : 'Play Audio');
+    final l10n = AppLocalizations.of(context)!;
+    final text = widget.label ?? (_isPlaying ? l10n.done : l10n.audioGuide);
 
     if (widget.compact) {
       return IconButton(

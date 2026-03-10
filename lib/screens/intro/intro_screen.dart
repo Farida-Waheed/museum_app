@@ -137,9 +137,9 @@ class _IntroScreenState extends State<IntroScreen>
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black.withOpacity(0.8),
-                  Colors.black.withOpacity(0.4),
-                  Colors.black.withOpacity(0.8),
+                  Colors.black.withOpacity(0.65),
+                  Colors.black.withOpacity(0.25),
+                  Colors.black.withOpacity(0.70),
                 ],
                 stops: const [0.0, 0.5, 1.0],
               ),

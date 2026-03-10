@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 
 import '../../models/exhibit.dart';
 import '../../models/user_preferences.dart';
+import '../../models/exhibit_provider.dart';
+import '../../models/tour_provider.dart';
 import '../../core/utils/audio_player.dart';
 import '../../widgets/bottom_nav.dart';
-import '../chat/chat_screen.dart'; // RoboGuideEntry
+import '../../widgets/app_menu_shell.dart';
+import '../../widgets/robot_status_banner.dart';
+import '../chat/chat_screen.dart';
+import '../quiz/quiz_screen.dart'; // To navigate to quiz
 
 class ExhibitDetailScreen extends StatefulWidget {
   const ExhibitDetailScreen({super.key});
@@ -20,7 +26,6 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
   late final AnimationController _playController;
 
   bool _isPlaying = false;
-  bool _isBookmarked = false;
 
   @override
   void initState() {
@@ -38,22 +43,17 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
     super.dispose();
   }
 
-  void _toggleAudio(Exhibit exhibit, bool isArabic) {
+  void _toggleAudio(Exhibit exhibit, AppLocalizations l10n) {
     setState(() {
       _isPlaying = !_isPlaying;
     });
 
     if (_isPlaying) {
       _playController.forward();
-      // TODO: wire proper audio path, this is just a placeholder
       _audioService.playAudio('audio/${exhibit.id}.mp3');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            isArabic
-                ? "يتم تشغيل الشرح الصوتي..."
-                : "Playing the audio guide...",
-          ),
+          content: Text(l10n.audioPlaying),
           duration: const Duration(seconds: 1),
         ),
       );
@@ -63,18 +63,13 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
     }
   }
 
-  void _toggleBookmark(bool isArabic) {
-    setState(() => _isBookmarked = !_isBookmarked);
+  void _toggleBookmark(Exhibit exhibit, AppLocalizations l10n, ExhibitProvider provider) {
+    provider.toggleBookmark(exhibit.id);
+    final isBookmarked = provider.isBookmarked(exhibit.id);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          _isBookmarked
-              ? (isArabic
-                    ? "تمت إضافة المعروض إلى قائمتك."
-                    : "Exhibit added to your list.")
-              : (isArabic
-                    ? "تمت إزالة المعروض من قائمتك."
-                    : "Exhibit removed from your list."),
+          isBookmarked ? l10n.addedToBookmarks : l10n.removedFromBookmarks,
         ),
         duration: const Duration(milliseconds: 900),
       ),
@@ -85,19 +80,29 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
   Widget build(BuildContext context) {
     final exhibit = ModalRoute.of(context)!.settings.arguments as Exhibit;
     final prefs = Provider.of<UserPreferencesModel>(context);
-    final isArabic = prefs.language == 'ar';
+    final exhibitProvider = Provider.of<ExhibitProvider>(context);
+    final tourProvider = Provider.of<TourProvider>(context);
+    final l10n = AppLocalizations.of(context)!;
 
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
+    final isBookmarked = exhibitProvider.isBookmarked(exhibit.id);
+    final isArabic = prefs.language == 'ar';
 
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      // detail screen usually has no bottom nav, but we keep Horus-Bot entry
+    // Mark as visited when viewing details
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<TourProvider>(context, listen: false).setCurrentExhibit(exhibit.id);
+    });
+
+    final hasCompletedQuiz = tourProvider.quizScores.containsKey(exhibit.id);
+
+    return AppMenuShell(
+      subHeader: const RobotStatusBanner(),
       bottomNavigationBar: const BottomNav(currentIndex: 0),
       floatingActionButton: const RoboGuideEntry(),
       body: CustomScrollView(
         slivers: [
-          _buildSliverAppBar(exhibit, prefs.language, cs, isArabic),
+          _buildSliverAppBar(exhibit, prefs.language, cs, l10n, isBookmarked, exhibitProvider),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(
@@ -105,16 +110,14 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                 vertical: 24.0,
               ),
               child: Column(
-                crossAxisAlignment: isArabic
-                    ? CrossAxisAlignment.end
-                    : CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildAudioCard(exhibit, isArabic, cs),
+                  _buildAudioCard(exhibit, l10n, cs),
                   const SizedBox(height: 24),
-                  _buildFactChips(exhibit, isArabic, cs),
+                  _buildFactChips(exhibit, l10n, cs),
                   const SizedBox(height: 28),
                   Text(
-                    isArabic ? "الوصف" : "Description",
+                    l10n.description,
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -122,18 +125,110 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                   const SizedBox(height: 10),
                   Text(
                     exhibit.getDescription(prefs.language),
-                    textAlign: isArabic ? TextAlign.right : TextAlign.left,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       height: 1.6,
                       color: Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 28),
-                  _buildRouteButtons(isArabic, cs),
+
+                  // Integrated Quiz Prompt
+                  if (!hasCompletedQuiz)
+                    _buildQuizPrompt(l10n, cs, exhibit.id, isArabic)
+                  else
+                    _buildQuizCompletedChip(l10n, cs, tourProvider.quizScores[exhibit.id]!, isArabic),
+
+                  const SizedBox(height: 28),
+                  _buildRouteButtons(l10n, cs),
                   const SizedBox(height: 32),
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuizPrompt(AppLocalizations l10n, ColorScheme cs, String exhibitId, bool isArabic) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.amber.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.amber.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.quiz_outlined, color: Colors.amber, size: 24),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.takeQuickQuiz,
+                  style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => QuizScreen(exhibitId: exhibitId),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber.shade700,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                  ),
+                  child: Text(l10n.startQuiz, style: const TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(width: 12),
+              TextButton(
+                onPressed: () {
+                  Provider.of<TourProvider>(context, listen: false).skipQuiz(exhibitId);
+                },
+                child: Text(isArabic ? "تخطي" : "Skip"),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuizCompletedChip(AppLocalizations l10n, ColorScheme cs, int score, bool isArabic) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.green.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.green.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.check_circle_rounded, color: Colors.green, size: 20),
+          const SizedBox(width: 10),
+          Text(
+            isArabic ? "الاختبار مكتمل" : "Quiz Completed",
+            style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+          ),
+          const Spacer(),
+          Text(
+            isArabic ? "النتيجة: $score" : "Score: $score",
+            style: TextStyle(color: Colors.green.shade800, fontWeight: FontWeight.w900),
           ),
         ],
       ),
@@ -146,7 +241,9 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
     Exhibit exhibit,
     String language,
     ColorScheme cs,
-    bool isArabic,
+    AppLocalizations l10n,
+    bool isBookmarked,
+    ExhibitProvider exhibitProvider,
   ) {
     return SliverAppBar(
       expandedHeight: 320,
@@ -156,10 +253,10 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
       actions: [
         IconButton(
           icon: Icon(
-            _isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+            isBookmarked ? Icons.bookmark : Icons.bookmark_border,
             color: Colors.white,
           ),
-          onPressed: () => _toggleBookmark(isArabic),
+          onPressed: () => _toggleBookmark(exhibit, l10n, exhibitProvider),
         ),
       ],
       flexibleSpace: FlexibleSpaceBar(
@@ -167,7 +264,6 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
         titlePadding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
         title: Text(
           exhibit.getName(language),
-          textAlign: isArabic ? TextAlign.right : TextAlign.left,
           style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -177,8 +273,6 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
         background: Stack(
           fit: StackFit.expand,
           children: [
-            // TODO: replace with Exhibit image if you add an imagePath field.
-            // e.g. Image.asset(exhibit.imagePath, fit: BoxFit.cover)
             Image.asset('assets/images/museum_interior.jpg', fit: BoxFit.cover),
             Container(
               decoration: BoxDecoration(
@@ -200,32 +294,24 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
 
   // ---------- AUDIO CARD ----------
 
-  Widget _buildAudioCard(Exhibit exhibit, bool isArabic, ColorScheme cs) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: cs.primary,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: cs.primary.withOpacity(0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () => _toggleAudio(exhibit, isArabic),
-            child: Container(
-              width: 56,
-              height: 56,
-              decoration: const BoxDecoration(
-                color: Color(0xFFD4AF37), // Gold
-                shape: BoxShape.circle,
-              ),
-              child: Center(
+  Widget _buildAudioCard(Exhibit exhibit, AppLocalizations l10n, ColorScheme cs) {
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Row(
+          children: [
+            InkWell(
+              onTap: () => _toggleAudio(exhibit, l10n),
+              borderRadius: BorderRadius.circular(30),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: cs.primary.withOpacity(0.08),
+                  shape: BoxShape.circle,
+                ),
                 child: AnimatedIcon(
                   icon: AnimatedIcons.play_pause,
                   progress: _playController,
@@ -234,28 +320,22 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                 ),
               ),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isArabic ? "الشرح الصوتي" : "Audio Guide",
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.audioGuide,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  isArabic
-                      ? "استمع لقصة هذا المعلم."
-                      : "Listen to the story of this artifact.",
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
-                    fontSize: 13,
+                  const SizedBox(height: 4),
+                  Text(
+                    l10n.audioNarration,
+                    style: const TextStyle(fontSize: 12, color: Colors.black54),
                   ),
                 ),
               ],
@@ -270,43 +350,33 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
 
   // ---------- FACT CHIPS ----------
 
-  Widget _buildFactChips(Exhibit exhibit, bool isArabic, ColorScheme cs) {
+  Widget _buildFactChips(Exhibit exhibit, AppLocalizations l10n, ColorScheme cs) {
     final facts = <Map<String, dynamic>>[
       {
         'icon': Icons.public,
-        'label': isArabic ? 'الأصل' : 'Origin',
+        'label': l10n.origin,
         'value': 'Ancient Egypt',
       },
       {
-        'icon': Icons.history_toggle_off,
-        'label': isArabic ? 'الفترة' : 'Period',
+        'icon': Icons.calendar_today,
+        'label': l10n.period,
         'value': 'New Kingdom',
       },
       {
-        'icon': Icons.place_outlined,
-        'label': isArabic ? 'المعرض' : 'Gallery',
+        'icon': Icons.location_on,
+        'label': l10n.gallery,
         'value': 'Hall A',
       },
     ];
 
     return Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      alignment: isArabic ? WrapAlignment.end : WrapAlignment.start,
-      children: facts.map((f) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFFE2E8F0)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(f['icon'] as IconData, size: 16, color: const Color(0xFFD4AF37)),
-              const SizedBox(width: 8),
-              Text(
+      spacing: 8,
+      runSpacing: 8,
+      children: facts
+          .map(
+            (f) => Chip(
+              avatar: Icon(f['icon'] as IconData, size: 18, color: cs.primary),
+              label: Text(
                 '${f['label']}: ${f['value']}',
                 style: const TextStyle(
                   fontSize: 13,
@@ -323,25 +393,20 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
 
   // ---------- ROUTE / MAP BUTTONS ----------
 
-  Widget _buildRouteButtons(bool isArabic, ColorScheme cs) {
+  Widget _buildRouteButtons(AppLocalizations l10n, ColorScheme cs) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         OutlinedButton.icon(
           onPressed: () {
-            // TODO: wire to My Route screen
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  isArabic
-                      ? "أُضيفت هذه القطعة إلى مسارك."
-                      : "Added to your route.",
-                ),
+                content: Text(l10n.addedToRoute),
               ),
             );
           },
           icon: const Icon(Icons.route),
-          label: Text(isArabic ? "أضف إلى مساري" : "Add to my route"),
+          label: Text(l10n.addToMyRoute),
           style: OutlinedButton.styleFrom(
             foregroundColor: cs.primary,
             side: BorderSide(color: cs.primary.withOpacity(0.4)),
@@ -354,19 +419,14 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
         const SizedBox(width: 12),
         TextButton.icon(
           onPressed: () {
-            // TODO: navigate to map zoomed into this gallery
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  isArabic
-                      ? "فتح الخريطة في قاعة هذه القطعة."
-                      : "Opening the map at this gallery.",
-                ),
+                content: Text(l10n.openingMap),
               ),
             );
           },
           icon: const Icon(Icons.map_outlined),
-          label: Text(isArabic ? "عرض على الخريطة" : "View on map"),
+          label: Text(l10n.viewOnMap),
           style: TextButton.styleFrom(foregroundColor: cs.primary),
         ),
       ],

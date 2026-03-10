@@ -1,67 +1,59 @@
 import 'package:flutter/material.dart';
-import '../core/constants/text_styles.dart';
+import '../core/constants/sizes.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String label;
-  final VoidCallback onPressed;
-  final bool isLoading;
+  final VoidCallback? onPressed;
   final IconData? icon;
-  final Color? backgroundColor;
-  final Color? foregroundColor;
+  final bool loading;
+  final bool fullWidth;
+  final Color? color;
 
   const PrimaryButton({
     super.key,
     required this.label,
-    required this.onPressed,
-    this.isLoading = false,
+    this.onPressed,
     this.icon,
-    this.backgroundColor,
-    this.foregroundColor,
+    this.loading = false,
+    this.fullWidth = false,
+    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final style = ElevatedButton.styleFrom(
-      backgroundColor: backgroundColor ?? theme.colorScheme.primary,
-      foregroundColor: foregroundColor ?? theme.colorScheme.onPrimary,
-      minimumSize: const Size(double.infinity, 56),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      elevation: 0,
-      textStyle: AppTextStyles.button(context),
+    Widget content = Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (loading)
+          const SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+          )
+        else ...[
+          if (icon != null) ...[
+            Icon(icon, size: 20),
+            const SizedBox(width: 8),
+          ],
+          Text(label),
+        ],
+      ],
     );
 
-    if (isLoading) {
-      return ElevatedButton(
-        onPressed: null,
-        style: style,
-        child: const SizedBox(
-          height: 24,
-          width: 24,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-          ),
-        ),
-      );
-    }
-
-    if (icon != null) {
-      return ElevatedButton.icon(
-        onPressed: onPressed,
-        style: style,
-        icon: Icon(icon, size: 20),
-        label: Text(label),
-      );
-    }
+    final buttonStyle = ElevatedButton.styleFrom(
+      backgroundColor: color ?? theme.colorScheme.primary,
+      foregroundColor: theme.colorScheme.onPrimary,
+      minimumSize: fullWidth ? const Size(double.infinity, AppSizes.buttonHeight) : const Size(0, AppSizes.buttonHeight),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+    );
 
     return ElevatedButton(
-      onPressed: onPressed,
-      style: style,
-      child: Text(label),
+      onPressed: loading ? null : onPressed,
+      style: buttonStyle,
+      child: content,
     );
   }
 }

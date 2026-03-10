@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 
 import '../../models/user_preferences.dart';
 import '../../app/router.dart';
@@ -22,70 +23,79 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     super.dispose();
   }
 
-  PopupMenuItem<String> _buildLanguageItem({
-    required String code,
-    required String name,
-    required String flag,
-    required bool isSelected,
-  }) {
-    return PopupMenuItem<String>(
-      value: code,
-      child: Row(
-        children: [
-          Text(flag, style: const TextStyle(fontSize: 18)),
-          const SizedBox(width: 12),
-          Text(
-            name,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const Spacer(),
-          if (isSelected)
-            const Icon(Icons.check, color: Color(0xFFE6C068), size: 18),
-        ],
-      ),
+  void _completeOnboarding(UserPreferencesModel prefs) {
+    prefs.setCompletedOnboarding(true);
+    Navigator.pushReplacementNamed(
+      context,
+      AppRoutes.mainHome,
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    // --- REUSABLE DESIGN MATERIALS ---
+
+    // Material A - Glass Surface (Controls)
+    final glassSurfaceDecoration = BoxDecoration(
+      color: Colors.black.withOpacity(0.25),
+      borderRadius: BorderRadius.circular(14),
+      border: Border.all(
+        color: const Color(0xFFD4AF37).withOpacity(0.35),
+        width: 1,
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.25),
+          blurRadius: 10,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    );
+
+    // Material B - Primary CTA Surface
+    final primaryCtaButtonStyle = ElevatedButton.styleFrom(
+      backgroundColor: const Color(0xFFF6F0E6),
+      foregroundColor: const Color(0xFF1B1B1B),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Color(0xFFD4AF37), width: 1.5),
+      ),
+      elevation: 6,
+      shadowColor: Colors.black.withOpacity(0.25),
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      // To match shadow spec exactly if possible, though elevation is standard.
+      // spec: blurRadius: 12, offset: Offset(0, 6)
+    );
+
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
 
-    // --- Onboarding pages (short text, Horus-Bot + app modes) ---
-    final List<Map<String, String>> pages = [
+    final List<Map<String, dynamic>> pages = [
       {
-        "title": isArabic ? "استكشف المتاحف" : "Explore Museums",
-        "desc": isArabic
-            ? "استكشف المتاحف المصرية مع حوروس."
-            : "Explore Egyptian museums with Horus-Bot.",
-        "image": "assets/images/GEM.jpg",
+        "title": l10n.onboarding1Title,
+        "desc": l10n.onboarding1Desc,
+        "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/pyramid.png",
       },
       {
-        "title": isArabic ? "مرشدك الذكي" : "Your Smart Guide",
-        "desc": isArabic
-            ? "تنقل بين المعروضات، اتبع الروبوت، واكتشف القصص المخفية."
-            : "Navigate exhibits, follow the robot, and discover hidden stories.",
-        "image": "assets/images/museum_interior.jpg",
+        "title": l10n.onboarding2Title,
+        "desc": l10n.onboarding2Desc,
+        "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/pharaoh.png",
       },
       {
-        "title": isArabic ? "خريطة تفاعلية" : "Interactive Map",
-        "desc": isArabic
-            ? "اعثر على طريقك بسهولة وشاهد موقع حوروس في الوقت الفعلي."
-            : "Find your way easily and see Horus-Bot's location in real-time.",
-        "image": "assets/images/Grand Hall.jpg",
+        "title": l10n.onboarding3Title,
+        "desc": l10n.onboarding3Desc,
+        "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/map.png",
       },
       {
-        "title": isArabic ? "تعلم وتفاعل" : "Learn & Interact",
-        "desc": isArabic
-            ? "اسأل حوروس عن أي قطعة وشارك في اختبارات ممتعة."
-            : "Ask Horus-Bot about any artifact and take fun quizzes.",
-        "image": "assets/images/Pharaonic Coffin Mask.jpg",
+        "title": l10n.onboarding4Title,
+        "desc": l10n.onboarding4Desc,
+        "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/scarab.png",
       },
     ];
@@ -106,7 +116,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
 
-          // --- 2. Cinematic gradient overlay ---
+          // --- 2. Cinematic Gradient overlay ---
           Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
@@ -114,9 +124,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.6),
-                    Colors.black.withOpacity(0.8),
+                    Colors.black.withOpacity(0.15),
+                    Colors.black.withOpacity(0.4),
+                    const Color(0xFF1B1B1B).withOpacity(0.95),
                   ],
+                  stops: const [0.0, 0.4, 1.0],
                 ),
               ),
             ),
@@ -133,59 +145,60 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   itemCount: pages.length,
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32),
+                      padding: const EdgeInsets.symmetric(horizontal: 48),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.center, // Lifted up
                         children: [
-                          // Animated Floating Icon
-                          TweenAnimationBuilder<double>(
-                            tween: Tween(begin: 0.0, end: 1.0),
-                            duration: const Duration(seconds: 2),
-                            curve: Curves.easeInOutSine,
-                            builder: (context, value, child) {
-                              return Transform.translate(
-                                offset: Offset(0, 10 * (1.0 - (2 * value - 1.0).abs())),
-                                child: child,
-                              );
-                            },
-                            child: ColorFiltered(
-                              colorFilter: const ColorFilter.mode(
-                                Color(0xFFE6C068), // Gold accent
-                                BlendMode.srcIn,
+                          const SizedBox(height: 40), // Top spacing adjustment
+                          // Unified Icon treatment
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Container(
+                                width: 90,
+                                height: 90,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: const Color(0xFFD4AF37).withOpacity(0.12),
+                                      blurRadius: 20,
+                                      spreadRadius: 4,
+                                    ),
+                                  ],
+                                ),
                               ),
-                              child: Image.asset(
+                              Image.asset(
                                 pages[index]["iconPath"]!,
-                                width: 80,
-                                height: 80,
+                                width: 84,
+                                height: 84,
+                                // Apply a subtle gold tint to unify mixed icon styles if needed
+                                // color: const Color(0xFFD4AF37).withOpacity(0.1),
+                                // colorBlendMode: BlendMode.srcATop,
                               ),
-                            ),
+                            ],
                           ),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: 28),
                           Text(
                             pages[index]["title"]!,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.w800,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
                               letterSpacing: 0.5,
                             ),
                           ),
-                          const SizedBox(height: 16),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Text(
-                              pages[index]["desc"]!,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontSize: 16,
-                                height: 1.6,
-                                fontWeight: FontWeight.w400,
-                              ),
+                          const SizedBox(height: 14),
+                          Text(
+                            pages[index]["desc"]!,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.85),
+                              fontSize: 15,
+                              height: 1.5,
                             ),
                           ),
-                          const SizedBox(height: 80),
                         ],
                       ),
                     );
@@ -193,44 +206,53 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
               ),
 
-              // --- Dots + "Start with Horus" button ---
+              // --- Dots + Primary button ---
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 48),
                 child: Column(
                   children: [
-                    // Dots indicator
+                    // Premium Dots indicator
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(pages.length, (index) {
                         final bool active = _currentPage == index;
                         return AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          width: active ? 24 : 8,
+                          duration: const Duration(milliseconds: 400),
+                          margin: const EdgeInsets.symmetric(horizontal: 5),
+                          width: active ? 26 : 8,
                           height: 6,
                           decoration: BoxDecoration(
-                            color: active
-                                ? const Color(0xFFE6C068) // Gold
-                                : const Color(0xFF666666), // Gray
+                            color: active ? const Color(0xFFD4AF37) : Colors.white.withOpacity(0.25),
                             borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              if (active)
+                                BoxShadow(
+                                  color: const Color(0xFFD4AF37).withOpacity(0.4),
+                                  blurRadius: 8,
+                                ),
+                            ],
                           ),
                         );
                       }),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 32),
 
-                    // "Start with Horus-Bot"
-                    PrimaryButton(
-                      label: isArabic ? "ابدأ الاستكشاف" : "Start Exploring",
-                      backgroundColor: const Color(0xFFE6C068), // Theme Gold
-                      foregroundColor: const Color(0xFF1E1912), // Dark Brown
-                      onPressed: () {
-                        prefs.setCompletedOnboarding(true);
-                        Navigator.pushReplacementNamed(
-                          context,
-                          AppRoutes.mainHome,
-                        );
-                      },
+                    // Primary CTA
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: () => _completeOnboarding(prefs),
+                        style: primaryCtaButtonStyle,
+                        child: Text(
+                          l10n.startExploring.toUpperCase(),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -238,55 +260,82 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ],
           ),
 
-          // --- 4. Language switcher (top-right) ---
+          // --- 4. Language selector (Top Start) ---
           Positioned(
-            top: 60,
-            right: 24,
+            top: 48,
+            left: isArabic ? null : 24,
+            right: isArabic ? 24 : null,
             child: SafeArea(
-              child: Theme(
-                data: Theme.of(context).copyWith(
-                  cardColor: const Color(0xE61E1912), // rgba(30, 25, 18, 0.9)
-                ),
-                child: PopupMenuButton<String>(
-                  offset: const Offset(0, 48),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    side: const BorderSide(color: Color(0xFFE6C068), width: 0.5),
+              child: PopupMenuButton<String>(
+                onSelected: (lang) => prefs.setLanguage(lang),
+                offset: const Offset(0, 48),
+                color: const Color(0xFF1B1B1B).withOpacity(0.85), // Keep dark for legibility
+                elevation: 8,
+                constraints: const BoxConstraints(minWidth: 160),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  side: BorderSide(
+                    color: const Color(0xFFD4AF37).withOpacity(0.35),
+                    width: 1,
                   ),
-                  onSelected: (lang) => prefs.setLanguage(lang),
-                  itemBuilder: (context) => [
-                    _buildLanguageItem(
-                      code: 'en',
-                      name: 'English',
-                      flag: '🇺🇸',
-                      isSelected: prefs.language == 'en',
-                    ),
-                    _buildLanguageItem(
-                      code: 'ar',
-                      name: 'العربية',
-                      flag: '🇪🇬',
-                      isSelected: prefs.language == 'ar',
-                    ),
-                  ],
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.4),
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.white.withOpacity(0.1)),
-                    ),
+                ),
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'en',
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.language, color: Colors.white, size: 18),
-                        const SizedBox(width: 8),
-                        Text(
-                          isArabic ? "العربية" : "English",
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                        const Text("🇺🇸 ", style: TextStyle(fontSize: 18)),
+                        const Flexible(
+                          child: Text(
+                            "English",
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                        const Icon(Icons.arrow_drop_down, color: Colors.white, size: 20),
+                        const SizedBox(width: 8),
+                        if (prefs.language == 'en')
+                          const Icon(Icons.check, size: 16, color: Colors.white70),
                       ],
                     ),
+                  ),
+                  PopupMenuItem(
+                    value: 'ar',
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text("🇪🇬 ", style: TextStyle(fontSize: 18)),
+                        const Flexible(
+                          child: Text(
+                            "العربية",
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        if (prefs.language == 'ar')
+                          const Icon(Icons.check, size: 16, color: Colors.white70),
+                      ],
+                    ),
+                  ),
+                ],
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: glassSurfaceDecoration,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.language, size: 16, color: Colors.white),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.language,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

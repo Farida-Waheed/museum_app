@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 
 import '../../models/user_preferences.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../widgets/app_menu_shell.dart';
 
 class LanguageOption {
   final String code;
@@ -28,22 +30,11 @@ class LanguageScreen extends StatelessWidget {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
     final cs = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
+    return AppMenuShell(
+      title: l10n.language,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
-      appBar: AppBar(
-        elevation: 0.5,
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-        title: Text(
-          isArabic ? "اللغة" : "Language",
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -55,8 +46,6 @@ class LanguageScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
-                textDirection:
-                    isArabic ? TextDirection.rtl : TextDirection.ltr,
                 children: [
                   Container(
                     padding: const EdgeInsets.all(10),
@@ -73,9 +62,7 @@ class LanguageScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
-                      crossAxisAlignment: isArabic
-                          ? CrossAxisAlignment.end
-                          : CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           isArabic ? "اختر لغتك" : "Choose your language",
@@ -136,16 +123,12 @@ class LanguageScreen extends StatelessWidget {
                     ),
                   ),
                   child: Row(
-                    textDirection:
-                        isArabic ? TextDirection.rtl : TextDirection.ltr,
                     children: [
                       Text(lang.flag, style: const TextStyle(fontSize: 24)),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           lang.name,
-                          textAlign:
-                              isArabic ? TextAlign.right : TextAlign.left,
                           style: TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w600,
@@ -176,9 +159,7 @@ class LanguageScreen extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(14),
               child: Column(
-                crossAxisAlignment: isArabic
-                    ? CrossAxisAlignment.end
-                    : CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     isArabic ? "ماذا يتغير؟" : "What changes?",
