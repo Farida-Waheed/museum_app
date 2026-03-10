@@ -185,10 +185,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
                                 ),
                                 Image.asset(
                                   pages[index]["iconPath"]!,
-                                  width: 84,
-                                  height: 84,
+                                  width: 72,
+                                  height: 72,
                                   color: const Color(0xFFE6C068),
-                                  colorBlendMode: BlendMode.srcIn,
+                                  colorBlendMode: BlendMode.color,
                                 ),
                               ],
                             ),
