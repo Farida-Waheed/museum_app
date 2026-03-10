@@ -347,28 +347,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get onboarding1Desc =>
-      'دليلك الذكي لاستكشاف المتحف. تصفح المعروضات، اتبع الروبوت، واكتشف القصص وراء كل قطعة أثرية.';
+      'دليلك الذكي للمتحف. تصفح المعروضات، اتبع الروبوت، واكتشف القصص الخفية.';
 
   @override
   String get onboarding2Title => 'تعرف على حوروس';
 
   @override
   String get onboarding2Desc =>
-      'حوروس هو مرشدك المتحفي الذكي. اطرح الأسئلة، استمع للشروحات، واستكشف المعروضات خلال زيارتك.';
+      'مرشدك الذكي للمتحف. اطرح الأسئلة واستكشف المعروضات خلال زيارتك.';
 
   @override
   String get onboarding3Title => 'وضع الجولة الموجهة';
 
   @override
   String get onboarding3Desc =>
-      'عند بدء جولتك، يقوم التطبيق تلقائياً بإرشادك عبر المعروضات ويبقيك على اتصال بحوروس.';
+      'إرشاد تلقائي عبر المعروضات. ابقَ على اتصال مع حوروس طوال رحلتك.';
 
   @override
   String get onboarding4Title => 'استكشف وتعلّم';
 
   @override
   String get onboarding4Desc =>
-      'اكتشف المعروضات، اسأل حوروس، واستمتع باختبارات المتحف التفاعلية.';
+      'اكتشف القطع الأثرية، اسأل حوروس، واستمتع باختبارات المتحف.';
 
   @override
   String get next => 'التالي';

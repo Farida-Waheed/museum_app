@@ -348,28 +348,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboarding1Desc =>
-      'Your smart guide for exploring the museum. Navigate exhibits, follow the robot, and discover stories behind every artifact.';
+      'Your smart guide to the museum. Navigate exhibits, follow the robot, and discover hidden stories.';
 
   @override
   String get onboarding2Title => 'Meet Horus-Bot';
 
   @override
   String get onboarding2Desc =>
-      'Horus-Bot is your intelligent museum guide. Ask questions, listen to explanations, and explore exhibits during your visit.';
+      'Your intelligent museum guide. Ask questions, listen to explanations, and explore during your visit.';
 
   @override
   String get onboarding3Title => 'Guided Tour Mode';
 
   @override
   String get onboarding3Desc =>
-      'When your tour begins, the app automatically guides you through exhibits and keeps you connected to Horus-Bot.';
+      'Automatic guidance through exhibits. Stay connected with Horus-Bot throughout your journey.';
 
   @override
   String get onboarding4Title => 'Explore & Learn';
 
   @override
   String get onboarding4Desc =>
-      'Discover exhibits, ask Horus-Bot questions, and enjoy interactive museum quizzes.';
+      'Discover artifacts, ask questions, and enjoy interactive museum quizzes.';
 
   @override
   String get next => 'Next';

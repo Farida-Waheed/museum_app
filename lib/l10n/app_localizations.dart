@@ -761,7 +761,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding1Desc.
   ///
   /// In en, this message translates to:
-  /// **'Your smart guide for exploring the museum. Navigate exhibits, follow the robot, and discover stories behind every artifact.'**
+  /// **'Your smart guide to the museum. Navigate exhibits, follow the robot, and discover hidden stories.'**
   String get onboarding1Desc;
 
   /// No description provided for @onboarding2Title.
@@ -773,7 +773,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding2Desc.
   ///
   /// In en, this message translates to:
-  /// **'Horus-Bot is your intelligent museum guide. Ask questions, listen to explanations, and explore exhibits during your visit.'**
+  /// **'Your intelligent museum guide. Ask questions, listen to explanations, and explore during your visit.'**
   String get onboarding2Desc;
 
   /// No description provided for @onboarding3Title.
@@ -785,7 +785,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding3Desc.
   ///
   /// In en, this message translates to:
-  /// **'When your tour begins, the app automatically guides you through exhibits and keeps you connected to Horus-Bot.'**
+  /// **'Automatic guidance through exhibits. Stay connected with Horus-Bot throughout your journey.'**
   String get onboarding3Desc;
 
   /// No description provided for @onboarding4Title.
@@ -797,7 +797,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding4Desc.
   ///
   /// In en, this message translates to:
-  /// **'Discover exhibits, ask Horus-Bot questions, and enjoy interactive museum quizzes.'**
+  /// **'Discover artifacts, ask questions, and enjoy interactive museum quizzes.'**
   String get onboarding4Desc;
 
   /// No description provided for @next.
