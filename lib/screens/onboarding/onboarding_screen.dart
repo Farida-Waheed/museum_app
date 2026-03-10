@@ -84,11 +84,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.2),
-                    Colors.black.withOpacity(0.4),
-                    Colors.black.withOpacity(0.85),
+                    Colors.black.withOpacity(0.25),
+                    Colors.black.withOpacity(0.35),
+                    Colors.black.withOpacity(0.9),
                   ],
-                  stops: const [0.0, 0.4, 1.0],
+                  stops: const [0.0, 0.35, 1.0],
                 ),
               ),
             ),
@@ -115,23 +115,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             alignment: Alignment.center,
                             children: [
                               Container(
-                                width: 94,
-                                height: 94,
+                                width: 92,
+                                height: 92,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.white.withOpacity(0.08),
-                                      blurRadius: 15,
-                                      spreadRadius: 3,
+                                      color: Colors.white.withOpacity(0.06),
+                                      blurRadius: 12,
+                                      spreadRadius: 2,
                                     ),
                                   ],
                                 ),
                               ),
                               Image.asset(
                                 pages[index]["iconPath"]!,
-                                width: 92,
-                                height: 92,
+                                width: 88,
+                                height: 88,
                               ),
                             ],
                           ),
@@ -175,11 +175,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         final bool active = _currentPage == index;
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
-                          margin: const EdgeInsets.symmetric(horizontal: 5),
-                          width: active ? 22 : 8,
+                          margin: const EdgeInsets.symmetric(horizontal: 6),
+                          width: active ? 24 : 8,
                           height: 8,
                           decoration: BoxDecoration(
-                            color: active ? Colors.white : Colors.white.withOpacity(0.3),
+                            color: active ? Colors.white : Colors.white.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(4),
                           ),
                         );
@@ -187,7 +187,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     const SizedBox(height: 28),
 
-                    // Navigation Button - Always "Start Exploring"
+                    // Navigation Button - Branded "Start Exploring"
                     SizedBox(
                       width: double.infinity,
                       height: 54,
@@ -195,17 +195,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         onPressed: () => _completeOnboarding(prefs),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          foregroundColor: Colors.black,
+                          foregroundColor: const Color(0xFF0F172A), // Premium dark blue-gray
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(16),
+                            side: BorderSide(color: const Color(0xFFD4AF37).withOpacity(0.3), width: 1.5), // Subtle gold border
                           ),
-                          elevation: 0,
+                          elevation: 2,
+                          shadowColor: Colors.black.withOpacity(0.2),
                         ),
                         child: Text(
                           l10n.startExploring,
                           style: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.8,
                           ),
                         ),
                       ),
@@ -235,26 +238,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   PopupMenuItem(
                     value: 'en',
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         const Text("🇺🇸 ", style: TextStyle(fontSize: 18)),
-                        const Text("English", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
-                        if (prefs.language == 'en') ...[
-                          const Spacer(),
+                        const Expanded(
+                          child: Text(
+                            "English",
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (prefs.language == 'en')
                           const Icon(Icons.check, size: 16, color: Colors.white70),
-                        ],
                       ],
                     ),
                   ),
                   PopupMenuItem(
                     value: 'ar',
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         const Text("🇪🇬 ", style: TextStyle(fontSize: 18)),
-                        const Text("العربية", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
-                        if (prefs.language == 'ar') ...[
-                          const Spacer(),
+                        const Expanded(
+                          child: Text(
+                            "العربية",
+                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (prefs.language == 'ar')
                           const Icon(Icons.check, size: 16, color: Colors.white70),
-                        ],
                       ],
                     ),
                   ),
