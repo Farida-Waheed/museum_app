@@ -101,7 +101,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
         "title": l10n.onboarding3Title,
         "desc": l10n.onboarding3Desc,
         "image": "assets/images/Onboarding.jpg",
-        "iconPath": "assets/icons/map.png",
+        "iconPath": "assets/icons/maps.png",
       },
       {
         "title": l10n.onboarding4Title,
