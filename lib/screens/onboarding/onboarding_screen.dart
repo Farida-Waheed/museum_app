@@ -76,7 +76,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
           ),
 
-          // --- 2. Gradient overlay to improve readability ---
+          // --- 2. Cinematic Gradient overlay ---
           Positioned.fill(
             child: DecoratedBox(
               decoration: BoxDecoration(
@@ -84,11 +84,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.25),
-                    Colors.black.withOpacity(0.35),
-                    Colors.black.withOpacity(0.9),
+                    Colors.black.withOpacity(0.15),
+                    Colors.black.withOpacity(0.4),
+                    const Color(0xFF1B1B1B).withOpacity(0.95),
                   ],
-                  stops: const [0.0, 0.35, 1.0],
+                  stops: const [0.0, 0.4, 1.0],
                 ),
               ),
             ),
@@ -110,28 +110,31 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         mainAxisAlignment: MainAxisAlignment.center, // Lifted up
                         children: [
                           const SizedBox(height: 40), // Top spacing adjustment
-                          // Icon with very subtle glow - Balanced size
+                          // Unified Icon treatment
                           Stack(
                             alignment: Alignment.center,
                             children: [
                               Container(
-                                width: 92,
-                                height: 92,
+                                width: 90,
+                                height: 90,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.white.withOpacity(0.06),
-                                      blurRadius: 12,
-                                      spreadRadius: 2,
+                                      color: const Color(0xFFD4AF37).withOpacity(0.12),
+                                      blurRadius: 20,
+                                      spreadRadius: 4,
                                     ),
                                   ],
                                 ),
                               ),
                               Image.asset(
                                 pages[index]["iconPath"]!,
-                                width: 88,
-                                height: 88,
+                                width: 84,
+                                height: 84,
+                                // Apply a subtle gold tint to unify mixed icon styles if needed
+                                // color: const Color(0xFFD4AF37).withOpacity(0.1),
+                                // colorBlendMode: BlendMode.srcATop,
                               ),
                             ],
                           ),
@@ -168,47 +171,54 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 48),
                 child: Column(
                   children: [
-                    // Dots indicator
+                    // Premium Dots indicator
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(pages.length, (index) {
                         final bool active = _currentPage == index;
                         return AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          margin: const EdgeInsets.symmetric(horizontal: 6),
-                          width: active ? 24 : 8,
-                          height: 8,
+                          duration: const Duration(milliseconds: 400),
+                          margin: const EdgeInsets.symmetric(horizontal: 5),
+                          width: active ? 26 : 8,
+                          height: 6,
                           decoration: BoxDecoration(
-                            color: active ? Colors.white : Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(4),
+                            color: active ? const Color(0xFFD4AF37) : Colors.white.withOpacity(0.25),
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              if (active)
+                                BoxShadow(
+                                  color: const Color(0xFFD4AF37).withOpacity(0.4),
+                                  blurRadius: 8,
+                                ),
+                            ],
                           ),
                         );
                       }),
                     ),
-                    const SizedBox(height: 28),
+                    const SizedBox(height: 32),
 
-                    // Navigation Button - Branded "Start Exploring"
+                    // Branded Primary CTA
                     SizedBox(
                       width: double.infinity,
-                      height: 54,
+                      height: 56,
                       child: ElevatedButton(
                         onPressed: () => _completeOnboarding(prefs),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          foregroundColor: const Color(0xFF0F172A), // Premium dark blue-gray
+                          foregroundColor: const Color(0xFF1B1B1B),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                            side: BorderSide(color: const Color(0xFFD4AF37).withOpacity(0.3), width: 1.5), // Subtle gold border
+                            borderRadius: BorderRadius.circular(18),
+                            side: const BorderSide(color: Color(0xFFD4AF37), width: 1.2),
                           ),
-                          elevation: 2,
-                          shadowColor: Colors.black.withOpacity(0.2),
+                          elevation: 4,
+                          shadowColor: Colors.black45,
                         ),
                         child: Text(
-                          l10n.startExploring,
+                          l10n.startExploring.toUpperCase(),
                           style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 0.8,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.2,
                           ),
                         ),
                       ),
@@ -227,12 +237,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: SafeArea(
               child: PopupMenuButton<String>(
                 onSelected: (lang) => prefs.setLanguage(lang),
-                offset: const Offset(0, 45),
-                color: Colors.black.withOpacity(0.8),
-                elevation: 8,
+                offset: const Offset(0, 48),
+                color: const Color(0xFF1B1B1B).withOpacity(0.9),
+                elevation: 12,
+                constraints: const BoxConstraints(minWidth: 160),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(color: Colors.white.withOpacity(0.1), width: 1),
+                  side: BorderSide(color: const Color(0xFFD4AF37).withOpacity(0.2), width: 1),
                 ),
                 itemBuilder: (context) => [
                   PopupMenuItem(
@@ -241,13 +252,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Text("🇺🇸 ", style: TextStyle(fontSize: 18)),
-                        const Expanded(
+                        const Flexible(
                           child: Text(
                             "English",
                             style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        const SizedBox(width: 8),
                         if (prefs.language == 'en')
                           const Icon(Icons.check, size: 16, color: Colors.white70),
                       ],
@@ -259,13 +271,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Text("🇪🇬 ", style: TextStyle(fontSize: 18)),
-                        const Expanded(
+                        const Flexible(
                           child: Text(
                             "العربية",
                             style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        const SizedBox(width: 8),
                         if (prefs.language == 'ar')
                           const Icon(Icons.check, size: 16, color: Colors.white70),
                       ],
