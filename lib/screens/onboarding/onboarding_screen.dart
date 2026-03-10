@@ -185,8 +185,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
                                     pages[index]["iconPath"]!,
                                     width: 72,
                                     height: 72,
-                                    color: const Color(0xFFE6C068),
-                                    colorBlendMode: BlendMode.srcIn,
                                   ),
                                 ),
                               ),
