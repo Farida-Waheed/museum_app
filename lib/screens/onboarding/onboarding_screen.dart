@@ -34,6 +34,41 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
+    // --- REUSABLE DESIGN MATERIALS ---
+
+    // Material A - Glass Surface (Controls)
+    final glassSurfaceDecoration = BoxDecoration(
+      color: Colors.black.withOpacity(0.25),
+      borderRadius: BorderRadius.circular(14),
+      border: Border.all(
+        color: const Color(0xFFD4AF37).withOpacity(0.35),
+        width: 1,
+      ),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.25),
+          blurRadius: 10,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    );
+
+    // Material B - Primary CTA Surface
+    final primaryCtaButtonStyle = ElevatedButton.styleFrom(
+      backgroundColor: const Color(0xFFF6F0E6),
+      foregroundColor: const Color(0xFF1B1B1B),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Color(0xFFD4AF37), width: 1.5),
+      ),
+      elevation: 6,
+      shadowColor: Colors.black.withOpacity(0.25),
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      // To match shadow spec exactly if possible, though elevation is standard.
+      // spec: blurRadius: 12, offset: Offset(0, 6)
+    );
+
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
 
@@ -197,22 +232,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     const SizedBox(height: 32),
 
-                    // Premium Museum Pass CTA
+                    // Primary CTA
                     SizedBox(
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
                         onPressed: () => _completeOnboarding(prefs),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFFF7F3EA), // Warm Ivory
-                          foregroundColor: const Color(0xFF0F172A), // Dark elegant blue-gray
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18),
-                            side: BorderSide(color: const Color(0xFFD4AF37).withOpacity(0.4), width: 1.2),
-                          ),
-                          elevation: 3,
-                          shadowColor: Colors.black.withOpacity(0.3),
-                        ),
+                        style: primaryCtaButtonStyle,
                         child: Text(
                           l10n.startExploring.toUpperCase(),
                           style: const TextStyle(
@@ -238,12 +264,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: PopupMenuButton<String>(
                 onSelected: (lang) => prefs.setLanguage(lang),
                 offset: const Offset(0, 48),
-                color: const Color(0xFF1B1B1B).withOpacity(0.9),
-                elevation: 12,
+                color: const Color(0xFF1B1B1B).withOpacity(0.85), // Keep dark for legibility
+                elevation: 8,
                 constraints: const BoxConstraints(minWidth: 160),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(color: const Color(0xFFD4AF37).withOpacity(0.2), width: 1),
+                  borderRadius: BorderRadius.circular(14),
+                  side: BorderSide(
+                    color: const Color(0xFFD4AF37).withOpacity(0.35),
+                    width: 1,
+                  ),
                 ),
                 itemBuilder: (context) => [
                   PopupMenuItem(
@@ -287,10 +316,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ],
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                  decoration: glassSurfaceDecoration,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
