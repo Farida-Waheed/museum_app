@@ -10,7 +10,8 @@ import '../../core/utils/audio_player.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
-import '../chat/chat_screen.dart'; // RoboGuideEntry
+import '../chat/chat_screen.dart';
+import '../quiz/quiz_screen.dart'; // To navigate to quiz
 
 class ExhibitDetailScreen extends StatefulWidget {
   const ExhibitDetailScreen({super.key});
@@ -49,7 +50,6 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
 
     if (_isPlaying) {
       _playController.forward();
-      // TODO: wire proper audio path, this is just a placeholder
       _audioService.playAudio('audio/${exhibit.id}.mp3');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -81,17 +81,20 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
     final exhibit = ModalRoute.of(context)!.settings.arguments as Exhibit;
     final prefs = Provider.of<UserPreferencesModel>(context);
     final exhibitProvider = Provider.of<ExhibitProvider>(context);
-    final tourProvider = Provider.of<TourProvider>(context, listen: false);
+    final tourProvider = Provider.of<TourProvider>(context);
     final l10n = AppLocalizations.of(context)!;
 
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
     final isBookmarked = exhibitProvider.isBookmarked(exhibit.id);
+    final isArabic = prefs.language == 'ar';
 
     // Mark as visited when viewing details
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      tourProvider.setCurrentExhibit(exhibit.id);
+      Provider.of<TourProvider>(context, listen: false).setCurrentExhibit(exhibit.id);
     });
+
+    final hasCompletedQuiz = tourProvider.quizScores.containsKey(exhibit.id);
 
     return AppMenuShell(
       subHeader: const RobotStatusBanner(),
@@ -128,7 +131,13 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                     ),
                   ),
                   const SizedBox(height: 28),
-                  _buildQuizPrompt(l10n, cs),
+
+                  // Integrated Quiz Prompt
+                  if (!hasCompletedQuiz)
+                    _buildQuizPrompt(l10n, cs, exhibit.id, isArabic)
+                  else
+                    _buildQuizCompletedChip(l10n, cs, tourProvider.quizScores[exhibit.id]!, isArabic),
+
                   const SizedBox(height: 28),
                   _buildRouteButtons(l10n, cs),
                   const SizedBox(height: 32),
@@ -141,31 +150,85 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
     );
   }
 
-  Widget _buildQuizPrompt(AppLocalizations l10n, ColorScheme cs) {
+  Widget _buildQuizPrompt(AppLocalizations l10n, ColorScheme cs, String exhibitId, bool isArabic) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.amber.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.amber.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.amber.withOpacity(0.3)),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.quiz, color: Colors.amber),
+              const Icon(Icons.quiz_outlined, color: Colors.amber, size: 24),
               const SizedBox(width: 12),
-              Expanded(child: Text(l10n.takeQuickQuiz, style: const TextStyle(fontWeight: FontWeight.bold))),
+              Expanded(
+                child: Text(
+                  l10n.takeQuickQuiz,
+                  style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, '/quiz'),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.amber, foregroundColor: Colors.black),
-              child: Text(l10n.startQuiz),
-            ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => QuizScreen(exhibitId: exhibitId),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.amber.shade700,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 0,
+                  ),
+                  child: Text(l10n.startQuiz, style: const TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ),
+              const SizedBox(width: 12),
+              TextButton(
+                onPressed: () {
+                  Provider.of<TourProvider>(context, listen: false).skipQuiz(exhibitId);
+                },
+                child: Text(isArabic ? "تخطي" : "Skip"),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuizCompletedChip(AppLocalizations l10n, ColorScheme cs, int score, bool isArabic) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.green.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.green.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.check_circle_rounded, color: Colors.green, size: 20),
+          const SizedBox(width: 10),
+          Text(
+            isArabic ? "الاختبار مكتمل" : "Quiz Completed",
+            style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+          ),
+          const Spacer(),
+          Text(
+            isArabic ? "النتيجة: $score" : "Score: $score",
+            style: TextStyle(color: Colors.green.shade800, fontWeight: FontWeight.w900),
           ),
         ],
       ),

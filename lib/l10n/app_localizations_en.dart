@@ -32,7 +32,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get todaysHighlights => 'Today\'s Highlights';
 
   @override
-  String get mapPreview => 'Map Preview (Horus-Bot\'s Location)';
+  String get mapPreview => 'Map Preview';
 
   @override
   String get fullView => 'Full View';
@@ -86,11 +86,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
-  String get privacyPermissions => 'Privacy & Permissions';
+  String get privacyPermissions => 'Location Permission';
 
   @override
   String get privacyText =>
-      'Horus-Bot uses Bluetooth and Location to walk with you inside the museum.\n\n• Data is anonymous.\n• Movement heatmaps are only for analytics.\n\nDo you allow us to use your location?';
+      'Horus-Bot uses Bluetooth and Location to guide you inside the museum.';
 
   @override
   String get deny => 'Deny';
@@ -342,4 +342,93 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tickets => 'Tickets';
+
+  @override
+  String get onboarding1Title => 'Welcome to Horus-Bot';
+
+  @override
+  String get onboarding1Desc =>
+      'Your smart guide for exploring the museum. Navigate exhibits, follow the robot, and discover stories behind every artifact.';
+
+  @override
+  String get onboarding2Title => 'Meet Horus-Bot';
+
+  @override
+  String get onboarding2Desc =>
+      'Horus-Bot is your intelligent museum guide. Ask questions, listen to explanations, and explore exhibits during your visit.';
+
+  @override
+  String get onboarding3Title => 'Guided Tour Mode';
+
+  @override
+  String get onboarding3Desc =>
+      'When your tour begins, the app automatically guides you through exhibits and keeps you connected to Horus-Bot.';
+
+  @override
+  String get onboarding4Title => 'Explore & Learn';
+
+  @override
+  String get onboarding4Desc =>
+      'Discover exhibits, ask Horus-Bot questions, and enjoy interactive museum quizzes.';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get startExploring => 'Start Exploring';
+
+  @override
+  String get recommendedForYou => 'Recommended for You';
+
+  @override
+  String get talkToHorusBot => 'Talk to Horus-Bot';
+
+  @override
+  String get mapSub => 'Find exhibits and routes';
+
+  @override
+  String get exhibitsSub => 'Browse nearby artifacts';
+
+  @override
+  String get quizSub => 'Test your knowledge';
+
+  @override
+  String get liveTourSub => 'Follow Horus-Bot';
+
+  @override
+  String get scanExhibitsAR => 'Scan Exhibits with AR';
+
+  @override
+  String get visit => 'Visit';
+
+  @override
+  String get accountPreferences => 'Account & Preferences';
+
+  @override
+  String get extras => 'Extras';
+
+  @override
+  String get liveTourActive => 'Live Tour Active';
+
+  @override
+  String currentlyVisiting(Object location) {
+    return 'Currently Visiting: $location';
+  }
+
+  @override
+  String get followHorusBot => 'Follow Horus-Bot';
+
+  @override
+  String get startNavigation => 'Start Navigation';
+
+  @override
+  String robotHeadingTo(Object location) {
+    return 'Robot heading to: $location';
+  }
+
+  @override
+  String get exploreTheMuseum => 'Explore the Museum';
+
+  @override
+  String get followAndDiscover => 'Follow Horus-Bot and discover ancient Egypt';
 }

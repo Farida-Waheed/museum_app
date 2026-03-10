@@ -35,7 +35,7 @@ class AppRoutes {
   static const String onboarding = '/onboarding';
 
   static const String map = '/map';
-  static const String exhibits = '/exhibits';
+  static const String exhibits = '/exhibits'; // Added for consistency
   static const String exhibitDetails = '/exhibit_details';
   static const String chat = '/chat';
   static const String quiz = '/quiz';
