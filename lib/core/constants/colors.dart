@@ -2,20 +2,18 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Brand
-  static const Color primary = Color(0xFF0F172A); // Deep Navy
-  static const Color secondary = Color(0xFFD4AF37); // Gold
-  static const Color tertiary = Color(0xFF1E293B); // Lighter Navy
-  static const Color accent = Color(0xFFE2E8F0); // Light Slate
+  static const Color primary = Color(0xFF1E5AA8); // museum blue
+  static const Color secondary = Color(0xFF00A6B6); // teal accent
+  static const Color highlight = Color(0xFFD4AF37); // gold
 
-  // Neutrals
-  static const Color background = Color(0xFFF8FAFC);
+  // Neutrals (fallbacks; prefer Theme colors in widgets)
+  static const Color background = Color(0xFFF6F8FC);
   static const Color surface = Colors.white;
-  static const Color border = Color(0xFFE2E8F0);
+  static const Color border = Color(0xFFE3E8F2);
 
-  // Text
+  // Text fallbacks
   static const Color textPrimary = Color(0xFF0F172A);
-  static const Color textSecondary = Color(0xFF64748B);
-  static const Color textMuted = Color(0xFF94A3B8);
+  static const Color textSecondary = Color(0xFF475569);
 
   // Status
   static const Color success = Color(0xFF16A34A);

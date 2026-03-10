@@ -171,6 +171,7 @@ class _ArScreenState extends State<ArScreen> with SingleTickerProviderStateMixin
     return Image.asset(
       "assets/images/museum_interior.jpg", 
       fit: BoxFit.cover,
+      color: Colors.black.withOpacity(0.2),
       colorBlendMode: BlendMode.darken,
       errorBuilder: (c, e, s) => Container(color: Colors.grey[900]),
     );

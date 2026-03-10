@@ -23,16 +23,27 @@ class AccessibilityScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Hero card
-            AppCard(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFD4AF37).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(16),
+            // Hero / context card (matches Ticket / Feedback style)
+            Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: BorderSide(color: Colors.grey.shade300),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        Icons.accessibility_new_rounded,
+                        color: theme.colorScheme.primary,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -54,11 +65,11 @@ class AccessibilityScreen extends StatelessWidget {
                               color: Colors.black54,
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
 

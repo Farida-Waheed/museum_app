@@ -612,6 +612,7 @@ class _HighlightCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = Theme.of(context).textTheme;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return Padding(
@@ -662,8 +663,8 @@ class _HighlightCard extends StatelessWidget {
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -678,12 +679,13 @@ class _Dots extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(count, (i) {
         final active = i == index;
         return AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 250),
           margin: const EdgeInsets.symmetric(horizontal: 4),
           width: active ? 24 : 8,
           height: 8,

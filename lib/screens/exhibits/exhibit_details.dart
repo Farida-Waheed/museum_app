@@ -315,8 +315,8 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                 child: AnimatedIcon(
                   icon: AnimatedIcons.play_pause,
                   progress: _playController,
-                  size: 28,
-                  color: Colors.white,
+                  size: 32,
+                  color: cs.primary,
                 ),
               ),
             ),
@@ -337,13 +337,11 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                     l10n.audioNarration,
                     style: const TextStyle(fontSize: 12, color: Colors.black54),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          Icon(Icons.graphic_eq, color: Colors.white.withOpacity(0.4), size: 24),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -378,16 +376,15 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
               avatar: Icon(f['icon'] as IconData, size: 18, color: cs.primary),
               label: Text(
                 '${f['label']}: ${f['value']}',
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF475569),
-                ),
+                style: const TextStyle(fontSize: 12),
               ),
-            ],
-          ),
-        );
-      }).toList(),
+              backgroundColor: cs.primary.withOpacity(0.05),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+          )
+          .toList(),
     );
   }
 
