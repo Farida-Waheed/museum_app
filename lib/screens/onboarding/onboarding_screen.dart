@@ -4,6 +4,7 @@ import '../../l10n/app_localizations.dart';
 
 import '../../models/user_preferences.dart';
 import '../../app/router.dart';
+import '../../widgets/primary_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -102,12 +103,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // --- 1. Background image (per page) ---
-          Positioned.fill(
+          // --- 1. Animated Background ---
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 600),
             child: Image.asset(
               pages[_currentPage]["image"]!,
+              key: ValueKey<int>(_currentPage),
               fit: BoxFit.cover,
-              errorBuilder: (c, e, s) => Container(color: Colors.blueGrey),
+              width: double.infinity,
+              height: double.infinity,
+              errorBuilder: (c, e, s) => Container(color: const Color(0xFF0F172A)),
             ),
           ),
 
