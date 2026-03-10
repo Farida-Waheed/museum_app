@@ -22,12 +22,11 @@ void main() {
     await tester.pumpAndSettle();
     await tester.takeScreenshot('onboarding_swiped');
 
-    // 3. Start Exploring
+    // 3. Start Exploring (Available on every slide now)
     final startExploringBtn = find.text('Start Exploring');
-    if (startExploringBtn.evaluate().isNotEmpty) {
-       await tester.tap(startExploringBtn);
-       await tester.pumpAndSettle();
-    }
+    expect(startExploringBtn, findsAtLeast(1));
+    await tester.tap(startExploringBtn.first);
+    await tester.pumpAndSettle();
 
     // 4. Verify Home Screen
     expect(find.byType(HomeScreen), findsOneWidget);
