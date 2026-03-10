@@ -90,24 +90,36 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
         "desc": l10n.onboarding1Desc,
         "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/pyramid.png",
+        "iconSize": 82.0,
+        "iconScale": 1.0,
+        "useShadow": false, // Already has strong outlines
       },
       {
         "title": l10n.onboarding2Title,
         "desc": l10n.onboarding2Desc,
         "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/pharaoh.png",
+        "iconSize": 82.0,
+        "iconScale": 1.0, // Visual Benchmark
+        "useShadow": false,
       },
       {
         "title": l10n.onboarding3Title,
         "desc": l10n.onboarding3Desc,
         "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/map.png",
+        "iconSize": 82.0,
+        "iconScale": 0.82, // Map is a solid block, needs to be smaller to match visual weight
+        "useShadow": true, // Needs shadow to match the "strength" of outline icons
       },
       {
         "title": l10n.onboarding4Title,
         "desc": l10n.onboarding4Desc,
         "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/scarab.png",
+        "iconSize": 82.0,
+        "iconScale": 1.1, // Wide and airy, needs slight upscale
+        "useShadow": false,
       },
     ];
 
@@ -167,24 +179,43 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
                               );
                             },
                             child: Container(
-                              width: 90,
-                              height: 90,
+                              width: 110,
+                              height: 110,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color(0xFFE6C068).withOpacity(0.12),
-                                    blurRadius: 20,
-                                    spreadRadius: 4,
-                                  ),
-                                ],
+                                gradient: RadialGradient(
+                                  colors: [
+                                    const Color(0xFFE6C068).withOpacity(0.12),
+                                    const Color(0xFFE6C068).withOpacity(0.0),
+                                  ],
+                                ),
                               ),
                               child: Center(
-                                child: ClipOval(
-                                  child: Image.asset(
-                                    pages[index]["iconPath"]!,
-                                    width: 72,
-                                    height: 72,
+                                child: Transform.scale(
+                                  scale: pages[index]["iconScale"] ?? 1.0,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      // Optional shadow layer to unify different icon styles
+                                      if (pages[index]["useShadow"] == true)
+                                        Transform.translate(
+                                          offset: const Offset(0, 2),
+                                          child: Image.asset(
+                                            pages[index]["iconPath"]!,
+                                            width: pages[index]["iconSize"] ?? 82.0,
+                                            height: pages[index]["iconSize"] ?? 82.0,
+                                            fit: BoxFit.contain,
+                                            color: Colors.black.withOpacity(0.2),
+                                          ),
+                                        ),
+                                      // Main Icon
+                                      Image.asset(
+                                        pages[index]["iconPath"]!,
+                                        width: pages[index]["iconSize"] ?? 82.0,
+                                        height: pages[index]["iconSize"] ?? 82.0,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
