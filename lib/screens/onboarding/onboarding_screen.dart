@@ -30,54 +30,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  void _showLanguageSelector(BuildContext context, UserPreferencesModel prefs, AppLocalizations l10n) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 12),
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(height: 20),
-              ListTile(
-                leading: const Text("🇺🇸", style: TextStyle(fontSize: 20)),
-                title: const Text("English", style: TextStyle(fontWeight: FontWeight.w600)),
-                trailing: prefs.language == 'en' ? const Icon(Icons.check_circle, color: Colors.blue) : null,
-                onTap: () {
-                  prefs.setLanguage('en');
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Text("🇪🇬", style: TextStyle(fontSize: 20)),
-                title: const Text("العربية", style: TextStyle(fontWeight: FontWeight.w600)),
-                trailing: prefs.language == 'ar' ? const Icon(Icons.check_circle, color: Colors.blue) : null,
-                onTap: () {
-                  prefs.setLanguage('ar');
-                  Navigator.pop(context);
-                },
-              ),
-              const SizedBox(height: 12),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -158,49 +110,49 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         mainAxisAlignment: MainAxisAlignment.center, // Lifted up
                         children: [
                           const SizedBox(height: 40), // Top spacing adjustment
-                          // Icon with very subtle glow
+                          // Icon with very subtle glow - Balanced size
                           Stack(
                             alignment: Alignment.center,
                             children: [
                               Container(
-                                width: 74,
-                                height: 74,
+                                width: 94,
+                                height: 94,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.white.withOpacity(0.05),
-                                      blurRadius: 10,
-                                      spreadRadius: 2,
+                                      color: Colors.white.withOpacity(0.08),
+                                      blurRadius: 15,
+                                      spreadRadius: 3,
                                     ),
                                   ],
                                 ),
                               ),
                               Image.asset(
                                 pages[index]["iconPath"]!,
-                                width: 72,
-                                height: 72,
+                                width: 92,
+                                height: 92,
                               ),
                             ],
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 28),
                           Text(
                             pages[index]["title"]!,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 20,
+                              fontSize: 24,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 0.5,
                             ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 14),
                           Text(
                             pages[index]["desc"]!,
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.80),
-                              fontSize: 13,
+                              color: Colors.white.withOpacity(0.85),
+                              fontSize: 15,
                               height: 1.5,
                             ),
                           ),
@@ -223,11 +175,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         final bool active = _currentPage == index;
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
-                          margin: const EdgeInsets.symmetric(horizontal: 4),
-                          width: active ? 16 : 5,
-                          height: 5,
+                          margin: const EdgeInsets.symmetric(horizontal: 5),
+                          width: active ? 22 : 8,
+                          height: 8,
                           decoration: BoxDecoration(
-                            color: active ? Colors.white : Colors.white.withOpacity(0.25),
+                            color: active ? Colors.white : Colors.white.withOpacity(0.3),
                             borderRadius: BorderRadius.circular(4),
                           ),
                         );
@@ -238,21 +190,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     // Navigation Button - Always "Start Exploring"
                     SizedBox(
                       width: double.infinity,
-                      height: 50,
+                      height: 54,
                       child: ElevatedButton(
                         onPressed: () => _completeOnboarding(prefs),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(14),
                           ),
                           elevation: 0,
                         ),
                         child: Text(
                           l10n.startExploring,
                           style: const TextStyle(
-                            fontSize: 15,
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -266,20 +218,62 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
           // --- 4. Language selector (Top Start) ---
           Positioned(
-            top: 40,
+            top: 48,
             left: isArabic ? null : 24,
             right: isArabic ? 24 : null,
             child: SafeArea(
-              child: TextButton.icon(
-                onPressed: () => _showLanguageSelector(context, prefs, l10n),
-                icon: const Icon(Icons.language, size: 16),
-                label: Text(l10n.language),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  backgroundColor: Colors.white.withOpacity(0.08),
+              child: PopupMenuButton<String>(
+                onSelected: (lang) => prefs.setLanguage(lang),
+                offset: const Offset(0, 45),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'en',
+                    child: Row(
+                      children: [
+                        const Text("🇺🇸 ", style: TextStyle(fontSize: 18)),
+                        const Text("English"),
+                        if (prefs.language == 'en') ...[
+                          const Spacer(),
+                          const Icon(Icons.check, size: 16, color: Colors.blue),
+                        ],
+                      ],
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'ar',
+                    child: Row(
+                      children: [
+                        const Text("🇪🇬 ", style: TextStyle(fontSize: 18)),
+                        const Text("العربية"),
+                        if (prefs.language == 'ar') ...[
+                          const Spacer(),
+                          const Icon(Icons.check, size: 16, color: Colors.blue),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+                child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.language, size: 16, color: Colors.white),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.language,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
