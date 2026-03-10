@@ -197,21 +197,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     ),
                     const SizedBox(height: 32),
 
-                    // Branded Primary CTA
+                    // Premium Museum Pass CTA
                     SizedBox(
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
                         onPressed: () => _completeOnboarding(prefs),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: const Color(0xFF1B1B1B),
+                          backgroundColor: const Color(0xFFF7F3EA), // Warm Ivory
+                          foregroundColor: const Color(0xFF0F172A), // Dark elegant blue-gray
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18),
-                            side: const BorderSide(color: Color(0xFFD4AF37), width: 1.2),
+                            side: BorderSide(color: const Color(0xFFD4AF37).withOpacity(0.4), width: 1.2),
                           ),
-                          elevation: 4,
-                          shadowColor: Colors.black45,
+                          elevation: 3,
+                          shadowColor: Colors.black.withOpacity(0.3),
                         ),
                         child: Text(
                           l10n.startExploring.toUpperCase(),
