@@ -118,6 +118,10 @@
   "home": "Home",
   "tour": "Tour",
   "tickets": "Tickets",
+  "seeAll": "See All",
+  "dataAnonymous": "Data is anonymous",
+  "analyticsNote": "Movement heatmaps are only used for analytics",
+  "notNow": "Not now",
 
   "onboarding1Title": "Welcome to Horus-Bot",
   "onboarding1Desc": "Your smart guide to the museum. Navigate exhibits, follow the robot, and discover hidden stories.",

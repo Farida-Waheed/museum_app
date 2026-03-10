@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../app/router.dart';
 import '../l10n/app_localizations.dart';
+import '../core/constants/colors.dart';
 
 class BottomNav extends StatelessWidget {
   final int currentIndex;
@@ -8,13 +9,9 @@ class BottomNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final primary = theme.colorScheme.primary;
     final l10n = AppLocalizations.of(context)!;
 
-    final surface = theme.colorScheme.surface;
-    final shadowColor = theme.colorScheme.shadow.withOpacity(0.06);
-    final unselected = theme.colorScheme.onSurface.withOpacity(0.4);
+    final shadowColor = Colors.black.withOpacity(0.06);
 
     void handleTap(int index) {
       if (index == currentIndex) return;
@@ -44,8 +41,8 @@ class BottomNav extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: surface,
-        border: Border(top: BorderSide(color: Colors.grey.shade100)),
+        color: AppColors.warmSurface,
+        border: Border(top: BorderSide(color: AppColors.mutedText.withOpacity(0.1))),
         boxShadow: [
           BoxShadow(
             color: shadowColor,
@@ -62,8 +59,8 @@ class BottomNav extends StatelessWidget {
             currentIndex: currentIndex,
             onTap: handleTap,
             type: BottomNavigationBarType.fixed,
-            selectedItemColor: primary,
-            unselectedItemColor: unselected,
+            selectedItemColor: AppColors.primaryGold,
+            unselectedItemColor: AppColors.mutedText,
             showUnselectedLabels: true,
             selectedFontSize: 11,
             unselectedFontSize: 11,

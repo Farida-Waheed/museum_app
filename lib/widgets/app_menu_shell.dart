@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
+import '../core/constants/colors.dart';
 
 import '../models/user_preferences.dart';
 import '../models/tour_provider.dart';
@@ -39,7 +40,7 @@ class _SideMenu extends StatelessWidget {
         width: width,
         child: Container(
           decoration: const BoxDecoration(
-            color: Colors.white,
+            color: AppColors.warmSurface,
           ),
           child: SafeArea(
             child: Column(
@@ -58,9 +59,10 @@ class _SideMenu extends StatelessWidget {
                           Text(
                             l10n.appTitle,
                             style: const TextStyle(
-                              fontSize: 20,
+                              fontSize: 24,
                               fontWeight: FontWeight.w900,
                               letterSpacing: 1.0,
+                              color: AppColors.darkInk,
                             ),
                           ),
                         ],
@@ -69,9 +71,9 @@ class _SideMenu extends StatelessWidget {
                       Row(
                         children: [
                           const CircleAvatar(
-                            radius: 24,
-                            backgroundColor: Color(0xFFF3F6FB),
-                            child: Icon(Icons.person_outline, color: Colors.black54),
+                            radius: 28,
+                            backgroundColor: AppColors.softSurface,
+                            child: Icon(Icons.person, color: AppColors.primaryGold, size: 32),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -81,15 +83,16 @@ class _SideMenu extends StatelessWidget {
                                 Text(
                                   l10n.guestUser,
                                   style: const TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.bold,
+                                    color: AppColors.darkInk,
                                   ),
                                 ),
                                 Text(
                                   l10n.exploreTheMuseum,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey.shade600,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    color: AppColors.mutedText,
                                   ),
                                 ),
                               ],
@@ -134,22 +137,10 @@ class _SideMenu extends StatelessWidget {
                     children: [
                       _SectionHeader(title: l10n.visit),
                       _MenuItem(
-                        icon: Icons.map_outlined,
-                        label: l10n.map,
-                        selected: currentRoute == AppRoutes.map,
-                        onTap: () => onPush(AppRoutes.map),
-                      ),
-                      _MenuItem(
                         icon: Icons.museum_outlined,
                         label: l10n.exhibits,
                         selected: currentRoute == AppRoutes.exhibits,
                         onTap: () => onPush(AppRoutes.exhibits),
-                      ),
-                      _MenuItem(
-                        icon: Icons.radio_button_checked,
-                        label: l10n.liveTour,
-                        selected: currentRoute == AppRoutes.liveTour,
-                        onTap: () => onPush(AppRoutes.liveTour),
                       ),
                       _MenuItem(
                         icon: Icons.quiz_outlined,
@@ -259,7 +250,6 @@ class _MenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       child: ListTile(
@@ -270,17 +260,17 @@ class _MenuItem extends StatelessWidget {
         leading: Icon(
           icon,
           size: 22,
-          color: selected ? cs.primary : Colors.black87,
+          color: selected ? AppColors.primaryGold : AppColors.darkInk,
         ),
         title: Text(
           label,
           style: TextStyle(
-            fontSize: 15,
+            fontSize: 16,
             fontWeight: selected ? FontWeight.bold : FontWeight.w500,
-            color: selected ? cs.primary : Colors.black87,
+            color: selected ? AppColors.primaryGold : AppColors.darkInk,
           ),
         ),
-        tileColor: selected ? cs.primary.withOpacity(0.08) : Colors.transparent,
+        tileColor: selected ? AppColors.primaryGold.withOpacity(0.08) : Colors.transparent,
       ),
     );
   }
@@ -375,7 +365,6 @@ class AppMenuShellState extends State<AppMenuShell>
     final isArabic = prefs.language == 'ar';
     final size = MediaQuery.of(context).size;
     final l10n = AppLocalizations.of(context)!;
-    final cs = Theme.of(context).colorScheme;
 
     final currentRoute = ModalRoute.of(context)?.settings.name;
 
@@ -385,10 +374,21 @@ class AppMenuShellState extends State<AppMenuShell>
       floatingActionButton: widget.floatingActionButton ?? (widget.showChatButton
           ? FloatingActionButton.extended(
               onPressed: () => Navigator.pushNamed(context, AppRoutes.chat),
-              icon: const Icon(Icons.chat_bubble_outline),
-              label: Text(l10n.talkToHorusBot),
-              backgroundColor: cs.primary,
-              foregroundColor: cs.onPrimary,
+              icon: const Icon(Icons.chat_bubble_outline, color: Colors.white, size: 20),
+              label: Text(
+                l10n.talkToHorusBot,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              backgroundColor: const Color(0xFF2A2118),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(28),
+                side: const BorderSide(color: AppColors.primaryGold, width: 1),
+              ),
+              elevation: 6,
             )
           : null),
       body: AnimatedBuilder(
