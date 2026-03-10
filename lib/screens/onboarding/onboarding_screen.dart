@@ -225,17 +225,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: PopupMenuButton<String>(
                 onSelected: (lang) => prefs.setLanguage(lang),
                 offset: const Offset(0, 45),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                color: Colors.black.withOpacity(0.8),
+                elevation: 8,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(color: Colors.white.withOpacity(0.1), width: 1),
+                ),
                 itemBuilder: (context) => [
                   PopupMenuItem(
                     value: 'en',
                     child: Row(
                       children: [
                         const Text("🇺🇸 ", style: TextStyle(fontSize: 18)),
-                        const Text("English"),
+                        const Text("English", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
                         if (prefs.language == 'en') ...[
                           const Spacer(),
-                          const Icon(Icons.check, size: 16, color: Colors.blue),
+                          const Icon(Icons.check, size: 16, color: Colors.white70),
                         ],
                       ],
                     ),
@@ -245,10 +250,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     child: Row(
                       children: [
                         const Text("🇪🇬 ", style: TextStyle(fontSize: 18)),
-                        const Text("العربية"),
+                        const Text("العربية", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
                         if (prefs.language == 'ar') ...[
                           const Spacer(),
-                          const Icon(Icons.check, size: 16, color: Colors.blue),
+                          const Icon(Icons.check, size: 16, color: Colors.white70),
                         ],
                       ],
                     ),
