@@ -30,6 +30,55 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
+  void _showLanguageSelector(BuildContext context, UserPreferencesModel prefs, AppLocalizations l10n) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 12),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ListTile(
+                leading: const Text("🇺🇸", style: TextStyle(fontSize: 20)),
+                title: const Text("English", style: TextStyle(fontWeight: FontWeight.w600)),
+                trailing: prefs.language == 'en' ? const Icon(Icons.check_circle, color: Colors.blue) : null,
+                onTap: () {
+                  prefs.setLanguage('en');
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Text("🇪🇬", style: TextStyle(fontSize: 20)),
+                title: const Text("العربية", style: TextStyle(fontWeight: FontWeight.w600)),
+                trailing: prefs.language == 'ar' ? const Icon(Icons.check_circle, color: Colors.blue) : null,
+                onTap: () {
+                  prefs.setLanguage('ar');
+                  Navigator.pop(context);
+                },
+              ),
+              const SizedBox(height: 12),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -104,57 +153,57 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   itemCount: pages.length,
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      padding: const EdgeInsets.symmetric(horizontal: 48),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.center, // Lifted up
                         children: [
+                          const SizedBox(height: 40), // Top spacing adjustment
                           // Icon with very subtle glow
                           Stack(
                             alignment: Alignment.center,
                             children: [
                               Container(
-                                width: 82,
-                                height: 82,
+                                width: 74,
+                                height: 74,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.white.withOpacity(0.06),
-                                      blurRadius: 12,
-                                      spreadRadius: 3,
+                                      color: Colors.white.withOpacity(0.05),
+                                      blurRadius: 10,
+                                      spreadRadius: 2,
                                     ),
                                   ],
                                 ),
                               ),
                               Image.asset(
                                 pages[index]["iconPath"]!,
-                                width: 80,
-                                height: 80,
+                                width: 72,
+                                height: 72,
                               ),
                             ],
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 24),
                           Text(
                             pages[index]["title"]!,
                             textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 22,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 0.5,
                             ),
                           ),
-                          const SizedBox(height: 10),
+                          const SizedBox(height: 12),
                           Text(
                             pages[index]["desc"]!,
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.85),
-                              fontSize: 14,
+                              color: Colors.white.withOpacity(0.80),
+                              fontSize: 13,
                               height: 1.5,
                             ),
                           ),
-                          const SizedBox(height: 40),
                         ],
                       ),
                     );
@@ -164,10 +213,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
               // --- Dots + Primary button ---
               Padding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 40),
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 48),
                 child: Column(
                   children: [
-                    // Dots indicator - Swipe-first flow
+                    // Dots indicator
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(pages.length, (index) {
@@ -175,35 +224,35 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           margin: const EdgeInsets.symmetric(horizontal: 4),
-                          width: active ? 18 : 6,
-                          height: 6,
+                          width: active ? 16 : 5,
+                          height: 5,
                           decoration: BoxDecoration(
-                            color: active ? Colors.white : Colors.white.withOpacity(0.3),
+                            color: active ? Colors.white : Colors.white.withOpacity(0.25),
                             borderRadius: BorderRadius.circular(4),
                           ),
                         );
                       }),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 28),
 
                     // Navigation Button - Always "Start Exploring"
                     SizedBox(
                       width: double.infinity,
-                      height: 52,
+                      height: 50,
                       child: ElevatedButton(
                         onPressed: () => _completeOnboarding(prefs),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           elevation: 0,
                         ),
                         child: Text(
                           l10n.startExploring,
                           style: const TextStyle(
-                            fontSize: 16,
+                            fontSize: 15,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -215,27 +264,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ],
           ),
 
-          // --- 4. Language switcher (Top Start) ---
+          // --- 4. Language selector (Top Start) ---
           Positioned(
             top: 40,
-            left: isArabic ? null : 20,
-            right: isArabic ? 20 : null,
+            left: isArabic ? null : 24,
+            right: isArabic ? 24 : null,
             child: SafeArea(
-              child: TextButton(
-                onPressed: () {
-                  prefs.setLanguage(isArabic ? 'en' : 'ar');
-                },
+              child: TextButton.icon(
+                onPressed: () => _showLanguageSelector(context, prefs, l10n),
+                icon: const Icon(Icons.language, size: 16),
+                label: Text(l10n.language),
                 style: TextButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: Colors.white.withOpacity(0.1),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  backgroundColor: Colors.white.withOpacity(0.08),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                ),
-                child: Text(
-                  "🌐 ${l10n.language}",
-                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
                 ),
               ),
             ),
