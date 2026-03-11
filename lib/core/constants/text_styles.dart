@@ -5,65 +5,68 @@ import 'colors.dart';
 class AppTextStyles {
   static const String _fontFamily = 'Playfair Display';
 
-  static TextStyle headline(BuildContext context) {
-    return TextStyle(
+  static TextStyle screenTitle(BuildContext context) {
+    return const TextStyle(
       fontFamily: _fontFamily,
-      fontWeight: FontWeight.w700,
-      fontSize: 22,
-      color: _textColor(context),
-      height: 1.2,
+      fontWeight: FontWeight.w900,
+      fontSize: 26,
+      color: Colors.white,
+      letterSpacing: 0.5,
     );
   }
 
-  static TextStyle title(BuildContext context) {
-    return TextStyle(
+  static TextStyle sectionTitle(BuildContext context) {
+    return const TextStyle(
+      fontFamily: _fontFamily,
+      fontWeight: FontWeight.bold,
+      fontSize: 15,
+      color: AppColors.primaryGold, // requested muted gold or warm beige
+      letterSpacing: 1.2,
+    );
+  }
+
+  static TextStyle cardTitle(BuildContext context) {
+    return const TextStyle(
       fontFamily: _fontFamily,
       fontWeight: FontWeight.w700,
-      fontSize: 18,
-      color: _textColor(context),
-      height: 1.25,
+      fontSize: 17,
+      color: Colors.white,
     );
   }
 
   static TextStyle body(BuildContext context) {
-    return TextStyle(
+    return const TextStyle(
       fontFamily: _fontFamily,
       fontWeight: FontWeight.w400,
       fontSize: 14,
-      color: _textColor(context),
-      height: 1.35,
+      color: AppColors.darkMutedText,
+      height: 1.4,
     );
   }
 
-  static TextStyle caption(BuildContext context) {
-    return TextStyle(
+  static TextStyle helper(BuildContext context) {
+    return const TextStyle(
       fontFamily: _fontFamily,
       fontWeight: FontWeight.w400,
-      fontSize: 12,
-      color: _textSecondaryColor(context),
-      height: 1.3,
+      fontSize: 12.5,
+      color: AppColors.helperText,
     );
   }
 
   static TextStyle button(BuildContext context) {
-    return TextStyle(
+    return const TextStyle(
       fontFamily: _fontFamily,
-      fontWeight: FontWeight.w700,
-      fontSize: 14,
-      color: Theme.of(context).colorScheme.onPrimary,
+      fontWeight: FontWeight.w900,
+      fontSize: 14.5,
+      color: AppColors.darkInk,
+      letterSpacing: 0.5,
     );
   }
 
-  static Color _textColor(BuildContext context) {
-    // prefer theme color if available
-    final c = Theme.of(context).textTheme.bodyMedium?.color;
-    return c ?? AppColors.textPrimary;
-  }
-
-  static Color _textSecondaryColor(BuildContext context) {
-    final c = Theme.of(context).textTheme.bodySmall?.color;
-    return c ?? AppColors.textSecondary;
-  }
+  // Deprecated / Backwards compatibility
+  static TextStyle headline(BuildContext context) => screenTitle(context);
+  static TextStyle title(BuildContext context) => cardTitle(context);
+  static TextStyle caption(BuildContext context) => helper(context);
 }
 
 class AppPadding {
