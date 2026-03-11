@@ -102,11 +102,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mainGallery => 'Main exhibition gallery';
 
   @override
-  String get comfortableApp => 'Make the app comfortable for you';
+  String get comfortableApp => 'Customize your museum experience';
 
   @override
   String get adjustSettings =>
-      'Adjust text size, contrast, and language to suit your needs.';
+      'Adjust navigation, accessibility, and display to suit your needs.';
 
   @override
   String get displayText => 'Display & text';
@@ -356,11 +356,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notNow => 'Not now';
 
   @override
-  String get allowLocationAccess => 'Allow Location Access';
+  String get allowLocationAccess => 'Enable Location';
 
   @override
   String get locationPermissionBody =>
-      'Horus-Bot uses Bluetooth and location to guide you inside the museum and help you follow the robot during your visit.';
+      'Horus-Bot uses your location to guide you through museum exhibits and help you follow the robot during your visit.';
 
   @override
   String get dataReassurance =>

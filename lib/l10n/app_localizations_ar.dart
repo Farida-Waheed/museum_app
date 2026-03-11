@@ -102,11 +102,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mainGallery => 'المعرض الرئيسي';
 
   @override
-  String get comfortableApp => 'اجعل التطبيق مريحاً لك';
+  String get comfortableApp => 'خصص تجربة المتحف الخاصة بك';
 
   @override
   String get adjustSettings =>
-      'عدّل حجم الخط والتباين واللغة لتناسب احتياجاتك.';
+      'عدل التنقل، إمكانية الوصول، والعرض لتناسب احتياجاتك.';
 
   @override
   String get displayText => 'العرض والنص';
@@ -355,11 +355,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notNow => 'ليس الآن';
 
   @override
-  String get allowLocationAccess => 'السماح بالوصول إلى الموقع';
+  String get allowLocationAccess => 'تفعيل الموقع';
 
   @override
   String get locationPermissionBody =>
-      'يستخدم حوروس البلوتوث والموقع لإرشادك داخل المتحف ومساعدتك في تتبع الروبوت أثناء زيارتك.';
+      'يستخدم حوروس موقعك لإرشادك عبر معروضات المتحف ومساعدتك في تتبع الروبوت أثناء الجولة.';
 
   @override
   String get dataReassurance => 'بياناتك مجهولة الهوية وتستخدم فقط للملاحة.';

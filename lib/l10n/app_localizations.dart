@@ -281,13 +281,13 @@ abstract class AppLocalizations {
   /// No description provided for @comfortableApp.
   ///
   /// In en, this message translates to:
-  /// **'Make the app comfortable for you'**
+  /// **'Customize your museum experience'**
   String get comfortableApp;
 
   /// No description provided for @adjustSettings.
   ///
   /// In en, this message translates to:
-  /// **'Adjust text size, contrast, and language to suit your needs.'**
+  /// **'Adjust navigation, accessibility, and display to suit your needs.'**
   String get adjustSettings;
 
   /// No description provided for @displayText.
@@ -779,13 +779,13 @@ abstract class AppLocalizations {
   /// No description provided for @allowLocationAccess.
   ///
   /// In en, this message translates to:
-  /// **'Allow Location Access'**
+  /// **'Enable Location'**
   String get allowLocationAccess;
 
   /// No description provided for @locationPermissionBody.
   ///
   /// In en, this message translates to:
-  /// **'Horus-Bot uses Bluetooth and location to guide you inside the museum and help you follow the robot during your visit.'**
+  /// **'Horus-Bot uses your location to guide you through museum exhibits and help you follow the robot during your visit.'**
   String get locationPermissionBody;
 
   /// No description provided for @dataReassurance.
