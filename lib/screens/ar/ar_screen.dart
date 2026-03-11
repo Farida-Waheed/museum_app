@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -37,6 +38,12 @@ class _ArScreenState extends State<ArScreen> with SingleTickerProviderStateMixin
   }
 
   Future<void> _checkPermission() async {
+    if (kIsWeb) {
+      setState(() {
+        _hasPermission = true; // Assume true for mock on web
+      });
+      return;
+    }
     final status = await Permission.camera.request();
     setState(() {
       _hasPermission = status.isGranted;

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../l10n/app_localizations.dart';
@@ -15,6 +16,7 @@ import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/dialogs/location_permission_dialog.dart';
 import '../../models/user_preferences.dart';
+import '../../models/tour_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,6 +26,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late List<Exhibit> exhibits;
+  late List<MockNews> news;
   int visitedCount = 0;
   int durationMinutes = 0;
   Timer? _simTimer;
@@ -43,16 +46,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     CurvedAnimation(parent: _robotPulseCtrl, curve: Curves.easeInOut),
   );
 
+  late final AnimationController _fabPulseCtrl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2000),
+  )..repeat(reverse: true);
+
+  late final Animation<double> _fabScale = Tween<double>(begin: 1.0, end: 1.05).animate(
+    CurvedAnimation(parent: _fabPulseCtrl, curve: Curves.easeInOut),
+  );
+
   @override
   void initState() {
     super.initState();
     exhibits = MockDataService.getAllExhibits();
+    news = MockDataService.getAllNews();
 
     Future.delayed(Duration.zero, () async {
       if (mounted) {
         final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
 
         if (prefs.hasCompletedOnboarding && !prefs.hasSeenLocationPrompt) {
+          if (kIsWeb) {
+            prefs.setHasSeenLocationPrompt(true);
+            return;
+          }
           final status = await Permission.locationWhenInUse.status;
           if (!status.isGranted) {
             _showPrivacyDialog();
@@ -79,6 +96,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _simTimer?.cancel();
     _pageCtrl.dispose();
     _robotPulseCtrl.dispose();
+    _fabPulseCtrl.dispose();
     super.dispose();
   }
 
@@ -108,14 +126,55 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final prefs = Provider.of<UserPreferencesModel>(context);
+    final isArabic = prefs.language == 'ar';
 
     return AppMenuShell(
       hideDefaultAppBar: true,
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.warmSurface,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
       floatingActionButton: _HorusFab(onPressed: () => Navigator.pushNamed(context, AppRoutes.chat), label: l10n.talkToHorusBot),
       body: Container(
         color: AppColors.cinematicBackground,
         child: CustomScrollView(
+      floatingActionButton: ScaleTransition(
+        scale: _fabScale,
+        child: _HorusFab(
+          onPressed: () => Navigator.pushNamed(context, AppRoutes.chat),
+          label: l10n.talkToHorusBot,
+        ),
+      ),
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              expandedHeight: 64.0,
+              toolbarHeight: 64.0,
+              floating: false,
+              pinned: true,
+              elevation: 0,
+              centerTitle: true,
+              backgroundColor: isDark ? AppColors.darkHeader : AppColors.warmSurface,
+              shape: Border(bottom: BorderSide(color: isDark ? AppColors.darkDivider : const Color(0xFFE5E0D5), width: 1)),
+              title: Image.asset("assets/icons/ankh.png", width: 32, height: 32),
+              leading: IconButton(
+                padding: const EdgeInsets.all(16),
+                icon: Icon(Icons.menu, color: isDark ? Colors.white : AppColors.darkInk, size: 28),
+                onPressed: () => AppMenuShell.of(context)?.openMenu(),
+              ),
+              actions: [
+                IconButton(
+                  padding: const EdgeInsets.all(16),
+                  icon: Icon(Icons.qr_code_scanner, color: isDark ? Colors.white : AppColors.darkInk, size: 28),
+                  onPressed: () => Navigator.pushNamed(context, AppRoutes.qrScan),
+                ),
+              ],
+            ),
+          ];
+        },
+        body: CustomScrollView(
           slivers: [
             // 1. Cinematic Hero Section
             SliverToBoxAdapter(
@@ -175,6 +234,85 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                       ),
                     ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(isArabic ? "أهلاً بك في المتحف" : "Welcome to the Museum", style: AppTextStyles.screenTitle(context)),
+                    const SizedBox(height: 4),
+                    Text(isArabic ? "اكتشف عجائب مصر القديمة" : "Discover the wonders of Ancient Egypt", style: AppTextStyles.helper(context)),
+                  ],
+                ),
+              ),
+            ),
+
+            // B. Hero Header / Horus-Bot Status Card
+            SliverToBoxAdapter(
+              child: Container(
+                height: 320,
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.asset('assets/images/museum_interior.jpg', fit: BoxFit.cover),
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.black.withOpacity(0.6),
+                                Colors.transparent,
+                                Colors.black.withOpacity(0.85),
+                              ],
+                              stops: const [0.0, 0.4, 1.0],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        left: 24,
+                        right: 24,
+                        bottom: 120,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Explore Egypt with Horus-Bot",
+                              style: theme.textTheme.displayLarge?.copyWith(
+                                fontSize: 30,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              "Follow Horus-Bot and discover ancient Egypt.",
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 16,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Positioned(
+                        left: 16,
+                        right: 16,
+                        bottom: 24,
+                        child: _NextStopBadge(
+                          location: "Tutankhamun Hall",
+                          time: "in 5 minutes",
+                          label: l10n.nextStopLabel,
+                          onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
+                        ),
+                      ),
+                    ],
                   ),
                   Positioned(
                     left: 24,
@@ -213,6 +351,23 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
 
             // 3. Quick Features Grid
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+
+            // ===== ROBOT STATUS CARD =====
+            SliverToBoxAdapter(
+              child: _RobotStatusCard(),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+
+            // ===== TOUR PROGRESS TRACKER =====
+            SliverToBoxAdapter(
+              child: _TourProgressTracker(),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+            // ===== FEATURE CARDS =====
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -305,6 +460,27 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             const SliverToBoxAdapter(child: SizedBox(height: 48)),
 
             // 5. Map Preview
+            // ===== MUSEUM NEWS =====
+            SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      "Museum News",
+                      style: theme.textTheme.headlineMedium,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ...news.map((item) => _NewsCard(news: item)),
+                ],
+              ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+            // ===== MAP PREVIEW =====
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -514,6 +690,38 @@ class _NextStopBadge extends StatelessWidget {
                   ),
                 ],
               ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(14),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: InkWell(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1E1912).withOpacity(0.55),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.primaryGold, width: 1),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.25),
+                  blurRadius: 15,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.location_on, color: AppColors.primaryGold, size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    "$label: $location $time",
+                    style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                const Icon(Icons.chevron_right_rounded, color: Colors.white, size: 20),
+              ],
             ),
             const Icon(Icons.arrow_forward_ios_rounded, color: AppColors.neutralDark, size: 20),
           ],
@@ -724,6 +932,174 @@ class _GridPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+class _RobotStatusCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final tourProvider = Provider.of<TourProvider>(context);
+    final isOnline = tourProvider.robotState != RobotState.disconnected;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.darkSurface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.primaryGold.withOpacity(0.1)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.primaryGold.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.smart_toy, color: AppColors.primaryGold, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Text("Horus-Bot Status", style: TextStyle(color: AppColors.primaryText, fontWeight: FontWeight.bold, fontSize: 16)),
+                    const SizedBox(width: 8),
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: isOnline ? Colors.green : Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  isOnline ? "Online • At Ancient Jewelry Gallery" : "Offline",
+                  style: const TextStyle(color: AppColors.secondaryText, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: const [
+              Text("Next Tour", style: TextStyle(color: AppColors.helperText, fontSize: 11)),
+              Text("2:00 PM", style: TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 14)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TourProgressTracker extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.darkSurface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.primaryGold.withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [
+              Text("Tour Progress", style: TextStyle(color: AppColors.primaryText, fontWeight: FontWeight.bold, fontSize: 16)),
+              Text("3 / 10 exhibits", style: TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 14)),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Stack(
+            children: [
+              Container(
+                height: 8,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              FractionallySizedBox(
+                widthFactor: 0.3,
+                child: Container(
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryGold,
+                    borderRadius: BorderRadius.circular(4),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primaryGold.withOpacity(0.3),
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NewsCard extends StatelessWidget {
+  final MockNews news;
+  const _NewsCard({required this.news});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      decoration: BoxDecoration(
+        color: AppColors.darkSurface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.primaryGold.withOpacity(0.1)),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.asset(news.image, height: 120, width: double.infinity, fit: BoxFit.cover),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(news.source, style: const TextStyle(color: AppColors.primaryGold, fontSize: 11, fontWeight: FontWeight.bold)),
+                      Text("Nov 24", style: const TextStyle(color: AppColors.helperText, fontSize: 11)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(news.title, style: const TextStyle(color: AppColors.primaryText, fontWeight: FontWeight.bold, fontSize: 16)),
+                  const SizedBox(height: 4),
+                  Text(
+                    news.description,
+                    style: const TextStyle(color: AppColors.secondaryText, fontSize: 13),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _HorusFab extends StatefulWidget {

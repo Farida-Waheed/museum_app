@@ -198,4 +198,14 @@
   "reduceAnimationsSub": "Simplifies motion effects for sensitive users.",
   "simpleMode": "Simple Mode",
   "simpleModeSub": "Larger buttons and simplified layout."
+  "followAndDiscover": "Follow Horus-Bot and discover ancient Egypt",
+  "aboutHorusBot": "About Horus-Bot",
+  "version": "Version 1.0",
+  "aboutDesc": "Your AI-powered companion for an immersive museum experience.",
+  "developedBy": "Developed By",
+  "university": "Benha University",
+  "program": "Faculty of Computers and Artificial Intelligence",
+  "projectInfo": "Project Info",
+  "team": "Our Team",
+  "privacyPolicy": "Privacy Policy"
 }

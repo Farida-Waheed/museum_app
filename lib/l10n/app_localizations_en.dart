@@ -102,11 +102,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mainGallery => 'Main exhibition gallery';
 
   @override
-  String get comfortableApp => 'Make the app comfortable for you';
+  String get comfortableApp => 'Customize your museum experience';
 
   @override
   String get adjustSettings =>
-      'Adjust text size, contrast, and language to suit your needs.';
+      'Adjust navigation, accessibility, and display to suit your needs.';
 
   @override
   String get displayText => 'Display & Text';
@@ -508,6 +508,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsDisabled => 'Settings: Disabled';
+  String get followAndDiscover => 'Follow Horus-Bot and discover ancient Egypt';
 
   @override
   String get aboutHorusBot => 'About Horus-Bot';
@@ -591,4 +592,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get simpleModeSub => 'Larger buttons and simplified layout.';
+  String get version => 'Version 1.0';
+
+  @override
+  String get aboutDesc =>
+      'Your AI-powered companion for an immersive museum experience.';
+
+  @override
+  String get developedBy => 'Developed By';
+
+  @override
+  String get university => 'Benha University';
+
+  @override
+  String get program => 'Faculty of Computers and Artificial Intelligence';
+
+  @override
+  String get projectInfo => 'Project Info';
+
+  @override
+  String get team => 'Our Team';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
 }

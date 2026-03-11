@@ -108,28 +108,14 @@ class _SideMenu extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     children: [
                       _MenuItem(
-                        icon: Icons.home_outlined,
-                        label: l10n.home,
-                        selected: currentRoute == AppRoutes.mainHome,
-                        onTap: () => onReplace(AppRoutes.mainHome),
+                        icon: Icons.language_outlined,
+                        label: l10n.appLanguage,
+                        onTap: () => onReplace(AppRoutes.language),
                       ),
                       _MenuItem(
-                        icon: Icons.map_outlined,
-                        label: l10n.map,
-                        selected: currentRoute == AppRoutes.map,
-                        onTap: () => onReplace(AppRoutes.map),
-                      ),
-                      _MenuItem(
-                        icon: Icons.radio_button_checked_outlined,
-                        label: l10n.tour,
-                        selected: currentRoute == AppRoutes.liveTour,
-                        onTap: () => onReplace(AppRoutes.liveTour),
-                      ),
-                      _MenuItem(
-                        icon: Icons.confirmation_number_outlined,
-                        label: l10n.tickets,
-                        selected: currentRoute == AppRoutes.tickets,
-                        onTap: () => onReplace(AppRoutes.tickets),
+                        icon: Icons.accessibility_new_outlined,
+                        label: l10n.accessibility,
+                        onTap: () => onReplace(AppRoutes.accessibility),
                       ),
                       _MenuItem(
                         icon: Icons.settings_outlined,
@@ -141,11 +127,6 @@ class _SideMenu extends StatelessWidget {
                         icon: Icons.help_outline_rounded,
                         label: isArabic ? "مساعدة" : "Help",
                         onTap: () => onReplace(AppRoutes.feedback),
-                      ),
-                      _MenuItem(
-                        icon: Icons.info_outline_rounded,
-                        label: isArabic ? "عن المشروع" : "About Project",
-                        onTap: () => {},
                       ),
                     ],
                   ),
@@ -363,8 +344,14 @@ class AppMenuShellState extends State<AppMenuShell>
                               backgroundColor: bgColor,
                               appBar: AppBar(
                                 leading: IconButton(
-                                  icon: const Icon(Icons.menu),
-                                  onPressed: toggleMenu,
+                                  icon: Icon(Navigator.canPop(context) ? Icons.arrow_back_ios_new : Icons.menu, size: Navigator.canPop(context) ? 20 : null),
+                                  onPressed: () {
+                                    if (Navigator.canPop(context)) {
+                                      Navigator.pop(context);
+                                    } else {
+                                      toggleMenu();
+                                    }
+                                  },
                                 ),
                                 title: Row(
                                   children: [
