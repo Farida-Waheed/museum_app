@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
-import '../../core/constants/text_styles.dart';
-
-import 'package:permission_handler/permission_handler.dart';
+import '../../app/router.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/dialogs/location_permission_dialog.dart';
@@ -16,11 +14,15 @@ class AccessibilityScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final l10n = AppLocalizations.of(context)!;
-    final isArabic = prefs.language == 'ar';
+    final isDark = theme.brightness == Brightness.dark;
+
+    final cardBgColor = isDark ? AppColors.darkSurface : const Color(0xFFF7F2E8);
+    final textColor = isDark ? const Color(0xFFF5F1E8) : const Color(0xFF2A2118);
+    final secondaryTextColor = isDark ? Colors.white.withOpacity(0.82) : const Color(0xFF5C5143);
 
     return AppMenuShell(
-      title: isArabic ? "الإعدادات وإمكانية الوصول" : "Settings & Accessibility",
-      backgroundColor: AppColors.darkBackground,
+      title: l10n.settings,
+      bottomNavigationBar: BottomNav(currentIndex: 4),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: Column(
@@ -187,18 +189,32 @@ class AccessibilityScreen extends StatelessWidget {
 
             const SizedBox(height: 32),
 
-            // F. About Horus-Bot
-            _SectionHeader(title: isArabic ? "عن حوروس-بوت" : "About Horus-Bot"),
-            _PremiumCard(
-              children: [
-                _InfoRow(label: isArabic ? "الإصدار" : "Version", value: "1.0"),
-                _Divider(),
-                _InfoRow(label: isArabic ? "النوع" : "Type", value: isArabic ? "دليل متحف ذكي ذاتي القيادة" : "Smart Autonomous Museum Guide"),
-                _Divider(),
-                _InfoRow(label: isArabic ? "تطوير" : "Developed by", value: isArabic ? "جامعة بنها" : "Benha University"),
-                _Divider(),
-                _InfoRow(label: isArabic ? "البرنامج" : "Program", value: isArabic ? "هندسة الحاسبات والاتصالات" : "Computer & Communication Engineering"),
-              ],
+            // ABOUT HORUS-BOT
+            _SectionHeader(title: l10n.aboutHorusBot),
+            _StyledCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.version, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+                  const SizedBox(height: 4),
+                  Text(l10n.aboutDesc, style: TextStyle(fontSize: 14, color: secondaryTextColor)),
+                  const SizedBox(height: 24),
+                  Text(l10n.developedBy, style: TextStyle(fontSize: 12, color: secondaryTextColor, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
+                  Text(l10n.university, style: TextStyle(fontSize: 14, color: textColor)),
+                  Text(l10n.program, style: TextStyle(fontSize: 13, color: secondaryTextColor)),
+                  const SizedBox(height: 24),
+                  _AboutLink(
+                    title: l10n.projectInfo,
+                    onTap: () => Navigator.pushNamed(context, AppRoutes.projectInfo),
+                  ),
+                  _AboutLink(
+                    title: l10n.team,
+                    onTap: () => Navigator.pushNamed(context, AppRoutes.projectInfo),
+                  ),
+                  _AboutLink(title: l10n.privacyPolicy),
+                ],
+              ),
             ),
 
             const SizedBox(height: 48),
@@ -370,25 +386,29 @@ class _PermissionRow extends StatelessWidget {
       ],
     );
   }
+}
 
-  void _handleAction(BuildContext context) async {
-    if (title == "Location" || title == "الموقع") {
-      final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
-      showDialog(
-        context: context,
-        useSafeArea: false,
-        builder: (context) => LocationPermissionDialog(
-          isHighContrast: prefs.isHighContrast,
-          onAllow: () async {
-            Navigator.pop(context);
-            await Permission.locationWhenInUse.request();
-          },
-          onDeny: () => Navigator.pop(context),
+class _AboutLink extends StatelessWidget {
+  final String title;
+  final VoidCallback? onTap;
+  const _AboutLink({required this.title, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(title, style: TextStyle(fontSize: 15, color: isDark ? Colors.white : Colors.black, fontWeight: FontWeight.w500)),
+            const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.primaryGold),
+          ],
         ),
-      );
-    } else {
-      openAppSettings();
-    }
+      ),
+    );
   }
 }
 

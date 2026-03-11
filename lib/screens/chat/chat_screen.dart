@@ -5,8 +5,8 @@ import 'package:provider/provider.dart';
 
 import '../../models/user_preferences.dart';
 import '../../l10n/app_localizations.dart';
+import '../../widgets/dialogs/premium_dialog.dart';
 import '../../core/constants/colors.dart';
-import '../../core/constants/text_styles.dart';
 
 // ======================= Chat Screen ==========================
 class ChatScreen extends StatefulWidget {
@@ -119,15 +119,31 @@ class ChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isUser = msg.isUser;
-    final bubbleColor = isUser ? AppColors.primaryGold : AppColors.darkSurface;
-    final textColor = isUser ? AppColors.darkInk : const Color(0xFFF5F1E8);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final bubbleColor = isUser
+        ? AppColors.primaryGold
+        : (isDark ? AppColors.darkSurfaceSecondary : Colors.grey.shade100);
+    final textColor = isUser
+        ? AppColors.darkInk
+        : (isDark ? Colors.white : Colors.black87);
+
     final msgIsArabic = msg.kind == MessageKind.text ? _hasArabic(msg.text) : isArabicUI;
     final dir = msgIsArabic ? TextDirection.rtl : TextDirection.ltr;
 
     final avatar = CircleAvatar(
       radius: 14,
-      backgroundColor: isUser ? AppColors.primaryGold.withOpacity(0.1) : AppColors.darkSurface,
-      child: isUser ? const Icon(Icons.person_outline, size: 16, color: AppColors.primaryGold) : const Icon(Icons.smart_toy_rounded, size: 16, color: AppColors.primaryGold),
+      backgroundColor: isUser
+          ? AppColors.primaryGold.withOpacity(0.1)
+          : (isDark ? Colors.white.withOpacity(0.1) : Colors.blueGrey.shade50),
+      child: isUser
+          ? const Icon(Icons.person_outline, size: 16, color: AppColors.primaryGold)
+          : Image.asset(
+              "assets/icons/ankh.png",
+              width: 16,
+              height: 16,
+              color: isDark ? Colors.white70 : Colors.black54
+            ),
     );
 
     Widget content = msg.kind == MessageKind.infoCard
@@ -166,8 +182,22 @@ class _InfoCardBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final titleStyle = TextStyle(fontWeight: FontWeight.w900, color: isUser ? AppColors.darkInk : AppColors.primaryGold, fontSize: 15);
-    final itemStyle = TextStyle(color: isUser ? AppColors.darkInk.withOpacity(0.9) : const Color(0xFFF5F1E8).withOpacity(0.82), fontSize: 14, height: 1.5);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final titleStyle = TextStyle(
+      fontWeight: FontWeight.w900,
+      color: isUser ? AppColors.darkInk : (isDark ? Colors.white : Colors.black),
+      fontSize: 15,
+      letterSpacing: 0.2,
+    );
+
+    final itemStyle = TextStyle(
+      color: isUser
+          ? AppColors.darkInk.withOpacity(0.8)
+          : (isDark ? Colors.white.withOpacity(0.9) : Colors.black87),
+      fontSize: 14,
+      height: 1.5,
+    );
+
     return Column(
       crossAxisAlignment: isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
       children: [
@@ -240,39 +270,124 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final isArabic = Provider.of<UserPreferencesModel>(context).language == "ar";
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: widget.isPopup ? Colors.transparent : AppColors.darkBackground,
-      appBar: widget.isPopup ? null : AppBar(title: Text(l10n.talkToHorusBot, style: AppTextStyles.screenTitle(context).copyWith(fontSize: 18)), backgroundColor: AppColors.darkBackground, elevation: 0, centerTitle: true, iconTheme: const IconThemeData(color: Colors.white)),
-      body: Center(
-        child: ScaleTransition(
-          scale: Tween(begin: 0.95, end: 1.0).animate(CurvedAnimation(parent: _popupAnim, curve: Curves.easeOutCubic)),
-          child: Container(
-            width: widget.isPopup ? MediaQuery.of(context).size.width * 0.92 : double.infinity,
-            height: widget.isPopup ? MediaQuery.of(context).size.height * 0.82 : double.infinity,
-            decoration: widget.isPopup ? BoxDecoration(borderRadius: BorderRadius.circular(24), color: AppColors.darkSurface, border: Border.all(color: AppColors.primaryGold, width: 1), boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 30, offset: const Offset(0, 15))]) : null,
-            child: ClipRRect(
-              borderRadius: widget.isPopup ? BorderRadius.circular(24) : BorderRadius.zero,
-              child: Column(
-                children: [
-                  if (widget.isPopup) Padding(padding: const EdgeInsets.fromLTRB(20, 20, 20, 10), child: Row(children: [const Icon(Icons.smart_toy_rounded, color: AppColors.primaryGold, size: 24), const SizedBox(width: 12), Text(l10n.talkToHorusBot, style: AppTextStyles.cardTitle(context).copyWith(fontSize: 18)), const Spacer(), IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close_rounded, color: AppColors.neutralMedium))])),
-                  _QuickChips(isArabic: isArabic, onSubmit: _submit),
-                  Expanded(child: ListView.builder(controller: _scroll, padding: const EdgeInsets.all(16), itemCount: _messages.length, itemBuilder: (context, i) => MessageEntryAnimator(isUser: _messages[i].isUser, child: ChatBubble(msg: _messages[i], isArabicUI: isArabic)))),
-                  if (_isTyping) Padding(padding: const EdgeInsets.fromLTRB(20, 0, 20, 10), child: Align(alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft, child: _TypingIndicator(isArabic: isArabic))),
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(color: AppColors.darkSurface, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, -5))]),
-                    child: SafeArea(top: false, child: Row(children: [
-                      Expanded(child: TextField(controller: _controller, textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr, onSubmitted: _submit, style: const TextStyle(color: Colors.white), decoration: InputDecoration(hintText: isArabic ? "اسأل حوروس..." : "Ask Horus...", hintStyle: TextStyle(color: Colors.white.withOpacity(0.3)), fillColor: AppColors.darkBackground, filled: true, border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: AppColors.primaryGold.withOpacity(0.2))), enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: AppColors.primaryGold.withOpacity(0.2))), focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: const BorderSide(color: AppColors.primaryGold)), contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12)))),
-                      const SizedBox(width: 12),
-                      AnimatedScale(scale: _canSend ? 1.0 : 0.9, duration: const Duration(milliseconds: 200), child: CircleAvatar(backgroundColor: _canSend ? AppColors.primaryGold : AppColors.darkBackground, radius: 24, child: IconButton(onPressed: _canSend ? () => _submit(_controller.text) : null, icon: Icon(Icons.send_rounded, color: _canSend ? AppColors.darkInk : AppColors.neutralMedium, size: 20))))
-                    ])),
-                  ),
-                ],
-              ),
-            ),
-          ),
+
+    final quickChips = Container(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: [
+            _QuickChip(label: isArabic ? "التذاكر 🎟️" : "Tickets 🎟️", onTap: () => _submit(isArabic ? "أسعار التذاكر" : "ticket prices")),
+            _QuickChip(label: isArabic ? "المواعيد ⏰" : "Hours ⏰", onTap: () => _submit(isArabic ? "مواعيد العمل" : "opening hours")),
+            _QuickChip(label: isArabic ? "الفعاليات 🎭" : "Events 🎭", onTap: () => _submit(isArabic ? "الفعاليات القادمة" : "upcoming events")),
+            _QuickChip(label: isArabic ? "المدة ⌛" : "Duration ⌛", onTap: () => _submit(isArabic ? "مدة الزيارة" : "visit duration")),
+          ],
         ),
       ),
+    );
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final content = Column(
+      children: [
+        quickChips,
+        Expanded(
+          child: ListView.builder(
+            controller: _scroll,
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            itemCount: _messages.length,
+            itemBuilder: (context, i) {
+              final m = _messages[i];
+              return MessageEntryAnimator(isUser: m.isUser, child: ChatBubble(msg: m, isArabicUI: isArabic));
+            },
+          ),
+        ),
+        if (_isTyping)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Align(alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft, child: _TypingIndicator(isArabic: isArabic)),
+          ),
+
+        // INPUT AREA
+        Container(
+          padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: () {}, // Mock microphone
+                icon: const Icon(Icons.mic_none_rounded, color: AppColors.primaryGold),
+              ),
+              Expanded(
+                child: TextField(
+                  controller: _controller,
+                  textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+                  onSubmitted: _submit,
+                  style: TextStyle(color: isDark ? Colors.white : AppColors.darkInk),
+                  decoration: InputDecoration(
+                    hintText: isArabic ? "اسأل حوروس عن أي شيء..." : "Ask Horus about anything...",
+                    hintStyle: TextStyle(color: isDark ? Colors.white38 : Colors.black38),
+                    fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade50,
+                    filled: true,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide.none),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              AnimatedScale(
+                scale: _canSend ? 1.0 : 0.9,
+                duration: const Duration(milliseconds: 200),
+                child: CircleAvatar(
+                  backgroundColor: _canSend ? AppColors.primaryGold : (isDark ? Colors.white10 : Colors.grey.shade100),
+                  radius: 22,
+                  child: IconButton(
+                    onPressed: _canSend ? () => _submit(_controller.text) : null,
+                    icon: Icon(Icons.send_rounded, color: _canSend ? AppColors.darkInk : Colors.grey, size: 18),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+
+    if (widget.isPopup) {
+      return PremiumDialog(
+        title: l10n.talkToHorusBot,
+        icon: Image.asset("assets/icons/ankh.png", width: 24, height: 24),
+        content: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.65,
+          child: content,
+        ),
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
+      appBar: AppBar(
+        title: Text(l10n.talkToHorusBot, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+        backgroundColor: isDark ? AppColors.darkHeader : Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new, size: 20), onPressed: () => Navigator.pop(context)),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: content,
+      ),
+      floatingActionButton: _showScrollBtn
+          ? FloatingActionButton.small(
+              onPressed: _scrollToBottom,
+              backgroundColor: AppColors.primaryGold,
+              foregroundColor: AppColors.darkInk,
+              child: const Icon(Icons.arrow_downward)
+            )
+          : null,
     );
   }
 }
