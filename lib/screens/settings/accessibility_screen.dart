@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
-
 import 'package:permission_handler/permission_handler.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/app_menu_shell.dart';
@@ -19,237 +18,511 @@ class AccessibilityScreen extends StatelessWidget {
     final isArabic = prefs.language == 'ar';
 
     return AppMenuShell(
-      title: isArabic ? "الإعدادات وإمكانية الوصول" : "Settings & Accessibility",
-      backgroundColor: AppColors.darkBackground,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              isArabic ? "خصص تجربة المتحف الخاصة بك" : "Customize your museum experience",
-              style: AppTextStyles.helper(context),
-            ),
-            const SizedBox(height: 32),
+      hideDefaultAppBar: true,
+      backgroundColor: AppColors.cinematicBackground,
+      body: Scaffold(
+        backgroundColor: AppColors.cinematicBackground,
+        appBar: AppBar(
+          backgroundColor: AppColors.cinematicNav,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.menu, color: Colors.white),
+            onPressed: () => AppMenuShell.of(context)?.openMenu(),
+          ),
+          title: Row(
+            children: [
+              Image.asset("assets/icons/ankh.png", width: 24, height: 24),
+              const SizedBox(width: 16),
+              Text(
+                l10n.settings,
+                style: AppTextStyles.screenTitle(context).copyWith(fontSize: 20),
+              ),
+            ],
+          ),
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 1. Introduction Card
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.cinematicCard,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryGold.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.settings, color: AppColors.primaryGold, size: 28),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.comfortableApp,
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            l10n.adjustSettings,
+                            style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 13),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
 
-            // A. Museum Experience
-            _SectionHeader(title: isArabic ? "تجربة المتحف" : "Museum Experience"),
-            _PremiumCard(
-              children: [
-                _SettingToggle(
-                  title: isArabic ? "اتبع حوروس-بوت تلقائيًا" : "Automatically follow Horus-Bot",
-                  subtitle: isArabic ? "يقوم الروبوت بتوجيهك تلقائيًا" : "Robot guides you automatically",
-                  value: true,
-                  onChanged: (val) {},
-                ),
-                _Divider(),
-                _SettingToggle(
-                  title: isArabic ? "إظهار المعروضات القريبة" : "Show nearby exhibits",
-                  subtitle: isArabic ? "تنبيهات عند الاقتراب من القطع الأثرية" : "Alerts when near artifacts",
-                  value: true,
-                  onChanged: (val) {},
-                ),
-                _Divider(),
-                _SettingToggle(
-                  title: isArabic ? "شروحات صوتية للمعروضات" : "Exhibit audio explanations",
-                  subtitle: isArabic ? "تشغيل الشرح الصوتي تلقائيًا" : "Auto-play audio narration",
-                  value: false,
-                  onChanged: (val) {},
-                ),
-                _Divider(),
-                _SettingToggle(
-                  title: isArabic ? "التفاعل الصوتي" : "Voice interaction",
-                  subtitle: isArabic ? "التحدث مع حوروس-بوت مباشرة" : "Talk to Horus-Bot directly",
-                  value: false,
-                  onChanged: (val) {},
-                ),
-              ],
-            ),
+              const SizedBox(height: 32),
 
-            const SizedBox(height: 32),
+              // 2. MUSEUM EXPERIENCE
+              _SectionTitle(title: l10n.museumExperience.toUpperCase()),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.cinematicCard,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      l10n.museumExperienceSub,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13),
+                    ),
+                    const SizedBox(height: 24),
+                    _SwitchItem(
+                      title: l10n.autoFollow,
+                      value: true,
+                      onChanged: (v) {},
+                    ),
+                    _SwitchItem(
+                      title: l10n.nearbyAlerts,
+                      value: true,
+                      onChanged: (v) {},
+                    ),
+                    _SwitchItem(
+                      title: l10n.detailedExplanations,
+                      value: true,
+                      onChanged: (v) {},
+                    ),
+                    _SwitchItem(
+                      title: l10n.voiceInteraction,
+                      value: false,
+                      onChanged: (v) {},
+                    ),
+                  ],
+                ),
+              ),
 
-            // B. Permissions
-            _SectionHeader(title: isArabic ? "الأذونات" : "Permissions"),
-            _PremiumCard(
-              children: [
-                _PermissionRow(
-                  icon: Icons.location_on_outlined,
-                  title: isArabic ? "الموقع" : "Location",
-                  subtitle: isArabic ? "يستخدم للملاحة الداخلية" : "Used for indoor navigation",
-                  status: isArabic ? "مفعل" : "Enabled",
-                  actionLabel: isArabic ? "إدارة" : "Manage",
-                  isArabic: isArabic,
-                ),
-                _Divider(),
-                _PermissionRow(
-                  icon: Icons.bluetooth_outlined,
-                  title: isArabic ? "بلوتوث" : "Bluetooth",
-                  subtitle: isArabic ? "للاتصال بالروبوت" : "To connect with the robot",
-                  status: isArabic ? "معطل" : "Disabled",
-                  actionLabel: isArabic ? "تفعيل" : "Enable",
-                  isArabic: isArabic,
-                ),
-                _Divider(),
-                _PermissionRow(
-                  icon: Icons.mic_none_outlined,
-                  title: isArabic ? "الميكروفون" : "Microphone",
-                  subtitle: isArabic ? "للأوامر الصوتية" : "For voice commands",
-                  status: isArabic ? "مرفوض" : "Denied",
-                  actionLabel: isArabic ? "إعدادات النظام" : "System Settings",
-                  isArabic: isArabic,
-                ),
-                _Divider(),
-                _PermissionRow(
-                  icon: Icons.camera_alt_outlined,
-                  title: isArabic ? "الكاميرا" : "Camera",
-                  subtitle: isArabic ? "لمسح التذاكر والواقع المعزز" : "For AR and scanning tickets",
-                  status: isArabic ? "مفعل" : "Enabled",
-                  actionLabel: isArabic ? "إدارة" : "Manage",
-                  isArabic: isArabic,
-                ),
-                _Divider(),
-                _PermissionRow(
-                  icon: Icons.notifications_none_outlined,
-                  title: isArabic ? "التنبيهات" : "Notifications",
-                  status: isArabic ? "مفعل" : "Enabled",
-                  actionLabel: isArabic ? "إدارة" : "Manage",
-                  isArabic: isArabic,
-                ),
-              ],
-            ),
+              const SizedBox(height: 32),
 
-            const SizedBox(height: 32),
-
-            // C. Accessibility
-            _SectionHeader(title: isArabic ? "إمكانية الوصول" : "Accessibility"),
-            _PremiumCard(
-              children: [
-                _SettingToggle(
-                  title: l10n.highContrast,
-                  subtitle: isArabic ? "زيادة تباين الألوان" : "Increase color contrast",
-                  value: prefs.isHighContrast,
-                  onChanged: prefs.toggleHighContrast,
+              // 3. PERMISSIONS
+              _SectionTitle(title: l10n.permissionsCenter.toUpperCase()),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.cinematicCard,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.white.withOpacity(0.05)),
                 ),
-                _Divider(),
-                _SettingToggle(
-                  title: isArabic ? "تقليل الحركة" : "Reduce motion",
-                  subtitle: isArabic ? "تقليل الحركات والانتقالات" : "Minimize animations and transitions",
-                  value: false,
-                  onChanged: (val) {},
+                child: Column(
+                  children: [
+                    _PermissionItem(
+                      icon: Icons.location_on_outlined,
+                      title: l10n.locationService,
+                      subtitle: l10n.locationServiceSub,
+                      onEnable: () {},
+                    ),
+                    _Divider(),
+                    _PermissionItem(
+                      icon: Icons.bluetooth,
+                      title: l10n.bluetooth,
+                      subtitle: l10n.bluetoothSub,
+                      onEnable: () {},
+                    ),
+                    _Divider(),
+                    _PermissionItem(
+                      icon: Icons.mic_none,
+                      title: l10n.microphone,
+                      subtitle: l10n.microphoneSub,
+                      onEnable: () {},
+                    ),
+                    _Divider(),
+                    _PermissionItem(
+                      icon: Icons.camera_alt_outlined,
+                      title: l10n.camera,
+                      subtitle: l10n.cameraSub,
+                      onEnable: () {},
+                    ),
+                    _Divider(),
+                    _PermissionItem(
+                      icon: Icons.notifications_none,
+                      title: l10n.notifications,
+                      subtitle: l10n.notificationsSub,
+                      onEnable: () {},
+                    ),
+                  ],
                 ),
-                _Divider(),
-                _SettingToggle(
-                  title: isArabic ? "الوضع البسيط" : "Simple mode",
-                  subtitle: isArabic ? "واجهة مستخدم مبسطة" : "Simplified user interface",
-                  value: false,
-                  onChanged: (val) {},
+              ),
+
+              const SizedBox(height: 32),
+
+              // 4. DISPLAY & TEXT
+              _SectionTitle(title: l10n.displayText.toUpperCase()),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.cinematicCard,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.white.withOpacity(0.05)),
                 ),
-                _Divider(),
-                _SettingToggle(
-                  title: isArabic ? "وضع الدليل الصوتي" : "Audio guide mode",
-                  subtitle: isArabic ? "تحسين للقارئ الصوتي" : "Optimized for screen readers",
-                  value: false,
-                  onChanged: (val) {},
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _SwitchItem(
+                      title: l10n.highContrast,
+                      value: prefs.isHighContrast,
+                      onChanged: (v) => prefs.toggleHighContrast(v),
+                    ),
+                    _SwitchItem(
+                      title: l10n.audioGuide,
+                      subtitle: l10n.audioGuideSub,
+                      value: false,
+                      onChanged: (v) {},
+                    ),
+                    _SwitchItem(
+                      title: l10n.reduceAnimations,
+                      subtitle: l10n.reduceAnimationsSub,
+                      value: false,
+                      onChanged: (v) {},
+                    ),
+                    _SwitchItem(
+                      title: l10n.simpleMode,
+                      subtitle: l10n.simpleModeSub,
+                      value: false,
+                      onChanged: (v) {},
+                    ),
+                    const SizedBox(height: 24),
+                    Text(l10n.appearanceMode, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        _AppearanceChip(
+                          label: l10n.system,
+                          icon: Icons.smartphone,
+                          selected: prefs.themeMode == 'system',
+                          onTap: () => prefs.setThemeMode('system'),
+                        ),
+                        const SizedBox(width: 8),
+                        _AppearanceChip(
+                          label: l10n.light,
+                          icon: Icons.light_mode_outlined,
+                          selected: prefs.themeMode == 'light',
+                          onTap: () => prefs.setThemeMode('light'),
+                        ),
+                        const SizedBox(width: 8),
+                        _AppearanceChip(
+                          label: l10n.dark,
+                          icon: Icons.dark_mode,
+                          selected: prefs.themeMode == 'dark',
+                          onTap: () => prefs.setThemeMode('dark'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 32),
+                    Text(l10n.textSize, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 16),
+                    SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        activeTrackColor: AppColors.primaryGold,
+                        inactiveTrackColor: Colors.white.withOpacity(0.1),
+                        thumbColor: AppColors.primaryGold,
+                        overlayColor: AppColors.primaryGold.withOpacity(0.2),
+                        trackHeight: 4,
+                      ),
+                      child: Slider(
+                        value: prefs.fontScale,
+                        min: 0.8,
+                        max: 1.4,
+                        divisions: 4,
+                        onChanged: (v) => prefs.setFontScale(v),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: List.generate(5, (i) => Container(width: 3, height: 3, decoration: const BoxDecoration(color: Colors.white24, shape: BoxShape.circle))),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
 
-            const SizedBox(height: 32),
+              const SizedBox(height: 32),
 
-            // D. Display
-            _SectionHeader(title: isArabic ? "العرض" : "Display"),
-            _PremiumCard(
-              children: [
-                _ThemeModeSetting(
-                  themeMode: prefs.themeMode,
-                  onChanged: prefs.setThemeMode,
+              // 5. LANGUAGE
+              _SectionTitle(title: l10n.language.toUpperCase()),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.cinematicCard,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.white.withOpacity(0.05)),
                 ),
-                const SizedBox(height: 24),
-                _FontSizeSetting(
-                  fontScale: prefs.fontScale,
-                  onChanged: prefs.setFontScale,
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryGold.withOpacity(0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.language, color: AppColors.primaryGold, size: 24),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l10n.appLanguage, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 4),
+                          Text(l10n.appLanguageSubtitle, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12)),
+                        ],
+                      ),
+                    ),
+                    DropdownButtonHideUnderline(
+                      child: DropdownButton<String>(
+                        value: prefs.language,
+                        icon: const Icon(Icons.arrow_drop_down, color: Colors.white54),
+                        dropdownColor: AppColors.cinematicElevated,
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        onChanged: (v) => prefs.setLanguage(v!),
+                        items: const [
+                          DropdownMenuItem(value: 'en', child: Text("English")),
+                          DropdownMenuItem(value: 'ar', child: Text("العربية")),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
 
-            const SizedBox(height: 32),
+              const SizedBox(height: 32),
 
-            // E. Language
-            _SectionHeader(title: isArabic ? "اللغة" : "Language"),
-            _PremiumCard(
-              children: [
-                _LanguageRow(
-                  currentLang: prefs.language,
-                  onChanged: (val) => prefs.setLanguage(val!),
+              // 6. ABOUT HORUS-BOT
+              _SectionTitle(title: l10n.aboutHorusBot.toUpperCase()),
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppColors.cinematicCard,
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: Colors.white.withOpacity(0.05)),
                 ),
-              ],
-            ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.appVersion, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                    const SizedBox(height: 4),
+                    Text(l10n.appTagline, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 14)),
+                    const SizedBox(height: 24),
+                    Text(l10n.developedBy.toUpperCase(), style: const TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 1)),
+                    const SizedBox(height: 8),
+                    Text(l10n.organization, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                    Text(l10n.department, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13)),
+                    const SizedBox(height: 24),
+                    _AboutNavItem(title: l10n.projectInfo),
+                    _AboutNavItem(title: l10n.team),
+                    _AboutNavItem(title: l10n.privacyPolicy),
+                  ],
+                ),
+              ),
 
-            const SizedBox(height: 32),
-
-            // F. About Horus-Bot
-            _SectionHeader(title: isArabic ? "عن حوروس-بوت" : "About Horus-Bot"),
-            _PremiumCard(
-              children: [
-                _InfoRow(label: isArabic ? "الإصدار" : "Version", value: "1.0"),
-                _Divider(),
-                _InfoRow(label: isArabic ? "النوع" : "Type", value: isArabic ? "دليل متحف ذكي ذاتي القيادة" : "Smart Autonomous Museum Guide"),
-                _Divider(),
-                _InfoRow(label: isArabic ? "تطوير" : "Developed by", value: isArabic ? "جامعة بنها" : "Benha University"),
-                _Divider(),
-                _InfoRow(label: isArabic ? "البرنامج" : "Program", value: isArabic ? "هندسة الحاسبات والاتصالات" : "Computer & Communication Engineering"),
-              ],
-            ),
-
-            const SizedBox(height: 48),
-          ],
+              const SizedBox(height: 48),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-// --- Internal Reusable Widgets ---
-
-class _SectionHeader extends StatelessWidget {
+class _SectionTitle extends StatelessWidget {
   final String title;
-  const _SectionHeader({required this.title});
-
+  const _SectionTitle({required this.title});
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 12, right: 4),
+      padding: const EdgeInsets.only(left: 4, bottom: 16),
       child: Text(
-        title.toUpperCase(),
-        style: AppTextStyles.sectionTitle(context),
+        title,
+        style: const TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1.5),
       ),
     );
   }
 }
 
-class _PremiumCard extends StatelessWidget {
-  final List<Widget> children;
-  const _PremiumCard({required this.children});
+class _SwitchItem extends StatelessWidget {
+  final String title;
+  final String? subtitle;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const _SwitchItem({required this.title, this.subtitle, required this.value, required this.onChanged});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.darkSurface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.darkDivider, width: 1),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15)),
+                if (subtitle != null) ...[
+                  const SizedBox(height: 4),
+                  Text(subtitle!, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12)),
+                ],
+              ],
+            ),
+          ),
+          Switch.adaptive(
+            value: value,
+            onChanged: onChanged,
+            activeTrackColor: AppColors.primaryGold.withOpacity(0.4),
+            activeColor: AppColors.primaryGold,
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: children,
+    );
+  }
+}
+
+class _PermissionItem extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final VoidCallback onEnable;
+
+  const _PermissionItem({required this.icon, required this.title, required this.subtitle, required this.onEnable});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, color: AppColors.primaryGold, size: 24),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                    const SizedBox(height: 4),
+                    Text(subtitle, style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12.5)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Text(
+                l10n.settingsDisabled,
+                style: const TextStyle(color: Colors.white38, fontWeight: FontWeight.bold, fontSize: 13),
+              ),
+              const Spacer(),
+              ElevatedButton(
+                onPressed: onEnable,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryGold,
+                  foregroundColor: AppColors.darkInk,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                ),
+                child: Text(l10n.enable, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AboutNavItem extends StatelessWidget {
+  final String title;
+  const _AboutNavItem({required this.title});
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500)),
+          const Icon(Icons.chevron_right, color: AppColors.primaryGold, size: 20),
+        ],
+      ),
+    );
+  }
+}
+
+class _AppearanceChip extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _AppearanceChip({required this.label, required this.icon, required this.selected, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          decoration: BoxDecoration(
+            color: selected ? AppColors.primaryGold : Colors.white.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            children: [
+              Icon(icon, color: selected ? AppColors.darkInk : Colors.white, size: 22),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                style: TextStyle(
+                  color: selected ? AppColors.darkInk : Colors.white,
+                  fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -257,287 +530,8 @@ class _PremiumCard extends StatelessWidget {
 }
 
 class _Divider extends StatelessWidget {
-  const _Divider();
   @override
   Widget build(BuildContext context) {
-    return Divider(height: 32, thickness: 1, color: AppColors.darkDivider);
-  }
-}
-
-class _SettingToggle extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final bool value;
-  final ValueChanged<bool> onChanged;
-
-  const _SettingToggle({
-    required this.title,
-    required this.subtitle,
-    required this.value,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: AppTextStyles.cardTitle(context)),
-              const SizedBox(height: 4),
-              Text(subtitle, style: AppTextStyles.helper(context)),
-            ],
-          ),
-        ),
-        const SizedBox(width: 16),
-        Switch.adaptive(
-          value: value,
-          activeTrackColor: AppColors.primaryGold,
-          inactiveTrackColor: AppColors.neutralDark,
-          activeColor: Colors.white,
-          inactiveThumbColor: Colors.white,
-          onChanged: onChanged,
-        ),
-      ],
-    );
-  }
-}
-
-class _PermissionRow extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String? subtitle;
-  final String status;
-  final String actionLabel;
-  final bool isArabic;
-
-  const _PermissionRow({
-    required this.icon,
-    required this.title,
-    this.subtitle,
-    required this.status,
-    required this.actionLabel,
-    required this.isArabic,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: AppColors.darkBackground,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(icon, color: AppColors.primaryGold, size: 20),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title, style: AppTextStyles.cardTitle(context)),
-              if (subtitle != null) ...[
-                const SizedBox(height: 2),
-                Text(subtitle!, style: AppTextStyles.helper(context)),
-              ],
-              const SizedBox(height: 4),
-              Text(
-                "${isArabic ? 'الحالة' : 'Status'}: $status",
-                style: TextStyle(
-                  color: status == "Enabled" || status == "مفعل" ? Colors.green : AppColors.alertRed,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(width: 16),
-        TextButton(
-          onPressed: () => _handleAction(context),
-          style: TextButton.styleFrom(
-            backgroundColor: AppColors.darkBackground,
-            foregroundColor: AppColors.primaryGold,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          ),
-          child: Text(actionLabel, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-        ),
-      ],
-    );
-  }
-
-  void _handleAction(BuildContext context) async {
-    if (title == "Location" || title == "الموقع") {
-      final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
-      showDialog(
-        context: context,
-        useSafeArea: false,
-        builder: (context) => LocationPermissionDialog(
-          isHighContrast: prefs.isHighContrast,
-          onAllow: () async {
-            Navigator.pop(context);
-            await Permission.locationWhenInUse.request();
-          },
-          onDeny: () => Navigator.pop(context),
-        ),
-      );
-    } else {
-      openAppSettings();
-    }
-  }
-}
-
-class _ThemeModeSetting extends StatelessWidget {
-  final String themeMode;
-  final ValueChanged<String> onChanged;
-
-  const _ThemeModeSetting({required this.themeMode, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(l10n.appearanceMode, style: AppTextStyles.cardTitle(context)),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            _ModeChip(label: l10n.system, icon: Icons.phone_android, selected: themeMode == 'system', onTap: () => onChanged('system')),
-            const SizedBox(width: 8),
-            _ModeChip(label: l10n.light, icon: Icons.light_mode, selected: themeMode == 'light', onTap: () => onChanged('light')),
-            const SizedBox(width: 8),
-            _ModeChip(label: l10n.dark, icon: Icons.dark_mode, selected: themeMode == 'dark', onTap: () => onChanged('dark')),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class _ModeChip extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _ModeChip({required this.label, required this.icon, required this.selected, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: selected ? AppColors.primaryGold.withOpacity(0.1) : AppColors.darkBackground,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: selected ? AppColors.primaryGold : AppColors.darkDivider),
-          ),
-          child: Column(
-            children: [
-              Icon(icon, color: selected ? AppColors.primaryGold : AppColors.neutralMedium, size: 20),
-              const SizedBox(height: 4),
-              Text(label, style: TextStyle(color: selected ? AppColors.primaryGold : AppColors.neutralMedium, fontSize: 11, fontWeight: selected ? FontWeight.bold : FontWeight.normal)),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _FontSizeSetting extends StatelessWidget {
-  final double fontScale;
-  final ValueChanged<double> onChanged;
-
-  const _FontSizeSetting({required this.fontScale, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(l10n.textSize, style: AppTextStyles.cardTitle(context)),
-            Text("${fontScale.toStringAsFixed(1)}x", style: TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.bold)),
-          ],
-        ),
-        SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            activeTrackColor: AppColors.primaryGold,
-            inactiveTrackColor: AppColors.darkDivider,
-            thumbColor: Colors.white,
-            overlayColor: AppColors.primaryGold.withOpacity(0.2),
-          ),
-          child: Slider(
-            value: fontScale.clamp(0.8, 1.4),
-            min: 0.8,
-            max: 1.4,
-            divisions: 6,
-            onChanged: onChanged,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _LanguageRow extends StatelessWidget {
-  final String currentLang;
-  final ValueChanged<String?> onChanged;
-
-  const _LanguageRow({required this.currentLang, required this.onChanged});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Icon(Icons.language, color: AppColors.primaryGold),
-        const SizedBox(width: 16),
-        Text(AppLocalizations.of(context)!.appLanguage, style: AppTextStyles.cardTitle(context)),
-        const Spacer(),
-        DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
-            value: currentLang,
-            dropdownColor: AppColors.darkSurface,
-            style: const TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.bold),
-            borderRadius: BorderRadius.circular(12),
-            items: const [
-              DropdownMenuItem(value: 'en', child: Text("English")),
-              DropdownMenuItem(value: 'ar', child: Text("العربية")),
-            ],
-            onChanged: onChanged,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _InfoRow extends StatelessWidget {
-  final String label;
-  final String value;
-  const _InfoRow({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: AppTextStyles.cardTitle(context).copyWith(fontSize: 14, color: AppColors.neutralMedium)),
-        Flexible(child: Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14), textAlign: TextAlign.end)),
-      ],
-    );
+    return Divider(height: 1, color: Colors.white.withOpacity(0.05), indent: 20, endIndent: 20);
   }
 }
