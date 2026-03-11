@@ -5,6 +5,26 @@ import 'colors.dart';
 class AppTextStyles {
   static const String _fontFamily = 'Playfair Display';
 
+  static TextStyle heroTitle(BuildContext context) {
+    return const TextStyle(
+      fontFamily: _fontFamily,
+      fontWeight: FontWeight.w900,
+      fontSize: 34, // ~34-36px
+      color: Colors.white,
+      letterSpacing: 0.5,
+    );
+  }
+
+  static TextStyle heroSubtitle(BuildContext context) {
+    return const TextStyle(
+      fontFamily: _fontFamily,
+      fontWeight: FontWeight.w400,
+      fontSize: 16, // ~16px
+      color: Colors.white70,
+      height: 1.4,
+    );
+  }
+
   static TextStyle screenTitle(BuildContext context) {
     return const TextStyle(
       fontFamily: _fontFamily,
@@ -20,7 +40,7 @@ class AppTextStyles {
       fontFamily: _fontFamily,
       fontWeight: FontWeight.bold,
       fontSize: 15,
-      color: AppColors.primaryGold, // requested muted gold or warm beige
+      color: AppColors.primaryGold,
       letterSpacing: 1.2,
     );
   }
@@ -39,7 +59,7 @@ class AppTextStyles {
       fontFamily: _fontFamily,
       fontWeight: FontWeight.w400,
       fontSize: 14,
-      color: AppColors.darkMutedText,
+      color: AppColors.neutralMedium,
       height: 1.4,
     );
   }

@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Horus-Bot';
 
   @override
-  String get exploreEgypt => 'Explore Egypt with Horus-Bot';
+  String get exploreEgypt => 'Explore Egypt With Horus-Bot';
 
   @override
   String nextStop(Object location, Object time) {
@@ -109,7 +109,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Adjust navigation, accessibility, and display to suit your needs.';
 
   @override
-  String get displayText => 'Display & text';
+  String get displayText => 'Display & Text';
 
   @override
   String get highContrast => 'High contrast mode';
@@ -171,7 +171,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get alignQr => 'Align QR Code within the frame';
 
   @override
-  String get audioGuide => 'Audio guide';
+  String get audioGuide => 'Audio Guide Mode';
 
   @override
   String get audioPlaying => 'Playing the audio guide...';
@@ -459,11 +459,135 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get followAndDiscover => 'Follow Horus-Bot';
+  String get followAndDiscover =>
+      'Follow the robot and uncover the stories behind ancient artifacts.';
+
+  @override
+  String get museumExperience => 'Museum Experience';
+
+  @override
+  String get museumExperienceSub =>
+      'Customize how Horus-Bot guides you through the museum.';
+
+  @override
+  String get autoFollow => 'Follow Horus-Bot automatically';
+
+  @override
+  String get nearbyAlerts => 'Show nearby exhibits';
+
+  @override
+  String get detailedExplanations => 'Enable exhibit explanations';
+
+  @override
+  String get voiceInteraction => 'Enable voice interaction';
+
+  @override
+  String get permissionsCenter => 'Permissions';
+
+  @override
+  String get locationService => 'Location';
+
+  @override
+  String get bluetooth => 'Bluetooth';
+
+  @override
+  String get microphone => 'Microphone';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get enable => 'Enable';
+
+  @override
+  String get settingsDisabled => 'Settings: Disabled';
+  String get followAndDiscover => 'Follow Horus-Bot and discover ancient Egypt';
 
   @override
   String get aboutHorusBot => 'About Horus-Bot';
 
   @override
+  String get appVersion => 'Version 1.0';
+
+  @override
+  String get appTagline => 'Smart Autonomous Museum Guide';
+
+  @override
+  String get developedBy => 'Developed by';
+
+  @override
+  String get organization => 'Benha University';
+
+  @override
+  String get department => 'Computer & Communication Engineering Program';
+
+  @override
+  String get projectInfo => 'Project Information';
+
+  @override
+  String get team => 'Team';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get tutankhamunHall => 'Tutankhamun Hall';
+
+  @override
+  String get fiveMinutesAway => '5 minutes away';
+
+  @override
+  String get tutankhamunMask => 'Tutankhamun Mask';
+
+  @override
+  String get goldenHallRecommended => 'Golden Hall • Recommended now';
+
+  @override
+  String get ancientPapyrus => 'Ancient Papyrus';
+
+  @override
+  String get westWingStory => 'West Wing • Story of Writing';
+
+  @override
+  String get canopicJars => 'Canopic Jars';
+
+  @override
+  String get southHallMummification => 'South Hall • Mummification Rituals';
+
+  @override
+  String get locationServiceSub =>
+      'Used for indoor navigation and exhibit guidance';
+
+  @override
+  String get bluetoothSub => 'Connect to nearby robot beacons';
+
+  @override
+  String get microphoneSub => 'Used for voice commands to Horus-Bot';
+
+  @override
+  String get cameraSub => 'Used for scanning QR tickets and AR view';
+
+  @override
+  String get notificationsSub => 'Stay updated on your tour and robot status';
+
+  @override
+  String get audioGuideSub => 'Automatically read exhibit information aloud.';
+
+  @override
+  String get reduceAnimations => 'Reduce Animations';
+
+  @override
+  String get reduceAnimationsSub =>
+      'Simplifies motion effects for sensitive users.';
+
+  @override
+  String get simpleMode => 'Simple Mode';
+
+  @override
+  String get simpleModeSub => 'Larger buttons and simplified layout.';
   String get version => 'Version 1.0';
 
   @override
