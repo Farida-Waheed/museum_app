@@ -973,6 +973,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Follow Horus-Bot and discover ancient Egypt'**
   String get followAndDiscover;
+
+  /// No description provided for @aboutHorusBot.
+  ///
+  /// In en, this message translates to:
+  /// **'About Horus-Bot'**
+  String get aboutHorusBot;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version 1.0'**
+  String get version;
+
+  /// No description provided for @aboutDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Your AI-powered companion for an immersive museum experience.'**
+  String get aboutDesc;
+
+  /// No description provided for @developedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Developed By'**
+  String get developedBy;
+
+  /// No description provided for @university.
+  ///
+  /// In en, this message translates to:
+  /// **'Benha University'**
+  String get university;
+
+  /// No description provided for @program.
+  ///
+  /// In en, this message translates to:
+  /// **'Faculty of Computers and Artificial Intelligence'**
+  String get program;
+
+  /// No description provided for @projectInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Project Info'**
+  String get projectInfo;
+
+  /// No description provided for @team.
+  ///
+  /// In en, this message translates to:
+  /// **'Our Team'**
+  String get team;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
 }
 
 class _AppLocalizationsDelegate

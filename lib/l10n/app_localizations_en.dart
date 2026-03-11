@@ -464,4 +464,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get followAndDiscover => 'Follow Horus-Bot and discover ancient Egypt';
+
+  @override
+  String get aboutHorusBot => 'About Horus-Bot';
+
+  @override
+  String get version => 'Version 1.0';
+
+  @override
+  String get aboutDesc =>
+      'Your AI-powered companion for an immersive museum experience.';
+
+  @override
+  String get developedBy => 'Developed By';
+
+  @override
+  String get university => 'Benha University';
+
+  @override
+  String get program => 'Faculty of Computers and Artificial Intelligence';
+
+  @override
+  String get projectInfo => 'Project Info';
+
+  @override
+  String get team => 'Our Team';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
 }

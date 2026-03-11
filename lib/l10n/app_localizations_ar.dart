@@ -462,4 +462,31 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get followAndDiscover => 'اتبع حوروس واكتشف مصر القديمة';
+
+  @override
+  String get aboutHorusBot => 'عن حوروس-بوت';
+
+  @override
+  String get version => 'الإصدار ١.٠';
+
+  @override
+  String get aboutDesc => 'رفيقك المدعوم بالذكاء الاصطناعي لتجربة متحف غامرة.';
+
+  @override
+  String get developedBy => 'تم التطوير بواسطة';
+
+  @override
+  String get university => 'جامعة بنها';
+
+  @override
+  String get program => 'كلية الحاسبات والذكاء الاصطناعي';
+
+  @override
+  String get projectInfo => 'معلومات المشروع';
+
+  @override
+  String get team => 'فريقنا';
+
+  @override
+  String get privacyPolicy => 'سياسة الخصوصية';
 }

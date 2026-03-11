@@ -87,6 +87,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
     final l10n = AppLocalizations.of(context)!;
 
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final cs = theme.colorScheme;
     final isBookmarked = exhibitProvider.isBookmarked(exhibit.id);
     final isArabic = prefs.language == 'ar';
@@ -128,7 +129,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                     exhibit.getDescription(prefs.language),
                     style: theme.textTheme.bodyLarge?.copyWith(
                       height: 1.6,
-                      color: Colors.black87,
+                      color: isDark ? AppColors.helperText : Colors.black87,
                     ),
                   ),
                   const SizedBox(height: 28),
@@ -337,10 +338,16 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
   // ---------- AUDIO CARD ----------
 
   Widget _buildAudioCard(Exhibit exhibit, AppLocalizations l10n, ColorScheme cs) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      margin: EdgeInsets.zero,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkSurface : Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: isDark ? AppColors.darkDivider : Colors.transparent),
+        boxShadow: [
+          if (!isDark) BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+        ],
+      ),
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Row(
@@ -351,14 +358,14 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: cs.primary.withOpacity(0.08),
+                  color: AppColors.primaryGold.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: AnimatedIcon(
                   icon: AnimatedIcons.play_pause,
                   progress: _playController,
                   size: 32,
-                  color: cs.primary,
+                  color: AppColors.primaryGold,
                 ),
               ),
             ),
@@ -369,15 +376,16 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                 children: [
                   Text(
                     l10n.audioGuide,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
+                      color: isDark ? Colors.white : Colors.black,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     l10n.audioNarration,
-                    style: const TextStyle(fontSize: 12, color: Colors.black54),
+                    style: TextStyle(fontSize: 12, color: isDark ? AppColors.helperText : Colors.black54),
                   ),
                 ],
               ),
@@ -391,6 +399,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
   // ---------- FACT CHIPS ----------
 
   Widget _buildFactChips(Exhibit exhibit, AppLocalizations l10n, ColorScheme cs) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final facts = <Map<String, dynamic>>[
       {
         'icon': Icons.public,
@@ -420,9 +429,11 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                 '${f['label']}: ${f['value']}',
                 style: const TextStyle(fontSize: 12),
               ),
-              backgroundColor: cs.primary.withOpacity(0.05),
+            backgroundColor: AppColors.primaryGold.withOpacity(0.1),
+            labelStyle: TextStyle(color: isDark ? Colors.white : Colors.black),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: AppColors.primaryGold.withOpacity(0.2)),
               ),
             ),
           )
@@ -447,8 +458,8 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
           icon: const Icon(Icons.route),
           label: Text(l10n.addToMyRoute),
           style: OutlinedButton.styleFrom(
-            foregroundColor: cs.primary,
-            side: BorderSide(color: cs.primary.withOpacity(0.4)),
+            foregroundColor: AppColors.primaryGold,
+            side: BorderSide(color: AppColors.primaryGold.withOpacity(0.4)),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(14),
@@ -464,9 +475,9 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
               ),
             );
           },
-          icon: const Icon(Icons.map_outlined),
-          label: Text(l10n.viewOnMap),
-          style: TextButton.styleFrom(foregroundColor: cs.primary),
+          icon: const Icon(Icons.map_outlined, color: AppColors.primaryGold),
+          label: Text(l10n.viewOnMap, style: const TextStyle(color: AppColors.primaryGold)),
+          style: TextButton.styleFrom(foregroundColor: AppColors.primaryGold),
         ),
       ],
     );

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../l10n/app_localizations.dart';
@@ -65,6 +66,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
 
         if (prefs.hasCompletedOnboarding && !prefs.hasSeenLocationPrompt) {
+          if (kIsWeb) {
+            prefs.setHasSeenLocationPrompt(true);
+            return;
+          }
           final status = await Permission.locationWhenInUse.status;
           if (!status.isGranted) {
             _showPrivacyDialog();
@@ -122,6 +127,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final prefs = Provider.of<UserPreferencesModel>(context);
+    final isArabic = prefs.language == 'ar';
 
     return AppMenuShell(
       hideDefaultAppBar: true,

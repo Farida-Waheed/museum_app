@@ -119,6 +119,7 @@ class ChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isUser = msg.isUser;
+    final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
     final bubbleColor = isUser
@@ -388,6 +389,36 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               child: const Icon(Icons.arrow_downward)
             )
           : null,
+    );
+  }
+}
+
+class _QuickChip extends StatelessWidget {
+  final String label;
+  final VoidCallback onTap;
+  const _QuickChip({required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: ActionChip(
+        onPressed: onTap,
+        label: Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: isDark ? Colors.white : AppColors.darkInk,
+          ),
+        ),
+        backgroundColor: isDark ? AppColors.cinematicElevated : Colors.grey.shade100,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: AppColors.primaryGold.withOpacity(0.3)),
+        ),
+      ),
     );
   }
 }

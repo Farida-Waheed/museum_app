@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/constants/colors.dart';
 import '../../l10n/app_localizations.dart';
 
 import '../../core/services/mock_data.dart';
@@ -20,8 +21,8 @@ class ExhibitListScreen extends StatelessWidget {
 
     return AppMenuShell(
       title: l10n.exhibits,
+      backgroundColor: AppColors.darkBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
-      backgroundColor: const Color(0xFFF8FAFC),
       body: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: 16),
         itemCount: exhibits.length,
@@ -69,12 +70,12 @@ class _ExhibitListTile extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppColors.darkSurface,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.grey.shade100),
+            border: Border.all(color: AppColors.darkDivider),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.02),
+                color: Colors.black.withOpacity(0.1),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -88,11 +89,11 @@ class _ExhibitListTile extends StatelessWidget {
                 child: Container(
                   width: 72,
                   height: 72,
-                  color: cs.primary.withOpacity(0.05),
-                  child: const Icon(
+                  color: AppColors.primaryGold.withOpacity(0.05),
+                  child: Icon(
                     Icons.museum_outlined,
                     size: 32,
-                    color: Colors.black54,
+                    color: AppColors.primaryGold,
                   ),
                 ),
               ),
@@ -106,7 +107,7 @@ class _ExhibitListTile extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.w900,
                         fontSize: 16,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -114,14 +115,14 @@ class _ExhibitListTile extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        Icon(Icons.location_on_outlined, size: 12, color: Colors.grey.shade500),
+                        Icon(Icons.location_on_outlined, size: 12, color: AppColors.helperText),
                         const SizedBox(width: 4),
                         Text(
                           l10n.mainGallery,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: Colors.grey.shade600,
+                            color: AppColors.helperText,
                           ),
                         ),
                       ],
@@ -130,7 +131,7 @@ class _ExhibitListTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(isArabic ? Icons.chevron_left_rounded : Icons.chevron_right_rounded, color: Colors.grey.shade400),
+              Icon(isArabic ? Icons.chevron_left_rounded : Icons.chevron_right_rounded, color: Colors.white24),
             ],
           ),
         ),

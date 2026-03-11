@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/constants/colors.dart';
 import '../../models/tour_provider.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/primary_button.dart';
@@ -21,6 +22,7 @@ class VisitSummaryScreen extends StatelessWidget {
 
     return AppMenuShell(
       title: l10n.visitSummary,
+      backgroundColor: AppColors.darkBackground,
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
         child: Column(
@@ -34,24 +36,24 @@ class VisitSummaryScreen extends StatelessWidget {
                   height: 140,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.amber.withOpacity(0.1),
+                    color: AppColors.primaryGold.withOpacity(0.1),
                     boxShadow: [
-                      BoxShadow(color: Colors.amber.withOpacity(0.1), blurRadius: 40, spreadRadius: 10),
+                      BoxShadow(color: AppColors.primaryGold.withOpacity(0.1), blurRadius: 40, spreadRadius: 10),
                     ],
                   ),
                 ),
-                const Icon(Icons.emoji_events_rounded, size: 80, color: Colors.amber),
+                const Icon(Icons.emoji_events_rounded, size: 80, color: AppColors.primaryGold),
               ],
             ),
             const SizedBox(height: 32),
 
             // 2. Main Congrats
-            Text(l10n.congrats, style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -0.5)),
+            Text(l10n.congrats, style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -0.5, color: Colors.white)),
             const SizedBox(height: 12),
             Text(
               l10n.visitComplete,
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, color: Colors.grey.shade600, height: 1.5),
+              style: const TextStyle(fontSize: 16, color: AppColors.helperText, height: 1.5),
             ),
             const SizedBox(height: 48),
 
@@ -59,16 +61,16 @@ class VisitSummaryScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.grey.shade50,
+                color: AppColors.darkSurface,
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: Colors.grey.shade100),
+                border: Border.all(color: AppColors.darkDivider),
               ),
               child: Column(
                 children: [
                   _buildStatRow(l10n.exhibitsVisited, "$visitedCount", Icons.museum_outlined),
-                  const Divider(height: 32, thickness: 1),
+                  const Divider(height: 32, thickness: 1, color: AppColors.darkDivider),
                   _buildStatRow(l10n.totalTime, "45 min", Icons.timer_outlined),
-                  const Divider(height: 32, thickness: 1),
+                  const Divider(height: 32, thickness: 1, color: AppColors.darkDivider),
                   _buildStatRow(
                     isArabic ? "الاختبارات المكتملة" : "Quizzes Completed",
                     "$totalQuizzesCompleted",
@@ -80,16 +82,16 @@ class VisitSummaryScreen extends StatelessWidget {
                       isArabic ? "إجمالي النقاط" : "Total Quiz Score",
                       "$totalQuizScore",
                       Icons.star_outline,
-                      valueColor: Colors.amber.shade700,
+                      valueColor: AppColors.primaryGold,
                     ),
                   ],
                   if (skippedQuizzesCount > 0) ...[
-                    const Divider(height: 32, thickness: 1),
+                    const Divider(height: 32, thickness: 1, color: AppColors.darkDivider),
                     _buildStatRow(
                       isArabic ? "اختبارات لم تُحل" : "Skipped Quizzes",
                       "$skippedQuizzesCount",
                       Icons.help_outline,
-                      valueColor: Colors.grey,
+                      valueColor: AppColors.helperText,
                     ),
                   ],
                 ],
@@ -111,12 +113,13 @@ class VisitSummaryScreen extends StatelessWidget {
               child: OutlinedButton(
                 onPressed: () => Navigator.pushReplacementNamed(context, '/home'),
                 style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primaryGold,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  side: BorderSide(color: Colors.grey.shade300),
+                  side: const BorderSide(color: AppColors.primaryGold),
                 ),
                 child: Text(
                   l10n.done,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                 ),
               ),
             ),
@@ -127,12 +130,12 @@ class VisitSummaryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatRow(String label, String value, IconData icon, {Color valueColor = Colors.blue}) {
+  Widget _buildStatRow(String label, String value, IconData icon, {Color valueColor = AppColors.primaryGold}) {
     return Row(
       children: [
-        Icon(icon, size: 22, color: Colors.grey.shade400),
+        Icon(icon, size: 22, color: AppColors.helperText),
         const SizedBox(width: 16),
-        Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.black87)),
+        Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.white)),
         const Spacer(),
         Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: valueColor)),
       ],

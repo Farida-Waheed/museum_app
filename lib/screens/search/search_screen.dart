@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/constants/colors.dart';
 
 import '../../models/user_preferences.dart';
 import '../../core/services/mock_data.dart';
@@ -66,20 +67,19 @@ class _SearchScreenState extends State<SearchScreen> {
     const int currentIndex = 2; // assuming Search tab index
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      bottomNavigationBar: const BottomNav(currentIndex: currentIndex),
+      backgroundColor: AppColors.darkBackground,
       floatingActionButton: const RoboGuideEntry(),
       appBar: AppBar(
         title: Text(
           isArabic ? "البحث في المعروضات" : "Search exhibits",
           style: const TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
-        elevation: 0.5,
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
+        elevation: 0,
+        backgroundColor: AppColors.darkHeader,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: ListView(
         padding: EdgeInsets.zero,
@@ -92,7 +92,7 @@ class _SearchScreenState extends State<SearchScreen> {
               onChanged: _filter,
               textAlign: isArabic ? TextAlign.right : TextAlign.left,
               decoration: InputDecoration(
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: Icon(Icons.search, color: AppColors.primaryGold),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear),
@@ -105,8 +105,9 @@ class _SearchScreenState extends State<SearchScreen> {
                     : null,
                 hintText:
                     isArabic ? "ابحث باسم القطعة..." : "Search by exhibit name...",
+                hintStyle: TextStyle(color: AppColors.helperText),
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: AppColors.darkSurface,
                 contentPadding: const EdgeInsets.symmetric(
                   horizontal: 18,
                   vertical: 14,
@@ -205,10 +206,13 @@ class _SearchResultTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    return Card(
-      elevation: 1,
+    return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      decoration: BoxDecoration(
+        color: AppColors.darkSurface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.darkDivider),
+      ),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(14),
@@ -221,11 +225,11 @@ class _SearchResultTile extends StatelessWidget {
                 child: Container(
                   width: 56,
                   height: 56,
-                  color: cs.primary.withOpacity(0.08),
-                  child: const Icon(
+                  color: AppColors.primaryGold.withOpacity(0.1),
+                  child: Icon(
                     Icons.museum_outlined,
                     size: 28,
-                    color: Colors.black54,
+                    color: AppColors.primaryGold,
                   ),
                 ),
               ),
@@ -240,6 +244,7 @@ class _SearchResultTile extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
+                        color: Colors.white,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -249,16 +254,16 @@ class _SearchResultTile extends StatelessWidget {
                       isArabic
                           ? "اضغط لعرض تفاصيل المعروض"
                           : "Tap to view details and audio guide",
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Colors.black54,
+                        color: AppColors.helperText,
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 4),
-              const Icon(Icons.chevron_right_rounded, size: 20),
+              const Icon(Icons.chevron_right_rounded, size: 20, color: Colors.white24),
             ],
           ),
         ),
