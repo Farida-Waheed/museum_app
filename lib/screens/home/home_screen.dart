@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
 
@@ -46,12 +47,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.initState();
     exhibits = MockDataService.getAllExhibits();
 
-    Future.delayed(Duration.zero, () {
+    Future.delayed(Duration.zero, () async {
       if (mounted) {
         final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
-        if (!prefs.hasSeenLocationPrompt) {
-          _showPrivacyDialog();
-          prefs.setHasSeenLocationPrompt(true);
+
+        // Only trigger if onboarding is done and dialog hasn't been seen this install
+        if (prefs.hasCompletedOnboarding && !prefs.hasSeenLocationPrompt) {
+          // Check if system permission is already granted
+          final status = await Permission.locationWhenInUse.status;
+          if (!status.isGranted) {
+            _showPrivacyDialog();
+          } else {
+            // Already granted, mark as seen so we don't check again
+            prefs.setHasSeenLocationPrompt(true);
+          }
         }
       }
     });
@@ -81,10 +90,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     showDialog(
       context: context,
       barrierDismissible: false,
+      useSafeArea: false, // Allow dialog to handle its own overlay
       builder: (context) => LocationPermissionDialog(
         isHighContrast: prefs.isHighContrast,
-        onAllow: () => Navigator.pop(context),
-        onDeny: () => Navigator.pop(context),
+        onAllow: () async {
+          Navigator.pop(context);
+          prefs.setHasSeenLocationPrompt(true);
+          // Trigger real system permission request
+          await Permission.locationWhenInUse.request();
+        },
+        onDeny: () {
+          Navigator.pop(context);
+          prefs.setHasSeenLocationPrompt(true);
+        },
       ),
     );
   }
