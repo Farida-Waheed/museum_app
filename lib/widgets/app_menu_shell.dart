@@ -5,7 +5,6 @@ import '../l10n/app_localizations.dart';
 import '../core/constants/colors.dart';
 
 import '../models/user_preferences.dart';
-import '../models/tour_provider.dart';
 import '../app/router.dart';
 
 class _SideMenu extends StatelessWidget {
@@ -28,19 +27,16 @@ class _SideMenu extends StatelessWidget {
     final size = MediaQuery.of(context).size;
     final width = size.width * 0.75;
     final l10n = AppLocalizations.of(context)!;
-    final cs = Theme.of(context).colorScheme;
-    final t = Theme.of(context).textTheme;
 
-    final tourProvider = Provider.of<TourProvider>(context);
-    final isTourActive = tourProvider.currentExhibitId != null;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Align(
       alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft,
       child: SizedBox(
         width: width,
         child: Container(
-          decoration: const BoxDecoration(
-            color: AppColors.warmSurface,
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.darkHeader : AppColors.warmSurface,
           ),
           child: SafeArea(
             child: Column(
@@ -55,14 +51,14 @@ class _SideMenu extends StatelessWidget {
                       Row(
                         children: [
                           Image.asset("assets/icons/ankh.png", width: 32, height: 32),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 16),
                           Text(
                             l10n.appTitle,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w900,
                               letterSpacing: 1.0,
-                              color: AppColors.darkInk,
+                              color: isDark ? Colors.white : AppColors.darkInk,
                             ),
                           ),
                         ],
@@ -70,10 +66,10 @@ class _SideMenu extends StatelessWidget {
                       const SizedBox(height: 32),
                       Row(
                         children: [
-                          const CircleAvatar(
+                          CircleAvatar(
                             radius: 28,
-                            backgroundColor: AppColors.softSurface,
-                            child: Icon(Icons.person, color: AppColors.primaryGold, size: 32),
+                            backgroundColor: isDark ? AppColors.darkSurfaceSecondary : AppColors.softSurface,
+                            child: const Icon(Icons.person_outline, color: AppColors.primaryGold, size: 32),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -82,17 +78,17 @@ class _SideMenu extends StatelessWidget {
                               children: [
                                 Text(
                                   l10n.guestUser,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.darkInk,
+                                    color: isDark ? Colors.white : AppColors.darkInk,
                                   ),
                                 ),
                                 Text(
                                   l10n.exploreTheMuseum,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 14,
-                                    color: AppColors.mutedText,
+                                    color: isDark ? AppColors.darkMutedText : AppColors.mutedText,
                                   ),
                                 ),
                               ],
@@ -100,35 +96,11 @@ class _SideMenu extends StatelessWidget {
                           ),
                         ],
                       ),
-                      if (isTourActive) ...[
-                        const SizedBox(height: 16),
-                        // Contextual Chip
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: cs.secondaryContainer,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.directions_run, size: 14),
-                              const SizedBox(width: 6),
-                              Text(
-                                l10n.liveTourActive,
-                                style: t.labelSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
                     ],
                   ),
                 ),
 
-                const Divider(height: 1, thickness: 1, color: Color(0xFFF5F5F5)),
+                Divider(height: 1, thickness: 1, color: isDark ? AppColors.darkDivider : const Color(0xFFF5F5F5)),
 
                 // --- MENU ITEMS ---
                 Expanded(
@@ -226,8 +198,8 @@ class _SectionHeader extends StatelessWidget {
         title.toUpperCase(),
         style: TextStyle(
           fontSize: 11,
-          fontWeight: FontWeight.w900,
-          color: Colors.grey.shade400,
+          fontWeight: FontWeight.w600,
+          color: Colors.grey.shade500,
           letterSpacing: 1.2,
         ),
       ),
@@ -250,6 +222,7 @@ class _MenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       child: ListTile(
@@ -260,14 +233,14 @@ class _MenuItem extends StatelessWidget {
         leading: Icon(
           icon,
           size: 22,
-          color: selected ? AppColors.primaryGold : AppColors.darkInk,
+          color: selected ? AppColors.primaryGold : (isDark ? Colors.white : AppColors.darkInk),
         ),
         title: Text(
           label,
           style: TextStyle(
             fontSize: 16,
             fontWeight: selected ? FontWeight.bold : FontWeight.w500,
-            color: selected ? AppColors.primaryGold : AppColors.darkInk,
+            color: selected ? AppColors.primaryGold : (isDark ? Colors.white : AppColors.darkInk),
           ),
         ),
         tileColor: selected ? AppColors.primaryGold.withOpacity(0.08) : Colors.transparent,
@@ -282,7 +255,7 @@ class AppMenuShell extends StatefulWidget {
   final List<Widget>? actions;
   final Widget? bottomNavigationBar;
   final bool showChatButton;
-  final Color backgroundColor;
+  final Color? backgroundColor;
   final bool hideDefaultAppBar;
   final Widget? subHeader;
   final Widget? floatingActionButton;
@@ -294,7 +267,7 @@ class AppMenuShell extends StatefulWidget {
     this.actions,
     this.bottomNavigationBar,
     this.showChatButton = false,
-    this.backgroundColor = Colors.white,
+    this.backgroundColor,
     this.hideDefaultAppBar = false,
     this.subHeader,
     this.floatingActionButton,
@@ -365,32 +338,16 @@ class AppMenuShellState extends State<AppMenuShell>
     final isArabic = prefs.language == 'ar';
     final size = MediaQuery.of(context).size;
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final currentRoute = ModalRoute.of(context)?.settings.name;
 
+    final bgColor = widget.backgroundColor ?? (isDark ? AppColors.darkBackground : Colors.white);
+
     return Scaffold(
-      backgroundColor: widget.backgroundColor,
+      backgroundColor: bgColor,
       bottomNavigationBar: widget.bottomNavigationBar,
-      floatingActionButton: widget.floatingActionButton ?? (widget.showChatButton
-          ? FloatingActionButton.extended(
-              onPressed: () => Navigator.pushNamed(context, AppRoutes.chat),
-              icon: const Icon(Icons.chat_bubble_outline, color: Colors.white, size: 20),
-              label: Text(
-                l10n.talkToHorusBot,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              backgroundColor: const Color(0xFF2A2118),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(28),
-                side: const BorderSide(color: AppColors.primaryGold, width: 1),
-              ),
-              elevation: 6,
-            )
-          : null),
+      floatingActionButton: widget.floatingActionButton,
       body: AnimatedBuilder(
         animation: _menuController,
         builder: (context, _) {
@@ -402,9 +359,8 @@ class AppMenuShellState extends State<AppMenuShell>
 
           return Stack(
             children: [
-              Container(color: widget.backgroundColor),
+              Container(color: bgColor),
 
-              // ✅ DIM / BLUR OVERLAY (Below Content Card)
               if (v > 0)
                 Positioned.fill(
                   child: GestureDetector(
@@ -418,10 +374,6 @@ class AppMenuShellState extends State<AppMenuShell>
                   ),
                 ),
 
-              // ✅ MENU PANEL (Behind or alongside Content Card depending on layout)
-              // Note: If we want the menu behind, it should be here.
-              // If we want it on top (standard drawer), it should be after.
-              // Original design had it behind with content shifting.
               _SideMenu(
                 isArabic: isArabic,
                 onClose: _closeMenu,
@@ -430,14 +382,13 @@ class AppMenuShellState extends State<AppMenuShell>
                 currentRoute: currentRoute,
               ),
 
-              // ✅ MAIN CONTENT CARD
               Transform.translate(
                 offset: Offset(dx, 0),
                 child: Transform.scale(
                   scale: scale,
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: bgColor,
                       borderRadius: BorderRadius.circular(radius),
                       boxShadow: [
                         if (v > 0)
@@ -453,28 +404,27 @@ class AppMenuShellState extends State<AppMenuShell>
                       child: widget.hideDefaultAppBar
                           ? widget.body
                           : Scaffold(
-                              backgroundColor: Colors.white,
+                              backgroundColor: bgColor,
                               appBar: AppBar(
                                 leading: IconButton(
-                                  icon: const Icon(Icons.menu, color: Colors.black),
+                                  icon: const Icon(Icons.menu),
                                   onPressed: toggleMenu,
                                 ),
                                 title: Row(
                                   children: [
                                     Image.asset("assets/icons/ankh.png", width: 26, height: 26),
-                                    const SizedBox(width: 10),
+                                    const SizedBox(width: 16),
                                     Text(
                                       widget.title ?? l10n.appTitle,
                                       style: const TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.black,
                                       ),
                                     ),
                                   ],
                                 ),
                                 actions: widget.actions,
-                                backgroundColor: Colors.white,
+                                backgroundColor: isDark ? AppColors.darkHeader : AppColors.warmSurface,
                                 elevation: 0,
                                 bottom: widget.subHeader != null
                                     ? PreferredSize(
