@@ -13,55 +13,62 @@ class MockDataService {
   // -------------------------
   static final List<Exhibit> exhibits = [
     Exhibit(
-      id: '1',
-      nameEn: 'Grand Hall / Tutankhamun Hall',
-      nameAr: 'القاعة الكبرى / قاعة توت عنخ آمون',
+      id: 'gem_ramses2_colossus',
+      nameEn: 'Colossal Statue of Ramesses II',
+      nameAr: 'تمثال رمسيس الثاني الضخم',
       descriptionEn:
-          'This hall contains the world-famous treasures of Tutankhamun, discovered in 1922.',
+          'This colossal red granite statue of Ramesses II stands over 11 meters tall and depicts the king in a powerful striding pose.',
       descriptionAr:
-          'تحتوي هذه القاعة على كنوز توت عنخ آمون المشهورة عالمياً، والتي تم اكتشافها في عام 1922.',
-      imageAsset: 'assets/images/Grand Hall.jpg',
+          'هذا التمثال الضخم من الجرانيت الأحمر للملك رمسيس الثاني يزيد طوله عن 11 مترًا ويصور الملك في وضعية خطوة قوية.',
+      imageAsset: 'assets/images/museum_interior.jpg',
       x: 100.0,
       y: 120.0,
     ),
     Exhibit(
-      id: '2',
-      nameEn: 'Colossal Seated Statues',
-      nameAr: 'التماثيل الجالسة الضخمة',
+      id: 'gem_ptolemaic_king_colossus',
+      nameEn: 'Colossus of a Ptolemaic King',
+      nameAr: 'تمثال ضخم لملك بطلمي',
       descriptionEn:
-          'Massive statues representing Pharaohs from the New Kingdom era.',
-      descriptionAr: 'تماثيل ضخمة تمثل الفراعنة من عصر الدولة الحديثة.',
-      imageAsset: 'assets/images/Colossal Seated Statues.jpg',
+          'This granite colossus, over 5 meters high, depicts a Ptolemaic king dressed in traditional pharaonic regalia.',
+      descriptionAr:
+          'هذا التمثال الضخم من الجرانيت، الذي يزيد ارتفاعه عن 5 أمتار، يصور ملكًا بطلميًا يرتدي الملابس الفرعونية التقليدية.',
+      imageAsset: 'assets/images/artifacts.jpg',
       x: 250.0,
       y: 280.0,
     ),
     Exhibit(
-      id: '3',
-      nameEn: 'Gold-Covered Sandals',
-      nameAr: 'صندل مغطى بالذهب',
-      descriptionEn: 'Exquisite sandals belonging to a Pharaoh, covered in pure gold leaf.',
-      descriptionAr: 'صندل رائع يخص أحد الفراعنة، مغطى بورق الذهب الخالص.',
-      imageAsset: 'assets/images/Gold-Covered Sandals.jpg',
+      id: 'gem_ptolemaic_queen_colossus',
+      nameEn: 'Colossus of a Ptolemaic Queen',
+      nameAr: 'تمثال ضخم لملكة بطلمية',
+      descriptionEn:
+          'This monumental statue represents a Ptolemaic queen, possibly Cleopatra II or Cleopatra III.',
+      descriptionAr:
+          'هذا التمثال الضخم يمثل ملكة بطلمية، ربما كليوباترا الثانية أو كليوباترا الثالثة.',
+      imageAsset: 'assets/images/Black Granite Statue.jpg',
       x: 400.0,
       y: 150.0,
     ),
     Exhibit(
-      id: '4',
-      nameEn: 'Canopic Jars',
-      nameAr: 'الأواني الكانوبية',
-      descriptionEn: 'Used during the mummification process to store internal organs.',
-      descriptionAr: 'استخدمت خلال عملية التحنيط لتخزين الأعضاء الداخلية.',
-      imageAsset: 'assets/images/canopic_jars.jpg',
+      id: 'gem_anubis_chest',
+      nameEn: 'Anubis on a Chest',
+      nameAr: 'أنوبيس على مقصورة',
+      descriptionEn:
+          'This pylon-shaped chest was found at the entrance to Tutankhamun’s Treasury.',
+      descriptionAr:
+          'عثر على هذه المقصورة التي تأخذ شكل الصرح عند مدخل غرفة الكنوز للملك توت عنخ آمون.',
+      imageAsset: 'assets/images/Grand Hall.jpg',
       x: 150.0,
       y: 450.0,
     ),
     Exhibit(
-      id: '5',
-      nameEn: 'Hieroglyphic Wall',
-      nameAr: 'جدار هيروغليفي',
-      descriptionEn: 'A section of a temple wall featuring intricate hieroglyphic inscriptions.',
-      descriptionAr: 'جزء من جدار معبد يتميز بنقوش هيروغليفية معقدة.',
-      imageAsset: 'assets/images/hieroglyphs.jpg',
+      id: 'gem_tut_golden_mask',
+      nameEn: 'Golden Burial Mask of Tutankhamun',
+      nameAr: 'قناع دفن توت عنخ آمون الذهبي',
+      descriptionEn:
+          'The Golden Burial Mask of Tutankhamun is one of the most famous objects from ancient Egypt.',
+      descriptionAr:
+          'يعد قناع دفن توت عنخ آمون الذهبي أحد أشهر القطع الأثرية من مصر القديمة.',
+      imageAsset: 'assets/images/pharaoh_head.jpg',
       x: 480.0,
       y: 380.0,
     ),

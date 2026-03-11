@@ -399,10 +399,20 @@ class AppLocalizationsAr extends AppLocalizations {
   String get startExploring => 'ابدأ الاستكشاف';
 
   @override
-  String get recommendedForYou => 'مقترح لك';
+  String get recommendedForYou => 'اكتشف القطع الأثرية';
 
   @override
   String get talkToHorusBot => 'تحدث مع حوروس';
+
+  @override
+  String get didYouKnow => 'هل تعلم؟';
+
+  @override
+  String get didYouKnowFact =>
+      'قناع توت عنخ آمون الذهبي يحتوي على أكثر من 10 كيلوغرامات من الذهب الخالص.';
+
+  @override
+  String get onlineStatus => '● متصل';
 
   @override
   String get mapSub => 'ابحث عن المعروضات والمسارات';
@@ -452,122 +462,4 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get followAndDiscover => 'اتبع حوروس واكتشف مصر القديمة';
-
-  @override
-  String get museumExperience => 'تجربة المتحف';
-
-  @override
-  String get museumExperienceDesc => 'خصص كيفية إرشاد حوروس لك في المتحف.';
-
-  @override
-  String get autoFollowRobot => 'اتبع حوروس تلقائياً';
-
-  @override
-  String get showNearbyExhibits => 'عرض المعروضات القريبة';
-
-  @override
-  String get enableExhibitExplanations => 'تفعيل شرح المعروضات';
-
-  @override
-  String get enableVoiceInteraction => 'تفعيل التفاعل الصوتي';
-
-  @override
-  String get permissions => 'الأذونات';
-
-  @override
-  String get location => 'الموقع';
-
-  @override
-  String get locationDesc => 'يستخدم للملاحة الداخلية وإرشاد المعروضات';
-
-  @override
-  String get bluetooth => 'البلوتوث';
-
-  @override
-  String get bluetoothDesc => 'الاتصال بأجهزة منارات الروبوت القريبة';
-
-  @override
-  String get microphone => 'الميكروفون';
-
-  @override
-  String get microphoneDesc => 'يستخدم للأوامر الصوتية مع حوروس';
-
-  @override
-  String get camera => 'الكاميرا';
-
-  @override
-  String get cameraDesc => 'يستخدم لمسح تذاكر QR وعرض الواقع المعزز';
-
-  @override
-  String get notifications => 'الإشعارات';
-
-  @override
-  String get notificationsDesc => 'ابقَ على اطلاع على حالة جولتك والروبوت';
-
-  @override
-  String get enabled => 'مفعل';
-
-  @override
-  String get disabled => 'معطل';
-
-  @override
-  String get deniedForever => 'مرفوض دائماً';
-
-  @override
-  String get enable => 'تفعيل';
-
-  @override
-  String get manage => 'إدارة';
-
-  @override
-  String get openSettings => 'افتح الإعدادات';
-
-  @override
-  String get openSystemSettings => 'افتح إعدادات النظام';
-
-  @override
-  String get audioGuideMode => 'وضع الدليل الصوتي';
-
-  @override
-  String get audioGuideModeDesc =>
-      'قراءة معلومات المعروضات بصوت عالٍ تلقائياً.';
-
-  @override
-  String get reduceAnimations => 'تقليل الرسوم المتحركة';
-
-  @override
-  String get reduceAnimationsDesc => 'يبسط تأثيرات الحركة للمستخدمين الحساسين.';
-
-  @override
-  String get simpleMode => 'الوضع البسيط';
-
-  @override
-  String get simpleModeDesc => 'أزرار أكبر وتخطيط مبسط.';
-
-  @override
-  String get aboutHorusBot => 'عن حوروس';
-
-  @override
-  String get version => 'الإصدار 1.0';
-
-  @override
-  String get aboutDesc => 'دليل متحف ذكي ذاتي القيادة';
-
-  @override
-  String get developedBy => 'تم التطوير بواسطة';
-
-  @override
-  String get university => 'جامعة بنها';
-
-  @override
-  String get program => 'برنامج هندسة الحاسبات والاتصالات';
-
-  @override
-  String get projectInfo => 'معلومات المشروع';
-
-  @override
-  String get team => 'الفريق';
-
-  @override
-  String get privacyPolicy => 'سياسة الخصوصية';
 }

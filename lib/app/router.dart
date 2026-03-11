@@ -26,6 +26,7 @@ import '../screens/settings/project_info_screen.dart';
 import '../screens/ar/ar_screen.dart';
 
 import '../screens/profile/profile_screen.dart';
+import '../screens/profile/memories_screen.dart';
 import '../screens/planner/tour_planner_screen.dart';
 import '../screens/events/events_screen.dart';
 import '../screens/achievements/achievements_screen.dart';
@@ -58,6 +59,7 @@ class AppRoutes {
   static const String arView = '/ar_view';
 
   static const String profile = '/profile';
+  static const String memories = '/memories';
   static const String tourPlanner = '/tour-planner';
   static const String events = '/events';
   static const String achievements = '/achievements';
@@ -91,6 +93,7 @@ class AppRoutes {
       arView: (context) => const ArScreen(),
 
       profile: (context) => const ProfileScreen(),
+      memories: (context) => const MemoriesScreen(),
       tourPlanner: (context) => const TourPlannerScreen(),
       events: (context) => const EventsScreen(),
       achievements: (context) => const AchievementsScreen(),
