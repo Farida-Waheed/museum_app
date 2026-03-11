@@ -5,7 +5,7 @@ class UserPreferencesModel extends ChangeNotifier {
   bool _isHighContrast = false;
   double _fontScale = 1.0;
   bool _hasCompletedOnboarding = false;
-  String themeMode = 'system';
+  String themeMode = 'dark'; // Set to dark by default
 
   String get language => _language;
   bool get isHighContrast => _isHighContrast;
@@ -31,7 +31,7 @@ class UserPreferencesModel extends ChangeNotifier {
     _fontScale = scale;
     notifyListeners();
   }
-  void setCompletedOnboarding(bool value) { // <<< NEW METHOD
+  void setCompletedOnboarding(bool value) {
     if (_hasCompletedOnboarding != value) {
       _hasCompletedOnboarding = value;
       notifyListeners();
