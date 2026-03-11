@@ -454,4 +454,124 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get followAndDiscover => 'Follow Horus-Bot and discover ancient Egypt';
+
+  @override
+  String get museumExperience => 'Museum Experience';
+
+  @override
+  String get museumExperienceDesc =>
+      'Customize how Horus-Bot guides you through the museum.';
+
+  @override
+  String get autoFollowRobot => 'Follow Horus-Bot automatically';
+
+  @override
+  String get showNearbyExhibits => 'Show nearby exhibits';
+
+  @override
+  String get enableExhibitExplanations => 'Enable exhibit explanations';
+
+  @override
+  String get enableVoiceInteraction => 'Enable voice interaction';
+
+  @override
+  String get permissions => 'Permissions';
+
+  @override
+  String get location => 'Location';
+
+  @override
+  String get locationDesc => 'Used for indoor navigation and exhibit guidance';
+
+  @override
+  String get bluetooth => 'Bluetooth';
+
+  @override
+  String get bluetoothDesc => 'Connect to nearby robot beacons';
+
+  @override
+  String get microphone => 'Microphone';
+
+  @override
+  String get microphoneDesc => 'Used for voice commands to Horus-Bot';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get cameraDesc => 'Used for scanning QR tickets and AR view';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get notificationsDesc => 'Stay updated on your tour and robot status';
+
+  @override
+  String get enabled => 'Enabled';
+
+  @override
+  String get disabled => 'Disabled';
+
+  @override
+  String get deniedForever => 'Denied Forever';
+
+  @override
+  String get enable => 'Enable';
+
+  @override
+  String get manage => 'Manage';
+
+  @override
+  String get openSettings => 'Open Settings';
+
+  @override
+  String get openSystemSettings => 'Open System Settings';
+
+  @override
+  String get audioGuideMode => 'Audio Guide Mode';
+
+  @override
+  String get audioGuideModeDesc =>
+      'Automatically read exhibit information aloud.';
+
+  @override
+  String get reduceAnimations => 'Reduce Animations';
+
+  @override
+  String get reduceAnimationsDesc =>
+      'Simplifies motion effects for sensitive users.';
+
+  @override
+  String get simpleMode => 'Simple Mode';
+
+  @override
+  String get simpleModeDesc => 'Larger buttons and simplified layout.';
+
+  @override
+  String get aboutHorusBot => 'About Horus-Bot';
+
+  @override
+  String get version => 'Version 1.0';
+
+  @override
+  String get aboutDesc => 'Smart Autonomous Museum Guide';
+
+  @override
+  String get developedBy => 'Developed by';
+
+  @override
+  String get university => 'Benha University';
+
+  @override
+  String get program => 'Computer & Communication Engineering Program';
+
+  @override
+  String get projectInfo => 'Project Information';
+
+  @override
+  String get team => 'Team';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
 }
