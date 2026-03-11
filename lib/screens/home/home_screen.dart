@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/constants/colors.dart';
 
 import '../../models/exhibit.dart';
 import '../../core/services/mock_data.dart';
@@ -73,18 +74,49 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text(l10n.privacyPermissions),
-        content: Text(l10n.privacyText),
+        backgroundColor: AppColors.warmSurface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        title: Text(
+          l10n.privacyPermissions,
+          style: const TextStyle(
+            color: AppColors.darkInk,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.privacyText,
+              style: const TextStyle(color: AppColors.darkInk, fontSize: 14),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              "• ${l10n.dataAnonymous}\n• ${l10n.analyticsNote}",
+              style: const TextStyle(color: AppColors.mutedText, fontSize: 13),
+            ),
+          ],
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text(l10n.deny),
+            child: Text(
+              l10n.notNow,
+              style: const TextStyle(color: AppColors.mutedText),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text(l10n.allow),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryGold,
+              foregroundColor: AppColors.darkInk,
+              elevation: 0,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: Text(l10n.allow, style: const TextStyle(fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -102,67 +134,76 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       bottomNavigationBar: const BottomNav(currentIndex: 0),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.pushNamed(context, AppRoutes.chat),
-        icon: const Icon(Icons.chat_bubble_outline),
-        label: Text(l10n.talkToHorusBot),
-        backgroundColor: cs.primary,
-        foregroundColor: cs.onPrimary,
-        elevation: 4,
+        icon: const Icon(Icons.chat_bubble_outline, color: Colors.white, size: 20),
+        label: Text(
+          l10n.talkToHorusBot,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 0.5,
+          ),
+        ),
+        backgroundColor: const Color(0xFF2A2118),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(28),
+          side: const BorderSide(color: AppColors.primaryGold, width: 1),
+        ),
+        elevation: 6,
       ),
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
             SliverAppBar(
-              expandedHeight: 80.0,
+              expandedHeight: 64.0,
+              toolbarHeight: 64.0,
               floating: false,
               pinned: true,
               elevation: 0,
-              backgroundColor: Colors.white.withOpacity(0.9),
-              flexibleSpace: ClipRect(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: FlexibleSpaceBar(
-                    titlePadding: EdgeInsets.zero,
-                    centerTitle: true,
-                    title: AnimatedOpacity(
-                      duration: const Duration(milliseconds: 200),
-                      opacity: innerBoxIsScrolled ? 0 : 1,
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image.asset("assets/icons/ankh.png", width: 24, height: 24),
-                            const SizedBox(width: 8),
-                            Text(
-                              l10n.appTitle,
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+              centerTitle: true,
+              backgroundColor: AppColors.warmSurface,
+              shape: Border(
+                bottom: BorderSide(
+                  color: AppColors.mutedText.withOpacity(0.1),
+                  width: 1,
                 ),
               ),
-              leading: IconButton(
-                icon: const Icon(Icons.menu, color: Colors.black),
-                onPressed: () {
-                  // This is tricky because the menu is controlled by AppMenuShell
-                  // We'll need to use a key or a provider to open the menu.
-                  // For now, let's assume AppMenuShell provides a way or we can trigger it.
-                  // Actually, AppMenuShell should ideally expose a toggle function.
-                  // Since I'm editing both, I'll make sure they work together.
-                  AppMenuShell.of(context)?.openMenu();
-                },
+              title: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset("assets/icons/ankh.png", width: 24, height: 24),
+                  const SizedBox(width: 8),
+                  Text(
+                    l10n.appTitle,
+                    style: const TextStyle(
+                      color: AppColors.darkInk,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
+              leading: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: IconButton(
+                  icon: const Icon(Icons.menu, color: AppColors.darkInk, size: 24),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  onPressed: () {
+                    AppMenuShell.of(context)?.openMenu();
+                  },
+                ),
               ),
               actions: [
-                IconButton(
-                  icon: const Icon(Icons.qr_code_scanner, color: Colors.black),
-                  onPressed: () => Navigator.pushNamed(context, AppRoutes.qrScan),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: IconButton(
+                    icon: const Icon(Icons.qr_code_scanner, color: AppColors.darkInk, size: 24),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: () => Navigator.pushNamed(context, AppRoutes.qrScan),
+                  ),
                 ),
               ],
             ),
@@ -182,27 +223,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     children: [
                       Image.asset('assets/images/museum_interior.jpg', fit: BoxFit.cover),
 
-                      // Animated gradient wash
-                      AnimatedBuilder(
-                        animation: _grad,
-                        builder: (_, __) {
-                          final gv = _grad.value;
-                          return DecoratedBox(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                transform: GradientRotation(pi * (.05 + .15 * gv)),
-                                colors: [
-                                  cs.secondary.withOpacity(.12 + .10 * gv),
-                                  cs.primary.withOpacity(.14 - .06 * gv),
-                                  cs.tertiary.withOpacity(.10 + .06 * gv),
-                                  Colors.black.withOpacity(.65),
-                                ],
-                              ),
+                      // Dark gradient overlay
+                      Positioned.fill(
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.black.withOpacity(0.2),
+                                Colors.black.withOpacity(0.8),
+                              ],
                             ),
-                          );
-                        },
+                          ),
+                        ),
                       ),
 
                       Positioned(
@@ -233,17 +267,24 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
                             // === NEXT STOP CARD ===
                             ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(14),
                               child: BackdropFilter(
-                                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                                filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                                 child: InkWell(
                                   onTap: () => Navigator.pushNamed(context, AppRoutes.progress),
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(16),
-                                      color: Colors.white.withOpacity(0.15),
-                                      border: Border.all(color: Colors.white.withOpacity(0.2)),
+                                      borderRadius: BorderRadius.circular(14),
+                                      color: const Color.fromRGBO(30, 25, 18, 0.55),
+                                      border: Border.all(color: AppColors.primaryGold, width: 1),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.3),
+                                          blurRadius: 8,
+                                          offset: const Offset(0, 4),
+                                        ),
+                                      ],
                                     ),
                                     child: Row(
                                       children: [
@@ -297,32 +338,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       childAspectRatio: 1.4,
                       children: [
                         _FeatureCard(
-                          icon: Icons.map_outlined,
-                          title: l10n.map,
-                          subtitle: l10n.mapSub,
-                          color: Colors.blue,
-                          onTap: () => Navigator.pushNamed(context, AppRoutes.map),
-                        ),
-                        _FeatureCard(
                           icon: Icons.museum_outlined,
                           title: l10n.exhibits,
                           subtitle: l10n.exhibitsSub,
-                          color: Colors.orange,
                           onTap: () => Navigator.pushNamed(context, AppRoutes.search),
                         ),
                         _FeatureCard(
                           icon: Icons.quiz_outlined,
                           title: l10n.quiz,
                           subtitle: l10n.quizSub,
-                          color: Colors.purple,
                           onTap: () => Navigator.pushNamed(context, AppRoutes.quiz),
-                        ),
-                        _FeatureCard(
-                          icon: Icons.radio_button_checked,
-                          title: l10n.liveTour,
-                          subtitle: l10n.liveTourSub,
-                          color: Colors.redAccent,
-                          onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
                         ),
                       ],
                     ),
@@ -335,11 +360,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       children: [
                         Text(
                           l10n.recommendedForYou,
-                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.darkInk,
+                          ),
                         ),
                         TextButton(
                           onPressed: () => Navigator.pushNamed(context, AppRoutes.search),
-                          child: Text(l10n.fullView),
+                          child: Text(
+                            l10n.seeAll,
+                            style: const TextStyle(color: AppColors.primaryGold),
+                          ),
                         ),
                       ],
                     ),
@@ -375,11 +407,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     const SizedBox(height: 32),
 
                     // --- MAP PREVIEW CARD ---
-                    Card(
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        side: BorderSide(color: Colors.grey.shade200),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.softSurface,
+                        borderRadius: BorderRadius.circular(18),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(20),
@@ -395,12 +433,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     children: [
                                       Text(
                                         l10n.mapPreview,
-                                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                        style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          color: AppColors.darkInk,
+                                        ),
                                       ),
                                       const SizedBox(height: 4),
                                       Text(
                                         l10n.robotHeadingTo("Tutankhamun Hall"),
-                                        style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                                        style: const TextStyle(fontSize: 14, color: AppColors.mutedText),
                                       ),
                                     ],
                                   ),
@@ -408,14 +450,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                 Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                                   decoration: BoxDecoration(
-                                    color: Colors.redAccent.withOpacity(0.1),
+                                    color: AppColors.alertRed.withOpacity(0.1),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
                                   child: Row(
                                     children: [
-                                      const Icon(Icons.circle, size: 8, color: Colors.redAccent),
+                                      const Icon(Icons.circle, size: 8, color: AppColors.alertRed),
                                       const SizedBox(width: 4),
-                                      Text(l10n.live, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.redAccent)),
+                                      Text(l10n.live, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppColors.alertRed)),
                                     ],
                                   ),
                                 ),
@@ -425,12 +467,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             Container(
                               height: 200,
                               decoration: BoxDecoration(
-                                color: Colors.grey[50],
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(color: Colors.grey.shade100),
+                                color: Colors.white.withOpacity(0.5),
+                                borderRadius: BorderRadius.circular(14),
+                                border: Border.all(color: AppColors.mutedText.withOpacity(0.1)),
                               ),
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(14),
                                 child: _buildMiniMap(),
                               ),
                             ),
@@ -440,10 +482,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               children: [
                                 _LegendDot(color: Colors.blue, label: l10n.horusBot),
                                 _LegendDot(color: Colors.orange, label: l10n.you),
-                                _LegendDot(color: Colors.redAccent, label: l10n.exhibit),
+                                _LegendDot(color: AppColors.alertRed, label: l10n.exhibit),
                               ],
                             ),
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 24),
                             Row(
                               children: [
                                 Expanded(
@@ -451,9 +493,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     onPressed: () => Navigator.pushNamed(context, AppRoutes.map),
                                     style: OutlinedButton.styleFrom(
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                      side: const BorderSide(color: AppColors.primaryGold),
                                       padding: const EdgeInsets.symmetric(vertical: 14),
                                     ),
-                                    child: Text(l10n.fullView),
+                                    child: const Text(
+                                      "Full Map",
+                                      style: TextStyle(color: AppColors.darkInk),
+                                    ),
                                   ),
                                 ),
                                 const SizedBox(width: 12),
@@ -461,13 +507,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                   child: ElevatedButton(
                                     onPressed: () => Navigator.pushNamed(context, AppRoutes.liveTour),
                                     style: ElevatedButton.styleFrom(
-                                      backgroundColor: cs.primary,
-                                      foregroundColor: cs.onPrimary,
+                                      backgroundColor: AppColors.primaryGold,
+                                      foregroundColor: AppColors.darkInk,
                                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                       padding: const EdgeInsets.symmetric(vertical: 14),
                                       elevation: 0,
                                     ),
-                                    child: Text(l10n.followHorusBot),
+                                    child: Text(l10n.followHorusBot, style: const TextStyle(fontWeight: FontWeight.bold)),
                                   ),
                                 ),
                               ],
@@ -506,7 +552,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               return Positioned(
                 left: dx.clamp(0, c.maxWidth - 5),
                 top: dy.clamp(0, c.maxHeight - 5),
-                child: const Icon(Icons.circle, size: 8, color: Colors.redAccent),
+                child: const Icon(Icons.circle, size: 8, color: AppColors.alertRed),
               );
             }),
             Positioned(
@@ -551,14 +597,12 @@ class _FeatureCard extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final Color color;
   final VoidCallback onTap;
 
   const _FeatureCard({
     required this.icon,
     required this.title,
     required this.subtitle,
-    required this.color,
     required this.onTap,
   });
 
@@ -566,16 +610,15 @@ class _FeatureCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(18),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          color: Colors.white,
-          border: Border.all(color: Colors.grey.shade100),
+          borderRadius: BorderRadius.circular(18),
+          color: AppColors.softSurface,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withOpacity(0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -584,16 +627,20 @@ class _FeatureCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: color, size: 28),
+            Icon(icon, color: AppColors.primaryGold, size: 28),
             const Spacer(),
             Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: AppColors.darkInk,
+              ),
             ),
             const SizedBox(height: 2),
             Text(
               subtitle,
-              style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
+              style: const TextStyle(fontSize: 12, color: AppColors.mutedText),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -612,7 +659,6 @@ class _HighlightCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = Theme.of(context).textTheme;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return Padding(
@@ -630,10 +676,8 @@ class _HighlightCard extends StatelessWidget {
                     end: Alignment.topCenter,
                     colors: [
                       Colors.black.withOpacity(.8),
-                      Colors.black.withOpacity(.3),
-                      Colors.transparent
+                      Colors.transparent,
                     ],
-                    stops: const [0.0, 0.5, 1.0],
                   ),
                 ),
               ),
@@ -641,24 +685,24 @@ class _HighlightCard extends StatelessWidget {
             Positioned(
               left: isArabic ? null : 20,
               right: isArabic ? 20 : null,
-              bottom: 20,
+              bottom: 24,
               child: Column(
                 crossAxisAlignment: isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: t.titleMedium?.copyWith(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontSize: 20,
                     ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
-                      fontSize: 12,
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 14,
                     ),
                   ),
                 ],
@@ -679,7 +723,6 @@ class _Dots extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(count, (i) {
@@ -690,7 +733,7 @@ class _Dots extends StatelessWidget {
           width: active ? 24 : 8,
           height: 8,
           decoration: BoxDecoration(
-            color: active ? cs.primary : cs.onSurface.withOpacity(.2),
+            color: active ? AppColors.primaryGold : const Color(0xFF666666),
             borderRadius: BorderRadius.circular(10),
           ),
         );
