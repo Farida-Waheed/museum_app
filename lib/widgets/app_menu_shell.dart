@@ -107,39 +107,29 @@ class _SideMenu extends StatelessWidget {
                   child: ListView(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     children: [
-                      _SectionHeader(title: l10n.visit),
                       _MenuItem(
-                        icon: Icons.museum_outlined,
-                        label: l10n.exhibits,
-                        selected: currentRoute == AppRoutes.exhibits,
-                        onTap: () => onPush(AppRoutes.exhibits),
+                        icon: Icons.home_outlined,
+                        label: l10n.home,
+                        selected: currentRoute == AppRoutes.mainHome,
+                        onTap: () => onReplace(AppRoutes.mainHome),
                       ),
                       _MenuItem(
-                        icon: Icons.quiz_outlined,
-                        label: l10n.quiz,
-                        selected: currentRoute == AppRoutes.quiz,
-                        onTap: () => onPush(AppRoutes.quiz),
-                      ),
-
-                      const SizedBox(height: 24),
-                      _SectionHeader(title: l10n.accountPreferences),
-                      _MenuItem(
-                        icon: Icons.person_outline,
-                        label: l10n.profile,
-                        selected: currentRoute == AppRoutes.profile,
-                        onTap: () => onReplace(AppRoutes.profile),
+                        icon: Icons.map_outlined,
+                        label: l10n.map,
+                        selected: currentRoute == AppRoutes.map,
+                        onTap: () => onReplace(AppRoutes.map),
                       ),
                       _MenuItem(
-                        icon: Icons.language,
-                        label: l10n.language,
-                        selected: currentRoute == AppRoutes.language,
-                        onTap: () => onReplace(AppRoutes.language),
+                        icon: Icons.radio_button_checked_outlined,
+                        label: l10n.tour,
+                        selected: currentRoute == AppRoutes.liveTour,
+                        onTap: () => onReplace(AppRoutes.liveTour),
                       ),
                       _MenuItem(
-                        icon: Icons.accessibility_new,
-                        label: l10n.accessibility,
-                        selected: currentRoute == AppRoutes.accessibility,
-                        onTap: () => onReplace(AppRoutes.accessibility),
+                        icon: Icons.confirmation_number_outlined,
+                        label: l10n.tickets,
+                        selected: currentRoute == AppRoutes.tickets,
+                        onTap: () => onReplace(AppRoutes.tickets),
                       ),
                       _MenuItem(
                         icon: Icons.settings_outlined,
@@ -147,32 +137,15 @@ class _SideMenu extends StatelessWidget {
                         selected: currentRoute == AppRoutes.settings,
                         onTap: () => onReplace(AppRoutes.settings),
                       ),
-
-                      const SizedBox(height: 24),
-                      _SectionHeader(title: l10n.extras),
                       _MenuItem(
-                        icon: Icons.route_outlined,
-                        label: l10n.tourPlanner,
-                        selected: currentRoute == AppRoutes.tourPlanner,
-                        onTap: () => onReplace(AppRoutes.tourPlanner),
-                      ),
-                      _MenuItem(
-                        icon: Icons.event_outlined,
-                        label: l10n.events,
-                        selected: currentRoute == AppRoutes.events,
-                        onTap: () => onReplace(AppRoutes.events),
-                      ),
-                      _MenuItem(
-                        icon: Icons.emoji_events_outlined,
-                        label: l10n.achievements,
-                        selected: currentRoute == AppRoutes.achievements,
-                        onTap: () => onReplace(AppRoutes.achievements),
-                      ),
-                      _MenuItem(
-                        icon: Icons.feedback_outlined,
-                        label: l10n.feedback,
-                        selected: currentRoute == AppRoutes.feedback,
+                        icon: Icons.help_outline_rounded,
+                        label: isArabic ? "مساعدة" : "Help",
                         onTap: () => onReplace(AppRoutes.feedback),
+                      ),
+                      _MenuItem(
+                        icon: Icons.info_outline_rounded,
+                        label: isArabic ? "عن المشروع" : "About Project",
+                        onTap: () => {},
                       ),
                     ],
                   ),
@@ -180,27 +153,6 @@ class _SideMenu extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  final String title;
-  const _SectionHeader({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
-      child: Text(
-        title.toUpperCase(),
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: Colors.grey.shade500,
-          letterSpacing: 1.2,
         ),
       ),
     );
@@ -329,7 +281,11 @@ class AppMenuShellState extends State<AppMenuShell>
 
   void _goReplace(String route) {
     _closeMenu();
-    Navigator.pushReplacementNamed(context, route);
+    if (route == AppRoutes.mainHome) {
+      Navigator.pushNamedAndRemoveUntil(context, route, (r) => false);
+    } else {
+      Navigator.pushReplacementNamed(context, route);
+    }
   }
 
   @override

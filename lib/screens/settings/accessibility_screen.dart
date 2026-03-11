@@ -4,7 +4,6 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
 import '../../models/user_preferences.dart';
-import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 
 class AccessibilityScreen extends StatefulWidget {

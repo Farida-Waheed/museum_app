@@ -106,12 +106,12 @@ class _QuizScreenState extends State<QuizScreen> {
     final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: Text(isArabic ? "اختبار المعلومات" : "Museum Quiz"),
+        title: Text(isArabic ? "اختبار المعلومات" : "Museum Quiz", style: const TextStyle(color: Color(0xFFF5F1E8))),
         elevation: 0,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: const Color(0xFF121212),
+        foregroundColor: const Color(0xFFF5F1E8),
       ),
       body: Column(
         children: [
@@ -158,13 +158,13 @@ class _QuizScreenState extends State<QuizScreen> {
                   Container(
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withOpacity(0.05),
+                      color: const Color(0xFF1E1912),
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: theme.colorScheme.primary.withOpacity(0.1)),
+                      border: Border.all(color: const Color(0xFFE6C068).withOpacity(0.2)),
                     ),
                     child: Text(
                       question.getQuestion(prefs.language),
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, height: 1.4),
+                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, height: 1.4, color: Color(0xFFF5F1E8)),
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -174,9 +174,9 @@ class _QuizScreenState extends State<QuizScreen> {
                     final isCorrect = index == question.correctAnswerIndex;
                     final isSelected = index == _selectedOptionIndex;
 
-                    Color bgColor = Colors.white;
-                    Color borderColor = Colors.grey.shade200;
-                    Color textColor = Colors.black87;
+                    Color bgColor = const Color(0xFF1E1912);
+                    Color borderColor = const Color(0xFFE6C068).withOpacity(0.2);
+                    Color textColor = const Color(0xFFF5F1E8);
                     IconData? icon;
 
                     if (_isAnswered) {
@@ -194,8 +194,8 @@ class _QuizScreenState extends State<QuizScreen> {
                         textColor = Colors.grey.shade400;
                       }
                     } else if (isSelected) {
-                      borderColor = theme.colorScheme.primary;
-                      bgColor = theme.colorScheme.primary.withOpacity(0.05);
+                      borderColor = const Color(0xFFE6C068);
+                      bgColor = const Color(0xFFE6C068).withOpacity(0.1);
                     }
 
                     return Padding(
@@ -217,14 +217,15 @@ class _QuizScreenState extends State<QuizScreen> {
                                 width: 32,
                                 height: 32,
                                 decoration: BoxDecoration(
-                                  color: isSelected ? theme.colorScheme.primary : Colors.grey.shade100,
+                                  color: isSelected ? const Color(0xFFE6C068) : const Color(0xFF121212),
                                   shape: BoxShape.circle,
+                                  border: Border.all(color: const Color(0xFFE6C068).withOpacity(0.2)),
                                 ),
                                 child: Center(
                                   child: Text(
                                     String.fromCharCode(65 + index),
                                     style: TextStyle(
-                                      color: isSelected ? Colors.white : Colors.black54,
+                                      color: isSelected ? const Color(0xFF1E1912) : const Color(0xFFF5F1E8).withOpacity(0.6),
                                       fontWeight: FontWeight.bold,
                                       fontSize: 14,
                                     ),
@@ -259,8 +260,8 @@ class _QuizScreenState extends State<QuizScreen> {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))],
+              color: const Color(0xFF1E1912),
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, -5))],
             ),
             child: SafeArea(
               top: false,
@@ -270,6 +271,8 @@ class _QuizScreenState extends State<QuizScreen> {
                 child: ElevatedButton(
                   onPressed: _isAnswered ? _nextQuestion : null,
                   style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFE6C068),
+                    foregroundColor: const Color(0xFF1E1912),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     elevation: 0,
                   ),
@@ -309,8 +312,13 @@ class _QuizResultPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
-      child: Padding(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      backgroundColor: const Color(0xFF1E1912),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: const Color(0xFFE6C068), width: 1),
+        ),
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -318,19 +326,19 @@ class _QuizResultPopup extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: (isPass ? Colors.amber : Colors.blueGrey).withOpacity(0.1),
+                color: const Color(0xFFE6C068).withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 isPass ? Icons.emoji_events_rounded : Icons.menu_book_rounded,
-                color: isPass ? Colors.amber.shade700 : Colors.blueGrey,
+                color: const Color(0xFFE6C068),
                 size: 64,
               ),
             ),
             const SizedBox(height: 24),
             Text(
               isPass ? l10n.congrats : (Localizations.localeOf(context).languageCode == 'ar' ? "استمر في التعلم!" : "Keep Learning!"),
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: Color(0xFFF5F1E8)),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
@@ -338,7 +346,7 @@ class _QuizResultPopup extends StatelessWidget {
               Localizations.localeOf(context).languageCode == 'ar'
                 ? "لقد حصلت على $score من $total"
                 : "You scored $score out of $total",
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+              style: TextStyle(color: const Color(0xFFF5F1E8).withOpacity(0.6), fontSize: 16),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -348,6 +356,8 @@ class _QuizResultPopup extends StatelessWidget {
                   child: OutlinedButton(
                     onPressed: onRetry,
                     style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFFE6C068),
+                      side: const BorderSide(color: Color(0xFFE6C068)),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
@@ -359,6 +369,8 @@ class _QuizResultPopup extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: onFinish,
                     style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFE6C068),
+                      foregroundColor: const Color(0xFF1E1912),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       elevation: 0,

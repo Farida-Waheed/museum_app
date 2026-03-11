@@ -13,13 +13,16 @@ class BottomNav extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     void handleTap(int index) {
+      if (index == 0) {
+        // Home must reset navigation stack
+        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.mainHome, (route) => false);
+        return;
+      }
+
       if (index == currentIndex) return;
 
       String route;
       switch (index) {
-        case 0:
-          route = AppRoutes.mainHome;
-          break;
         case 1:
           route = AppRoutes.map;
           break;
@@ -31,7 +34,7 @@ class BottomNav extends StatelessWidget {
           break;
         case 4:
         default:
-          route = AppRoutes.settings;
+          route = AppRoutes.profile;
           break;
       }
 

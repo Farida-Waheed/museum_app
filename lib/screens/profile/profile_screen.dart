@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../app/router.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -62,6 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // 2. Options List
             _buildOptionGroup([
               _ProfileOption(icon: Icons.history_rounded, label: isArabic ? "تاريخ الزيارات" : "Visit History", onTap: () {}),
+              _ProfileOption(icon: Icons.photo_library_outlined, label: isArabic ? "ذكرياتي" : "My Memories", onTap: () => Navigator.pushNamed(context, AppRoutes.memories)),
               _ProfileOption(icon: Icons.emoji_events_outlined, label: l10n.achievements, onTap: () {}),
               _ProfileOption(icon: Icons.bookmark_border_rounded, label: isArabic ? "المحفوظات" : "Bookmarks", onTap: () {}),
             ]),
