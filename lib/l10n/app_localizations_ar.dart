@@ -343,6 +343,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tickets => 'التذاكر';
 
   @override
+  String get seeAll => 'عرض الكل';
+
+  @override
+  String get dataAnonymous => 'البيانات مجهولة الهوية';
+
+  @override
+  String get analyticsNote => 'خرائط الحركة تستخدم فقط للتحليل';
+
+  @override
+  String get notNow => 'ليس الآن';
+
+  @override
   String get onboarding1Title => 'مرحباً بك في حوروس';
 
   @override

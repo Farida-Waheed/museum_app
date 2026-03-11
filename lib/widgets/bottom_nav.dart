@@ -10,8 +10,7 @@ class BottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-
-    final shadowColor = Colors.black.withOpacity(0.06);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     void handleTap(int index) {
       if (index == currentIndex) return;
@@ -25,7 +24,7 @@ class BottomNav extends StatelessWidget {
           route = AppRoutes.map;
           break;
         case 2:
-          route = AppRoutes.liveTour; // Updated to liveTour for better consistency
+          route = AppRoutes.liveTour;
           break;
         case 3:
           route = AppRoutes.tickets;
@@ -41,15 +40,8 @@ class BottomNav extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.warmSurface,
-        border: Border(top: BorderSide(color: AppColors.mutedText.withOpacity(0.1))),
-        boxShadow: [
-          BoxShadow(
-            color: shadowColor,
-            blurRadius: 20,
-            offset: const Offset(0, -5),
-          ),
-        ],
+        color: isDark ? AppColors.darkHeader : AppColors.warmSurface,
+        border: Border(top: BorderSide(color: isDark ? AppColors.darkDivider : AppColors.mutedText.withOpacity(0.1))),
       ),
       child: SafeArea(
         top: false,
@@ -60,7 +52,7 @@ class BottomNav extends StatelessWidget {
             onTap: handleTap,
             type: BottomNavigationBarType.fixed,
             selectedItemColor: AppColors.primaryGold,
-            unselectedItemColor: AppColors.mutedText,
+            unselectedItemColor: isDark ? AppColors.darkMutedText : AppColors.mutedText,
             showUnselectedLabels: true,
             selectedFontSize: 11,
             unselectedFontSize: 11,
@@ -91,7 +83,7 @@ class BottomNav extends StatelessWidget {
               BottomNavigationBarItem(
                 icon: const Icon(Icons.person_outline, size: 22),
                 activeIcon: const Icon(Icons.person_rounded, size: 24),
-                label: l10n.profile, // Used profile instead of settings for bottom nav consistency with product rule
+                label: l10n.profile,
               ),
             ],
           ),

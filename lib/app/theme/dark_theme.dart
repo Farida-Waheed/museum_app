@@ -1,20 +1,27 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/colors.dart';
 
 final ThemeData darkTheme = ThemeData(
   useMaterial3: true,
   brightness: Brightness.dark,
 
-  colorScheme: ColorScheme.fromSeed(
-    seedColor: Colors.blue,
-    brightness: Brightness.dark,
+  colorScheme: const ColorScheme.dark(
+    primary: AppColors.primaryGold,
+    secondary: AppColors.primaryGold,
+    surface: AppColors.darkSurface,
+    background: AppColors.darkBackground,
+    onBackground: Colors.white,
+    onSurface: Colors.white,
+    error: AppColors.alertRed,
   ),
 
-  scaffoldBackgroundColor: const Color(0xFF101215),
+  scaffoldBackgroundColor: AppColors.darkBackground,
 
   appBarTheme: const AppBarTheme(
-    backgroundColor: Color(0xFF181A1F),
+    backgroundColor: AppColors.darkHeader,
     elevation: 0,
     iconTheme: IconThemeData(color: Colors.white),
+    centerTitle: true,
     titleTextStyle: TextStyle(
       color: Colors.white,
       fontSize: 20,
@@ -22,29 +29,59 @@ final ThemeData darkTheme = ThemeData(
     ),
   ),
 
-  // 👇 FIXED: CardThemeData
   cardTheme: const CardThemeData(
-    color: Color(0xFF181A1F),
-    elevation: 1,
+    color: AppColors.darkSurface,
+    elevation: 0,
     shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(16)),
+      borderRadius: BorderRadius.all(Radius.circular(18)),
     ),
   ),
 
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-    backgroundColor: Color(0xFF181A1F),
-    selectedItemColor: Colors.blueAccent,
-    unselectedItemColor: Colors.white70,
+    backgroundColor: AppColors.darkHeader,
+    selectedItemColor: AppColors.primaryGold,
+    unselectedItemColor: AppColors.darkMutedText,
     showUnselectedLabels: true,
+    type: BottomNavigationBarType.fixed,
   ),
 
   textTheme: const TextTheme(
-    bodyLarge: TextStyle(color: Colors.white, height: 1.45),
-    bodyMedium: TextStyle(color: Colors.white70, height: 1.4),
-    titleLarge: TextStyle(
-      color: Colors.white,
+    displayLarge: TextStyle(
+      fontSize: 28,
       fontWeight: FontWeight.bold,
+      color: Colors.white,
+    ),
+    headlineMedium: TextStyle(
       fontSize: 22,
+      fontWeight: FontWeight.w600,
+      color: Colors.white,
+    ),
+    titleMedium: TextStyle(
+      fontSize: 17,
+      fontWeight: FontWeight.w600,
+      color: Colors.white,
+    ),
+    bodyLarge: TextStyle(
+      fontSize: 14,
+      color: Colors.white,
+      height: 1.5,
+    ),
+    bodySmall: TextStyle(
+      fontSize: 12,
+      color: AppColors.darkMutedText,
+    ),
+  ),
+
+  dividerTheme: const DividerThemeData(
+    color: AppColors.darkDivider,
+    thickness: 1,
+  ),
+
+  floatingActionButtonTheme: const FloatingActionButtonThemeData(
+    backgroundColor: Color(0xFF2A2118),
+    foregroundColor: Colors.white,
+    shape: StadiumBorder(
+      side: BorderSide(color: AppColors.primaryGold, width: 1),
     ),
   ),
 );
