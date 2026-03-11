@@ -776,6 +776,24 @@ abstract class AppLocalizations {
   /// **'Not now'**
   String get notNow;
 
+  /// No description provided for @allowLocationAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Location Access'**
+  String get allowLocationAccess;
+
+  /// No description provided for @locationPermissionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot uses Bluetooth and location to guide you inside the museum and help you follow the robot during your visit.'**
+  String get locationPermissionBody;
+
+  /// No description provided for @dataReassurance.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data is anonymous and used only for navigation.'**
+  String get dataReassurance;
+
   /// No description provided for @onboarding1Title.
   ///
   /// In en, this message translates to:

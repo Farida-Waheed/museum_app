@@ -122,6 +122,9 @@
   "dataAnonymous": "Data is anonymous",
   "analyticsNote": "Movement heatmaps are only used for analytics",
   "notNow": "Not now",
+  "allowLocationAccess": "Allow Location Access",
+  "locationPermissionBody": "Horus-Bot uses Bluetooth and location to guide you inside the museum and help you follow the robot during your visit.",
+  "dataReassurance": "Your data is anonymous and used only for navigation.",
 
   "onboarding1Title": "Welcome to Horus-Bot",
   "onboarding1Desc": "Your smart guide to the museum. Navigate exhibits, follow the robot, and discover hidden stories.",

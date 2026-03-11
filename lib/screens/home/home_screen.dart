@@ -8,8 +8,11 @@ import '../../core/constants/colors.dart';
 import '../../models/exhibit.dart';
 import '../../core/services/mock_data.dart';
 import '../../app/router.dart';
+import 'package:provider/provider.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
+import '../../widgets/dialogs/location_permission_dialog.dart';
+import '../../models/user_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -44,7 +47,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     exhibits = MockDataService.getAllExhibits();
 
     Future.delayed(Duration.zero, () {
-      if (mounted) _showPrivacyDialog();
+      if (mounted) {
+        final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+        if (!prefs.hasSeenLocationPrompt) {
+          _showPrivacyDialog();
+          prefs.setHasSeenLocationPrompt(true);
+        }
+      }
     });
 
     _simTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
@@ -67,53 +76,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void _showPrivacyDialog() {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
+    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
 
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        backgroundColor: theme.colorScheme.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text(
-          l10n.privacyPermissions,
-          style: theme.textTheme.titleMedium,
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.privacyText,
-              style: theme.textTheme.bodyLarge,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              "• ${l10n.dataAnonymous}\n• ${l10n.analyticsNote}",
-              style: theme.textTheme.bodySmall?.copyWith(color: AppColors.darkMutedText),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text(
-              l10n.notNow,
-              style: theme.textTheme.bodyLarge?.copyWith(color: AppColors.darkMutedText, fontWeight: FontWeight.w600),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryGold,
-              foregroundColor: AppColors.darkInk,
-              elevation: 0,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-            child: Text(l10n.allow, style: const TextStyle(fontWeight: FontWeight.bold)),
-          ),
-        ],
+      builder: (context) => LocationPermissionDialog(
+        isHighContrast: prefs.isHighContrast,
+        onAllow: () => Navigator.pop(context),
+        onDeny: () => Navigator.pop(context),
       ),
     );
   }

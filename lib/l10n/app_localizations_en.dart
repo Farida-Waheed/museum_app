@@ -356,6 +356,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notNow => 'Not now';
 
   @override
+  String get allowLocationAccess => 'Allow Location Access';
+
+  @override
+  String get locationPermissionBody =>
+      'Horus-Bot uses Bluetooth and location to guide you inside the museum and help you follow the robot during your visit.';
+
+  @override
+  String get dataReassurance =>
+      'Your data is anonymous and used only for navigation.';
+
+  @override
   String get onboarding1Title => 'Welcome to Horus-Bot';
 
   @override
