@@ -130,6 +130,28 @@ class MockDataService {
   static List<QuizQuestion> getAllQuestions() => questions;
 
   // -------------------------
+  // Museum News
+  // -------------------------
+  static final List<MockNews> news = [
+    MockNews(
+      title: "New Discovery in Saqqara",
+      description: "Archaeologists have uncovered a well-preserved tomb from the Old Kingdom era.",
+      image: "assets/images/Onboarding.jpg",
+      source: "National Geographic",
+      date: DateTime.now().subtract(const Duration(days: 1)),
+    ),
+    MockNews(
+      title: "Digital Preservation of Artifacts",
+      description: "The museum starts a new initiative to scan all artifacts in 3D.",
+      image: "assets/images/Grand Hall.jpg",
+      source: "UNESCO",
+      date: DateTime.now().subtract(const Duration(days: 3)),
+    ),
+  ];
+
+  static List<MockNews> getAllNews() => news;
+
+  // -------------------------
   // Events (Happening Now / Today focus)
   // -------------------------
   static final List<MockEvent> events = [
@@ -225,6 +247,22 @@ class MockEvent {
   String getTitle(String lang) => lang == 'ar' ? titleAr : titleEn;
   String getLocation(String lang) => lang == 'ar' ? locationAr : locationEn;
   String getDescription(String lang) => lang == 'ar' ? descriptionAr : descriptionEn;
+}
+
+class MockNews {
+  final String title;
+  final String description;
+  final String image;
+  final String source;
+  final DateTime date;
+
+  MockNews({
+    required this.title,
+    required this.description,
+    required this.image,
+    required this.source,
+    required this.date,
+  });
 }
 
 class MockBadge {

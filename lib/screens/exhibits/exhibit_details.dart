@@ -12,6 +12,8 @@ import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
 import '../chat/chat_screen.dart';
 import '../quiz/quiz_screen.dart'; // To navigate to quiz
+import '../../widgets/dialogs/premium_dialog.dart';
+import '../../core/constants/colors.dart';
 
 class ExhibitDetailScreen extends StatefulWidget {
   const ExhibitDetailScreen({super.key});
@@ -150,24 +152,29 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
   }
 
   Widget _buildQuizPrompt(AppLocalizations l10n, ColorScheme cs, String exhibitId, bool isArabic) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.amber.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.amber.withOpacity(0.3)),
+        color: isDark ? AppColors.darkSurface : Colors.amber.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.primaryGold.withOpacity(0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Icons.quiz_outlined, color: Colors.amber, size: 24),
+              const Icon(Icons.quiz_outlined, color: AppColors.primaryGold, size: 24),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   l10n.takeQuickQuiz,
-                  style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 16,
+                    color: isDark ? Colors.white : AppColors.darkInk,
+                  ),
                 ),
               ),
             ],
@@ -178,16 +185,49 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
               Expanded(
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => QuizScreen(exhibitId: exhibitId),
+                    showDialog(
+                      context: context,
+                      builder: (context) => PremiumDialog(
+                        title: isArabic ? "هل أنت مستعد؟" : "Are you ready?",
+                        icon: const Icon(Icons.quiz_outlined, color: AppColors.primaryGold),
+                        content: Text(
+                          isArabic
+                            ? "أنهيت عرض توت عنخ آمون. هل تريد بدء الاختبار؟"
+                            : "You finished the Tutankhamun exhibit. Ready to start the quiz?",
+                          style: const TextStyle(color: Colors.white70, fontSize: 16),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Provider.of<TourProvider>(context, listen: false).skipQuiz(exhibitId);
+                            },
+                            child: Text(isArabic ? "لاحقاً" : "Later", style: const TextStyle(color: Colors.white60)),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => QuizScreen(exhibitId: exhibitId),
+                                ),
+                              );
+                            },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.primaryGold,
+                              foregroundColor: AppColors.darkInk,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            ),
+                            child: Text(l10n.startQuiz, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          ),
+                        ],
                       ),
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.amber.shade700,
-                    foregroundColor: Colors.white,
+                    backgroundColor: AppColors.primaryGold,
+                    foregroundColor: AppColors.darkInk,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     elevation: 0,
                   ),
@@ -199,7 +239,10 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                 onPressed: () {
                   Provider.of<TourProvider>(context, listen: false).skipQuiz(exhibitId);
                 },
-                child: Text(isArabic ? "تخطي" : "Skip"),
+                child: Text(
+                  isArabic ? "تخطي" : "Skip",
+                  style: TextStyle(color: isDark ? Colors.white70 : AppColors.mutedText),
+                ),
               ),
             ],
           ),

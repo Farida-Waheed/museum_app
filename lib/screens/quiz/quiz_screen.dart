@@ -6,8 +6,8 @@ import '../../models/quiz.dart';
 import '../../models/tour_provider.dart';
 import '../../core/services/mock_data.dart';
 import '../../l10n/app_localizations.dart';
+import '../../widgets/dialogs/premium_dialog.dart';
 import '../../core/constants/colors.dart';
-import '../../core/constants/text_styles.dart';
 
 class QuizScreen extends StatefulWidget {
   final String? exhibitId;
@@ -52,16 +52,58 @@ class _QuizScreenState extends State<QuizScreen> {
 
   void _showResultDialog() {
     final l10n = AppLocalizations.of(context)!;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final isPass = _score >= (_questions.length / 2);
+
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => _QuizResultPopup(
-        score: _score,
-        total: _questions.length,
-        isPass: _score >= (_questions.length / 2),
-        l10n: l10n,
-        onFinish: () { Navigator.pop(context); Navigator.pop(context); },
-        onRetry: () { Navigator.pop(context); setState(() { _currentIndex = 0; _score = 0; _selectedOptionIndex = null; _isAnswered = false; }); },
+      builder: (context) => PremiumDialog(
+        title: isPass ? l10n.congrats : (isArabic ? "استمر في التعلم!" : "Keep Learning!"),
+        showCloseButton: false,
+        icon: Icon(
+          isPass ? Icons.emoji_events_rounded : Icons.menu_book_rounded,
+          color: AppColors.primaryGold,
+          size: 32,
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              isArabic
+                  ? "لقد حصلت على $_score من ${_questions.length}"
+                  : "You scored $_score out of ${_questions.length}",
+              style: const TextStyle(color: Colors.white70, fontSize: 18),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Close Dialog
+              setState(() {
+                _currentIndex = 0;
+                _score = 0;
+                _selectedOptionIndex = null;
+                _isAnswered = false;
+              });
+            },
+            child: Text(isArabic ? "إعادة" : "Retry", style: const TextStyle(color: Colors.white60)),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context); // Close Dialog
+              Navigator.pop(context); // Go Back
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryGold,
+              foregroundColor: AppColors.darkInk,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: Text(l10n.done, style: const TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
       ),
     );
   }
