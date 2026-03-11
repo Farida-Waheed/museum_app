@@ -5,6 +5,7 @@ import '../l10n/app_localizations.dart';
 
 import '../models/user_preferences.dart';
 import 'theme/light_theme.dart';
+import 'theme/dark_theme.dart';
 import 'theme/high_contrast.dart';
 import 'router.dart';
 
@@ -32,6 +33,7 @@ class MuseumApp extends StatelessWidget {
 
           // 1. Theme Logic (High Contrast vs Light)
           theme: prefs.isHighContrast ? highContrastTheme : lightTheme,
+          darkTheme: darkTheme,
 
           // 2. Localization
           locale: Locale(prefs.language),
