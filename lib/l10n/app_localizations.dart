@@ -98,7 +98,7 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
-  /// No description provided for @appTitle.
+  /// The title of the application
   ///
   /// In en, this message translates to:
   /// **'Horus-Bot'**
@@ -281,13 +281,13 @@ abstract class AppLocalizations {
   /// No description provided for @comfortableApp.
   ///
   /// In en, this message translates to:
-  /// **'Customize your museum experience'**
+  /// **'Make the app comfortable for you'**
   String get comfortableApp;
 
   /// No description provided for @adjustSettings.
   ///
   /// In en, this message translates to:
-  /// **'Adjust navigation, accessibility, and display to suit your needs.'**
+  /// **'Adjust text size, contrast, and language to suit your needs.'**
   String get adjustSettings;
 
   /// No description provided for @displayText.
@@ -971,7 +971,6 @@ abstract class AppLocalizations {
   /// No description provided for @followAndDiscover.
   ///
   /// In en, this message translates to:
-  /// **'Follow Horus-Bot'**
   /// **'Follow the robot and uncover the stories behind ancient artifacts.'**
   String get followAndDiscover;
 
@@ -1076,17 +1075,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Smart Autonomous Museum Guide'**
   String get appTagline;
-  /// No description provided for @version.
-  ///
-  /// In en, this message translates to:
-  /// **'Version 1.0'**
-  String get version;
-
-  /// No description provided for @aboutDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Your AI companion.'**
-  String get aboutDesc;
 
   /// No description provided for @developedBy.
   ///
@@ -1105,33 +1093,17 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Computer & Communication Engineering Program'**
   String get department;
-  /// **'Developed By'**
-  String get developedBy;
-
-  /// No description provided for @university.
-  ///
-  /// In en, this message translates to:
-  /// **'Benha University'**
-  String get university;
-
-  /// No description provided for @program.
-  ///
-  /// In en, this message translates to:
-  /// **'Faculty of Computers and Artificial Intelligence'**
-  String get program;
 
   /// No description provided for @projectInfo.
   ///
   /// In en, this message translates to:
   /// **'Project Information'**
-  /// **'Project Info'**
   String get projectInfo;
 
   /// No description provided for @team.
   ///
   /// In en, this message translates to:
   /// **'Team'**
-  /// **'Our Team'**
   String get team;
 
   /// No description provided for @privacyPolicy.
@@ -1247,6 +1219,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Larger buttons and simplified layout.'**
   String get simpleModeSub;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version 1.0'**
+  String get version;
+
+  /// No description provided for @aboutDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Your AI companion.'**
+  String get aboutDesc;
+
+  /// No description provided for @university.
+  ///
+  /// In en, this message translates to:
+  /// **'Benha University'**
+  String get university;
+
+  /// No description provided for @program.
+  ///
+  /// In en, this message translates to:
+  /// **'Faculty of Computers and Artificial Intelligence'**
+  String get program;
 }
 
 class _AppLocalizationsDelegate

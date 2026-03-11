@@ -5,7 +5,6 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../../app/router.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/app_menu_shell.dart';
@@ -22,9 +21,6 @@ class AccessibilityScreen extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final isArabic = prefs.language == 'ar';
-
-    final textColor = isDark ? const Color(0xFFF5F1E8) : const Color(0xFF2A2118);
-    final secondaryTextColor = isDark ? Colors.white.withOpacity(0.82) : const Color(0xFF5C5143);
 
     return AppMenuShell(
       hideDefaultAppBar: true,
@@ -61,41 +57,6 @@ class AccessibilityScreen extends StatelessWidget {
                   color: AppColors.cinematicCard,
                   borderRadius: BorderRadius.circular(24),
                   border: Border.all(color: Colors.white.withOpacity(0.05)),
-      title: l10n.settings,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              isArabic ? "خصص تجربة المتحف الخاصة بك" : "Customize your museum experience",
-              style: AppTextStyles.helper(context),
-            ),
-            const SizedBox(height: 32),
-
-            // A. Museum Experience
-            _SectionHeader(title: isArabic ? "تجربة المتحف" : "Museum Experience"),
-            _PremiumCard(
-              children: [
-                _SettingToggle(
-                  title: isArabic ? "اتبع حوروس-بوت تلقائيًا" : "Automatically follow Horus-Bot",
-                  subtitle: isArabic ? "يقوم الروبوت بتوجيهك تلقائيًا" : "Robot guides you automatically",
-                  value: true,
-                  onChanged: (val) {},
-                ),
-                _Divider(),
-                _SettingToggle(
-                  title: isArabic ? "إظهار المعروضات القريبة" : "Show nearby exhibits",
-                  subtitle: isArabic ? "تنبيهات عند الاقتراب من القطع الأثرية" : "Alerts when near artifacts",
-                  value: true,
-                  onChanged: (val) {},
-                ),
-                _Divider(),
-                _SettingToggle(
-                  title: isArabic ? "شروحات صوتية للمعروضات" : "Exhibit audio explanations",
-                  subtitle: isArabic ? "تشغيل الشرح الصوتي تلقائيًا" : "Auto-play audio narration",
-                  value: false,
-                  onChanged: (val) {},
                 ),
                 child: Row(
                   children: [
@@ -387,39 +348,18 @@ class AccessibilityScreen extends StatelessWidget {
                     Text(l10n.organization, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
                     Text(l10n.department, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13)),
                     const SizedBox(height: 24),
-                    _AboutNavItem(title: l10n.projectInfo),
-                    _AboutNavItem(title: l10n.team),
+                    _AboutNavItem(
+                      title: l10n.projectInfo,
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.projectInfo),
+                    ),
+                    _AboutNavItem(
+                      title: l10n.team,
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.projectInfo),
+                    ),
                     _AboutNavItem(title: l10n.privacyPolicy),
                   ],
                 ),
               ),
-            // ABOUT HORUS-BOT
-            _SectionHeader(title: l10n.aboutHorusBot),
-            _StyledCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l10n.version, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
-                  const SizedBox(height: 4),
-                  Text(l10n.aboutDesc, style: TextStyle(fontSize: 14, color: secondaryTextColor)),
-                  const SizedBox(height: 24),
-                  Text(l10n.developedBy, style: TextStyle(fontSize: 12, color: secondaryTextColor, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 4),
-                  Text(l10n.university, style: TextStyle(fontSize: 14, color: textColor)),
-                  Text(l10n.program, style: TextStyle(fontSize: 13, color: secondaryTextColor)),
-                  const SizedBox(height: 24),
-                  _AboutLink(
-                    title: l10n.projectInfo,
-                    onTap: () => Navigator.pushNamed(context, AppRoutes.projectInfo),
-                  ),
-                  _AboutLink(
-                    title: l10n.team,
-                    onTap: () => Navigator.pushNamed(context, AppRoutes.projectInfo),
-                  ),
-                  _AboutLink(title: l10n.privacyPolicy),
-                ],
-              ),
-            ),
 
               const SizedBox(height: 48),
             ],
@@ -518,92 +458,6 @@ class _PermissionItem extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Row(
-        ),
-        const SizedBox(width: 16),
-        Switch.adaptive(
-          value: value,
-          activeTrackColor: AppColors.primaryGold,
-          inactiveTrackColor: AppColors.neutralDark,
-          inactiveThumbColor: Colors.white,
-          onChanged: onChanged,
-        ),
-      ],
-    );
-  }
-}
-
-class _StyledCard extends StatelessWidget {
-  final Widget child;
-  const _StyledCard({required this.child});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.darkSurface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.darkDivider, width: 1),
-      ),
-      child: child,
-    );
-  }
-}
-
-class _PermissionRow extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String? subtitle;
-  final String status;
-  final String actionLabel;
-  final bool isArabic;
-
-  const _PermissionRow({
-    required this.icon,
-    required this.title,
-    this.subtitle,
-    required this.status,
-    required this.actionLabel,
-    required this.isArabic,
-  });
-
-  Future<void> _handleAction(BuildContext context) async {
-    if (kIsWeb) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(isArabic ? "إعدادات الأذونات غير متوفرة على الويب" : "Permission settings not available on Web")),
-      );
-      return;
-    }
-
-    // Attempt to open settings or request
-    if (title.contains("Location") || title.contains("الموقع")) {
-      await Permission.locationWhenInUse.request();
-    } else if (title.contains("Camera") || title.contains("الكاميرا")) {
-      await Permission.camera.request();
-    } else if (title.contains("Microphone") || title.contains("الميكروفون")) {
-      await Permission.microphone.request();
-    } else {
-      openAppSettings();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: AppColors.darkBackground,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Icon(icon, color: AppColors.primaryGold, size: 20),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 l10n.settingsDisabled,
@@ -629,43 +483,23 @@ class _PermissionRow extends StatelessWidget {
   }
 }
 
-class _AboutLink extends StatelessWidget {
+class _AboutNavItem extends StatelessWidget {
   final String title;
   final VoidCallback? onTap;
-  const _AboutLink({required this.title, this.onTap});
-
+  const _AboutNavItem({required this.title, this.onTap});
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: 14),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: TextStyle(fontSize: 15, color: isDark ? Colors.white : Colors.black, fontWeight: FontWeight.w500)),
-            const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.primaryGold),
+            Text(title, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500)),
+            const Icon(Icons.chevron_right, color: AppColors.primaryGold, size: 20),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _AboutNavItem extends StatelessWidget {
-  final String title;
-  const _AboutNavItem({required this.title});
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500)),
-          const Icon(Icons.chevron_right, color: AppColors.primaryGold, size: 20),
-        ],
       ),
     );
   }
