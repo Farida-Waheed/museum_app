@@ -355,6 +355,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get notNow => 'ليس الآن';
 
   @override
+  String get allowLocationAccess => 'السماح بالوصول إلى الموقع';
+
+  @override
+  String get locationPermissionBody =>
+      'يستخدم حوروس البلوتوث والموقع لإرشادك داخل المتحف ومساعدتك في تتبع الروبوت أثناء زيارتك.';
+
+  @override
+  String get dataReassurance => 'بياناتك مجهولة الهوية وتستخدم فقط للملاحة.';
+
+  @override
   String get onboarding1Title => 'مرحباً بك في حوروس';
 
   @override

@@ -5,12 +5,14 @@ class UserPreferencesModel extends ChangeNotifier {
   bool _isHighContrast = false;
   double _fontScale = 1.0;
   bool _hasCompletedOnboarding = false;
+  bool _hasSeenLocationPrompt = false;
   String themeMode = 'dark'; // Set to dark by default
 
   String get language => _language;
   bool get isHighContrast => _isHighContrast;
   double get fontScale => _fontScale;
   bool get hasCompletedOnboarding => _hasCompletedOnboarding;
+  bool get hasSeenLocationPrompt => _hasSeenLocationPrompt;
 
   void setLanguage(String lang) {
     _language = lang;
@@ -34,6 +36,13 @@ class UserPreferencesModel extends ChangeNotifier {
   void setCompletedOnboarding(bool value) {
     if (_hasCompletedOnboarding != value) {
       _hasCompletedOnboarding = value;
+      notifyListeners();
+    }
+  }
+
+  void setHasSeenLocationPrompt(bool value) {
+    if (_hasSeenLocationPrompt != value) {
+      _hasSeenLocationPrompt = value;
       notifyListeners();
     }
   }
