@@ -107,7 +107,7 @@ abstract class AppLocalizations {
   /// No description provided for @exploreEgypt.
   ///
   /// In en, this message translates to:
-  /// **'Explore Egypt with Horus-Bot'**
+  /// **'Explore Egypt With Horus-Bot'**
   String get exploreEgypt;
 
   /// No description provided for @nextStop.
@@ -293,7 +293,7 @@ abstract class AppLocalizations {
   /// No description provided for @displayText.
   ///
   /// In en, this message translates to:
-  /// **'Display & text'**
+  /// **'Display & Text'**
   String get displayText;
 
   /// No description provided for @highContrast.
@@ -413,7 +413,7 @@ abstract class AppLocalizations {
   /// No description provided for @audioGuide.
   ///
   /// In en, this message translates to:
-  /// **'Audio guide'**
+  /// **'Audio Guide Mode'**
   String get audioGuide;
 
   /// No description provided for @audioPlaying.
@@ -971,8 +971,92 @@ abstract class AppLocalizations {
   /// No description provided for @followAndDiscover.
   ///
   /// In en, this message translates to:
-  /// **'Follow Horus-Bot and discover ancient Egypt'**
+  /// **'Follow the robot and uncover the stories behind ancient artifacts.'**
   String get followAndDiscover;
+
+  /// No description provided for @museumExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Museum Experience'**
+  String get museumExperience;
+
+  /// No description provided for @museumExperienceSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize how Horus-Bot guides you through the museum.'**
+  String get museumExperienceSub;
+
+  /// No description provided for @autoFollow.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow Horus-Bot automatically'**
+  String get autoFollow;
+
+  /// No description provided for @nearbyAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Show nearby exhibits'**
+  String get nearbyAlerts;
+
+  /// No description provided for @detailedExplanations.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable exhibit explanations'**
+  String get detailedExplanations;
+
+  /// No description provided for @voiceInteraction.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable voice interaction'**
+  String get voiceInteraction;
+
+  /// No description provided for @permissionsCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Permissions'**
+  String get permissionsCenter;
+
+  /// No description provided for @locationService.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get locationService;
+
+  /// No description provided for @bluetooth.
+  ///
+  /// In en, this message translates to:
+  /// **'Bluetooth'**
+  String get bluetooth;
+
+  /// No description provided for @microphone.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone'**
+  String get microphone;
+
+  /// No description provided for @camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get camera;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @enable.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable'**
+  String get enable;
+
+  /// No description provided for @settingsDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings: Disabled'**
+  String get settingsDisabled;
 
   /// No description provided for @aboutHorusBot.
   ///
@@ -980,6 +1064,17 @@ abstract class AppLocalizations {
   /// **'About Horus-Bot'**
   String get aboutHorusBot;
 
+  /// No description provided for @appVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version 1.0'**
+  String get appVersion;
+
+  /// No description provided for @appTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Autonomous Museum Guide'**
+  String get appTagline;
   /// No description provided for @version.
   ///
   /// In en, this message translates to:
@@ -995,6 +1090,20 @@ abstract class AppLocalizations {
   /// No description provided for @developedBy.
   ///
   /// In en, this message translates to:
+  /// **'Developed by'**
+  String get developedBy;
+
+  /// No description provided for @organization.
+  ///
+  /// In en, this message translates to:
+  /// **'Benha University'**
+  String get organization;
+
+  /// No description provided for @department.
+  ///
+  /// In en, this message translates to:
+  /// **'Computer & Communication Engineering Program'**
+  String get department;
   /// **'Developed By'**
   String get developedBy;
 
@@ -1013,12 +1122,14 @@ abstract class AppLocalizations {
   /// No description provided for @projectInfo.
   ///
   /// In en, this message translates to:
+  /// **'Project Information'**
   /// **'Project Info'**
   String get projectInfo;
 
   /// No description provided for @team.
   ///
   /// In en, this message translates to:
+  /// **'Team'**
   /// **'Our Team'**
   String get team;
 
@@ -1027,6 +1138,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Privacy Policy'**
   String get privacyPolicy;
+
+  /// No description provided for @tutankhamunHall.
+  ///
+  /// In en, this message translates to:
+  /// **'Tutankhamun Hall'**
+  String get tutankhamunHall;
+
+  /// No description provided for @fiveMinutesAway.
+  ///
+  /// In en, this message translates to:
+  /// **'5 minutes away'**
+  String get fiveMinutesAway;
+
+  /// No description provided for @tutankhamunMask.
+  ///
+  /// In en, this message translates to:
+  /// **'Tutankhamun Mask'**
+  String get tutankhamunMask;
+
+  /// No description provided for @goldenHallRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Golden Hall • Recommended now'**
+  String get goldenHallRecommended;
+
+  /// No description provided for @ancientPapyrus.
+  ///
+  /// In en, this message translates to:
+  /// **'Ancient Papyrus'**
+  String get ancientPapyrus;
+
+  /// No description provided for @westWingStory.
+  ///
+  /// In en, this message translates to:
+  /// **'West Wing • Story of Writing'**
+  String get westWingStory;
+
+  /// No description provided for @canopicJars.
+  ///
+  /// In en, this message translates to:
+  /// **'Canopic Jars'**
+  String get canopicJars;
+
+  /// No description provided for @southHallMummification.
+  ///
+  /// In en, this message translates to:
+  /// **'South Hall • Mummification Rituals'**
+  String get southHallMummification;
+
+  /// No description provided for @locationServiceSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Used for indoor navigation and exhibit guidance'**
+  String get locationServiceSub;
+
+  /// No description provided for @bluetoothSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to nearby robot beacons'**
+  String get bluetoothSub;
+
+  /// No description provided for @microphoneSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Used for voice commands to Horus-Bot'**
+  String get microphoneSub;
+
+  /// No description provided for @cameraSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Used for scanning QR tickets and AR view'**
+  String get cameraSub;
+
+  /// No description provided for @notificationsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay updated on your tour and robot status'**
+  String get notificationsSub;
+
+  /// No description provided for @audioGuideSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatically read exhibit information aloud.'**
+  String get audioGuideSub;
+
+  /// No description provided for @reduceAnimations.
+  ///
+  /// In en, this message translates to:
+  /// **'Reduce Animations'**
+  String get reduceAnimations;
+
+  /// No description provided for @reduceAnimationsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Simplifies motion effects for sensitive users.'**
+  String get reduceAnimationsSub;
+
+  /// No description provided for @simpleMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Simple Mode'**
+  String get simpleMode;
+
+  /// No description provided for @simpleModeSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Larger buttons and simplified layout.'**
+  String get simpleModeSub;
 }
 
 class _AppLocalizationsDelegate

@@ -106,6 +106,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get adjustSettings =>
+      'عدل حجم النص، التباين، واللغة لتناسب احتياجاتك.';
       'عدل التنقل، إمكانية الوصول، والعرض لتناسب احتياجاتك.';
 
   @override
@@ -171,7 +172,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get alignQr => 'ضع رمز QR داخل الإطار';
 
   @override
-  String get audioGuide => 'الشرح الصوتي';
+  String get audioGuide => 'وضع الدليل الصوتي';
 
   @override
   String get audioPlaying => 'يتم تشغيل الشرح الصوتي...';
@@ -461,6 +462,60 @@ class AppLocalizationsAr extends AppLocalizations {
   String get exploreTheMuseum => 'استكشف المتحف';
 
   @override
+  String get followAndDiscover =>
+      'اتبع الروبوت واكتشف القصص وراء القطع الأثرية القديمة.';
+
+  @override
+  String get museumExperience => 'تجربة المتحف';
+
+  @override
+  String get museumExperienceSub =>
+      'خصص كيف يقوم حوروس-بوت بإرشادك عبر المتحف.';
+
+  @override
+  String get autoFollow => 'التتبع التلقائي لحوروس';
+
+  @override
+  String get nearbyAlerts => 'إظهار المعروضات القريبة';
+
+  @override
+  String get detailedExplanations => 'تفعيل شروحات المعروضات';
+
+  @override
+  String get voiceInteraction => 'تفعيل التفاعل الصوتي';
+
+  @override
+  String get permissionsCenter => 'الأذونات';
+
+  @override
+  String get locationService => 'الموقع';
+
+  @override
+  String get bluetooth => 'البلوتوث';
+
+  @override
+  String get microphone => 'الميكروفون';
+
+  @override
+  String get camera => 'الكاميرا';
+
+  @override
+  String get notifications => 'التنبيهات';
+
+  @override
+  String get enable => 'تفعيل';
+
+  @override
+  String get settingsDisabled => 'الإعدادات: معطل';
+
+  @override
+  String get aboutHorusBot => 'حول حوروس';
+
+  @override
+  String get appVersion => 'الإصدار ١.٠';
+
+  @override
+  String get appTagline => 'مرشد متحف ذكي ذاتي القيادة';
   String get followAndDiscover => 'اتبع حوروس واكتشف مصر القديمة';
 
   @override
@@ -476,6 +531,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get developedBy => 'تم التطوير بواسطة';
 
   @override
+  String get organization => 'جامعة بنها';
+
+  @override
+  String get department => 'برنامج هندسة الحاسبات والاتصالات';
   String get university => 'جامعة بنها';
 
   @override
@@ -485,6 +544,64 @@ class AppLocalizationsAr extends AppLocalizations {
   String get projectInfo => 'معلومات المشروع';
 
   @override
+  String get team => 'الفريق';
+
+  @override
+  String get privacyPolicy => 'سياسة الخصوصية';
+
+  @override
+  String get tutankhamunHall => 'قاعة توت عنخ آمون';
+
+  @override
+  String get fiveMinutesAway => 'على بعد ٥ دقائق';
+
+  @override
+  String get tutankhamunMask => 'قناع توت عنخ آمون';
+
+  @override
+  String get goldenHallRecommended => 'القاعة الذهبية • مستحسن الآن';
+
+  @override
+  String get ancientPapyrus => 'بردية قديمة';
+
+  @override
+  String get westWingStory => 'الجناح الغربي • قصة الكتابة';
+
+  @override
+  String get canopicJars => 'أواني كانوبية';
+
+  @override
+  String get southHallMummification => 'القاعة الجنوبية • طقوس التحنيط';
+
+  @override
+  String get locationServiceSub => 'يستخدم للملاحة الداخلية وإرشاد المعروضات';
+
+  @override
+  String get bluetoothSub => 'اتصل بمنارات الروبوت القريبة';
+
+  @override
+  String get microphoneSub => 'يستخدم للأوامر الصوتية لحوروس-بوت';
+
+  @override
+  String get cameraSub => 'يستخدم لمسح تذاكر QR وعرض الواقع المعزز';
+
+  @override
+  String get notificationsSub => 'ابق على اطلاع بجولتك وحالة الروبوت';
+
+  @override
+  String get audioGuideSub => 'قراءة معلومات المعروضات بصوت عالٍ تلقائيًا';
+
+  @override
+  String get reduceAnimations => 'تقليل الحركات';
+
+  @override
+  String get reduceAnimationsSub => 'تبسيط تأثيرات الحركة للمستخدمين الحساسين';
+
+  @override
+  String get simpleMode => 'الوضع البسيط';
+
+  @override
+  String get simpleModeSub => 'أزرار أكبر وتخطيط مبسط';
   String get team => 'فريقنا';
 
   @override
