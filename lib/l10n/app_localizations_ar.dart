@@ -15,7 +15,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get exploreEgypt => 'استكشف مصر مع حوروس';
 
   @override
-  String nextStop(String location, int time) {
+  String nextStop(Object location, Object time) {
     return 'المحطة التالية: $location خلال $time دقائق';
   }
 
@@ -368,29 +368,25 @@ class AppLocalizationsAr extends AppLocalizations {
   String get onboarding1Title => 'مرحباً بك في حوروس';
 
   @override
-  String get onboarding1Desc =>
-      'دليلك الذكي للمتحف. تصفح المعروضات، اتبع الروبوت، واكتشف القصص الخفية.';
+  String get onboarding1Desc => 'دليلك الذكي للمتحف.';
 
   @override
   String get onboarding2Title => 'تعرف على حوروس';
 
   @override
-  String get onboarding2Desc =>
-      'مرشدك الذكي للمتحف. اطرح الأسئلة واستكشف المعروضات خلال زيارتك.';
+  String get onboarding2Desc => 'مرشدك الذكي للمتحف.';
 
   @override
   String get onboarding3Title => 'وضع الجولة الموجهة';
 
   @override
-  String get onboarding3Desc =>
-      'إرشاد تلقائي عبر المعروضات. ابقَ على اتصال مع حوروس طوال رحلتك.';
+  String get onboarding3Desc => 'إرشاد تلقائي عبر المعروضات.';
 
   @override
   String get onboarding4Title => 'استكشف وتعلّم';
 
   @override
-  String get onboarding4Desc =>
-      'اكتشف القطع الأثرية، اسأل حوروس، واستمتع باختبارات المتحف.';
+  String get onboarding4Desc => 'اكتشف القطع الأثرية.';
 
   @override
   String get next => 'التالي';
@@ -408,8 +404,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get didYouKnow => 'هل تعلم؟';
 
   @override
-  String get didYouKnowFact =>
-      'قناع توت عنخ آمون الذهبي يحتوي على أكثر من 10 كيلوغرامات من الذهب الخالص.';
+  String get didYouKnowFact => 'قناع توت عنخ آمون الذهبي يحتوي على ١٠ كجم ذهب.';
 
   @override
   String get onlineStatus => '● متصل';
@@ -461,7 +456,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get exploreTheMuseum => 'استكشف المتحف';
 
   @override
-  String get followAndDiscover => 'اتبع حوروس واكتشف مصر القديمة';
+  String get followAndDiscover => 'اتبع حوروس';
 
   @override
   String get aboutHorusBot => 'عن حوروس-بوت';
@@ -470,7 +465,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get version => 'الإصدار ١.٠';
 
   @override
-  String get aboutDesc => 'رفيقك المدعوم بالذكاء الاصطناعي لتجربة متحف غامرة.';
+  String get aboutDesc => 'رفيقك الذكي.';
 
   @override
   String get developedBy => 'تم التطوير بواسطة';

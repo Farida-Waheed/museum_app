@@ -171,7 +171,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         },
         body: CustomScrollView(
           slivers: [
-            // A. Welcome Header
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
@@ -185,8 +184,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
-
-            // B. Hero Header / Horus-Bot Status Card
             SliverToBoxAdapter(
               child: Container(
                 height: 320,
@@ -221,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Explore Egypt with Horus-Bot",
+                              isArabic ? "استكشف مصر مع حوروس" : "Explore Egypt with Horus-Bot",
                               style: theme.textTheme.displayLarge?.copyWith(
                                 fontSize: 30,
                                 color: Colors.white,
@@ -231,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              "Follow Horus-Bot and discover ancient Egypt.",
+                              isArabic ? "اتبع حوروس واكتشف مصر القديمة" : "Follow Horus-Bot and discover ancient Egypt.",
                               style: theme.textTheme.bodyLarge?.copyWith(
                                 color: Colors.white.withOpacity(0.9),
                                 fontSize: 16,
@@ -246,7 +243,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         bottom: 24,
                         child: _NextStopBadge(
                           location: "Tutankhamun Hall",
-                          time: "in 5 minutes",
+                          time: isArabic ? "خلال ٥ دقائق" : "in 5 minutes",
                           label: l10n.nextStopLabel,
                           onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
                         ),
@@ -256,8 +253,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
-
-            // C. Quick Actions
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -272,24 +267,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
-
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
-
-            // ===== ROBOT STATUS CARD =====
-            SliverToBoxAdapter(
-              child: _RobotStatusCard(),
-            ),
-
+            SliverToBoxAdapter(child: _RobotStatusCard()),
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
-
-            // ===== TOUR PROGRESS TRACKER =====
-            SliverToBoxAdapter(
-              child: _TourProgressTracker(),
-            ),
-
+            SliverToBoxAdapter(child: _TourProgressTracker()),
             const SliverToBoxAdapter(child: SizedBox(height: 32)),
-
-            // ===== FEATURE CARDS =====
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -319,10 +301,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
-
             const SliverToBoxAdapter(child: SizedBox(height: 32)),
-
-            // E. Nearby Exhibits
             SliverToBoxAdapter(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,30 +320,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ],
               ),
             ),
-
             const SliverToBoxAdapter(child: SizedBox(height: 32)),
-
-            // ===== MUSEUM NEWS =====
-            SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(
-                      "Museum News",
-                      style: theme.textTheme.headlineMedium,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ...news.map((item) => _NewsCard(news: item)),
-                ],
-              ),
-            ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
-
-            // ===== MAP PREVIEW =====
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -391,10 +347,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
-
             const SliverToBoxAdapter(child: SizedBox(height: 32)),
-
-            // Did You Know Section
             SliverToBoxAdapter(
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -416,7 +369,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
-
             const SliverToBoxAdapter(child: SizedBox(height: 48)),
           ],
         ),
@@ -488,7 +440,6 @@ class _NextStopBadge extends StatelessWidget {
   final String location;
   final String time;
   final VoidCallback onTap;
-
   const _NextStopBadge({required this.label, required this.location, required this.time, required this.onTap});
 
   @override
@@ -505,13 +456,6 @@ class _NextStopBadge extends StatelessWidget {
               color: const Color(0xFF1E1912).withOpacity(0.55),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppColors.primaryGold, width: 1),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.25),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
-                ),
-              ],
             ),
             child: Row(
               children: [
@@ -527,54 +471,6 @@ class _NextStopBadge extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _FeatureCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const _FeatureCard({required this.icon, required this.title, required this.subtitle, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
-          color: AppColors.cinematicCard,
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
-          image: DecorationImage(
-            image: const AssetImage('assets/images/hieroglyphs.jpg'),
-            opacity: 0.05,
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(icon, color: AppColors.primaryGold.withOpacity(0.8), size: 24),
-            const SizedBox(height: 32),
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 17, color: Colors.white),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              subtitle,
-              style: const TextStyle(fontSize: 12, color: AppColors.darkMutedText),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
         ),
       ),
     );
@@ -638,7 +534,6 @@ class _Dots extends StatelessWidget {
   final int count;
   final int index;
   const _Dots({required this.count, required this.index});
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -656,48 +551,6 @@ class _Dots extends StatelessWidget {
           ),
         );
       }),
-    );
-  }
-}
-
-class _LiveBadge extends StatelessWidget {
-  final String label;
-  const _LiveBadge({required this.label});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: AppColors.alertRed.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(Icons.circle, size: 6, color: AppColors.alertRed),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: AppColors.alertRed, letterSpacing: 0.5),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _LegendDot extends StatelessWidget {
-  final Color color;
-  final String label;
-  const _LegendDot({required this.color, required this.label});
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(Icons.circle, size: 8, color: color),
-        const SizedBox(width: 8),
-        Text(label, style: const TextStyle(fontSize: 12, color: AppColors.darkMutedText)),
-      ],
     );
   }
 }
@@ -753,9 +606,9 @@ class _RobotStatusCard extends StatelessWidget {
               ],
             ),
           ),
-          Column(
+          const Column(
             crossAxisAlignment: CrossAxisAlignment.end,
-            children: const [
+            children: [
               Text("Next Tour", style: TextStyle(color: AppColors.helperText, fontSize: 11)),
               Text("2:00 PM", style: TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 14)),
             ],
@@ -780,9 +633,9 @@ class _TourProgressTracker extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
+            children: [
               Text("Tour Progress", style: TextStyle(color: AppColors.primaryText, fontWeight: FontWeight.bold, fontSize: 16)),
               Text("3 / 10 exhibits", style: TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 14)),
             ],
@@ -825,7 +678,6 @@ class _TourProgressTracker extends StatelessWidget {
 class _NewsCard extends StatelessWidget {
   final MockNews news;
   const _NewsCard({required this.news});
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -850,7 +702,7 @@ class _NewsCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(news.source, style: const TextStyle(color: AppColors.primaryGold, fontSize: 11, fontWeight: FontWeight.bold)),
-                      Text("Nov 24", style: const TextStyle(color: AppColors.helperText, fontSize: 11)),
+                      const Text("Nov 24", style: TextStyle(color: AppColors.helperText, fontSize: 11)),
                     ],
                   ),
                   const SizedBox(height: 8),
@@ -880,7 +732,7 @@ class _HorusFab extends StatefulWidget {
   State<_HorusFab> createState() => _HorusFabState();
 }
 
-class _HorusFabState extends State<_HorusFab> {
+class _HorusFabState extends State<_HorusFab> with SingleTickerProviderStateMixin {
   bool _pressed = false;
 
   @override
