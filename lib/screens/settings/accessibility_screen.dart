@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 
 import '../../models/user_preferences.dart';
-import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 
 class AccessibilityScreen extends StatelessWidget {
@@ -17,7 +16,6 @@ class AccessibilityScreen extends StatelessWidget {
 
     return AppMenuShell(
       title: l10n.settingsAccessibility,
-      bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

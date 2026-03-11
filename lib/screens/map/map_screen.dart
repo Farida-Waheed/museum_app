@@ -229,21 +229,30 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
         child: Column(
           children: [
             Container(
-              width: 18,
-              height: 18,
+              width: 24,
+              height: 24,
               decoration: BoxDecoration(
-                color: isVisited ? Colors.teal : Colors.grey.shade400,
+                color: isVisited ? const Color(0xFFE6C068) : const Color(0xFF1E1912),
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 2),
+                border: Border.all(color: const Color(0xFFE6C068), width: 2),
+                boxShadow: [
+                  if (isVisited)
+                    BoxShadow(color: const Color(0xFFE6C068).withOpacity(0.4), blurRadius: 8, spreadRadius: 1),
+                ],
+              ),
+              child: Icon(
+                Icons.museum_outlined,
+                size: 14,
+                color: isVisited ? const Color(0xFF1E1912) : const Color(0xFFE6C068),
               ),
             ),
             const SizedBox(height: 4),
             Text(
               e.getName(Localizations.localeOf(context).languageCode),
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 9,
-                color: Colors.grey[800],
-                fontWeight: FontWeight.w600,
+                color: Color(0xFFF5F1E8),
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],
@@ -282,20 +291,20 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             margin: const EdgeInsets.only(bottom: 6),
             decoration: BoxDecoration(
-              color: Colors.blue[50],
+              color: const Color(0xFF1E1912),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.blue.shade100),
+              border: Border.all(color: const Color(0xFFE6C068).withOpacity(0.3)),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text("🤖", style: TextStyle(fontSize: 10)),
+                const Icon(Icons.smart_toy_rounded, color: Color(0xFFE6C068), size: 12),
                 const SizedBox(width: 4),
                 Text(
                   l10n.live,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 10,
-                    color: Colors.blue[800],
+                    color: Color(0xFFE6C068),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -307,34 +316,39 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
           AnimatedBuilder(
             animation: _pulseAnimation,
             builder: (context, child) {
-              return Container(
-                width: 60 * _pulseAnimation.value,
-                height: 60 * _pulseAnimation.value,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.orange.withOpacity((0.4 - (_pulseAnimation.value - 1.0)).clamp(0, 1)),
-                    width: 2,
-                  ),
-                ),
-                child: Center(
-                  child: Container(
-                    width: 18,
-                    height: 18,
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Outer Glow / Pulse
+                  Container(
+                    width: 40 * _pulseAnimation.value,
+                    height: 40 * _pulseAnimation.value,
                     decoration: BoxDecoration(
-                      color: Colors.blue,
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
+                      color: const Color(0xFFE6C068).withOpacity((0.3 - (_pulseAnimation.value - 1.0)).clamp(0, 1)),
+                    ),
+                  ),
+                  // Robot Base
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1E1912),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: const Color(0xFFE6C068), width: 2),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.blue.withOpacity(.4),
-                          blurRadius: 8,
-                          spreadRadius: 1,
+                          color: const Color(0xFFE6C068).withOpacity(0.6),
+                          blurRadius: 12,
+                          spreadRadius: 2,
                         )
                       ],
                     ),
+                    child: const Center(
+                      child: Icon(Icons.smart_toy_rounded, color: Color(0xFFE6C068), size: 14),
+                    ),
                   ),
-                ),
+                ],
               );
             },
           ),

@@ -219,6 +219,63 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
             const SliverToBoxAdapter(child: SizedBox(height: 32)),
 
+            // ===== TOUR PROGRESS CARD =====
+            SliverToBoxAdapter(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E1912),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: const Color(0xFFE6C068).withOpacity(0.3), width: 1),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 15,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Tour Progress",
+                          style: TextStyle(
+                            color: Color(0xFFE6C068),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "3 of 5 exhibits completed",
+                          style: TextStyle(
+                            color: const Color(0xFFF5F1E8).withOpacity(0.6),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: const LinearProgressIndicator(
+                        value: 0.6,
+                        minHeight: 10,
+                        backgroundColor: Color(0xFF121212),
+                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE6C068)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
             // ===== FEATURE CARDS =====
             SliverToBoxAdapter(
               child: Padding(

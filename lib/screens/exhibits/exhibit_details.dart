@@ -98,7 +98,6 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
 
     return AppMenuShell(
       subHeader: const RobotStatusBanner(),
-      bottomNavigationBar: const BottomNav(currentIndex: 0),
       floatingActionButton: const RoboGuideEntry(),
       body: CustomScrollView(
         slivers: [

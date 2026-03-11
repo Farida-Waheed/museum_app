@@ -187,8 +187,8 @@ class ChatBubble extends StatelessWidget {
     final theme = Theme.of(context);
     final isUser = msg.isUser;
 
-    final bubbleColor = isUser ? theme.colorScheme.primary : Colors.grey.shade100;
-    final textColor = isUser ? Colors.white : Colors.black87;
+    final bubbleColor = isUser ? const Color(0xFFE6C068) : const Color(0xFF1E1912);
+    final textColor = isUser ? const Color(0xFF1E1912) : const Color(0xFFF5F1E8);
 
     final msgIsArabic = msg.kind == MessageKind.text ? _hasArabic(msg.text) : isArabicUI;
     final dir = msgIsArabic ? TextDirection.rtl : TextDirection.ltr;
@@ -196,11 +196,11 @@ class ChatBubble extends StatelessWidget {
     final avatar = CircleAvatar(
       radius: 14,
       backgroundColor: isUser
-          ? theme.colorScheme.primary.withOpacity(0.1)
-          : Colors.blueGrey.shade50,
+          ? const Color(0xFFE6C068).withOpacity(0.1)
+          : const Color(0xFF1E1912),
       child: isUser
-          ? Icon(Icons.person_outline, size: 16, color: theme.colorScheme.primary)
-          : Image.asset("assets/icons/ankh.png", width: 16, height: 16, color: Colors.black54),
+          ? const Icon(Icons.person_outline, size: 16, color: Color(0xFFE6C068))
+          : const Icon(Icons.smart_toy_rounded, size: 16, color: Color(0xFFE6C068)),
     );
 
     Widget content;
@@ -219,7 +219,7 @@ class ChatBubble extends StatelessWidget {
           color: textColor,
           fontSize: 15,
           height: 1.5,
-          fontWeight: isUser ? FontWeight.w500 : FontWeight.normal,
+          fontWeight: isUser ? FontWeight.w900 : FontWeight.normal,
         ),
       );
     }
@@ -237,8 +237,9 @@ class ChatBubble extends StatelessWidget {
           bottomLeft: Radius.circular(isUser ? 20 : 4),
           bottomRight: Radius.circular(isUser ? 4 : 20),
         ),
+        border: Border.all(color: const Color(0xFFE6C068).withOpacity(0.2)),
         boxShadow: [
-          if (!isUser) BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 4, offset: const Offset(0, 2)),
+          BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 4, offset: const Offset(0, 2)),
         ],
       ),
       child: Directionality(textDirection: dir, child: content),
@@ -274,13 +275,13 @@ class _InfoCardBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final titleStyle = TextStyle(
       fontWeight: FontWeight.w900,
-      color: isUser ? Colors.white : Colors.black,
+      color: isUser ? const Color(0xFF1E1912) : const Color(0xFFE6C068),
       fontSize: 15,
       letterSpacing: 0.2,
     );
 
     final itemStyle = TextStyle(
-      color: isUser ? Colors.white.withOpacity(0.9) : Colors.black87,
+      color: isUser ? const Color(0xFF1E1912).withOpacity(0.9) : const Color(0xFFF5F1E8).withOpacity(0.82),
       fontSize: 14,
       height: 1.5,
     );
@@ -588,8 +589,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     final quickChips = Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
+        color: const Color(0xFF1E1912),
+        border: Border(bottom: BorderSide(color: const Color(0xFFE6C068).withOpacity(0.1))),
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -606,14 +607,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     );
 
     return Scaffold(
-      backgroundColor: widget.isPopup ? Colors.transparent : Colors.white,
+      backgroundColor: widget.isPopup ? Colors.transparent : const Color(0xFF121212),
       appBar: widget.isPopup
           ? null
           : AppBar(
-              title: Text(l10n.talkToHorusBot, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
-              backgroundColor: Colors.white,
+              title: Text(l10n.talkToHorusBot, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Color(0xFFF5F1E8))),
+              backgroundColor: const Color(0xFF121212),
               elevation: 0,
               centerTitle: true,
+              iconTheme: const IconThemeData(color: Color(0xFFF5F1E8)),
               leading: IconButton(icon: const Icon(Icons.arrow_back_ios_new, size: 20), onPressed: () => Navigator.pop(context)),
             ),
 
@@ -625,13 +627,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             height: widget.isPopup ? MediaQuery.of(context).size.height * 0.82 : double.infinity,
             decoration: widget.isPopup
                 ? BoxDecoration(
-                    borderRadius: BorderRadius.circular(28),
-                    color: Colors.white,
-                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.12), blurRadius: 30, offset: const Offset(0, 15))],
+                    borderRadius: BorderRadius.circular(24),
+                    color: const Color(0xFF1E1912),
+                    border: Border.all(color: const Color(0xFFE6C068), width: 1),
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 30, offset: const Offset(0, 15))],
                   )
                 : null,
             child: ClipRRect(
-              borderRadius: widget.isPopup ? BorderRadius.circular(28) : BorderRadius.zero,
+              borderRadius: widget.isPopup ? BorderRadius.circular(24) : BorderRadius.zero,
               child: Column(
                 children: [
                   if (widget.isPopup)
@@ -639,9 +642,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
                       child: Row(
                         children: [
-                          Image.asset("assets/icons/ankh.png", width: 24, height: 24),
+                          const Icon(Icons.smart_toy_rounded, color: Color(0xFFE6C068), size: 24),
                           const SizedBox(width: 12),
-                          Text(l10n.talkToHorusBot, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+                          Text(l10n.talkToHorusBot, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: Color(0xFFF5F1E8))),
                           const Spacer(),
                           IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close_rounded), color: Colors.grey),
                         ],
@@ -669,8 +672,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   Container(
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, -5))],
+                      color: const Color(0xFF1E1912),
+                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, -5))],
                     ),
                     child: SafeArea(
                       top: false,
@@ -681,12 +684,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                               controller: _controller,
                               textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                               onSubmitted: _submit,
+                              style: const TextStyle(color: Color(0xFFF5F1E8)),
                               decoration: InputDecoration(
                                 hintText: isArabic ? "اسأل حوروس عن أي شيء..." : "Ask Horus about anything...",
-                                fillColor: Colors.grey.shade50,
+                                hintStyle: TextStyle(color: const Color(0xFFF5F1E8).withOpacity(0.4)),
+                                fillColor: const Color(0xFF121212),
                                 filled: true,
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: Colors.grey.shade200)),
-                                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: Colors.grey.shade200)),
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: const Color(0xFFE6C068).withOpacity(0.2))),
+                                enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: BorderSide(color: const Color(0xFFE6C068).withOpacity(0.2))),
+                                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: const BorderSide(color: Color(0xFFE6C068))),
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                               ),
                             ),
@@ -696,11 +702,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                             scale: _canSend ? 1.0 : 0.9,
                             duration: const Duration(milliseconds: 200),
                             child: CircleAvatar(
-                              backgroundColor: _canSend ? primary : Colors.grey.shade100,
+                              backgroundColor: _canSend ? const Color(0xFFE6C068) : const Color(0xFF121212),
                               radius: 24,
                               child: IconButton(
                                 onPressed: _canSend ? () => _submit(_controller.text) : null,
-                                icon: Icon(Icons.send_rounded, color: _canSend ? Colors.white : Colors.grey, size: 20),
+                                icon: Icon(Icons.send_rounded, color: _canSend ? const Color(0xFF1E1912) : Colors.grey, size: 20),
                               ),
                             ),
                           ),
@@ -732,10 +738,10 @@ class _QuickChip extends StatelessWidget {
       padding: const EdgeInsets.only(right: 8),
       child: ActionChip(
         onPressed: onTap,
-        label: Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.grey.shade50,
+        label: Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Color(0xFFF5F1E8))),
+        backgroundColor: const Color(0xFF121212),
         padding: const EdgeInsets.symmetric(horizontal: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: Colors.grey.shade200)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20), side: BorderSide(color: const Color(0xFFE6C068).withOpacity(0.3))),
       ),
     );
   }
