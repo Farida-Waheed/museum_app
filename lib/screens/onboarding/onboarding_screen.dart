@@ -153,154 +153,162 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
           ),
 
           // --- 3. Main content (pages + dots + button) ---
-          Column(
-            children: [
-              Expanded(
-                child: PageView.builder(
-                  controller: _pageController,
-                  onPageChanged: (index) =>
-                      setState(() => _currentPage = index),
-                  itemCount: pages.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 48),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center, // Lifted up
-                        children: [
-                          const SizedBox(height: 40), // Top spacing adjustment
-                          // Unified Icon treatment
-                          AnimatedBuilder(
-                            animation: _floatController,
-                            builder: (context, child) {
-                              final double floatOffset = 8 * math.sin(_floatController.value * 2 * math.pi);
-                              return Transform.translate(
-                                offset: Offset(0, floatOffset),
-                                child: child,
-                              );
-                            },
-                            child: Container(
-                              width: 110,
-                              height: 110,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: RadialGradient(
-                                  colors: [
-                                    const Color(0xFFE6C068).withOpacity(0.12),
-                                    const Color(0xFFE6C068).withOpacity(0.0),
-                                  ],
-                                ),
-                              ),
-                              child: Center(
-                                child: Transform.scale(
-                                  scale: pages[index]["iconScale"] ?? 1.0,
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      // Optional shadow layer to unify different icon styles
-                                      if (pages[index]["useShadow"] == true)
-                                        Transform.translate(
-                                          offset: const Offset(0, 2),
-                                          child: Image.asset(
+          SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height,
+              ),
+              child: IntrinsicHeight(
+                child: Column(
+                  children: [
+                  Expanded(
+                    child: PageView.builder(
+                      controller: _pageController,
+                      onPageChanged: (index) => setState(() => _currentPage = index),
+                      itemCount: pages.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 48),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center, // Lifted up
+                            children: [
+                              const SizedBox(height: 40), // Top spacing adjustment
+                              // Unified Icon treatment
+                              AnimatedBuilder(
+                                animation: _floatController,
+                                builder: (context, child) {
+                                  final double floatOffset = 8 * math.sin(_floatController.value * 2 * math.pi);
+                                  return Transform.translate(
+                                    offset: Offset(0, floatOffset),
+                                    child: child,
+                                  );
+                                },
+                                child: Container(
+                                  width: 110,
+                                  height: 110,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: RadialGradient(
+                                      colors: [
+                                        const Color(0xFFE6C068).withOpacity(0.12),
+                                        const Color(0xFFE6C068).withOpacity(0.0),
+                                      ],
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Transform.scale(
+                                      scale: pages[index]["iconScale"] ?? 1.0,
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          // Optional shadow layer to unify different icon styles
+                                          if (pages[index]["useShadow"] == true)
+                                            Transform.translate(
+                                              offset: const Offset(0, 2),
+                                              child: Image.asset(
+                                                pages[index]["iconPath"]!,
+                                                width: pages[index]["iconSize"] ?? 82.0,
+                                                height: pages[index]["iconSize"] ?? 82.0,
+                                                fit: BoxFit.contain,
+                                                color: Colors.black.withOpacity(0.2),
+                                              ),
+                                            ),
+                                          // Main Icon
+                                          Image.asset(
                                             pages[index]["iconPath"]!,
                                             width: pages[index]["iconSize"] ?? 82.0,
                                             height: pages[index]["iconSize"] ?? 82.0,
                                             fit: BoxFit.contain,
-                                            color: Colors.black.withOpacity(0.2),
                                           ),
-                                        ),
-                                      // Main Icon
-                                      Image.asset(
-                                        pages[index]["iconPath"]!,
-                                        width: pages[index]["iconSize"] ?? 82.0,
-                                        height: pages[index]["iconSize"] ?? 82.0,
-                                        fit: BoxFit.contain,
+                                        ],
                                       ),
-                                    ],
+                                    ),
                                   ),
                                 ),
                               ),
-                            ),
-                          ),
-                          const SizedBox(height: 28),
-                          Text(
-                            pages[index]["title"]!,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                          Text(
-                            pages[index]["desc"]!,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.85),
-                              fontSize: 15,
-                              height: 1.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              // --- Dots + Primary button ---
-              Padding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 48),
-                child: Column(
-                  children: [
-                    // Premium Dots indicator
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(pages.length, (index) {
-                        final bool active = _currentPage == index;
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 400),
-                          margin: const EdgeInsets.symmetric(horizontal: 5),
-                          width: active ? 26 : 8,
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: active ? const Color(0xFFE6C068) : const Color(0xFF666666),
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              if (active)
-                                BoxShadow(
-                                  color: const Color(0xFFE6C068).withOpacity(0.4),
-                                  blurRadius: 8,
+                              const SizedBox(height: 28),
+                              Text(
+                                pages[index]["title"]!,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5,
                                 ),
+                              ),
+                              const SizedBox(height: 14),
+                              Text(
+                                pages[index]["desc"]!,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.85),
+                                  fontSize: 15,
+                                  height: 1.5,
+                                ),
+                              ),
                             ],
                           ),
                         );
-                      }),
+                      },
                     ),
-                    const SizedBox(height: 32),
+                  ),
 
-                    // Primary CTA
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: ElevatedButton(
-                        onPressed: () => _completeOnboarding(prefs),
-                        style: primaryCtaButtonStyle,
-                        child: Text(
-                          l10n.startExploring.toUpperCase(),
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.2,
+                  // --- Dots + Primary button ---
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 32, 24, 48),
+                    child: Column(
+                      children: [
+                        // Premium Dots indicator
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(pages.length, (index) {
+                            final bool active = _currentPage == index;
+                            return AnimatedContainer(
+                              duration: const Duration(milliseconds: 400),
+                              margin: const EdgeInsets.symmetric(horizontal: 5),
+                              width: active ? 26 : 8,
+                              height: 6,
+                              decoration: BoxDecoration(
+                                color: active ? const Color(0xFFE6C068) : const Color(0xFF666666),
+                                borderRadius: BorderRadius.circular(10),
+                                boxShadow: [
+                                  if (active)
+                                    BoxShadow(
+                                      color: const Color(0xFFE6C068).withOpacity(0.4),
+                                      blurRadius: 8,
+                                    ),
+                                ],
+                              ),
+                            );
+                          }),
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Primary CTA
+                        SizedBox(
+                          width: double.infinity,
+                          height: 56,
+                          child: ElevatedButton(
+                            onPressed: () => _completeOnboarding(prefs),
+                            style: primaryCtaButtonStyle,
+                            child: Text(
+                              l10n.startExploring.toUpperCase(),
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ),
+                  ),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
 
           // --- 4. Language selector (Top Start) ---

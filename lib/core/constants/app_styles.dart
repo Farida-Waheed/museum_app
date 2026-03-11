@@ -6,7 +6,7 @@ class AppStyles {
     color: Colors.black.withOpacity(0.25),
     borderRadius: BorderRadius.circular(14),
     border: Border.all(
-      color: AppColors.secondaryGold.withOpacity(0.35),
+      color: AppColors.primaryGold.withOpacity(0.35),
       width: 1,
     ),
     boxShadow: [

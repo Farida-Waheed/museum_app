@@ -146,5 +146,14 @@
   "startNavigation": "بدء الملاحة",
   "robotHeadingTo": "الروبوت يتجه إلى: {location}",
   "exploreTheMuseum": "استكشف المتحف",
-  "followAndDiscover": "اتبع حوروس واكتشف مصر القديمة"
+  "followAndDiscover": "اتبع حوروس واكتشف مصر القديمة",
+  "aboutHorusBot": "عن حوروس-بوت",
+  "version": "الإصدار ١.٠",
+  "aboutDesc": "رفيقك المدعوم بالذكاء الاصطناعي لتجربة متحف غامرة.",
+  "developedBy": "تم التطوير بواسطة",
+  "university": "جامعة بنها",
+  "program": "كلية الحاسبات والذكاء الاصطناعي",
+  "projectInfo": "معلومات المشروع",
+  "team": "فريقنا",
+  "privacyPolicy": "سياسة الخصوصية"
 }

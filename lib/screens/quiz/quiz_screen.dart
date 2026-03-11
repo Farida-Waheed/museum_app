@@ -8,6 +8,7 @@ import '../../core/services/mock_data.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/dialogs/premium_dialog.dart';
 import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
 
 class QuizScreen extends StatefulWidget {
   final String? exhibitId;

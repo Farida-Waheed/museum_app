@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/constants/colors.dart';
 
 import '../../models/user_preferences.dart';
-import '../../widgets/bottom_nav.dart';
 
 class MyTicketsScreen extends StatelessWidget {
   const MyTicketsScreen({super.key});
@@ -34,17 +34,16 @@ class MyTicketsScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      bottomNavigationBar: const BottomNav(currentIndex: 3),
+      backgroundColor: AppColors.darkBackground,
       appBar: AppBar(
         title: Text(
           isArabic ? "تذاكري" : "My tickets",
-          style: const TextStyle(color: Colors.black),
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        elevation: 0.5,
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
+        elevation: 0,
+        backgroundColor: AppColors.darkHeader,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: tickets.isEmpty
           ? _buildEmptyState(isArabic, theme)
@@ -69,10 +68,10 @@ class MyTicketsScreen extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            const Icon(
               Icons.confirmation_number_outlined,
               size: 48,
-              color: theme.colorScheme.primary.withOpacity(0.6),
+              color: AppColors.primaryGold,
             ),
             const SizedBox(height: 16),
             Text(
@@ -80,6 +79,7 @@ class MyTicketsScreen extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
+                color: Colors.white,
               ),
             ),
             const SizedBox(height: 8),
@@ -90,7 +90,7 @@ class MyTicketsScreen extends StatelessWidget {
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: 13,
-                color: Colors.black54,
+                color: AppColors.helperText,
               ),
             ),
           ],
@@ -129,14 +129,12 @@ class MyTicketsScreen extends StatelessWidget {
 
     final bool isActive = status == 'active';
 
-    return Card(
-      elevation: 0,
+    return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(
+      decoration: BoxDecoration(
+        color: AppColors.darkSurface,
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(
-          color: Colors.grey.shade300,
-        ),
+        border: Border.all(color: AppColors.darkDivider),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
@@ -150,12 +148,12 @@ class MyTicketsScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.08),
+                    color: AppColors.primaryGold.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.museum_outlined,
-                    color: theme.colorScheme.primary,
+                    color: AppColors.primaryGold,
                     size: 24,
                   ),
                 ),
@@ -173,6 +171,7 @@ class MyTicketsScreen extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
+                          color: Colors.white,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -180,7 +179,7 @@ class MyTicketsScreen extends StatelessWidget {
                         "$type • $formattedDate",
                         style: const TextStyle(
                           fontSize: 13,
-                          color: Colors.black54,
+                          color: AppColors.helperText,
                         ),
                         textAlign:
                             isArabic ? TextAlign.right : TextAlign.left,
@@ -192,7 +191,7 @@ class MyTicketsScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 12),
-            const Divider(height: 1),
+            const Divider(height: 1, color: AppColors.darkDivider),
 
             const SizedBox(height: 8),
 
@@ -205,11 +204,11 @@ class MyTicketsScreen extends StatelessWidget {
                         ? CrossAxisAlignment.end
                         : CrossAxisAlignment.start,
                     children: [
-                      Text(
+                    Text(
                         isArabic ? "معرّف التذكرة" : "Ticket ID",
-                        style: const TextStyle(
+                      style: const TextStyle(
                           fontSize: 12,
-                          color: Colors.black45,
+                          color: AppColors.helperText,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -219,6 +218,7 @@ class MyTicketsScreen extends StatelessWidget {
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
+                          color: Colors.white,
                         ),
                       ),
                     ],
@@ -232,16 +232,16 @@ class MyTicketsScreen extends StatelessWidget {
                       isArabic ? "السعر" : "Price",
                       style: const TextStyle(
                         fontSize: 12,
-                        color: Colors.black45,
+                        color: AppColors.helperText,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       "\$${price.toStringAsFixed(2)}",
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.primary,
+                        color: AppColors.primaryGold,
                       ),
                     ),
                   ],
@@ -261,7 +261,7 @@ class MyTicketsScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: isActive
                         ? Colors.green.withOpacity(0.1)
-                        : Colors.grey.withOpacity(0.15),
+                        : Colors.white.withOpacity(0.05),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -272,7 +272,7 @@ class MyTicketsScreen extends StatelessWidget {
                             ? Icons.check_circle_outline
                             : Icons.history_toggle_off,
                         size: 16,
-                        color: isActive ? Colors.green : Colors.grey[600],
+                        color: isActive ? Colors.green : AppColors.helperText,
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -281,7 +281,7 @@ class MyTicketsScreen extends StatelessWidget {
                             : (isActive ? "Active" : "Expired"),
                         style: TextStyle(
                           fontSize: 12,
-                          color: isActive ? Colors.green : Colors.grey[700],
+                          color: isActive ? Colors.green : AppColors.helperText,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -295,14 +295,14 @@ class MyTicketsScreen extends StatelessWidget {
                     const Icon(
                       Icons.qr_code_2,
                       size: 28,
-                      color: Colors.black87,
+                      color: Colors.white70,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       isArabic ? "إظهار رمز الدخول" : "Show entry code",
                       style: const TextStyle(
                         fontSize: 12,
-                        color: Colors.black54,
+                        color: AppColors.helperText,
                       ),
                     ),
                   ],

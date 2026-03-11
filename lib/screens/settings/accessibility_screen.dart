@@ -1,10 +1,14 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
 import '../../app/router.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/app_menu_shell.dart';
+import '../../widgets/bottom_nav.dart';
 import '../../widgets/dialogs/location_permission_dialog.dart';
 
 class AccessibilityScreen extends StatelessWidget {
@@ -14,15 +18,15 @@ class AccessibilityScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isArabic = prefs.language == 'ar';
 
-    final cardBgColor = isDark ? AppColors.darkSurface : const Color(0xFFF7F2E8);
     final textColor = isDark ? const Color(0xFFF5F1E8) : const Color(0xFF2A2118);
     final secondaryTextColor = isDark ? Colors.white.withOpacity(0.82) : const Color(0xFF5C5143);
 
     return AppMenuShell(
       title: l10n.settings,
-      bottomNavigationBar: BottomNav(currentIndex: 4),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         child: Column(
@@ -312,11 +316,29 @@ class _SettingToggle extends StatelessWidget {
           value: value,
           activeTrackColor: AppColors.primaryGold,
           inactiveTrackColor: AppColors.neutralDark,
-          activeColor: Colors.white,
           inactiveThumbColor: Colors.white,
           onChanged: onChanged,
         ),
       ],
+    );
+  }
+}
+
+class _StyledCard extends StatelessWidget {
+  final Widget child;
+  const _StyledCard({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.darkSurface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.darkDivider, width: 1),
+      ),
+      child: child,
     );
   }
 }
@@ -337,6 +359,26 @@ class _PermissionRow extends StatelessWidget {
     required this.actionLabel,
     required this.isArabic,
   });
+
+  Future<void> _handleAction(BuildContext context) async {
+    if (kIsWeb) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(isArabic ? "إعدادات الأذونات غير متوفرة على الويب" : "Permission settings not available on Web")),
+      );
+      return;
+    }
+
+    // Attempt to open settings or request
+    if (title.contains("Location") || title.contains("الموقع")) {
+      await Permission.locationWhenInUse.request();
+    } else if (title.contains("Camera") || title.contains("الكاميرا")) {
+      await Permission.camera.request();
+    } else if (title.contains("Microphone") || title.contains("الميكروفون")) {
+      await Permission.microphone.request();
+    } else {
+      openAppSettings();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
