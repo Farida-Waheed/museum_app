@@ -246,8 +246,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
-
-            // B. Hero Header / Horus-Bot Status Card
             SliverToBoxAdapter(
               child: Container(
                 height: 320,
@@ -282,7 +280,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Explore Egypt with Horus-Bot",
+                              isArabic ? "استكشف مصر مع حوروس" : "Explore Egypt with Horus-Bot",
                               style: theme.textTheme.displayLarge?.copyWith(
                                 fontSize: 30,
                                 color: Colors.white,
@@ -292,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             ),
                             const SizedBox(height: 12),
                             Text(
-                              "Follow Horus-Bot and discover ancient Egypt.",
+                              isArabic ? "اتبع حوروس واكتشف مصر القديمة" : "Follow Horus-Bot and discover ancient Egypt.",
                               style: theme.textTheme.bodyLarge?.copyWith(
                                 color: Colors.white.withOpacity(0.9),
                                 fontSize: 16,
@@ -307,7 +305,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         bottom: 24,
                         child: _NextStopBadge(
                           location: "Tutankhamun Hall",
-                          time: "in 5 minutes",
+                          time: isArabic ? "خلال ٥ دقائق" : "in 5 minutes",
                           label: l10n.nextStopLabel,
                           onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
                         ),
@@ -352,22 +350,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
             // 3. Quick Features Grid
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
-
-            // ===== ROBOT STATUS CARD =====
-            SliverToBoxAdapter(
-              child: _RobotStatusCard(),
-            ),
-
+            SliverToBoxAdapter(child: _RobotStatusCard()),
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
-
-            // ===== TOUR PROGRESS TRACKER =====
-            SliverToBoxAdapter(
-              child: _TourProgressTracker(),
-            ),
-
+            SliverToBoxAdapter(child: _TourProgressTracker()),
             const SliverToBoxAdapter(child: SizedBox(height: 32)),
-
-            // ===== FEATURE CARDS =====
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -414,6 +400,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
 
             const SliverToBoxAdapter(child: SizedBox(height: 48)),
 
@@ -479,8 +466,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
 
             const SliverToBoxAdapter(child: SizedBox(height: 32)),
-
-            // ===== MAP PREVIEW =====
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -570,6 +555,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
 
             const SliverToBoxAdapter(child: SizedBox(height: 48)),
 
@@ -622,6 +608,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
+            const SliverToBoxAdapter(child: SizedBox(height: 48)),
 
             const SliverToBoxAdapter(child: SizedBox(height: 120)),
           ],
@@ -636,7 +623,6 @@ class _NextStopBadge extends StatelessWidget {
   final String location;
   final String time;
   final VoidCallback onTap;
-
   const _NextStopBadge({required this.label, required this.location, required this.time, required this.onTap});
 
   @override
@@ -702,13 +688,6 @@ class _NextStopBadge extends StatelessWidget {
               color: const Color(0xFF1E1912).withOpacity(0.55),
               borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppColors.primaryGold, width: 1),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.25),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
-                ),
-              ],
             ),
             child: Row(
               children: [
@@ -843,7 +822,6 @@ class _Dots extends StatelessWidget {
   final int count;
   final int index;
   const _Dots({required this.count, required this.index});
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -983,9 +961,9 @@ class _RobotStatusCard extends StatelessWidget {
               ],
             ),
           ),
-          Column(
+          const Column(
             crossAxisAlignment: CrossAxisAlignment.end,
-            children: const [
+            children: [
               Text("Next Tour", style: TextStyle(color: AppColors.helperText, fontSize: 11)),
               Text("2:00 PM", style: TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 14)),
             ],
@@ -1010,9 +988,9 @@ class _TourProgressTracker extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: const [
+            children: [
               Text("Tour Progress", style: TextStyle(color: AppColors.primaryText, fontWeight: FontWeight.bold, fontSize: 16)),
               Text("3 / 10 exhibits", style: TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 14)),
             ],
@@ -1055,7 +1033,6 @@ class _TourProgressTracker extends StatelessWidget {
 class _NewsCard extends StatelessWidget {
   final MockNews news;
   const _NewsCard({required this.news});
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -1080,7 +1057,7 @@ class _NewsCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(news.source, style: const TextStyle(color: AppColors.primaryGold, fontSize: 11, fontWeight: FontWeight.bold)),
-                      Text("Nov 24", style: const TextStyle(color: AppColors.helperText, fontSize: 11)),
+                      const Text("Nov 24", style: TextStyle(color: AppColors.helperText, fontSize: 11)),
                     ],
                   ),
                   const SizedBox(height: 8),

@@ -98,7 +98,7 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
-  /// The title of the application
+  /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
   /// **'Horus-Bot'**
@@ -114,7 +114,7 @@ abstract class AppLocalizations {
   ///
   /// In en, this message translates to:
   /// **'Next stop: {location} in {time} min'**
-  String nextStop(String location, int time);
+  String nextStop(Object location, Object time);
 
   /// No description provided for @exhibits.
   ///
@@ -803,7 +803,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding1Desc.
   ///
   /// In en, this message translates to:
-  /// **'Your smart guide to the museum. Navigate exhibits, follow the robot, and discover hidden stories.'**
+  /// **'Your smart guide to the museum.'**
   String get onboarding1Desc;
 
   /// No description provided for @onboarding2Title.
@@ -815,7 +815,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding2Desc.
   ///
   /// In en, this message translates to:
-  /// **'Your intelligent museum guide. Ask questions, listen to explanations, and explore during your visit.'**
+  /// **'Your intelligent museum guide.'**
   String get onboarding2Desc;
 
   /// No description provided for @onboarding3Title.
@@ -827,7 +827,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding3Desc.
   ///
   /// In en, this message translates to:
-  /// **'Automatic guidance through exhibits. Stay connected with Horus-Bot throughout your journey.'**
+  /// **'Automatic guidance through exhibits.'**
   String get onboarding3Desc;
 
   /// No description provided for @onboarding4Title.
@@ -839,7 +839,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding4Desc.
   ///
   /// In en, this message translates to:
-  /// **'Discover artifacts, ask questions, and enjoy interactive museum quizzes.'**
+  /// **'Discover artifacts and ask questions.'**
   String get onboarding4Desc;
 
   /// No description provided for @next.
@@ -875,7 +875,7 @@ abstract class AppLocalizations {
   /// No description provided for @didYouKnowFact.
   ///
   /// In en, this message translates to:
-  /// **'Tutankhamun\'s golden mask contains more than 10 kilograms of solid gold.'**
+  /// **'Tutankhamun\'s mask contains 10kg of gold.'**
   String get didYouKnowFact;
 
   /// No description provided for @onlineStatus.
@@ -971,6 +971,7 @@ abstract class AppLocalizations {
   /// No description provided for @followAndDiscover.
   ///
   /// In en, this message translates to:
+  /// **'Follow Horus-Bot'**
   /// **'Follow the robot and uncover the stories behind ancient artifacts.'**
   String get followAndDiscover;
 
@@ -1084,7 +1085,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutDesc.
   ///
   /// In en, this message translates to:
-  /// **'Your AI-powered companion for an immersive museum experience.'**
+  /// **'Your AI companion.'**
   String get aboutDesc;
 
   /// No description provided for @developedBy.

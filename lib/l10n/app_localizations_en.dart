@@ -15,7 +15,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreEgypt => 'Explore Egypt With Horus-Bot';
 
   @override
-  String nextStop(String location, int time) {
+  String nextStop(Object location, Object time) {
     return 'Next stop: $location in $time min';
   }
 
@@ -370,29 +370,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboarding1Title => 'Welcome to Horus-Bot';
 
   @override
-  String get onboarding1Desc =>
-      'Your smart guide to the museum. Navigate exhibits, follow the robot, and discover hidden stories.';
+  String get onboarding1Desc => 'Your smart guide to the museum.';
 
   @override
   String get onboarding2Title => 'Meet Horus-Bot';
 
   @override
-  String get onboarding2Desc =>
-      'Your intelligent museum guide. Ask questions, listen to explanations, and explore during your visit.';
+  String get onboarding2Desc => 'Your intelligent museum guide.';
 
   @override
   String get onboarding3Title => 'Guided Tour Mode';
 
   @override
-  String get onboarding3Desc =>
-      'Automatic guidance through exhibits. Stay connected with Horus-Bot throughout your journey.';
+  String get onboarding3Desc => 'Automatic guidance through exhibits.';
 
   @override
   String get onboarding4Title => 'Explore & Learn';
 
   @override
-  String get onboarding4Desc =>
-      'Discover artifacts, ask questions, and enjoy interactive museum quizzes.';
+  String get onboarding4Desc => 'Discover artifacts and ask questions.';
 
   @override
   String get next => 'Next';
@@ -410,8 +406,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get didYouKnow => 'Did You Know?';
 
   @override
-  String get didYouKnowFact =>
-      'Tutankhamun\'s golden mask contains more than 10 kilograms of solid gold.';
+  String get didYouKnowFact => 'Tutankhamun\'s mask contains 10kg of gold.';
 
   @override
   String get onlineStatus => '● Online';
@@ -463,6 +458,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exploreTheMuseum => 'Explore the Museum';
 
   @override
+  String get followAndDiscover => 'Follow Horus-Bot';
   String get followAndDiscover =>
       'Follow the robot and uncover the stories behind ancient artifacts.';
 
@@ -595,8 +591,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get version => 'Version 1.0';
 
   @override
-  String get aboutDesc =>
-      'Your AI-powered companion for an immersive museum experience.';
+  String get aboutDesc => 'Your AI companion.';
 
   @override
   String get developedBy => 'Developed By';
