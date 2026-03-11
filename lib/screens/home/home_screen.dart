@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
 
 import '../../models/exhibit.dart';
 import '../../core/services/mock_data.dart';
@@ -51,14 +52,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       if (mounted) {
         final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
 
-        // Only trigger if onboarding is done and dialog hasn't been seen this install
         if (prefs.hasCompletedOnboarding && !prefs.hasSeenLocationPrompt) {
-          // Check if system permission is already granted
           final status = await Permission.locationWhenInUse.status;
           if (!status.isGranted) {
             _showPrivacyDialog();
           } else {
-            // Already granted, mark as seen so we don't check again
             prefs.setHasSeenLocationPrompt(true);
           }
         }
@@ -90,13 +88,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     showDialog(
       context: context,
       barrierDismissible: false,
-      useSafeArea: false, // Allow dialog to handle its own overlay
+      useSafeArea: false,
       builder: (context) => LocationPermissionDialog(
         isHighContrast: prefs.isHighContrast,
         onAllow: () async {
           Navigator.pop(context);
           prefs.setHasSeenLocationPrompt(true);
-          // Trigger real system permission request
           await Permission.locationWhenInUse.request();
         },
         onDeny: () {
@@ -111,6 +108,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return AppMenuShell(
       hideDefaultAppBar: true,
@@ -130,11 +128,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               title: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.asset("assets/icons/ankh.png", width: 24, height: 24),
+                  const Icon(Icons.smart_toy_rounded, color: AppColors.primaryGold, size: 24),
                   const SizedBox(width: 16),
                   Text(
                     l10n.appTitle,
-                    style: theme.textTheme.titleMedium?.copyWith(letterSpacing: 0.5),
+                    style: AppTextStyles.screenTitle(context).copyWith(fontSize: 20),
                   ),
                 ],
               ),
@@ -154,13 +152,26 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         },
         body: CustomScrollView(
           slivers: [
-            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            // A. Welcome Header
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(isArabic ? "أهلاً بك في المتحف" : "Welcome to the Museum", style: AppTextStyles.screenTitle(context)),
+                    const SizedBox(height: 4),
+                    Text(isArabic ? "اكتشف عجائب مصر القديمة" : "Discover the wonders of Ancient Egypt", style: AppTextStyles.helper(context)),
+                  ],
+                ),
+              ),
+            ),
 
-            // ===== HERO HEADER =====
+            // B. Hero Header / Horus-Bot Status Card
             SliverToBoxAdapter(
               child: Container(
-                height: 260,
-                margin: const EdgeInsets.symmetric(horizontal: 16),
+                height: 220,
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(24),
                   child: Stack(
@@ -174,41 +185,41 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                               colors: [
-                                Colors.black.withOpacity(0.65),
-                                Colors.black.withOpacity(0.9),
+                                Colors.black.withOpacity(0.4),
+                                Colors.black.withOpacity(0.8),
                               ],
                             ),
                           ),
                         ),
                       ),
                       Positioned(
-                        left: 24,
-                        right: 24,
-                        top: 64,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        left: 20,
+                        right: 20,
+                        bottom: 20,
+                        child: Row(
                           children: [
-                            Text(
-                              "Explore Egypt With Horus-Bot",
-                              style: theme.textTheme.displayLarge?.copyWith(fontSize: 36),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Container(width: 8, height: 8, decoration: const BoxDecoration(color: Colors.green, shape: BoxShape.circle)),
+                                      const SizedBox(width: 8),
+                                      Text(isArabic ? "حوروس-بوت متصل" : "Horus-Bot Online", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(isArabic ? "الموقع الحالي: قاعة توت عنخ آمون" : "Current: Tutankhamun Hall", style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                                ],
+                              ),
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Follow the robot and uncover the stories behind ancient artifacts.",
-                              style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white70, fontSize: 16),
+                            ElevatedButton(
+                              onPressed: () => Navigator.pushNamed(context, AppRoutes.liveTour),
+                              style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryGold, foregroundColor: AppColors.darkInk, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10)),
+                              child: Text(isArabic ? "انضم للجولة" : "Join Tour", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
                             ),
                           ],
-                        ),
-                      ),
-                      Positioned(
-                        left: 16,
-                        right: 16,
-                        bottom: 16,
-                        child: _NextStopBadge(
-                          location: "Tutankhamun Hall",
-                          time: "5 minutes away",
-                          label: l10n.nextStopLabel,
-                          onTap: () => Navigator.pushNamed(context, AppRoutes.progress),
                         ),
                       ),
                     ],
@@ -217,86 +228,48 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
-
-            // ===== TOUR PROGRESS CARD =====
+            // C. Quick Actions
             SliverToBoxAdapter(
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF1E1912),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: const Color(0xFFE6C068).withOpacity(0.3), width: 1),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "Tour Progress",
-                          style: TextStyle(
-                            color: Color(0xFFE6C068),
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "3 of 5 exhibits completed",
-                          style: TextStyle(
-                            color: const Color(0xFFF5F1E8).withOpacity(0.6),
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: const LinearProgressIndicator(
-                        value: 0.6,
-                        minHeight: 10,
-                        backgroundColor: Color(0xFF121212),
-                        valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFE6C068)),
-                      ),
-                    ),
+                    _QuickActionCard(icon: Icons.route_outlined, label: isArabic ? "جولة موجهة" : "Guided Tour", onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour)),
+                    const SizedBox(width: 12),
+                    _QuickActionCard(icon: Icons.map_outlined, label: isArabic ? "الخريطة" : "Explore Map", onTap: () => Navigator.pushNamed(context, AppRoutes.map)),
+                    const SizedBox(width: 12),
+                    _QuickActionCard(icon: Icons.qr_code_scanner, label: isArabic ? "مسح التذكرة" : "Scan Ticket", onTap: () => Navigator.pushNamed(context, AppRoutes.qrScan)),
                   ],
                 ),
               ),
             ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
 
-            // ===== FEATURE CARDS =====
+            // D. Tour Progress
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: _FeatureCard(
-                        icon: Icons.museum_outlined,
-                        title: l10n.exhibits,
-                        subtitle: l10n.exhibitsSub,
-                        onTap: () => Navigator.pushNamed(context, AppRoutes.search),
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _FeatureCard(
-                        icon: Icons.quiz_outlined,
-                        title: l10n.quiz,
-                        subtitle: l10n.quizSub,
-                        onTap: () => Navigator.pushNamed(context, AppRoutes.quiz),
+                    Text(isArabic ? "تقدم الجولة" : "TOUR PROGRESS", style: AppTextStyles.sectionTitle(context)),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(color: AppColors.darkSurface, borderRadius: BorderRadius.circular(20), border: Border.all(color: AppColors.darkDivider)),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(isArabic ? "٣ من ١٠ مقتنيات" : "3 of 10 exhibits completed", style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                              const Text("30%", style: TextStyle(color: AppColors.primaryGold, fontSize: 13, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          ClipRRect(borderRadius: BorderRadius.circular(10), child: const LinearProgressIndicator(value: 0.3, minHeight: 6, backgroundColor: AppColors.darkBackground, valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryGold))),
+                        ],
                       ),
                     ),
                   ],
@@ -306,73 +279,64 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
             const SliverToBoxAdapter(child: SizedBox(height: 32)),
 
-            // ===== RECOMMENDED SECTION =====
+            // E. Nearby Exhibits
             SliverToBoxAdapter(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          l10n.recommendedForYou,
-                          style: theme.textTheme.headlineMedium,
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pushNamed(context, AppRoutes.search),
-                          child: Text(
-                            l10n.seeAll,
-                            style: const TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Text(isArabic ? "مقتنيات قريبة" : "NEARBY EXHIBITS", style: AppTextStyles.sectionTitle(context))),
                   const SizedBox(height: 16),
                   SizedBox(
-                    height: 200,
-                    child: PageView(
-                      controller: _pageCtrl,
-                      onPageChanged: (i) => setState(() => pageIndex = i),
-                      children: const [
-                        _HighlightCard(
-                          title: "Tutankhamun Mask",
-                          subtitle: "Golden Hall • Recommended now",
-                          image: "assets/images/pharaoh_head.jpg",
-                        ),
-                        _HighlightCard(
-                          title: "Golden Hieroglyphs",
-                          subtitle: "Gallery 3 • New Kingdom",
-                          image: "assets/images/hieroglyphs.jpg",
-                        ),
-                        _HighlightCard(
-                          title: "Canopic Jars",
-                          subtitle: "West Wing • Ritual Artifacts",
-                          image: "assets/images/canopic_jars.jpg",
-                        ),
-                      ],
+                    height: 180,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: exhibits.length,
+                      itemBuilder: (context, i) => _NearbyExhibitCard(exhibit: exhibits[i], isArabic: isArabic),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  _Dots(count: 3, index: pageIndex),
                 ],
               ),
             ),
 
             const SliverToBoxAdapter(child: SizedBox(height: 32)),
 
-            // ===== DID YOU KNOW SECTION =====
+            // G. Learning / Discovery Section
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(isArabic ? "اكتشف مقتنيات" : "DISCOVER ARTIFACTS", style: AppTextStyles.sectionTitle(context)),
+                    const SizedBox(height: 16),
+                    SizedBox(
+                      height: 200,
+                      child: PageView(
+                        controller: _pageCtrl,
+                        onPageChanged: (i) => setState(() => pageIndex = i),
+                        children: const [
+                          _HighlightCard(title: "Tutankhamun Mask", subtitle: "Golden Hall • Recommended now", image: "assets/images/pharaoh_head.jpg"),
+                          _HighlightCard(title: "Golden Hieroglyphs", subtitle: "Gallery 3 • New Kingdom", image: "assets/images/hieroglyphs.jpg"),
+                          _HighlightCard(title: "Canopic Jars", subtitle: "West Wing • Ritual Artifacts", image: "assets/images/canopic_jars.jpg"),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _Dots(count: 3, index: pageIndex),
+                  ],
+                ),
+              ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+            // Did You Know Section
             SliverToBoxAdapter(
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: AppColors.cinematicCard,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
-                ),
+                decoration: BoxDecoration(color: AppColors.darkSurface, borderRadius: BorderRadius.circular(20), border: Border.all(color: AppColors.darkDivider)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -380,188 +344,80 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       children: [
                         const Icon(Icons.lightbulb_outline, color: AppColors.primaryGold, size: 24),
                         const SizedBox(width: 12),
-                        Text(
-                          l10n.didYouKnow,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            color: AppColors.primaryGold,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        Text(l10n.didYouKnow, style: const TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 16)),
                       ],
                     ),
                     const SizedBox(height: 16),
-                    Text(
-                      l10n.didYouKnowFact,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: Colors.white,
-                        height: 1.5,
-                      ),
-                    ),
+                    Text(l10n.didYouKnowFact, style: const TextStyle(color: Colors.white, height: 1.5, fontSize: 14)),
                   ],
                 ),
               ),
             ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
-
-            // ===== MAP PREVIEW =====
-            SliverToBoxAdapter(
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  color: AppColors.darkSurfaceSecondary,
-                  borderRadius: BorderRadius.circular(18),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(l10n.mapPreview, style: theme.textTheme.titleMedium),
-                              const SizedBox(height: 4),
-                              Text(
-                                l10n.robotHeadingTo("Tutankhamun Hall"),
-                                style: theme.textTheme.bodySmall,
-                              ),
-                            ],
-                          ),
-                          _LiveBadge(label: l10n.live),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      Container(
-                        height: 200,
-                        decoration: BoxDecoration(
-                          color: AppColors.darkBackground,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: Colors.white.withOpacity(0.05)),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(14),
-                          child: _buildMiniMap(),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _LegendDot(color: Colors.blue, label: l10n.horusBot),
-                          _LegendDot(color: Colors.orange, label: l10n.you),
-                          _LegendDot(color: AppColors.alertRed, label: l10n.exhibit),
-                        ],
-                      ),
-                      const SizedBox(height: 32),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: () => Navigator.pushNamed(context, AppRoutes.map),
-                              style: OutlinedButton.styleFrom(
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                side: const BorderSide(color: AppColors.primaryGold),
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                              ),
-                              child: const Text("Full Map", style: TextStyle(color: Colors.white)),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () => Navigator.pushNamed(context, AppRoutes.liveTour),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primaryGold,
-                                foregroundColor: AppColors.darkInk,
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                padding: const EdgeInsets.symmetric(vertical: 16),
-                                elevation: 0,
-                              ),
-                              child: Text(l10n.followHorusBot, style: const TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
             const SliverToBoxAdapter(child: SizedBox(height: 48)),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildMiniMap() {
-    return LayoutBuilder(
-      builder: (context, c) {
-        return Stack(
-          children: [
-            Positioned.fill(child: CustomPaint(painter: _MapGridPainter())),
-            ...exhibits.map((e) {
-              double dx = (e.x / 400) * c.maxWidth;
-              double dy = (e.y / 600) * c.maxHeight;
-              return Positioned(
-                left: dx.clamp(0, c.maxWidth - 5),
-                top: dy.clamp(0, c.maxHeight - 5),
-                child: const Icon(Icons.circle, size: 6, color: AppColors.alertRed),
-              );
-            }),
-            Positioned(
-              left: c.maxWidth * 0.5,
-              top: c.maxHeight * 0.7,
-              child: const Icon(Icons.circle, size: 8, color: Colors.orange),
-            ),
-            AnimatedPositioned(
-              duration: const Duration(seconds: 1),
-              left: (robotX / 400) * c.maxWidth,
-              top: (robotY / 600) * c.maxHeight,
-              child: ScaleTransition(
-                scale: _robotScale,
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primaryGold.withOpacity(0.4),
-                        blurRadius: 10,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: const Icon(Icons.smart_toy, size: 28, color: Colors.blue),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
+class _QuickActionCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  const _QuickActionCard({required this.icon, required this.label, required this.onTap});
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          decoration: BoxDecoration(color: AppColors.darkSurface, borderRadius: BorderRadius.circular(16), border: Border.all(color: AppColors.darkDivider)),
+          child: Column(
+            children: [
+              Icon(icon, color: AppColors.primaryGold, size: 24),
+              const SizedBox(height: 8),
+              Text(label, style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
-class _MapGridPainter extends CustomPainter {
+class _NearbyExhibitCard extends StatelessWidget {
+  final Exhibit exhibit;
+  final bool isArabic;
+  const _NearbyExhibitCard({required this.exhibit, required this.isArabic});
   @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.white.withOpacity(0.02)
-      ..strokeWidth = 1.0;
-    const step = 20.0;
-    for (double i = 0; i < size.width; i += step) {
-      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
-    }
-    for (double i = 0; i < size.height; i += step) {
-      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
-    }
+  Widget build(BuildContext context) {
+    return Container(
+      width: 160,
+      margin: const EdgeInsets.only(right: 12),
+      decoration: BoxDecoration(color: AppColors.darkSurface, borderRadius: BorderRadius.circular(20), border: Border.all(color: AppColors.darkDivider)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: ClipRRect(borderRadius: const BorderRadius.vertical(top: Radius.circular(19)), child: Image.asset(exhibit.imageAsset, fit: BoxFit.cover, width: double.infinity))),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(exhibit.getName(isArabic ? 'ar' : 'en'), style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 4),
+                Text(isArabic ? "على بعد ٥٠م" : "50m away", style: AppTextStyles.helper(context).copyWith(fontSize: 10)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _NextStopBadge extends StatelessWidget {

@@ -69,11 +69,11 @@ class _LocationPermissionDialogState extends State<LocationPermissionDialog> wit
       goldAccent = const Color(0xFFFFD700); // High visibility gold
       borderColor = goldAccent;
     } else if (isDark) {
-      surfaceColor = const Color(0xFF1E1912);
+      surfaceColor = AppColors.darkSurface;
       textColor = const Color(0xFFF5F1E8);
       secondaryTextColor = Colors.white.withOpacity(0.82);
-      helperTextColor = Colors.white.withOpacity(0.58);
-      borderColor = goldAccent.withOpacity(0.2);
+      helperTextColor = AppColors.helperText;
+      borderColor = AppColors.primaryGold;
     } else {
       // Light Mode (Warm Ivory/Sandstone)
       surfaceColor = const Color(0xFFF7F2E8);

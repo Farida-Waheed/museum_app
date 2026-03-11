@@ -9,25 +9,28 @@ class AppColors {
   static const Color mutedText = Color(0xFF6B6358);
   static const Color alertRed = Color(0xFFE54848);
 
-  // Brand Design System - Dark
-  static const Color darkBackground = Color(0xFF0F0F0F);
-  static const Color darkSurface = Color(0xFF1E1E1E);
-  static const Color darkSurfaceSecondary = Color(0xFF262626);
-  static const Color darkMutedText = Color(0xFFB9B2A6);
-  static const Color darkDivider = Color(0xFF262626);
+  // Brand Design System - Dark (Upgraded Palette)
+  static const Color darkBackground = Color(0xFF0B0B0B);
+  static const Color darkSurface = Color(0xFF1A1A1A);
+  static const Color darkSurfaceSecondary = Color(0xFF242424);
+  static const Color darkMutedText = Color(0xFFB8B8B8);
+  static const Color darkDivider = Color(0xFF2E2E2E);
   static const Color darkHeader = Color(0xFF141414);
 
-  // Cinematic Dark Theme
-  static const Color cinematicBackground = Color(0xFF0F0F0F);
+  // Cinematic Dark Theme (Upgraded)
+  static const Color cinematicBackground = Color(0xFF0B0B0B);
   static const Color cinematicSection = Color(0xFF151515);
-  static const Color cinematicCard = Color(0xFF1E1E1E);
-  static const Color cinematicElevated = Color(0xFF262626);
+  static const Color cinematicCard = Color(0xFF1A1A1A);
+  static const Color cinematicElevated = Color(0xFF242424);
   static const Color cinematicNav = Color(0xFF141414);
 
-  // Neutral Tones
-  static const Color neutralLight = Color(0xFFC9C9C9);
+  // Neutral Tones (Refined)
+  static const Color neutralLight = Color(0xFFE0E0E0);
   static const Color neutralMedium = Color(0xFFAAAAAA);
-  static const Color neutralDark = Color(0xFF888888);
+  static const Color neutralDark = Color(0xFF404040);
+
+  // Premium Helper Text
+  static const Color helperText = Color(0x94FFFFFF); // rgba(255,255,255,0.58)
 
   // Utility colors
   static const Color white = Colors.white;

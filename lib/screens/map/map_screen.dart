@@ -9,6 +9,8 @@ import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -50,9 +52,17 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
     super.dispose();
   }
 
+  void _showExhibitPopup(Exhibit exhibit, bool isVisited) {
+    showDialog(
+      context: context,
+      builder: (context) => _ExhibitInfoPopup(exhibit: exhibit, isVisited: isVisited),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final tourProvider = Provider.of<TourProvider>(context);
 
     final currentExhibit = exhibits.firstWhere((e) => e.id == tourProvider.currentExhibitId, orElse: () => exhibits.first);
@@ -60,156 +70,167 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
     final robotY = (currentExhibit.y / 600) * mapHeight;
 
     return AppMenuShell(
-      title: l10n.map,
+      title: isArabic ? "خريطة المتحف" : "Museum Map",
       subHeader: const RobotStatusBanner(),
       bottomNavigationBar: const BottomNav(currentIndex: 1),
-      body: Stack(
+      body: Column(
         children: [
-          // --- INTERACTIVE MAP AREA ---
+          // Header Info
           Container(
-            color: const Color(0xFFF6F8FA),
-            child: InteractiveViewer(
-              transformationController: _transformController,
-              boundaryMargin: const EdgeInsets.all(50),
-              minScale: 0.5,
-              maxScale: 2.5,
-              constrained: false,
-
-              child: Padding(
-                padding: const EdgeInsets.all(40),
-                child: Container(
-                  width: mapWidth,
-                  height: mapHeight,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(.9),
-                    border: Border.all(color: Colors.blueGrey.shade200, width: 2),
-                    borderRadius: BorderRadius.circular(22),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(.05),
-                        blurRadius: 25,
-                        offset: const Offset(0, 8),
-                      )
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(22),
-                    child: Stack(
-                      children: [
-                        // GRID LINES
-                        CustomPaint(
-                          size: Size(mapWidth, mapHeight),
-                          painter: MapGridPainter(),
-                        ),
-
-                        // ROUTE TO NEXT STOP
-                        CustomPaint(
-                          size: Size(mapWidth, mapHeight),
-                          painter: RoutePainter(
-                            visitorPos: Offset(mapWidth * 0.5, mapHeight * 0.7),
-                            robotPos: Offset(robotX, robotY),
-                          ),
-                        ),
-
-                        // ENTRANCE LABEL
-                        const Align(
-                          alignment: Alignment.topCenter,
-                          child: Padding(
-                            padding: EdgeInsets.only(top: 10),
-                            child: Text(
-                              "Entrance",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blueGrey,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                        // EXHIBITS
-                        ...exhibits.map((e) => _buildExhibitMarker(e, tourProvider.hasVisited(e.id))),
-
-                        // VISITOR
-                        _buildVisitorMarker(mapWidth * 0.5, mapHeight * 0.7),
-
-                        // ROBOT
-                        _buildRobotMarker(robotX, robotY, l10n),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-
-          // --- MAP ACTIONS (Recenter) ---
-          Positioned(
-            right: 16,
-            top: 16,
-            child: Column(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            color: AppColors.darkBackground,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                FloatingActionButton.small(
-                  heroTag: 'recenter_robot',
-                  onPressed: () {
-                    final tourProvider = Provider.of<TourProvider>(context, listen: false);
-                    final currentExhibit = exhibits.firstWhere((e) => e.id == tourProvider.currentExhibitId, orElse: () => exhibits.first);
-                    final robotX = (currentExhibit.x / 400) * mapWidth;
-                    final robotY = (currentExhibit.y / 600) * mapHeight;
-                    _transformController.value = Matrix4.identity()..translate(-robotX + 150, -robotY + 200);
-                  },
-                  backgroundColor: Colors.white,
-                  child: const Icon(Icons.smart_toy, color: Colors.blue),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(isArabic ? "المتحف المصري الكبير" : "Grand Egyptian Museum", style: AppTextStyles.cardTitle(context).copyWith(fontSize: 14)),
+                    const SizedBox(height: 2),
+                    Text(isArabic ? "الجناح الشرقي • مقتنيات ذهبية" : "East Wing • Golden Artifacts", style: AppTextStyles.helper(context)),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                FloatingActionButton.small(
-                  heroTag: 'recenter_me',
-                  onPressed: () {
-                    _transformController.value = Matrix4.identity()..translate(-mapWidth * 0.5 + 150, -mapHeight * 0.7 + 200);
-                  },
-                  backgroundColor: Colors.white,
-                  child: const Icon(Icons.my_location, color: Colors.orange),
-                ),
+                _FilterChip(label: isArabic ? "مقتنيات" : "Exhibits"),
               ],
             ),
           ),
 
-          // --- LEGEND FLOATING CARD ---
-          Positioned(
-            left: 16,
-            bottom: 30,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(.75),
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(.08),
-                        blurRadius: 15,
-                        offset: const Offset(0, 6),
+          Expanded(
+            child: Stack(
+              children: [
+                // --- INTERACTIVE MAP AREA ---
+                Container(
+                  color: AppColors.darkBackground,
+                  child: InteractiveViewer(
+                    transformationController: _transformController,
+                    boundaryMargin: const EdgeInsets.all(100),
+                    minScale: 0.5,
+                    maxScale: 2.5,
+                    constrained: false,
+                    child: Padding(
+                      padding: const EdgeInsets.all(40),
+                      child: Container(
+                        width: mapWidth,
+                        height: mapHeight,
+                        decoration: BoxDecoration(
+                          color: AppColors.darkSurface,
+                          border: Border.all(color: AppColors.darkDivider, width: 2),
+                          borderRadius: BorderRadius.circular(22),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(.25),
+                              blurRadius: 25,
+                              offset: const Offset(0, 8),
+                            )
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(22),
+                          child: Stack(
+                            children: [
+                              // GRID LINES
+                              CustomPaint(
+                                size: Size(mapWidth, mapHeight),
+                                painter: MapGridPainter(),
+                              ),
+
+                              // ROUTE TO NEXT STOP
+                              CustomPaint(
+                                size: Size(mapWidth, mapHeight),
+                                painter: RoutePainter(
+                                  visitorPos: Offset(mapWidth * 0.5, mapHeight * 0.7),
+                                  robotPos: Offset(robotX, robotY),
+                                ),
+                              ),
+
+                              // ENTRANCE LABEL
+                              Align(
+                                alignment: Alignment.topCenter,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: Text(
+                                    isArabic ? "المدخل" : "Entrance",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.neutralMedium,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                              // EXHIBITS
+                              ...exhibits.map((e) => _buildExhibitMarker(e, tourProvider.hasVisited(e.id))),
+
+                              // VISITOR
+                              _buildVisitorMarker(mapWidth * 0.5, mapHeight * 0.7),
+
+                              // ROBOT
+                              _buildRobotMarker(robotX, robotY, l10n),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // --- MAP ACTIONS (Recenter) ---
+                Positioned(
+                  right: 16,
+                  top: 16,
+                  child: Column(
+                    children: [
+                      _MapActionBtn(
+                        icon: Icons.smart_toy_rounded,
+                        onPressed: () {
+                          final tourProvider = Provider.of<TourProvider>(context, listen: false);
+                          final currentExhibit = exhibits.firstWhere((e) => e.id == tourProvider.currentExhibitId, orElse: () => exhibits.first);
+                          final robotX = (currentExhibit.x / 400) * mapWidth;
+                          final robotY = (currentExhibit.y / 600) * mapHeight;
+                          _transformController.value = Matrix4.identity()..translate(-robotX + 150, -robotY + 200);
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      _MapActionBtn(
+                        icon: Icons.my_location_rounded,
+                        onPressed: () {
+                          _transformController.value = Matrix4.identity()..translate(-mapWidth * 0.5 + 150, -mapHeight * 0.7 + 200);
+                        },
                       ),
                     ],
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildLegendItem(Colors.blue, l10n.horusBot),
-                      const SizedBox(height: 8),
-                      _buildLegendItem(Colors.orange, l10n.you),
-                      const SizedBox(height: 8),
-                      _buildLegendItem(Colors.teal, l10n.visited),
-                      const SizedBox(height: 8),
-                      _buildLegendItem(Colors.grey, l10n.exhibit),
-                    ],
-                  ),
                 ),
-              ),
+
+                // --- LEGEND FLOATING CARD ---
+                Positioned(
+                  left: 16,
+                  bottom: 16,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: AppColors.darkSurface.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: AppColors.darkDivider),
+                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10)],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildLegendItem(AppColors.primaryGold, l10n.horusBot),
+                        const SizedBox(height: 8),
+                        _buildLegendItem(Colors.blue, l10n.you),
+                        const SizedBox(height: 8),
+                        _buildLegendItem(Colors.green, l10n.visited),
+                        const SizedBox(height: 8),
+                        _buildLegendItem(AppColors.neutralMedium, l10n.exhibit),
+                      ],
+                    ),
+                  ),
+                )
+              ],
             ),
-          )
+          ),
         ],
       ),
     );
@@ -222,40 +243,26 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
     final double y = (e.y / 600) * mapHeight;
 
     return Positioned(
-      left: x - 30,
-      top: y - 30,
+      left: x - 20,
+      top: y - 20,
       child: GestureDetector(
-        onTap: () => Navigator.pushNamed(context, AppRoutes.exhibitDetails, arguments: e),
-        child: Column(
-          children: [
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                color: isVisited ? const Color(0xFFE6C068) : const Color(0xFF1E1912),
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFFE6C068), width: 2),
-                boxShadow: [
-                  if (isVisited)
-                    BoxShadow(color: const Color(0xFFE6C068).withOpacity(0.4), blurRadius: 8, spreadRadius: 1),
-                ],
-              ),
-              child: Icon(
-                Icons.museum_outlined,
-                size: 14,
-                color: isVisited ? const Color(0xFF1E1912) : const Color(0xFFE6C068),
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              e.getName(Localizations.localeOf(context).languageCode),
-              style: const TextStyle(
-                fontSize: 9,
-                color: Color(0xFFF5F1E8),
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
+        onTap: () => _showExhibitPopup(e, isVisited),
+        child: Container(
+          width: 24,
+          height: 24,
+          decoration: BoxDecoration(
+            color: isVisited ? Colors.green : AppColors.darkBackground,
+            shape: BoxShape.circle,
+            border: Border.all(color: isVisited ? Colors.green : AppColors.primaryGold, width: 2),
+            boxShadow: [
+              if (!isVisited) BoxShadow(color: AppColors.primaryGold.withOpacity(0.3), blurRadius: 8, spreadRadius: 1),
+            ],
+          ),
+          child: Icon(
+            Icons.museum_outlined,
+            size: 14,
+            color: isVisited ? Colors.white : AppColors.primaryGold,
+          ),
         ),
       ),
     );
@@ -269,11 +276,11 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
         width: 20,
         height: 20,
         decoration: BoxDecoration(
-          color: Colors.orange,
+          color: Colors.blue,
           shape: BoxShape.circle,
           border: Border.all(color: Colors.white, width: 3),
           boxShadow: [
-            BoxShadow(color: Colors.orange.withOpacity(0.4), blurRadius: 10, spreadRadius: 2),
+            BoxShadow(color: Colors.blue.withOpacity(0.4), blurRadius: 10, spreadRadius: 2),
           ],
         ),
       ),
@@ -282,77 +289,46 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
 
   Widget _buildRobotMarker(double x, double y, AppLocalizations l10n) {
     return Positioned(
-      left: x - 40,
-      top: y - 60,
-      child: Column(
-        children: [
-          // CHAT BUBBLE
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-            margin: const EdgeInsets.only(bottom: 6),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E1912),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color(0xFFE6C068).withOpacity(0.3)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.smart_toy_rounded, color: Color(0xFFE6C068), size: 12),
-                const SizedBox(width: 4),
-                Text(
-                  l10n.live,
-                  style: const TextStyle(
-                    fontSize: 10,
-                    color: Color(0xFFE6C068),
-                    fontWeight: FontWeight.bold,
-                  ),
+      left: x - 30,
+      top: y - 30,
+      child: AnimatedBuilder(
+        animation: _pulseAnimation,
+        builder: (context, child) {
+          return Stack(
+            alignment: Alignment.center,
+            children: [
+              // Outer Glow / Pulse
+              Container(
+                width: 40 * _pulseAnimation.value,
+                height: 40 * _pulseAnimation.value,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.primaryGold.withOpacity((0.3 - (_pulseAnimation.value - 1.0)).clamp(0, 1)),
                 ),
-              ],
-            ),
-          ),
-
-          // PULSING ROBOT
-          AnimatedBuilder(
-            animation: _pulseAnimation,
-            builder: (context, child) {
-              return Stack(
-                alignment: Alignment.center,
-                children: [
-                  // Outer Glow / Pulse
-                  Container(
-                    width: 40 * _pulseAnimation.value,
-                    height: 40 * _pulseAnimation.value,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color(0xFFE6C068).withOpacity((0.3 - (_pulseAnimation.value - 1.0)).clamp(0, 1)),
-                    ),
-                  ),
-                  // Robot Base
-                  Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF1E1912),
-                      shape: BoxShape.circle,
-                      border: Border.all(color: const Color(0xFFE6C068), width: 2),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFFE6C068).withOpacity(0.6),
-                          blurRadius: 12,
-                          spreadRadius: 2,
-                        )
-                      ],
-                    ),
-                    child: const Center(
-                      child: Icon(Icons.smart_toy_rounded, color: Color(0xFFE6C068), size: 14),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
+              ),
+              // Robot Base
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: AppColors.darkInk,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: AppColors.primaryGold, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primaryGold.withOpacity(0.6),
+                      blurRadius: 12,
+                      spreadRadius: 2,
+                    )
+                  ],
+                ),
+                child: const Center(
+                  child: Icon(Icons.smart_toy_rounded, color: AppColors.primaryGold, size: 16),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -361,31 +337,156 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
     return Row(
       children: [
         Container(
-          width: 12,
-          height: 12,
+          width: 10,
+          height: 10,
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
-        const SizedBox(width: 8),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.black87)),
+        const SizedBox(width: 10),
+        Text(label, style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold)),
       ],
     );
   }
 }
 
-// ========== GRID PAINTER ==========
+class _MapActionBtn extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onPressed;
+  const _MapActionBtn({required this.icon, required this.onPressed});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.darkSurface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.darkDivider),
+      ),
+      child: IconButton(
+        icon: Icon(icon, color: AppColors.primaryGold, size: 20),
+        onPressed: onPressed,
+      ),
+    );
+  }
+}
+
+class _FilterChip extends StatelessWidget {
+  final String label;
+  const _FilterChip({required this.label});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppColors.primaryGold.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.primaryGold.withOpacity(0.3)),
+      ),
+      child: Text(label, style: const TextStyle(color: AppColors.primaryGold, fontSize: 11, fontWeight: FontWeight.bold)),
+    );
+  }
+}
+
+class _ExhibitInfoPopup extends StatelessWidget {
+  final Exhibit exhibit;
+  final bool isVisited;
+  const _ExhibitInfoPopup({required this.exhibit, required this.isVisited});
+
+  @override
+  Widget build(BuildContext context) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.all(24),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.darkSurface,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.primaryGold.withOpacity(0.3)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(23)),
+              child: Image.asset(exhibit.imageAsset, height: 160, width: double.infinity, fit: BoxFit.cover),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(child: Text(exhibit.getName(isArabic ? 'ar' : 'en'), style: AppTextStyles.cardTitle(context).copyWith(fontSize: 20))),
+                      if (isVisited) const Icon(Icons.check_circle, color: Colors.green, size: 24),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(exhibit.getDescription(isArabic ? 'ar' : 'en'), style: AppTextStyles.body(context), maxLines: 3, overflow: TextOverflow.ellipsis),
+                  const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      Expanded(child: _PopupBtn(label: isArabic ? "شرح" : "Explain", icon: Icons.volume_up, onTap: () {})),
+                      const SizedBox(width: 12),
+                      Expanded(child: _PopupBtn(label: isArabic ? "اختبار" : "Quiz", icon: Icons.quiz, onTap: () {})),
+                      const SizedBox(width: 12),
+                      _PopupIconBtn(icon: Icons.bookmark_border, onTap: () {}),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _PopupBtn extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback onTap;
+  const _PopupBtn({required this.label, required this.icon, required this.onTap});
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton.icon(
+      onPressed: onTap,
+      icon: Icon(icon, size: 16),
+      label: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primaryGold,
+        foregroundColor: AppColors.darkInk,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 0,
+      ),
+    );
+  }
+}
+
+class _PopupIconBtn extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  const _PopupIconBtn({required this.icon, required this.onTap});
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(color: AppColors.darkBackground, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppColors.darkDivider)),
+      child: IconButton(icon: Icon(icon, color: AppColors.primaryGold, size: 20), onPressed: onTap),
+    );
+  }
+}
+
+// ========== PAINTERS ==========
 
 class MapGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final linePaint = Paint()
-      ..color = Colors.grey.shade200
+      ..color = Colors.white.withOpacity(0.02)
       ..strokeWidth = 1;
 
-    final dashedPaint = Paint()
-      ..color = Colors.grey.shade400
-      ..strokeWidth = 1;
-
-    // Regular grid
     double gridSize = 50;
     for (double i = 0; i <= size.width; i += gridSize) {
       canvas.drawLine(Offset(i, 0), Offset(i, size.height), linePaint);
@@ -393,20 +494,7 @@ class MapGridPainter extends CustomPainter {
     for (double i = 0; i <= size.height; i += gridSize) {
       canvas.drawLine(Offset(0, i), Offset(size.width, i), linePaint);
     }
-
-    // Center dashed lines
-    double cx = size.width / 2;
-    double cy = size.height / 2;
-
-    for (double i = 0; i < size.height; i += 10) {
-      if (i % 20 == 0) canvas.drawLine(Offset(cx, i), Offset(cx, i + 5), dashedPaint);
-    }
-
-    for (double i = 0; i < size.width; i += 10) {
-      if (i % 20 == 0) canvas.drawLine(Offset(i, cy), Offset(i + 5, cy), dashedPaint);
-    }
   }
-
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
@@ -420,30 +508,26 @@ class RoutePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.blue.withOpacity(0.3)
+      ..color = AppColors.primaryGold.withOpacity(0.2)
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
 
     final path = Path();
     path.moveTo(visitorPos.dx, visitorPos.dy);
-
-    // Simple L-shaped route for museum feel
     path.lineTo(robotPos.dx, visitorPos.dy);
     path.lineTo(robotPos.dx, robotPos.dy);
 
     canvas.drawPath(path, paint);
 
-    // Draw dots along the path
     final dashPaint = Paint()
-      ..color = Colors.blue
+      ..color = AppColors.primaryGold
       ..strokeWidth = 2;
 
     for (double i = 0; i < 1.0; i += 0.1) {
-       // Manual interpolation for L-shape is complex, just draw a direct dashed line for now
        double dx = visitorPos.dx + (robotPos.dx - visitorPos.dx) * i;
        double dy = visitorPos.dy + (robotPos.dy - visitorPos.dy) * i;
-       canvas.drawCircle(Offset(dx, dy), 2, dashPaint);
+       canvas.drawCircle(Offset(dx, dy), 1.5, dashPaint);
     }
   }
 
