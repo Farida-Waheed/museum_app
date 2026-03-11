@@ -752,6 +752,30 @@ abstract class AppLocalizations {
   /// **'Tickets'**
   String get tickets;
 
+  /// No description provided for @seeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See All'**
+  String get seeAll;
+
+  /// No description provided for @dataAnonymous.
+  ///
+  /// In en, this message translates to:
+  /// **'Data is anonymous'**
+  String get dataAnonymous;
+
+  /// No description provided for @analyticsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Movement heatmaps are only used for analytics'**
+  String get analyticsNote;
+
+  /// No description provided for @notNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get notNow;
+
   /// No description provided for @onboarding1Title.
   ///
   /// In en, this message translates to:

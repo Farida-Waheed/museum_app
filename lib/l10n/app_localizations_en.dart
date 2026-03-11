@@ -344,6 +344,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tickets => 'Tickets';
 
   @override
+  String get seeAll => 'See All';
+
+  @override
+  String get dataAnonymous => 'Data is anonymous';
+
+  @override
+  String get analyticsNote => 'Movement heatmaps are only used for analytics';
+
+  @override
+  String get notNow => 'Not now';
+
+  @override
   String get onboarding1Title => 'Welcome to Horus-Bot';
 
   @override
