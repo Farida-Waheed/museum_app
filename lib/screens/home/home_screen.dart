@@ -173,11 +173,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
-                              stops: const [0.0, 0.4, 1.0],
                               colors: [
-                                Colors.black.withOpacity(0.75),
-                                Colors.black.withOpacity(0.35),
-                                Colors.transparent,
+                                Colors.black.withOpacity(0.65),
+                                Colors.black.withOpacity(0.9),
                               ],
                             ),
                           ),
@@ -186,18 +184,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       Positioned(
                         left: 24,
                         right: 24,
-                        top: 48,
+                        top: 64,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
                               "Explore Egypt With Horus-Bot",
-                              style: theme.textTheme.displayLarge?.copyWith(fontSize: 28),
+                              style: theme.textTheme.displayLarge?.copyWith(fontSize: 36),
                             ),
                             const SizedBox(height: 8),
                             Text(
                               "Follow the robot and uncover the stories behind ancient artifacts.",
-                              style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white70),
+                              style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white70, fontSize: 16),
                             ),
                           ],
                         ),
@@ -303,6 +301,47 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   const SizedBox(height: 16),
                   _Dots(count: 3, index: pageIndex),
                 ],
+              ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+            // ===== DID YOU KNOW SECTION =====
+            SliverToBoxAdapter(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppColors.cinematicCard,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: Colors.white.withOpacity(0.05)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Icon(Icons.lightbulb_outline, color: AppColors.primaryGold, size: 24),
+                        const SizedBox(width: 12),
+                        Text(
+                          l10n.didYouKnow,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: AppColors.primaryGold,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.didYouKnowFact,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: Colors.white,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -428,7 +467,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               top: (robotY / 600) * c.maxHeight,
               child: ScaleTransition(
                 scale: _robotScale,
-                child: const Icon(Icons.smart_toy, size: 28, color: Colors.blue),
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primaryGold.withOpacity(0.4),
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(Icons.smart_toy, size: 28, color: Colors.blue),
+                ),
               ),
             ),
           ],
@@ -442,7 +493,7 @@ class _MapGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.05)
+      ..color = Colors.white.withOpacity(0.02)
       ..strokeWidth = 1.0;
     const step = 20.0;
     for (double i = 0; i < size.width; i += step) {
@@ -473,16 +524,16 @@ class _NextStopBadge extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
-              color: const Color(0xFF1E1912).withOpacity(0.85),
+              color: AppColors.cinematicElevated.withOpacity(0.9),
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.primaryGold, width: 1),
+              border: Border.all(color: AppColors.neutralDark, width: 1),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  blurRadius: 12,
-                  offset: const Offset(0, 6),
+                  color: Colors.black.withOpacity(0.25),
+                  blurRadius: 15,
+                  offset: const Offset(0, 8),
                 ),
               ],
             ),
@@ -502,7 +553,7 @@ class _NextStopBadge extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         location,
-                        style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
+                        style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -539,13 +590,19 @@ class _FeatureCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(18),
-          color: AppColors.darkSurface,
+          color: AppColors.cinematicCard,
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          image: DecorationImage(
+            image: const AssetImage('assets/images/hieroglyphs.jpg'),
+            opacity: 0.05,
+            fit: BoxFit.cover,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(icon, color: AppColors.primaryGold, size: 28),
-            const SizedBox(height: 24),
+            Icon(icon, color: AppColors.primaryGold.withOpacity(0.8), size: 24),
+            const SizedBox(height: 32),
             Text(
               title,
               style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 17, color: Colors.white),
@@ -631,10 +688,10 @@ class _Dots extends StatelessWidget {
         return AnimatedContainer(
           duration: const Duration(milliseconds: 300),
           margin: const EdgeInsets.symmetric(horizontal: 4),
-          width: active ? 16 : 8,
+          width: active ? 24 : 8,
           height: 8,
           decoration: BoxDecoration(
-            color: active ? AppColors.primaryGold : const Color(0xFF555555),
+            color: active ? AppColors.primaryGold : AppColors.neutralDark.withOpacity(0.4),
             borderRadius: BorderRadius.circular(4),
           ),
         );
@@ -649,7 +706,7 @@ class _LiveBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         color: AppColors.alertRed.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8),
@@ -708,7 +765,7 @@ class _HorusFabState extends State<_HorusFab> {
         onTap: widget.onPressed,
         child: Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF2A2118),
+            color: AppColors.cinematicElevated,
             borderRadius: BorderRadius.circular(28),
             border: Border.all(color: AppColors.primaryGold, width: 1),
             boxShadow: [
@@ -716,6 +773,10 @@ class _HorusFabState extends State<_HorusFab> {
                 color: Colors.black.withOpacity(0.35),
                 blurRadius: 20,
                 offset: const Offset(0, 10),
+              ),
+              BoxShadow(
+                color: AppColors.primaryGold.withOpacity(0.15),
+                blurRadius: 12,
               ),
             ],
           ),
@@ -725,9 +786,19 @@ class _HorusFabState extends State<_HorusFab> {
             children: [
               const Icon(Icons.chat_bubble_outline, color: Colors.white, size: 20),
               const SizedBox(width: 12),
-              Text(
-                widget.label,
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.label,
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                  ),
+                  Text(
+                    AppLocalizations.of(context)!.onlineStatus,
+                    style: const TextStyle(color: Colors.green, fontSize: 10, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
             ],
           ),

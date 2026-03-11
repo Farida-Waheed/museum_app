@@ -857,7 +857,7 @@ abstract class AppLocalizations {
   /// No description provided for @recommendedForYou.
   ///
   /// In en, this message translates to:
-  /// **'Recommended for You'**
+  /// **'Discover Artifacts'**
   String get recommendedForYou;
 
   /// No description provided for @talkToHorusBot.
@@ -865,6 +865,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Talk to Horus-Bot'**
   String get talkToHorusBot;
+
+  /// No description provided for @didYouKnow.
+  ///
+  /// In en, this message translates to:
+  /// **'Did You Know?'**
+  String get didYouKnow;
+
+  /// No description provided for @didYouKnowFact.
+  ///
+  /// In en, this message translates to:
+  /// **'Tutankhamun\'s golden mask contains more than 10 kilograms of solid gold.'**
+  String get didYouKnowFact;
+
+  /// No description provided for @onlineStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'● Online'**
+  String get onlineStatus;
 
   /// No description provided for @mapSub.
   ///

@@ -399,10 +399,20 @@ class AppLocalizationsAr extends AppLocalizations {
   String get startExploring => 'ابدأ الاستكشاف';
 
   @override
-  String get recommendedForYou => 'مقترح لك';
+  String get recommendedForYou => 'اكتشف القطع الأثرية';
 
   @override
   String get talkToHorusBot => 'تحدث مع حوروس';
+
+  @override
+  String get didYouKnow => 'هل تعلم؟';
+
+  @override
+  String get didYouKnowFact =>
+      'قناع توت عنخ آمون الذهبي يحتوي على أكثر من 10 كيلوغرامات من الذهب الخالص.';
+
+  @override
+  String get onlineStatus => '● متصل';
 
   @override
   String get mapSub => 'ابحث عن المعروضات والمسارات';

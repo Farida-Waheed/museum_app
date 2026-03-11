@@ -401,10 +401,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startExploring => 'Start Exploring';
 
   @override
-  String get recommendedForYou => 'Recommended for You';
+  String get recommendedForYou => 'Discover Artifacts';
 
   @override
   String get talkToHorusBot => 'Talk to Horus-Bot';
+
+  @override
+  String get didYouKnow => 'Did You Know?';
+
+  @override
+  String get didYouKnowFact =>
+      'Tutankhamun\'s golden mask contains more than 10 kilograms of solid gold.';
+
+  @override
+  String get onlineStatus => '● Online';
 
   @override
   String get mapSub => 'Find exhibits and routes';
