@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
+import '../../app/router.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
@@ -47,13 +48,12 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     final cardBgColor = isDark ? AppColors.darkSurface : const Color(0xFFF7F2E8);
-    final borderColor = isDark ? AppColors.primaryGold.withOpacity(0.2) : AppColors.primaryGold.withOpacity(0.15);
     final textColor = isDark ? const Color(0xFFF5F1E8) : const Color(0xFF2A2118);
     final secondaryTextColor = isDark ? Colors.white.withOpacity(0.82) : const Color(0xFF5C5143);
 
     return AppMenuShell(
       title: l10n.settings,
-      bottomNavigationBar: const BottomNav(currentIndex: 4),
+      bottomNavigationBar: BottomNav(currentIndex: 4),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -273,8 +273,14 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                   Text(l10n.university, style: TextStyle(fontSize: 14, color: textColor)),
                   Text(l10n.program, style: TextStyle(fontSize: 13, color: secondaryTextColor)),
                   const SizedBox(height: 24),
-                  _AboutLink(title: l10n.projectInfo),
-                  _AboutLink(title: l10n.team),
+                  _AboutLink(
+                    title: l10n.projectInfo,
+                    onTap: () => Navigator.pushNamed(context, AppRoutes.projectInfo),
+                  ),
+                  _AboutLink(
+                    title: l10n.team,
+                    onTap: () => Navigator.pushNamed(context, AppRoutes.projectInfo),
+                  ),
                   _AboutLink(title: l10n.privacyPolicy),
                 ],
               ),
@@ -476,19 +482,23 @@ class _PermissionItem extends StatelessWidget {
 
 class _AboutLink extends StatelessWidget {
   final String title;
-  const _AboutLink({required this.title});
+  final VoidCallback? onTap;
+  const _AboutLink({required this.title, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(title, style: TextStyle(fontSize: 15, color: isDark ? Colors.white : Colors.black, fontWeight: FontWeight.w500)),
-          const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.primaryGold),
-        ],
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(title, style: TextStyle(fontSize: 15, color: isDark ? Colors.white : Colors.black, fontWeight: FontWeight.w500)),
+            const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.primaryGold),
+          ],
+        ),
       ),
     );
   }

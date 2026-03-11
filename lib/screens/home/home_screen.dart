@@ -14,6 +14,7 @@ import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/dialogs/location_permission_dialog.dart';
 import '../../models/user_preferences.dart';
+import '../../models/tour_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -23,6 +24,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late List<Exhibit> exhibits;
+  late List<MockNews> news;
   int visitedCount = 0;
   int durationMinutes = 0;
   Timer? _simTimer;
@@ -42,10 +44,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     CurvedAnimation(parent: _robotPulseCtrl, curve: Curves.easeInOut),
   );
 
+  late final AnimationController _fabPulseCtrl = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 2000),
+  )..repeat(reverse: true);
+
+  late final Animation<double> _fabScale = Tween<double>(begin: 1.0, end: 1.05).animate(
+    CurvedAnimation(parent: _fabPulseCtrl, curve: Curves.easeInOut),
+  );
+
   @override
   void initState() {
     super.initState();
     exhibits = MockDataService.getAllExhibits();
+    news = MockDataService.getAllNews();
 
     Future.delayed(Duration.zero, () async {
       if (mounted) {
@@ -81,6 +93,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _simTimer?.cancel();
     _pageCtrl.dispose();
     _robotPulseCtrl.dispose();
+    _fabPulseCtrl.dispose();
     super.dispose();
   }
 
@@ -111,11 +124,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return AppMenuShell(
       hideDefaultAppBar: true,
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.warmSurface,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
-      floatingActionButton: _HorusFab(onPressed: () => Navigator.pushNamed(context, AppRoutes.chat), label: l10n.talkToHorusBot),
+      floatingActionButton: ScaleTransition(
+        scale: _fabScale,
+        child: _HorusFab(
+          onPressed: () => Navigator.pushNamed(context, AppRoutes.chat),
+          label: l10n.talkToHorusBot,
+        ),
+      ),
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
@@ -126,28 +147,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               pinned: true,
               elevation: 0,
               centerTitle: true,
-              backgroundColor: AppColors.darkHeader,
-              title: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Image.asset("assets/icons/ankh.png", width: 24, height: 24),
-                  const SizedBox(width: 16),
-                  Text(
-                    l10n.appTitle,
-                    style: theme.textTheme.titleMedium?.copyWith(letterSpacing: 0.5),
-                  ),
-                ],
-              ),
+              backgroundColor: isDark ? AppColors.darkHeader : AppColors.warmSurface,
+              shape: Border(bottom: BorderSide(color: isDark ? AppColors.darkDivider : const Color(0xFFE5E0D5), width: 1)),
+              title: Image.asset("assets/icons/ankh.png", width: 32, height: 32),
               leading: IconButton(
-                icon: const Icon(Icons.menu, color: Colors.white, size: 24),
+                padding: const EdgeInsets.all(16),
+                icon: Icon(Icons.menu, color: isDark ? Colors.white : AppColors.darkInk, size: 28),
                 onPressed: () => AppMenuShell.of(context)?.openMenu(),
               ),
               actions: [
                 IconButton(
-                  icon: const Icon(Icons.qr_code_scanner, color: Colors.white, size: 24),
+                  padding: const EdgeInsets.all(16),
+                  icon: Icon(Icons.qr_code_scanner, color: isDark ? Colors.white : AppColors.darkInk, size: 28),
                   onPressed: () => Navigator.pushNamed(context, AppRoutes.qrScan),
                 ),
-                const SizedBox(width: 8),
               ],
             ),
           ];
@@ -159,7 +172,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             // ===== HERO HEADER =====
             SliverToBoxAdapter(
               child: Container(
-                height: 260,
+                height: 320,
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(24),
@@ -173,12 +186,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
-                              stops: const [0.0, 0.4, 1.0],
                               colors: [
-                                Colors.black.withOpacity(0.75),
-                                Colors.black.withOpacity(0.35),
+                                Colors.black.withOpacity(0.6),
                                 Colors.transparent,
+                                Colors.black.withOpacity(0.85),
                               ],
+                              stops: const [0.0, 0.4, 1.0],
                             ),
                           ),
                         ),
@@ -186,18 +199,26 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       Positioned(
                         left: 24,
                         right: 24,
-                        top: 48,
+                        bottom: 120,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Explore Egypt With Horus-Bot",
-                              style: theme.textTheme.displayLarge?.copyWith(fontSize: 28),
+                              "Explore Egypt with Horus-Bot",
+                              style: theme.textTheme.displayLarge?.copyWith(
+                                fontSize: 30,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 12),
                             Text(
-                              "Follow the robot and uncover the stories behind ancient artifacts.",
-                              style: theme.textTheme.bodyLarge?.copyWith(color: Colors.white70),
+                              "Follow Horus-Bot and discover ancient Egypt.",
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: Colors.white.withOpacity(0.9),
+                                fontSize: 16,
+                              ),
                             ),
                           ],
                         ),
@@ -205,18 +226,32 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       Positioned(
                         left: 16,
                         right: 16,
-                        bottom: 16,
+                        bottom: 24,
                         child: _NextStopBadge(
                           location: "Tutankhamun Hall",
-                          time: "5 minutes away",
+                          time: "in 5 minutes",
                           label: l10n.nextStopLabel,
-                          onTap: () => Navigator.pushNamed(context, AppRoutes.progress),
+                          onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+            // ===== ROBOT STATUS CARD =====
+            SliverToBoxAdapter(
+              child: _RobotStatusCard(),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+
+            // ===== TOUR PROGRESS TRACKER =====
+            SliverToBoxAdapter(
+              child: _TourProgressTracker(),
             ),
 
             const SliverToBoxAdapter(child: SizedBox(height: 32)),
@@ -302,6 +337,26 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   ),
                   const SizedBox(height: 16),
                   _Dots(count: 3, index: pageIndex),
+                ],
+              ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+            // ===== MUSEUM NEWS =====
+            SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      "Museum News",
+                      style: theme.textTheme.headlineMedium,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ...news.map((item) => _NewsCard(news: item)),
                 ],
               ),
             ),
@@ -467,16 +522,16 @@ class _NextStopBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(18),
+      borderRadius: BorderRadius.circular(14),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: InkWell(
           onTap: onTap,
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF1E1912).withOpacity(0.85),
-              borderRadius: BorderRadius.circular(18),
+              color: const Color(0xFF1E1912).withOpacity(0.55),
+              borderRadius: BorderRadius.circular(14),
               border: Border.all(color: AppColors.primaryGold, width: 1),
               boxShadow: [
                 BoxShadow(
@@ -488,31 +543,15 @@ class _NextStopBadge extends StatelessWidget {
             ),
             child: Row(
               children: [
-                const Icon(Icons.route, color: AppColors.primaryGold, size: 24),
-                const SizedBox(width: 16),
+                const Icon(Icons.location_on, color: AppColors.primaryGold, size: 20),
+                const SizedBox(width: 12),
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        label,
-                        style: const TextStyle(color: AppColors.primaryGold, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        location,
-                        style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        time,
-                        style: const TextStyle(color: Colors.white70, fontSize: 12),
-                      ),
-                    ],
+                  child: Text(
+                    "$label: $location $time",
+                    style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                 ),
-                const Icon(Icons.chevron_right_rounded, color: Colors.white70, size: 24),
+                const Icon(Icons.chevron_right_rounded, color: Colors.white, size: 20),
               ],
             ),
           ),
@@ -681,6 +720,176 @@ class _LegendDot extends StatelessWidget {
         const SizedBox(width: 8),
         Text(label, style: const TextStyle(fontSize: 12, color: AppColors.darkMutedText)),
       ],
+    );
+  }
+}
+
+class _RobotStatusCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final tourProvider = Provider.of<TourProvider>(context);
+    final isOnline = tourProvider.robotState != RobotState.disconnected;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.darkSurface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.primaryGold.withOpacity(0.1)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.primaryGold.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.smart_toy, color: AppColors.primaryGold, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Text("Horus-Bot Status", style: TextStyle(color: AppColors.primaryText, fontWeight: FontWeight.bold, fontSize: 16)),
+                    const SizedBox(width: 8),
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: isOnline ? Colors.green : Colors.red,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  isOnline ? "Online • At Ancient Jewelry Gallery" : "Offline",
+                  style: const TextStyle(color: AppColors.secondaryText, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: const [
+              Text("Next Tour", style: TextStyle(color: AppColors.helperText, fontSize: 11)),
+              Text("2:00 PM", style: TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 14)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TourProgressTracker extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.darkSurface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.primaryGold.withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: const [
+              Text("Tour Progress", style: TextStyle(color: AppColors.primaryText, fontWeight: FontWeight.bold, fontSize: 16)),
+              Text("3 / 10 exhibits", style: TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 14)),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Stack(
+            children: [
+              Container(
+                height: 8,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              FractionallySizedBox(
+                widthFactor: 0.3,
+                child: Container(
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryGold,
+                    borderRadius: BorderRadius.circular(4),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primaryGold.withOpacity(0.3),
+                        blurRadius: 6,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NewsCard extends StatelessWidget {
+  final MockNews news;
+  const _NewsCard({required this.news});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      decoration: BoxDecoration(
+        color: AppColors.darkSurface,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.primaryGold.withOpacity(0.1)),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.asset(news.image, height: 120, width: double.infinity, fit: BoxFit.cover),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(news.source, style: const TextStyle(color: AppColors.primaryGold, fontSize: 11, fontWeight: FontWeight.bold)),
+                      Text("Nov 24", style: const TextStyle(color: AppColors.helperText, fontSize: 11)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(news.title, style: const TextStyle(color: AppColors.primaryText, fontWeight: FontWeight.bold, fontSize: 16)),
+                  const SizedBox(height: 4),
+                  Text(
+                    news.description,
+                    style: const TextStyle(color: AppColors.secondaryText, fontSize: 13),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

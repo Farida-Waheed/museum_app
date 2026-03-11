@@ -22,6 +22,7 @@ import '../screens/tickets/qr_scanner_screen.dart';
 import '../screens/feedback/feedback_screen.dart';
 import '../screens/language/language_screen.dart';
 import '../screens/settings/accessibility_screen.dart';
+import '../screens/settings/project_info_screen.dart';
 import '../screens/ar/ar_screen.dart';
 
 import '../screens/profile/profile_screen.dart';
@@ -51,6 +52,7 @@ class AppRoutes {
 
   static const String settings = '/settings';
   static const String accessibility = '/accessibility';
+  static const String projectInfo = '/project_info';
   static const String feedback = '/feedback';
   static const String language = '/language';
   static const String arView = '/ar_view';
@@ -83,6 +85,7 @@ class AppRoutes {
 
       settings: (context) => const AccessibilityScreen(),
       accessibility: (context) => const AccessibilityScreen(),
+      projectInfo: (context) => const ProjectInfoScreen(),
       feedback: (context) => const FeedbackScreen(),
       language: (context) => const LanguageScreen(),
       arView: (context) => const ArScreen(),

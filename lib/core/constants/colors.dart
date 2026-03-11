@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  // Brand Design System - Light
+  // Global Design System
   static const Color primaryGold = Color(0xFFE6C068);
   static const Color darkInk = Color(0xFF1E1912);
   static const Color warmSurface = Color(0xFFF6F2EA);
@@ -9,23 +9,23 @@ class AppColors {
   static const Color mutedText = Color(0xFF6B6358);
   static const Color alertRed = Color(0xFFE54848);
 
-  // Brand Design System - Dark
-  static const Color darkBackground = Color(0xFF12110F);
+  // Legacy/Additional (Keeping some for compatibility if needed, but prioritizing above)
+  static const Color darkBackground = Color(0xFF121212);
   static const Color darkSurface = Color(0xFF1E1912);
-  static const Color darkSurfaceSecondary = Color(0xFF2A251D);
-  static const Color darkMutedText = Color(0xFFB9B2A6);
-  static const Color darkDivider = Color(0xFF2A251D);
-  static const Color darkHeader = Color(0xFF1A1712);
+  static const Color darkSurfaceSecondary = Color(0xFF2D261E);
+  static const Color darkHeader = Color(0xFF1E1912);
+  static const Color darkMutedText = Color(0xFF6B6358);
+  static const Color darkDivider = Color(0xFF2D261E);
 
-  // Utility colors
+  static const Color primaryText = Color(0xFFF5F1E8);
+  static const Color secondaryText = Color(0xD1FFFFFF);
+  static const Color helperText = Color(0x94FFFFFF);
+
+  // Mappings for the requested components
+  static const Color headerBackground = warmSurface;
+  static const Color cardBackground = softSurface;
+  static const Color fabBackground = Color(0xFF2A2118);
+
   static const Color white = Colors.white;
   static const Color black = Colors.black;
-
-  // Legacy/Theme Mappings
-  static const Color primary = primaryGold;
-  static const Color secondary = darkInk;
-  static const Color background = warmSurface;
-  static const Color surface = softSurface;
-  static const Color error = alertRed;
-  static const Color border = Color(0xFFE3E8F2);
 }
