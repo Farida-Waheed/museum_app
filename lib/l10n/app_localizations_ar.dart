@@ -102,12 +102,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mainGallery => 'المعرض الرئيسي';
 
   @override
-  String get comfortableApp => 'خصص تجربة المتحف الخاصة بك';
+  String get comfortableApp => 'اجعل التطبيق مريحاً لك';
 
   @override
   String get adjustSettings =>
       'عدل حجم النص، التباين، واللغة لتناسب احتياجاتك.';
-      'عدل التنقل، إمكانية الوصول، والعرض لتناسب احتياجاتك.';
 
   @override
   String get displayText => 'العرض والنص';
@@ -457,7 +456,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get exploreTheMuseum => 'استكشف المتحف';
 
   @override
-  String get followAndDiscover => 'اتبع حوروس';
   String get followAndDiscover =>
       'اتبع الروبوت واكتشف القصص وراء القطع الأثرية القديمة.';
 
@@ -505,23 +503,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsDisabled => 'الإعدادات: معطل';
 
   @override
-  String get aboutHorusBot => 'حول حوروس';
+  String get aboutHorusBot => 'عن حوروس-بوت';
 
   @override
   String get appVersion => 'الإصدار ١.٠';
 
   @override
   String get appTagline => 'مرشد متحف ذكي ذاتي القيادة';
-  String get followAndDiscover => 'اتبع حوروس واكتشف مصر القديمة';
-
-  @override
-  String get aboutHorusBot => 'عن حوروس-بوت';
-
-  @override
-  String get version => 'الإصدار ١.٠';
-
-  @override
-  String get aboutDesc => 'رفيقك الذكي.';
 
   @override
   String get developedBy => 'تم التطوير بواسطة';
@@ -531,16 +519,12 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get department => 'برنامج هندسة الحاسبات والاتصالات';
-  String get university => 'جامعة بنها';
-
-  @override
-  String get program => 'كلية الحاسبات والذكاء الاصطناعي';
 
   @override
   String get projectInfo => 'معلومات المشروع';
 
   @override
-  String get team => 'الفريق';
+  String get team => 'فريقنا';
 
   @override
   String get privacyPolicy => 'سياسة الخصوصية';
@@ -598,8 +582,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get simpleModeSub => 'أزرار أكبر وتخطيط مبسط';
-  String get team => 'فريقنا';
 
   @override
-  String get privacyPolicy => 'سياسة الخصوصية';
+  String get version => 'الإصدار ١.٠';
+
+  @override
+  String get aboutDesc => 'رفيقك الذكي.';
+
+  @override
+  String get university => 'جامعة بنها';
+
+  @override
+  String get program => 'كلية الحاسبات والذكاء الاصطناعي';
 }
