@@ -1,9 +1,10 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../l10n/app_localizations.dart';
 
-import '../../models/user_preferences.dart';
 import '../../app/router.dart';
+import '../../l10n/app_localizations.dart';
+import '../../models/user_preferences.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -12,7 +13,8 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerProviderStateMixin {
+class _OnboardingScreenState extends State<OnboardingScreen>
+    with SingleTickerProviderStateMixin {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   late final AnimationController _floatController;
@@ -35,12 +37,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
 
   void _completeOnboarding(UserPreferencesModel prefs) {
     prefs.setCompletedOnboarding(true);
-    Navigator.pushReplacementNamed(
-      context,
-      AppRoutes.mainHome,
-    );
+    Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -76,8 +74,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
       elevation: 6,
       shadowColor: Colors.black.withOpacity(0.25),
       padding: const EdgeInsets.symmetric(vertical: 16),
-      // To match shadow spec exactly if possible, though elevation is standard.
-      // spec: blurRadius: 12, offset: Offset(0, 6)
     );
 
     final prefs = Provider.of<UserPreferencesModel>(context);
@@ -89,173 +85,252 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
         "desc": l10n.onboarding1Desc,
         "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/pyramid.png",
+        "iconSize": 82.0,
+        "iconScale": 1.0,
+        "useShadow": false,
       },
       {
         "title": l10n.onboarding2Title,
         "desc": l10n.onboarding2Desc,
         "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/pharaoh.png",
+        "iconSize": 82.0,
+        "iconScale": 1.0,
+        "useShadow": false,
       },
       {
         "title": l10n.onboarding3Title,
         "desc": l10n.onboarding3Desc,
         "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/map.png",
+        "iconSize": 82.0,
+        "iconScale": 0.82,
+        "useShadow": true,
       },
       {
         "title": l10n.onboarding4Title,
         "desc": l10n.onboarding4Desc,
         "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/scarab.png",
+        "iconSize": 82.0,
+        "iconScale": 1.1,
+        "useShadow": false,
       },
     ];
 
     return Scaffold(
       body: Stack(
+        fit: StackFit.expand,
         children: [
-          // --- 1. Background image (per page) ---
-          Positioned.fill(
-            child: Image.asset(
-              pages[_currentPage]["image"]!,
-              fit: BoxFit.cover,
-              errorBuilder: (c, e, s) => Container(color: Colors.blueGrey),
+          // --- Background ---
+          Image.asset("assets/images/Onboarding.jpg", fit: BoxFit.cover),
+
+          // --- Dark cinematic overlay ---
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withOpacity(0.55),
+                  Colors.black.withOpacity(0.35),
+                  Colors.black.withOpacity(0.70),
+                ],
+              ),
             ),
           ),
 
-          // --- 2. Cinematic Gradient overlay ---
-          Positioned.fill(
-            child: DecoratedBox(
+          // --- Decorative glow ---
+          Positioned(
+            top: -80,
+            right: -60,
+            child: Container(
+              width: 220,
+              height: 220,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.6),
-                    Colors.black.withOpacity(0.8),
-                  ],
-                  stops: const [0.0, 1.0],
-                ),
+                shape: BoxShape.circle,
+                color: const Color(0xFFE6C068).withOpacity(0.08),
               ),
             ),
           ),
 
-          // --- 3. Main content (pages + dots + button) ---
-          SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height,
-              ),
-              child: IntrinsicHeight(
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 500, // Fixed height for PageView content area
-                        child: PageView.builder(
-                          controller: _pageController,
-                          onPageChanged: (index) => setState(() => _currentPage = index),
-                          itemCount: pages.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 48),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center, // Lifted up
-                                children: [
-                                  const SizedBox(height: 40), // Top spacing adjustment
-                                  // Simplified Icon treatment to match OLD version
-                                  Image.asset(
-                                    pages[index]["iconPath"]!,
-                                    width: 110,
-                                    height: 110,
-                                    fit: BoxFit.contain,
-                                  ),
-                                  const SizedBox(height: 28),
-                                  Text(
-                                    pages[index]["title"]!,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 0.5,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 14),
-                                  Text(
-                                    pages[index]["desc"]!,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Colors.white.withOpacity(0.85),
-                                      fontSize: 15,
-                                      height: 1.5,
-                                    ),
+          // --- Main content ---
+          Column(
+            children: [
+              const Spacer(),
+
+              Expanded(
+                flex: 7,
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: pages.length,
+                  onPageChanged: (value) {
+                    setState(() => _currentPage = value);
+                  },
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 28),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AnimatedBuilder(
+                            animation: _floatController,
+                            builder: (context, child) {
+                              final offset =
+                                  math.sin(_floatController.value * math.pi) *
+                                  8;
+                              return Transform.translate(
+                                offset: Offset(0, -offset),
+                                child: child,
+                              );
+                            },
+                            child: Container(
+                              width: 110,
+                              height: 110,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(
+                                      0xFFE6C068,
+                                    ).withOpacity(0.12),
+                                    blurRadius: 20,
+                                    spreadRadius: 4,
                                   ),
                                 ],
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-
-                    // --- Dots + Primary button ---
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(24, 32, 24, 48),
-                      child: Column(
-                        children: [
-                          // Premium Dots indicator
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: List.generate(pages.length, (index) {
-                              final bool active = _currentPage == index;
-                              return AnimatedContainer(
-                                duration: const Duration(milliseconds: 400),
-                                margin: const EdgeInsets.symmetric(horizontal: 5),
-                                width: active ? 26 : 8,
-                                height: 6,
-                                decoration: BoxDecoration(
-                                  color: active ? const Color(0xFFE6C068) : const Color(0xFF666666),
-                                  borderRadius: BorderRadius.circular(10),
-                                  boxShadow: [
-                                    if (active)
-                                      BoxShadow(
-                                        color: const Color(0xFFE6C068).withOpacity(0.4),
-                                        blurRadius: 8,
-                                      ),
+                                gradient: RadialGradient(
+                                  colors: [
+                                    const Color(0xFFE6C068).withOpacity(0.12),
+                                    const Color(0xFFE6C068).withOpacity(0.0),
                                   ],
                                 ),
-                              );
-                            }),
-                          ),
-                          const SizedBox(height: 32),
+                              ),
+                              child: Center(
+                                child: Transform.scale(
+                                  scale: pages[index]["iconScale"] ?? 1.0,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      // Optional shadow layer to unify different icon styles
+                                      if (pages[index]["useShadow"] == true)
+                                        Transform.translate(
+                                          offset: const Offset(0, 2),
+                                          child: Image.asset(
+                                            pages[index]["iconPath"]!,
+                                            width:
+                                                pages[index]["iconSize"] ??
+                                                82.0,
+                                            height:
+                                                pages[index]["iconSize"] ??
+                                                82.0,
+                                            fit: BoxFit.contain,
+                                            color: Colors.black.withOpacity(
+                                              0.2,
+                                            ),
+                                          ),
+                                        ),
 
-                          // Primary CTA
-                          SizedBox(
-                            width: double.infinity,
-                            height: 56,
-                            child: ElevatedButton(
-                              onPressed: () => _completeOnboarding(prefs),
-                              style: primaryCtaButtonStyle,
-                              child: Text(
-                                l10n.startExploring.toUpperCase(),
-                                style: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 1.2,
+                                      // Main Icon
+                                      Image.asset(
+                                        pages[index]["iconPath"]!,
+                                        width: pages[index]["iconSize"] ?? 82.0,
+                                        height:
+                                            pages[index]["iconSize"] ?? 82.0,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
+                          const SizedBox(height: 28),
+                          Text(
+                            pages[index]["title"]!,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          Text(
+                            pages[index]["desc"]!,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.85),
+                              fontSize: 15,
+                              height: 1.5,
+                            ),
+                          ),
                         ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+              // --- Dots + Primary button ---
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 48),
+                child: Column(
+                  children: [
+                    // Premium Dots indicator
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(pages.length, (index) {
+                        final bool active = _currentPage == index;
+                        return AnimatedContainer(
+                          duration: const Duration(milliseconds: 400),
+                          margin: const EdgeInsets.symmetric(horizontal: 5),
+                          width: active ? 26 : 8,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: active
+                                ? const Color(0xFFE6C068)
+                                : const Color(0xFF666666),
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              if (active)
+                                BoxShadow(
+                                  color: const Color(
+                                    0xFFE6C068,
+                                  ).withOpacity(0.4),
+                                  blurRadius: 8,
+                                ),
+                            ],
+                          ),
+                        );
+                      }),
+                    ),
+                    const SizedBox(height: 32),
+
+                    // Primary CTA
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: () => _completeOnboarding(prefs),
+                        style: primaryCtaButtonStyle,
+                        child: Text(
+                          l10n.startExploring.toUpperCase(),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
+            ],
           ),
 
-          // --- 4. Language selector (Top Start) ---
+          // --- Language selector (Top Start) ---
           Positioned(
             top: 48,
             left: isArabic ? null : 24,
@@ -264,7 +339,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
               child: PopupMenuButton<String>(
                 onSelected: (lang) => prefs.setLanguage(lang),
                 offset: const Offset(0, 48),
-                color: const Color(0xFF1E1912).withOpacity(0.9), // Keep dark for legibility
+                color: const Color(0xFF1E1912).withOpacity(0.9),
                 elevation: 8,
                 constraints: const BoxConstraints(minWidth: 160),
                 shape: RoundedRectangleBorder(
@@ -284,13 +359,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
                         const Flexible(
                           child: Text(
                             "English",
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         const SizedBox(width: 8),
                         if (prefs.language == 'en')
-                          const Icon(Icons.check, size: 16, color: Colors.white70),
+                          const Icon(
+                            Icons.check,
+                            size: 16,
+                            color: Colors.white70,
+                          ),
                       ],
                     ),
                   ),
@@ -303,19 +385,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
                         const Flexible(
                           child: Text(
                             "العربية",
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         const SizedBox(width: 8),
                         if (prefs.language == 'ar')
-                          const Icon(Icons.check, size: 16, color: Colors.white70),
+                          const Icon(
+                            Icons.check,
+                            size: 16,
+                            color: Colors.white70,
+                          ),
                       ],
                     ),
                   ),
                 ],
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
                   decoration: glassSurfaceDecoration,
                   child: Row(
                     mainAxisSize: MainAxisSize.min,

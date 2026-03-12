@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../l10n/app_localizations.dart';
 
 import '../../app/router.dart';
 import '../../models/user_preferences.dart';
@@ -25,7 +24,6 @@ class _IntroScreenState extends State<IntroScreen>
   void initState() {
     super.initState();
 
-    // Simple intro animation for the title
     _animController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
@@ -45,17 +43,14 @@ class _IntroScreenState extends State<IntroScreen>
   }
 
   void _startTimer() {
-    // Show splash for ~2 seconds
     Future.delayed(const Duration(seconds: 2), () {
       if (!mounted) return;
 
       final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
 
       if (prefs.hasCompletedOnboarding) {
-        // Go directly to main home
         Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
       } else {
-        // Fade into onboarding
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
             settings: const RouteSettings(name: AppRoutes.onboarding),
@@ -68,6 +63,7 @@ class _IntroScreenState extends State<IntroScreen>
                     parent: animation,
                     curve: Curves.easeOutCubic,
                   );
+
                   return FadeTransition(opacity: curved, child: child);
                 },
           ),
@@ -84,7 +80,6 @@ class _IntroScreenState extends State<IntroScreen>
 
   @override
   Widget build(BuildContext context) {
-    // Shared text styles
     const String fontFamily = 'Playfair Display';
 
     const TextStyle smallTheStyle = TextStyle(
@@ -110,13 +105,10 @@ class _IntroScreenState extends State<IntroScreen>
       fontWeight: FontWeight.w400,
     );
 
-    final l10n = AppLocalizations.of(context)!;
-
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Background Image
           Image.asset(
             'assets/images/GEM.jpg',
             fit: BoxFit.cover,
@@ -161,26 +153,34 @@ class _IntroScreenState extends State<IntroScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     RichText(
-                      text: TextSpan(
+                      text: const TextSpan(
                         style: mainTitleStyle,
                         children: <TextSpan>[
-                          TextSpan(
-                            text: '${l10n.introTitle.split(' ').first}\n',
-                            style: smallTheStyle,
-                          ),
-                          TextSpan(
-                            text: l10n.introTitle.split(' ').skip(1).join(' '),
-                          ),
+                          TextSpan(text: 'The ', style: smallTheStyle),
+                          TextSpan(text: 'Egyptian'),
                         ],
                       ),
                     ),
+                    const Text('Museums', style: mainTitleStyle),
                     const SizedBox(height: 12),
-                    Text(
-                      AppLocalizations.of(context)!.introSubtitle,
+                    const Text(
+                      'Explore Egypt with your Horus-Bot and its app.',
                       style: taglineStyle,
                     ),
                   ],
                 ),
+              ),
+            ),
+          ),
+
+          const Positioned(
+            bottom: 50,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: CircularProgressIndicator(
+                color: Colors.white,
+                strokeWidth: 2.2,
               ),
             ),
           ),
