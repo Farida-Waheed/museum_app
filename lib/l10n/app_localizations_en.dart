@@ -367,28 +367,38 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your data is anonymous and used only for navigation.';
 
   @override
+  String get introTitle => 'The Egyptian Museums';
+
+  @override
+  String get introSubtitle => 'Explore Egyptian museums with Horus-Bot.';
+
+  @override
   String get onboarding1Title => 'Welcome to Horus-Bot';
 
   @override
-  String get onboarding1Desc => 'Your smart guide to the museum.';
+  String get onboarding1Desc =>
+      'Your smart guide to the museum. Navigate exhibits, follow the robot, and discover hidden stories.';
 
   @override
   String get onboarding2Title => 'Meet Horus-Bot';
 
   @override
-  String get onboarding2Desc => 'Your intelligent museum guide.';
+  String get onboarding2Desc =>
+      'Your intelligent museum guide. Ask questions, listen to explanations, and explore during your visit.';
 
   @override
   String get onboarding3Title => 'Guided Tour Mode';
 
   @override
-  String get onboarding3Desc => 'Automatic guidance through exhibits.';
+  String get onboarding3Desc =>
+      'Automatic guidance through exhibits. Stay connected with Horus-Bot throughout your journey.';
 
   @override
   String get onboarding4Title => 'Explore & Learn';
 
   @override
-  String get onboarding4Desc => 'Discover artifacts and ask questions.';
+  String get onboarding4Desc =>
+      'Discover artifacts, ask questions, and enjoy interactive museum quizzes.';
 
   @override
   String get next => 'Next';

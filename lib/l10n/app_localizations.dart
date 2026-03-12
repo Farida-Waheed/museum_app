@@ -794,6 +794,18 @@ abstract class AppLocalizations {
   /// **'Your data is anonymous and used only for navigation.'**
   String get dataReassurance;
 
+  /// No description provided for @introTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The Egyptian Museums'**
+  String get introTitle;
+
+  /// No description provided for @introSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore Egyptian museums with Horus-Bot.'**
+  String get introSubtitle;
+
   /// No description provided for @onboarding1Title.
   ///
   /// In en, this message translates to:
@@ -803,7 +815,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding1Desc.
   ///
   /// In en, this message translates to:
-  /// **'Your smart guide to the museum.'**
+  /// **'Your smart guide to the museum. Navigate exhibits, follow the robot, and discover hidden stories.'**
   String get onboarding1Desc;
 
   /// No description provided for @onboarding2Title.
@@ -815,7 +827,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding2Desc.
   ///
   /// In en, this message translates to:
-  /// **'Your intelligent museum guide.'**
+  /// **'Your intelligent museum guide. Ask questions, listen to explanations, and explore during your visit.'**
   String get onboarding2Desc;
 
   /// No description provided for @onboarding3Title.
@@ -827,7 +839,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding3Desc.
   ///
   /// In en, this message translates to:
-  /// **'Automatic guidance through exhibits.'**
+  /// **'Automatic guidance through exhibits. Stay connected with Horus-Bot throughout your journey.'**
   String get onboarding3Desc;
 
   /// No description provided for @onboarding4Title.
@@ -839,7 +851,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding4Desc.
   ///
   /// In en, this message translates to:
-  /// **'Discover artifacts and ask questions.'**
+  /// **'Discover artifacts, ask questions, and enjoy interactive museum quizzes.'**
   String get onboarding4Desc;
 
   /// No description provided for @next.

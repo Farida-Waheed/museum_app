@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../l10n/app_localizations.dart';
 
 import '../../app/router.dart';
 import '../../models/user_preferences.dart';
@@ -109,6 +110,8 @@ class _IntroScreenState extends State<IntroScreen>
       fontWeight: FontWeight.w400,
     );
 
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -158,18 +161,22 @@ class _IntroScreenState extends State<IntroScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     RichText(
-                      text: const TextSpan(
+                      text: TextSpan(
                         style: mainTitleStyle,
                         children: <TextSpan>[
-                          TextSpan(text: 'The ', style: smallTheStyle),
-                          TextSpan(text: 'Egyptian'),
+                          TextSpan(
+                            text: '${l10n.introTitle.split(' ').first}\n',
+                            style: smallTheStyle,
+                          ),
+                          TextSpan(
+                            text: l10n.introTitle.split(' ').skip(1).join(' '),
+                          ),
                         ],
                       ),
                     ),
-                    const Text('Museums', style: mainTitleStyle),
                     const SizedBox(height: 12),
-                    const Text(
-                      'Explore Egyptian museums with Horus-Bot.',
+                    Text(
+                      AppLocalizations.of(context)!.introSubtitle,
                       style: taglineStyle,
                     ),
                   ],
