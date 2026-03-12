@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/router.dart';
-import '../../l10n/app_localizations.dart';
 import '../../models/user_preferences.dart';
 import '../onboarding/onboarding_screen.dart';
 
@@ -49,9 +48,6 @@ class _IntroScreenState extends State<IntroScreen>
 
       final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
 
-      // logic:
-      // First launch (hasCompletedOnboarding is false) -> Onboarding
-      // Returning launch (hasCompletedOnboarding is true) -> Home
       if (prefs.hasCompletedOnboarding) {
         Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
       } else {
@@ -84,9 +80,6 @@ class _IntroScreenState extends State<IntroScreen>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-
     const String fontFamily = 'Playfair Display';
 
     const TextStyle smallTheStyle = TextStyle(
@@ -111,40 +104,6 @@ class _IntroScreenState extends State<IntroScreen>
       fontSize: 14,
       fontWeight: FontWeight.w400,
     );
-
-    // Logic to split the title elegantly while maintaining the cinematic style
-    final titleParts = l10n.introTitle.split(' ');
-    Widget titleWidget;
-
-    if (!isArabic && titleParts.length >= 3) {
-      // English cinematic style: "The" (small) "Egyptian" (large) \n "Museums" (large)
-      titleWidget = Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          RichText(
-            text: TextSpan(
-              style: mainTitleStyle,
-              children: [
-                TextSpan(text: '${titleParts[0]} ', style: smallTheStyle),
-                TextSpan(text: titleParts[1]),
-              ],
-            ),
-          ),
-          Text(titleParts.sublist(2).join(' '), style: mainTitleStyle),
-        ],
-      );
-    } else if (titleParts.length >= 2) {
-      // Generic split for other cases/languages (e.g. Arabic)
-      titleWidget = Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(titleParts[0], style: mainTitleStyle),
-          Text(titleParts.sublist(1).join(' '), style: mainTitleStyle),
-        ],
-      );
-    } else {
-      titleWidget = Text(l10n.introTitle, style: mainTitleStyle);
-    }
 
     return Scaffold(
       body: Stack(
@@ -182,10 +141,10 @@ class _IntroScreenState extends State<IntroScreen>
             ),
           ),
 
-          PositionedDirectional(
+          Positioned(
             top: MediaQuery.of(context).padding.top + 50,
-            start: 20,
-            end: 20,
+            left: 20,
+            right: 20,
             child: FadeTransition(
               opacity: _fadeAnimation,
               child: ScaleTransition(
@@ -193,10 +152,19 @@ class _IntroScreenState extends State<IntroScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    titleWidget,
+                    RichText(
+                      text: const TextSpan(
+                        style: mainTitleStyle,
+                        children: <TextSpan>[
+                          TextSpan(text: 'The ', style: smallTheStyle),
+                          TextSpan(text: 'Egyptian'),
+                        ],
+                      ),
+                    ),
+                    const Text('Museums', style: mainTitleStyle),
                     const SizedBox(height: 12),
-                    Text(
-                      l10n.introSubtitle,
+                    const Text(
+                      'Explore Egypt with your Horus-Bot and its app.',
                       style: taglineStyle,
                     ),
                   ],

@@ -35,17 +35,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     super.dispose();
   }
 
-  void _onNextPressed(UserPreferencesModel prefs, int totalPages) {
-    if (_currentPage < totalPages - 1) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      _completeOnboarding(prefs);
-    }
-  }
-
   void _completeOnboarding(UserPreferencesModel prefs) {
     prefs.setCompletedOnboarding(true);
     Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
@@ -179,13 +168,12 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     setState(() => _currentPage = value);
                   },
                   itemBuilder: (context, index) {
-                    return SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 40),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            AnimatedBuilder(
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 28),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AnimatedBuilder(
                             animation: _floatController,
                             builder: (context, child) {
                               final offset =
@@ -268,17 +256,16 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                             ),
                           ),
                           const SizedBox(height: 14),
-                            Text(
-                              pages[index]["desc"]!,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.85),
-                                fontSize: 15,
-                                height: 1.5,
-                              ),
+                          Text(
+                            pages[index]["desc"]!,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.85),
+                              fontSize: 15,
+                              height: 1.5,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   },
@@ -325,13 +312,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () => _onNextPressed(prefs, pages.length),
+                        onPressed: () => _completeOnboarding(prefs),
                         style: primaryCtaButtonStyle,
                         child: Text(
-                          (_currentPage < pages.length - 1
-                                  ? l10n.next
-                                  : l10n.startExploring)
-                              .toUpperCase(),
+                          l10n.startExploring.toUpperCase(),
                           style: const TextStyle(
                             fontSize: 15,
                             fontWeight: FontWeight.w900,
