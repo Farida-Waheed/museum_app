@@ -15,6 +15,7 @@ class UserPreferencesModel extends ChangeNotifier {
   bool _hasCompletedOnboarding = false;
   bool _hasSeenLocationPrompt = false;
   String _themeMode = 'dark';
+  bool _isFirstLaunch = true;
 
   String get language => _language;
   bool get isHighContrast => _isHighContrast;
@@ -22,17 +23,34 @@ class UserPreferencesModel extends ChangeNotifier {
   bool get hasCompletedOnboarding => _hasCompletedOnboarding;
   bool get hasSeenLocationPrompt => _hasSeenLocationPrompt;
   String get themeMode => _themeMode;
+  bool get isFirstLaunch => _isFirstLaunch;
 
   UserPreferencesModel() {
     _loadFromPrefs();
   }
 
+  Future<void> init() async {
+    await _loadFromPrefs();
+  }
+
   Future<void> _loadFromPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    _language = prefs.getString(_kLanguage) ?? 'en';
+
+    // Check if it's the first ever launch by looking for the onboarding completion flag
+    final bool? completedOnboarding = prefs.getBool(_kHasCompletedOnboarding);
+    _isFirstLaunch = completedOnboarding == null;
+    _hasCompletedOnboarding = completedOnboarding ?? false;
+
+    // As per requirements: First launch must default to English.
+    // Subsequent launches use the saved language.
+    if (_isFirstLaunch) {
+      _language = 'en';
+    } else {
+      _language = prefs.getString(_kLanguage) ?? 'en';
+    }
+
     _isHighContrast = prefs.getBool(_kIsHighContrast) ?? false;
     _fontScale = prefs.getDouble(_kFontScale) ?? 1.0;
-    _hasCompletedOnboarding = prefs.getBool(_kHasCompletedOnboarding) ?? false;
     _hasSeenLocationPrompt = prefs.getBool(_kHasSeenLocationPrompt) ?? false;
     _themeMode = prefs.getString(_kThemeMode) ?? 'dark';
     notifyListeners();
@@ -71,6 +89,12 @@ class UserPreferencesModel extends ChangeNotifier {
       _hasCompletedOnboarding = value;
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_kHasCompletedOnboarding, value);
+
+      // Once onboarding is completed, it's definitely no longer the first launch period.
+      if (value) {
+        _isFirstLaunch = false;
+      }
+
       notifyListeners();
     }
   }
