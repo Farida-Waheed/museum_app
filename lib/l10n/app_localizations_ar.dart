@@ -365,28 +365,38 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dataReassurance => 'بياناتك مجهولة الهوية وتستخدم فقط للملاحة.';
 
   @override
-  String get onboarding1Title => 'مرحباً بك في حوروس';
+  String get introTitle => 'المتاحف المصرية';
 
   @override
-  String get onboarding1Desc => 'دليلك الذكي للمتحف.';
+  String get introSubtitle => 'استكشف المتاحف المصرية مع حورس-بوت.';
 
   @override
-  String get onboarding2Title => 'تعرف على حوروس';
+  String get onboarding1Title => 'مرحبًا بك في حورس-بوت';
 
   @override
-  String get onboarding2Desc => 'مرشدك الذكي للمتحف.';
+  String get onboarding1Desc =>
+      'دليلك الذكي داخل المتحف. تنقّل بين المعروضات، واتبع الروبوت، واكتشف القصص المخفية.';
 
   @override
-  String get onboarding3Title => 'وضع الجولة الموجهة';
+  String get onboarding2Title => 'تعرّف على حورس-بوت';
 
   @override
-  String get onboarding3Desc => 'إرشاد تلقائي عبر المعروضات.';
+  String get onboarding2Desc =>
+      'مرشدك الذكي داخل المتحف. اطرح الأسئلة، واستمع إلى الشروحات، واستكشف أثناء زيارتك.';
+
+  @override
+  String get onboarding3Title => 'وضع الجولة الإرشادية';
+
+  @override
+  String get onboarding3Desc =>
+      'إرشاد تلقائي عبر المعروضات. ابقَ متصلًا بحورس-بوت طوال رحلتك.';
 
   @override
   String get onboarding4Title => 'استكشف وتعلّم';
 
   @override
-  String get onboarding4Desc => 'اكتشف القطع الأثرية.';
+  String get onboarding4Desc =>
+      'اكتشف القطع الأثرية، واطرح الأسئلة، واستمتع بالاختبارات التفاعلية داخل المتحف.';
 
   @override
   String get next => 'التالي';

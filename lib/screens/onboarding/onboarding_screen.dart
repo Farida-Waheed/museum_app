@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
@@ -90,36 +89,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
         "desc": l10n.onboarding1Desc,
         "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/pyramid.png",
-        "iconSize": 82.0,
-        "iconScale": 1.0,
-        "useShadow": false, // Already has strong outlines
       },
       {
         "title": l10n.onboarding2Title,
         "desc": l10n.onboarding2Desc,
         "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/pharaoh.png",
-        "iconSize": 82.0,
-        "iconScale": 1.0, // Visual Benchmark
-        "useShadow": false,
       },
       {
         "title": l10n.onboarding3Title,
         "desc": l10n.onboarding3Desc,
         "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/map.png",
-        "iconSize": 82.0,
-        "iconScale": 0.82, // Map is a solid block, needs to be smaller to match visual weight
-        "useShadow": true, // Needs shadow to match the "strength" of outline icons
       },
       {
         "title": l10n.onboarding4Title,
         "desc": l10n.onboarding4Desc,
         "image": "assets/images/Onboarding.jpg",
         "iconPath": "assets/icons/scarab.png",
-        "iconSize": 82.0,
-        "iconScale": 1.1, // Wide and airy, needs slight upscale
-        "useShadow": false,
       },
     ];
 
@@ -175,58 +162,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
                                 mainAxisAlignment: MainAxisAlignment.center, // Lifted up
                                 children: [
                                   const SizedBox(height: 40), // Top spacing adjustment
-                                  // Unified Icon treatment
-                                  AnimatedBuilder(
-                                    animation: _floatController,
-                                    builder: (context, child) {
-                                      final double floatOffset = 8 * math.sin(_floatController.value * 2 * math.pi);
-                                      return Transform.translate(
-                                        offset: Offset(0, floatOffset),
-                                        child: child,
-                                      );
-                                    },
-                                    child: Container(
-                                      width: 110,
-                                      height: 110,
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        gradient: RadialGradient(
-                                          colors: [
-                                            const Color(0xFFE6C068).withOpacity(0.12),
-                                            const Color(0xFFE6C068).withOpacity(0.0),
-                                          ],
-                                        ),
-                                      ),
-                                      child: Center(
-                                        child: Transform.scale(
-                                          scale: pages[index]["iconScale"] ?? 1.0,
-                                          child: Stack(
-                                            alignment: Alignment.center,
-                                            children: [
-                                              // Optional shadow layer to unify different icon styles
-                                              if (pages[index]["useShadow"] == true)
-                                                Transform.translate(
-                                                  offset: const Offset(0, 2),
-                                                  child: Image.asset(
-                                                    pages[index]["iconPath"]!,
-                                                    width: pages[index]["iconSize"] ?? 82.0,
-                                                    height: pages[index]["iconSize"] ?? 82.0,
-                                                    fit: BoxFit.contain,
-                                                    color: Colors.black.withOpacity(0.2),
-                                                  ),
-                                                ),
-                                              // Main Icon
-                                              Image.asset(
-                                                pages[index]["iconPath"]!,
-                                                width: pages[index]["iconSize"] ?? 82.0,
-                                                height: pages[index]["iconSize"] ?? 82.0,
-                                                fit: BoxFit.contain,
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                                  // Simplified Icon treatment to match OLD version
+                                  Image.asset(
+                                    pages[index]["iconPath"]!,
+                                    width: 110,
+                                    height: 110,
+                                    fit: BoxFit.contain,
                                   ),
                                   const SizedBox(height: 28),
                                   Text(
