@@ -23,11 +23,9 @@ class UserPreferencesModel extends ChangeNotifier {
   bool get hasSeenLocationPrompt => _hasSeenLocationPrompt;
   String get themeMode => _themeMode;
 
-  UserPreferencesModel() {
-    _loadFromPrefs();
-  }
+  UserPreferencesModel();
 
-  Future<void> _loadFromPrefs() async {
+  Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
     _language = prefs.getString(_kLanguage) ?? 'en';
     _isHighContrast = prefs.getBool(_kIsHighContrast) ?? false;

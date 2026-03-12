@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/router.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/user_preferences.dart';
 import '../onboarding/onboarding_screen.dart';
 
@@ -80,6 +81,10 @@ class _IntroScreenState extends State<IntroScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+    final isArabic = prefs.language == 'ar';
+
     const String fontFamily = 'Playfair Display';
 
     const TextStyle smallTheStyle = TextStyle(
@@ -141,10 +146,10 @@ class _IntroScreenState extends State<IntroScreen>
             ),
           ),
 
-          Positioned(
+          PositionedDirectional(
             top: MediaQuery.of(context).padding.top + 50,
-            left: 20,
-            right: 20,
+            start: 20,
+            end: 20,
             child: FadeTransition(
               opacity: _fadeAnimation,
               child: ScaleTransition(
@@ -152,19 +157,26 @@ class _IntroScreenState extends State<IntroScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    RichText(
-                      text: const TextSpan(
+                    if (isArabic)
+                      Text(
+                        l10n.introTitle,
                         style: mainTitleStyle,
-                        children: <TextSpan>[
-                          TextSpan(text: 'The ', style: smallTheStyle),
-                          TextSpan(text: 'Egyptian'),
-                        ],
+                      )
+                    else ...[
+                      RichText(
+                        text: const TextSpan(
+                          style: mainTitleStyle,
+                          children: <TextSpan>[
+                            TextSpan(text: 'The ', style: smallTheStyle),
+                            TextSpan(text: 'Egyptian'),
+                          ],
+                        ),
                       ),
-                    ),
-                    const Text('Museums', style: mainTitleStyle),
+                      const Text('Museums', style: mainTitleStyle),
+                    ],
                     const SizedBox(height: 12),
-                    const Text(
-                      'Explore Egypt with your Horus-Bot and its app.',
+                    Text(
+                      l10n.introSubtitle,
                       style: taglineStyle,
                     ),
                   ],
