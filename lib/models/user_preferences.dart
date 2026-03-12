@@ -23,8 +23,10 @@ class UserPreferencesModel extends ChangeNotifier {
   bool get hasSeenLocationPrompt => _hasSeenLocationPrompt;
   String get themeMode => _themeMode;
 
-  UserPreferencesModel() {
-    _loadFromPrefs();
+  UserPreferencesModel();
+
+  Future<void> init() async {
+    await _loadFromPrefs();
   }
 
   Future<void> _loadFromPrefs() async {

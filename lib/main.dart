@@ -13,10 +13,13 @@ Future<void> main() async {
   await initializeDateFormatting('en', null);
   await initializeDateFormatting('ar', null);
 
+  final userPrefs = UserPreferencesModel();
+  await userPrefs.init();
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => UserPreferencesModel()),
+        ChangeNotifierProvider.value(value: userPrefs),
         ChangeNotifierProvider(create: (_) => ExhibitProvider()),
         ChangeNotifierProvider(create: (_) => TourProvider()),
       ],
