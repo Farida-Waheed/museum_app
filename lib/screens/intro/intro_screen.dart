@@ -172,18 +172,6 @@ class _IntroScreenState extends State<IntroScreen>
               ),
             ),
           ),
-
-          const Positioned(
-            bottom: 50,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 2.2,
-              ),
-            ),
-          ),
         ],
       ),
     );
