@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,6 +28,10 @@ class UserPreferencesModel extends ChangeNotifier {
     _loadFromPrefs();
   }
 
+  final Completer<void> _completer = Completer();
+
+  Future<void> get ready => _completer.future;
+
   Future<void> _loadFromPrefs() async {
     final prefs = await SharedPreferences.getInstance();
     _language = prefs.getString(_kLanguage) ?? 'en';
@@ -36,6 +41,7 @@ class UserPreferencesModel extends ChangeNotifier {
     _hasSeenLocationPrompt = prefs.getBool(_kHasSeenLocationPrompt) ?? false;
     _themeMode = prefs.getString(_kThemeMode) ?? 'dark';
     notifyListeners();
+    _completer.complete();
   }
 
   Future<void> setLanguage(String lang) async {
@@ -58,7 +64,7 @@ class UserPreferencesModel extends ChangeNotifier {
     await prefs.setBool(_kIsHighContrast, value);
     notifyListeners();
   }
-  
+
   Future<void> setFontScale(double scale) async {
     _fontScale = scale;
     final prefs = await SharedPreferences.getInstance();
