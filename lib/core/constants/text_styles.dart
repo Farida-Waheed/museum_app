@@ -8,27 +8,27 @@ class AppTextStyles {
   static TextStyle heroTitle(BuildContext context) {
     return const TextStyle(
       fontFamily: _fontFamily,
-      fontWeight: FontWeight.w900,
-      fontSize: 34, // ~34-36px
+      fontWeight: FontWeight.w300, // Light for editorial look
+      fontSize: 40,
       color: Colors.white,
-      letterSpacing: 0.5,
+      letterSpacing: 1.0,
+      height: 1.1,
     );
   }
 
   static TextStyle heroSubtitle(BuildContext context) {
     return const TextStyle(
-      fontFamily: _fontFamily,
       fontWeight: FontWeight.w400,
-      fontSize: 16, // ~16px
+      fontSize: 16,
       color: Colors.white70,
-      height: 1.4,
+      height: 1.5,
     );
   }
 
   static TextStyle screenTitle(BuildContext context) {
     return const TextStyle(
       fontFamily: _fontFamily,
-      fontWeight: FontWeight.w900,
+      fontWeight: FontWeight.w700,
       fontSize: 26,
       color: Colors.white,
       letterSpacing: 0.5,
@@ -37,18 +37,16 @@ class AppTextStyles {
 
   static TextStyle sectionTitle(BuildContext context) {
     return const TextStyle(
-      fontFamily: _fontFamily,
-      fontWeight: FontWeight.bold,
-      fontSize: 15,
+      fontWeight: FontWeight.w900,
+      fontSize: 13,
       color: AppColors.primaryGold,
-      letterSpacing: 1.2,
+      letterSpacing: 2.0,
     );
   }
 
   static TextStyle cardTitle(BuildContext context) {
     return const TextStyle(
-      fontFamily: _fontFamily,
-      fontWeight: FontWeight.w700,
+      fontWeight: FontWeight.bold,
       fontSize: 17,
       color: Colors.white,
     );
@@ -56,7 +54,6 @@ class AppTextStyles {
 
   static TextStyle body(BuildContext context) {
     return const TextStyle(
-      fontFamily: _fontFamily,
       fontWeight: FontWeight.w400,
       fontSize: 14,
       color: AppColors.neutralMedium,
@@ -66,7 +63,6 @@ class AppTextStyles {
 
   static TextStyle helper(BuildContext context) {
     return const TextStyle(
-      fontFamily: _fontFamily,
       fontWeight: FontWeight.w400,
       fontSize: 12.5,
       color: AppColors.helperText,
@@ -75,11 +71,20 @@ class AppTextStyles {
 
   static TextStyle button(BuildContext context) {
     return const TextStyle(
-      fontFamily: _fontFamily,
       fontWeight: FontWeight.w900,
       fontSize: 14.5,
       color: AppColors.darkInk,
-      letterSpacing: 0.5,
+      letterSpacing: 1.0,
+    );
+  }
+
+  // Brand specific
+  static TextStyle brandTitle(BuildContext context, {bool isDark = true}) {
+    return TextStyle(
+      fontWeight: FontWeight.w900,
+      fontSize: 20,
+      letterSpacing: 2.0,
+      color: isDark ? Colors.white : AppColors.darkInk,
     );
   }
 
