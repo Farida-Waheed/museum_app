@@ -167,26 +167,31 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           // --- Main content ---
           Column(
             children: [
-              const Spacer(),
-
               Expanded(
-                flex: 7,
-                child: PageView.builder(
-                  controller: _pageController,
-                  itemCount: pages.length,
-                  onPageChanged: (value) {
-                    setState(() => _currentPage = value);
-                  },
-                  itemBuilder: (context, index) {
-                    return SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 28),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                          AnimatedBuilder(
-                            animation: _floatController,
-                            builder: (context, child) {
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    return PageView.builder(
+                      controller: _pageController,
+                      itemCount: pages.length,
+                      onPageChanged: (value) {
+                        setState(() => _currentPage = value);
+                      },
+                      itemBuilder: (context, index) {
+                        return SingleChildScrollView(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minHeight: constraints.maxHeight,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 28,
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  AnimatedBuilder(
+                                    animation: _floatController,
+                                    builder: (context, child) {
                               final offset =
                                   math.sin(_floatController.value * math.pi) *
                                   8;
@@ -276,49 +281,52 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                 height: 1.5,
                               ),
                             ),
+                            const SizedBox(height: 32),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(pages.length, (idx) {
+                                final bool active = _currentPage == idx;
+                                return AnimatedContainer(
+                                  duration: const Duration(milliseconds: 400),
+                                  margin: const EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                  ),
+                                  width: active ? 26 : 8,
+                                  height: 6,
+                                  decoration: BoxDecoration(
+                                    color: active
+                                        ? const Color(0xFFE6C068)
+                                        : const Color(0xFF666666),
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      if (active)
+                                        BoxShadow(
+                                          color: const Color(
+                                            0xFFE6C068,
+                                          ).withOpacity(0.4),
+                                          blurRadius: 8,
+                                        ),
+                                    ],
+                                  ),
+                                );
+                              }),
+                            ),
                           ],
                         ),
-                      ),
+                              ),
+                            ),
+                        );
+                      },
                     );
                   },
                 ),
               ),
 
-              // --- Dots + Primary button ---
+              // --- Primary button ---
               Padding(
                 padding: const EdgeInsets.fromLTRB(24, 0, 24, 48),
                 child: Column(
                   children: [
-                    // Premium Dots indicator
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(pages.length, (index) {
-                        final bool active = _currentPage == index;
-                        return AnimatedContainer(
-                          duration: const Duration(milliseconds: 400),
-                          margin: const EdgeInsets.symmetric(horizontal: 5),
-                          width: active ? 26 : 8,
-                          height: 6,
-                          decoration: BoxDecoration(
-                            color: active
-                                ? const Color(0xFFE6C068)
-                                : const Color(0xFF666666),
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              if (active)
-                                BoxShadow(
-                                  color: const Color(
-                                    0xFFE6C068,
-                                  ).withOpacity(0.4),
-                                  blurRadius: 8,
-                                ),
-                            ],
-                          ),
-                        );
-                      }),
-                    ),
-                    const SizedBox(height: 32),
-
                     // Primary CTA
                     SizedBox(
                       width: double.infinity,
