@@ -113,6 +113,31 @@ class _SideMenu extends StatelessWidget {
                         onTap: () => onReplace(AppRoutes.language),
                       ),
                       _MenuItem(
+                        icon: Icons.route_outlined,
+                        label: l10n.tourPlanner,
+                        onTap: () => onReplace(AppRoutes.tourPlanner),
+                      ),
+                      _MenuItem(
+                        icon: Icons.event_note_outlined,
+                        label: l10n.events,
+                        onTap: () => onReplace(AppRoutes.events),
+                      ),
+                      _MenuItem(
+                        icon: Icons.emoji_events_outlined,
+                        label: l10n.achievements,
+                        onTap: () => onReplace(AppRoutes.achievements),
+                      ),
+                      _MenuItem(
+                        icon: Icons.auto_awesome_mosaic_outlined,
+                        label: l10n.exhibits,
+                        onTap: () => onReplace(AppRoutes.exhibits),
+                      ),
+                      _MenuItem(
+                        icon: Icons.quiz_outlined,
+                        label: l10n.quiz,
+                        onTap: () => onReplace(AppRoutes.quiz),
+                      ),
+                      _MenuItem(
                         icon: Icons.accessibility_new_outlined,
                         label: l10n.accessibility,
                         onTap: () => onReplace(AppRoutes.accessibility),
