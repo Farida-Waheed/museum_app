@@ -35,17 +35,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     super.dispose();
   }
 
-  void _onNextPressed(UserPreferencesModel prefs, int totalPages) {
-    if (_currentPage < totalPages - 1) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 600),
-        curve: Curves.easeOutCubic,
-      );
-    } else {
-      _completeOnboarding(prefs);
-    }
-  }
-
   void _completeOnboarding(UserPreferencesModel prefs) {
     prefs.setCompletedOnboarding(true);
     Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
@@ -88,6 +77,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
 
     final prefs = Provider.of<UserPreferencesModel>(context);
+    final isArabic = prefs.language == 'ar';
 
     final List<Map<String, dynamic>> pages = [
       {
@@ -178,12 +168,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     setState(() => _currentPage = value);
                   },
                   itemBuilder: (context, index) {
-                    return SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 28),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 28),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
                           AnimatedBuilder(
                             animation: _floatController,
                             builder: (context, child) {
@@ -266,18 +255,17 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                               letterSpacing: 0.5,
                             ),
                           ),
-                            const SizedBox(height: 14),
-                            Text(
-                              pages[index]["desc"]!,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: Colors.white.withOpacity(0.85),
-                                fontSize: 15,
-                                height: 1.5,
-                              ),
+                          const SizedBox(height: 14),
+                          Text(
+                            pages[index]["desc"]!,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.85),
+                              fontSize: 15,
+                              height: 1.5,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   },
@@ -324,7 +312,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () => _onNextPressed(prefs, pages.length),
+                        onPressed: () => _completeOnboarding(prefs),
                         style: primaryCtaButtonStyle,
                         child: Text(
                           l10n.startExploring.toUpperCase(),
@@ -343,9 +331,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
           ),
 
           // --- Language selector (Top Start) ---
-          PositionedDirectional(
+          Positioned(
             top: 48,
-            start: 24,
+            left: isArabic ? null : 24,
+            right: isArabic ? 24 : null,
             child: SafeArea(
               child: PopupMenuButton<String>(
                 onSelected: (lang) => prefs.setLanguage(lang),
