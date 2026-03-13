@@ -1,9 +1,7 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/router.dart';
-import '../../l10n/app_localizations.dart';
 import '../../models/user_preferences.dart';
 import '../onboarding/onboarding_screen.dart';
 
@@ -21,9 +19,6 @@ class _IntroScreenState extends State<IntroScreen>
   late final AnimationController _animController;
   late final Animation<double> _fadeAnimation;
   late final Animation<double> _scaleAnimation;
-
-  Timer? _timer;
-  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -48,52 +43,43 @@ class _IntroScreenState extends State<IntroScreen>
   }
 
   void _startTimer() {
-    _timer = Timer(const Duration(seconds: 2), () {
-      _navigateNext();
+    Future.delayed(const Duration(seconds: 2), () {
+      if (!mounted) return;
+
+      final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+
+      if (prefs.hasCompletedOnboarding) {
+        Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
+      } else {
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            settings: const RouteSettings(name: AppRoutes.onboarding),
+            transitionDuration: const Duration(milliseconds: 600),
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const OnboardingScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  final curved = CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  );
+
+                  return FadeTransition(opacity: curved, child: child);
+                },
+          ),
+        );
+      }
     });
-  }
-
-  void _navigateNext() {
-    if (!mounted || _isNavigating) return;
-    _isNavigating = true;
-    _timer?.cancel();
-
-    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
-
-    if (prefs.hasCompletedOnboarding) {
-      Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
-    } else {
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          settings: const RouteSettings(name: AppRoutes.onboarding),
-          transitionDuration: const Duration(milliseconds: 600),
-          pageBuilder:
-              (context, animation, secondaryAnimation) =>
-                  const OnboardingScreen(),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            final curved = CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOutCubic,
-            );
-
-            return FadeTransition(opacity: curved, child: child);
-          },
-        ),
-      );
-    }
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
     _animController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     const String fontFamily = 'Playfair Display';
 
     const TextStyle smallTheStyle = TextStyle(
@@ -120,12 +106,9 @@ class _IntroScreenState extends State<IntroScreen>
     );
 
     return Scaffold(
-      body: GestureDetector(
-        onTap: _navigateNext,
-        behavior: HitTestBehavior.opaque,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
           Image.asset(
             'assets/images/GEM.jpg',
             fit: BoxFit.cover,
@@ -158,10 +141,10 @@ class _IntroScreenState extends State<IntroScreen>
             ),
           ),
 
-          PositionedDirectional(
+          Positioned(
             top: MediaQuery.of(context).padding.top + 50,
-            start: 20,
-            end: 20,
+            left: 20,
+            right: 20,
             child: FadeTransition(
               opacity: _fadeAnimation,
               child: ScaleTransition(
@@ -169,42 +152,39 @@ class _IntroScreenState extends State<IntroScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (isArabic) ...[
-                      const Text('المتاحف', style: mainTitleStyle),
-                      const Text('المصرية', style: mainTitleStyle),
-                    ] else ...[
-                      RichText(
-                        text: const TextSpan(
-                          style: mainTitleStyle,
-                          children: <TextSpan>[
-                            TextSpan(text: 'The ', style: smallTheStyle),
-                            TextSpan(text: 'Egyptian'),
-                          ],
-                        ),
+                    RichText(
+                      text: const TextSpan(
+                        style: mainTitleStyle,
+                        children: <TextSpan>[
+                          TextSpan(text: 'The ', style: smallTheStyle),
+                          TextSpan(text: 'Egyptian'),
+                        ],
                       ),
-                      const Text('Museums', style: mainTitleStyle),
-                    ],
+                    ),
+                    const Text('Museums', style: mainTitleStyle),
                     const SizedBox(height: 12),
-                    Text(l10n.introSubtitle, style: taglineStyle),
+                    const Text(
+                      'Explore Egypt with your Horus-Bot and its app.',
+                      style: taglineStyle,
+                    ),
                   ],
                 ),
               ),
             ),
           ),
 
-            const Positioned(
-              bottom: 50,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: Colors.white,
-                  strokeWidth: 2.2,
-                ),
+          const Positioned(
+            bottom: 50,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: CircularProgressIndicator(
+                color: Colors.white,
+                strokeWidth: 2.2,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
