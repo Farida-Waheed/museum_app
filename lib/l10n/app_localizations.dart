@@ -1321,6 +1321,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Follow the robot to continue your tour.'**
   String get robotNearbyMsg;
+
+  /// No description provided for @permissionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'App Permissions'**
+  String get permissionsTitle;
+
+  /// No description provided for @permissionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable these features to get the most out of your museum visit.'**
+  String get permissionsSubtitle;
+
+  /// No description provided for @locationPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Location Access'**
+  String get locationPermissionTitle;
+
+  /// No description provided for @locationPermissionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Used for indoor navigation, finding nearby exhibits, and following the robot.'**
+  String get locationPermissionDesc;
+
+  /// No description provided for @notificationPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationPermissionTitle;
+
+  /// No description provided for @notificationPermissionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive alerts for tour starts, next exhibits, and quiz reminders.'**
+  String get notificationPermissionDesc;
+
+  /// No description provided for @cameraPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera Access'**
+  String get cameraPermissionTitle;
+
+  /// No description provided for @cameraPermissionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Needed for scanning QR tickets and future AR features.'**
+  String get cameraPermissionDesc;
+
+  /// No description provided for @micPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone'**
+  String get micPermissionTitle;
+
+  /// No description provided for @micPermissionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Used for voice interaction and questions to Horus.'**
+  String get micPermissionDesc;
+
+  /// No description provided for @continueBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'CONTINUE TO HOME'**
+  String get continueBtn;
 }
 
 class _AppLocalizationsDelegate

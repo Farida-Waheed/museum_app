@@ -2,23 +2,31 @@ import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
 
-class LocationPermissionDialog extends StatefulWidget {
+class BrandedPermissionDialog extends StatefulWidget {
+  final IconData icon;
+  final String title;
+  final String description;
+  final String? helperText;
   final VoidCallback onAllow;
   final VoidCallback onDeny;
   final bool isHighContrast;
 
-  const LocationPermissionDialog({
+  const BrandedPermissionDialog({
     super.key,
+    required this.icon,
+    required this.title,
+    required this.description,
+    this.helperText,
     required this.onAllow,
     required this.onDeny,
     this.isHighContrast = false,
   });
 
   @override
-  State<LocationPermissionDialog> createState() => _LocationPermissionDialogState();
+  State<BrandedPermissionDialog> createState() => _BrandedPermissionDialogState();
 }
 
-class _LocationPermissionDialogState extends State<LocationPermissionDialog> with SingleTickerProviderStateMixin {
+class _BrandedPermissionDialogState extends State<BrandedPermissionDialog> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
@@ -52,7 +60,6 @@ class _LocationPermissionDialogState extends State<LocationPermissionDialog> wit
     final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Theme-based colors alignment
     Color surfaceColor;
     Color textColor;
     Color secondaryTextColor;
@@ -66,7 +73,7 @@ class _LocationPermissionDialogState extends State<LocationPermissionDialog> wit
       textColor = Colors.white;
       secondaryTextColor = Colors.white;
       helperTextColor = Colors.white;
-      goldAccent = const Color(0xFFFFD700); // High visibility gold
+      goldAccent = const Color(0xFFFFD700);
       borderColor = goldAccent;
     } else if (isDark) {
       surfaceColor = AppColors.darkSurface;
@@ -75,7 +82,6 @@ class _LocationPermissionDialogState extends State<LocationPermissionDialog> wit
       helperTextColor = AppColors.helperText;
       borderColor = AppColors.primaryGold;
     } else {
-      // Light Mode (Warm Ivory/Sandstone)
       surfaceColor = const Color(0xFFF7F2E8);
       textColor = const Color(0xFF2A2118);
       secondaryTextColor = const Color(0xFF5C5143);
@@ -88,7 +94,6 @@ class _LocationPermissionDialogState extends State<LocationPermissionDialog> wit
       backgroundColor: Colors.transparent,
       body: Stack(
         children: [
-          // Background overlay
           Positioned.fill(
             child: GestureDetector(
               onTap: widget.onDeny,
@@ -119,18 +124,11 @@ class _LocationPermissionDialogState extends State<LocationPermissionDialog> wit
                           blurRadius: 30,
                           offset: const Offset(0, 12),
                         ),
-                        if (isDark && !widget.isHighContrast)
-                          BoxShadow(
-                            color: goldAccent.withOpacity(0.05),
-                            blurRadius: 40,
-                            spreadRadius: 2,
-                          ),
                       ],
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        // Redesigned Icon (Gold pin with glow)
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
@@ -138,15 +136,14 @@ class _LocationPermissionDialogState extends State<LocationPermissionDialog> wit
                             color: goldAccent.withOpacity(0.1),
                           ),
                           child: Icon(
-                            Icons.location_on,
+                            widget.icon,
                             size: 32,
                             color: goldAccent,
                           ),
                         ),
                         const SizedBox(height: 24),
-                        // Title
                         Text(
-                          l10n.allowLocationAccess,
+                          widget.title,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: textColor,
@@ -156,9 +153,8 @@ class _LocationPermissionDialogState extends State<LocationPermissionDialog> wit
                           ),
                         ),
                         const SizedBox(height: 14),
-                        // Body
                         Text(
-                          l10n.locationPermissionBody,
+                          widget.description,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: secondaryTextColor,
@@ -166,19 +162,19 @@ class _LocationPermissionDialogState extends State<LocationPermissionDialog> wit
                             height: 1.5,
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        // Helper/Privacy
-                        Text(
-                          l10n.dataReassurance,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: helperTextColor,
-                            fontSize: 12.5,
-                            fontStyle: FontStyle.italic,
+                        if (widget.helperText != null) ...[
+                          const SizedBox(height: 12),
+                          Text(
+                            widget.helperText!,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: helperTextColor,
+                              fontSize: 12.5,
+                              fontStyle: FontStyle.italic,
+                            ),
                           ),
-                        ),
+                        ],
                         const SizedBox(height: 32),
-                        // Actions Row
                         Row(
                           children: [
                             Expanded(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../widgets/dialogs/branded_permission_dialog.dart';
 import '../../l10n/app_localizations.dart';
 
 class ArScreen extends StatefulWidget {
@@ -44,10 +45,29 @@ class _ArScreenState extends State<ArScreen> with SingleTickerProviderStateMixin
       });
       return;
     }
-    final status = await Permission.camera.request();
-    setState(() {
-      _hasPermission = status.isGranted;
-    });
+    final status = await Permission.camera.status;
+    if (!status.isGranted && mounted) {
+      final l10n = AppLocalizations.of(context)!;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => BrandedPermissionDialog(
+          icon: Icons.camera_alt_outlined,
+          title: l10n.cameraPermissionTitle,
+          description: l10n.cameraPermissionDesc,
+          onAllow: () async {
+            Navigator.pop(context);
+            final result = await Permission.camera.request();
+            if (mounted) setState(() => _hasPermission = result.isGranted);
+          },
+          onDeny: () => Navigator.pop(context),
+        ),
+      );
+    } else {
+      setState(() {
+        _hasPermission = status.isGranted;
+      });
+    }
   }
 
   @override
