@@ -8,7 +8,8 @@ import '../../app/router.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
-import '../../core/services/permission_service.dart';
+import '../../widgets/dialogs/branded_permission_dialog.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
@@ -39,7 +40,7 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
     exhibits = MockDataService.getAllExhibits();
 
     Future.delayed(Duration.zero, () {
-      PermissionService.checkAndRequestLocation(context, forcePrompt: true);
+      _checkLocationPermission();
     });
 
     _pulseController = AnimationController(
@@ -63,6 +64,28 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
       context: context,
       builder: (context) => _ExhibitInfoPopup(exhibit: exhibit, isVisited: isVisited),
     );
+  }
+
+  Future<void> _checkLocationPermission() async {
+    if (kIsWeb) return;
+    final status = await Permission.locationWhenInUse.status;
+    if (!status.isGranted && mounted) {
+      final l10n = AppLocalizations.of(context)!;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => BrandedPermissionDialog(
+          icon: Icons.location_on_outlined,
+          title: l10n.locationPermissionTitle,
+          description: l10n.locationPermissionDesc,
+          onAllow: () async {
+            Navigator.pop(context);
+            await Permission.locationWhenInUse.request();
+          },
+          onDeny: () => Navigator.pop(context),
+        ),
+      );
+    }
   }
 
   @override

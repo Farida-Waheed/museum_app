@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/app_menu_shell.dart';
-import '../../widgets/section_title.dart';
-import '../../widgets/stat_card.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../app/router.dart';
@@ -21,6 +19,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return AppMenuShell(
       title: l10n.profile,
@@ -31,37 +31,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           children: [
             // A. Visitor Identity Header
-            const _VisitorHeader(),
+            _VisitorHeader(isArabic: isArabic),
             const SizedBox(height: 32),
 
             // B. Visitor Statistics
-            SectionTitle(title: l10n.visitorStats),
-            const _VisitorStats(),
-            const SizedBox(height: 16),
+            _SectionTitle(title: isArabic ? "إحصائيات الزائر" : "Visitor Statistics"),
+            _VisitorStats(isArabic: isArabic),
+            const SizedBox(height: 32),
 
             // C. My Tours
-            SectionTitle(title: l10n.myTours),
-            const _MyTours(),
+            _SectionTitle(title: isArabic ? "جولاتي" : "My Tours"),
+            _MyTours(isArabic: isArabic),
             const SizedBox(height: 32),
 
             // D. Saved Exhibits
-            SectionTitle(title: l10n.savedExhibits),
-            const _SavedExhibits(),
+            _SectionTitle(title: isArabic ? "المعروضات المحفوظة" : "Saved Exhibits"),
+            _SavedExhibits(isArabic: isArabic),
             const SizedBox(height: 32),
 
             // E. Learning Progress
-            SectionTitle(title: l10n.learningProgress),
-            const _LearningProgress(),
+            _SectionTitle(title: isArabic ? "تقدم التعلم" : "Learning Progress"),
+            _LearningProgress(isArabic: isArabic),
             const SizedBox(height: 32),
 
             // F. Quick Preferences
-            SectionTitle(title: l10n.quickPreferences),
-            const _QuickPreferences(),
+            _SectionTitle(title: isArabic ? "التفضيلات السريعة" : "Quick Preferences"),
+            _QuickPreferences(isArabic: isArabic),
             const SizedBox(height: 32),
 
             // G. My Tickets
-            SectionTitle(title: l10n.myTickets),
-            const _MyTickets(),
+            _SectionTitle(title: isArabic ? "تذاكري" : "My Tickets"),
+            _MyTickets(isArabic: isArabic),
             const SizedBox(height: 48),
 
             // Logout
@@ -75,7 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   backgroundColor: AppColors.darkSurface,
                 ),
-                child: Text(l10n.signOut, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                child: Text(isArabic ? "تسجيل الخروج" : "Sign Out", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),
             const SizedBox(height: 48),
@@ -86,12 +86,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-
-class _VisitorHeader extends StatelessWidget {
-  const _VisitorHeader();
+class _SectionTitle extends StatelessWidget {
+  final String title;
+  const _SectionTitle({required this.title});
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 4, bottom: 16, right: 4),
+        child: Text(title.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
+      ),
+    );
+  }
+}
+
+class _VisitorHeader extends StatelessWidget {
+  final bool isArabic;
+  const _VisitorHeader({required this.isArabic});
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -134,12 +148,12 @@ class _VisitorHeader extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    l10n.explorer,
+                    isArabic ? "مستكشف" : "Explorer",
                     style: const TextStyle(color: AppColors.primaryGold, fontSize: 11, fontWeight: FontWeight.bold),
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(l10n.memberSince, style: AppTextStyles.helper(context)),
+                Text(isArabic ? "عضو منذ أكتوبر ٢٠٢٣" : "Member since Oct 2023", style: AppTextStyles.helper(context)),
               ],
             ),
           ),
@@ -150,10 +164,10 @@ class _VisitorHeader extends StatelessWidget {
 }
 
 class _VisitorStats extends StatelessWidget {
-  const _VisitorStats();
+  final bool isArabic;
+  const _VisitorStats({required this.isArabic});
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
@@ -162,20 +176,55 @@ class _VisitorStats extends StatelessWidget {
       crossAxisSpacing: 12,
       childAspectRatio: 1.6,
       children: [
-        StatCard(icon: Icons.explore_outlined, value: "12", label: l10n.exhibits, isVertical: false),
-        StatCard(icon: Icons.route_outlined, value: "03", label: l10n.tour, isVertical: false),
-        StatCard(icon: Icons.auto_stories_outlined, value: "45", label: l10n.exhibit, isVertical: false),
-        StatCard(icon: Icons.quiz_outlined, value: "850", label: l10n.quiz, isVertical: false),
+        _StatCard(icon: Icons.explore_outlined, count: "12", label: isArabic ? "معرض مستكشف" : "Exhibits"),
+        _StatCard(icon: Icons.route_outlined, count: "03", label: isArabic ? "جولة مكتملة" : "Tours"),
+        _StatCard(icon: Icons.auto_stories_outlined, count: "45", label: isArabic ? "قطع تم تعلمها" : "Artifacts"),
+        _StatCard(icon: Icons.quiz_outlined, count: "850", label: isArabic ? "نقاط الاختبار" : "Quiz Score"),
       ],
     );
   }
 }
 
-class _MyTours extends StatelessWidget {
-  const _MyTours();
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final String count;
+  final String label;
+  const _StatCard({required this.icon, required this.count, required this.label});
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.darkSurface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.darkDivider),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: AppColors.primaryGold, size: 20),
+          const SizedBox(height: 8),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(count, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(width: 4),
+              Flexible(child: Text(label, style: AppTextStyles.helper(context).copyWith(fontSize: 10), overflow: TextOverflow.ellipsis)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MyTours extends StatelessWidget {
+  final bool isArabic;
+  const _MyTours({required this.isArabic});
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -186,9 +235,9 @@ class _MyTours extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _TourRow(name: l10n.newKingdomHighlights, status: l10n.completed, progress: 1.0),
+          _TourRow(name: isArabic ? "أبرز مقتنيات الدولة الحديثة" : "New Kingdom Highlights", status: "Completed", progress: 1.0),
           const Divider(height: 32, color: AppColors.darkDivider),
-          _TourRow(name: l10n.tutankhamunTreasures, status: l10n.inProgress, progress: 0.6),
+          _TourRow(name: isArabic ? "جولة كنوز توت عنخ آمون" : "Tutankhamun Treasures", status: "In Progress", progress: 0.6),
         ],
       ),
     );
@@ -202,7 +251,6 @@ class _TourRow extends StatelessWidget {
   const _TourRow({required this.name, required this.status, required this.progress});
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -210,7 +258,7 @@ class _TourRow extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(name, style: AppTextStyles.cardTitle(context).copyWith(fontSize: 15)),
-            Text(status, style: TextStyle(color: status == l10n.completed ? Colors.green : AppColors.primaryGold, fontSize: 11, fontWeight: FontWeight.bold)),
+            Text(status, style: TextStyle(color: status == "Completed" ? Colors.green : AppColors.primaryGold, fontSize: 11, fontWeight: FontWeight.bold)),
           ],
         ),
         const SizedBox(height: 12),
@@ -229,18 +277,18 @@ class _TourRow extends StatelessWidget {
 }
 
 class _SavedExhibits extends StatelessWidget {
-  const _SavedExhibits();
+  final bool isArabic;
+  const _SavedExhibits({required this.isArabic});
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
       height: 140,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          _SavedItem(image: "assets/images/pharaoh_head.jpg", name: l10n.tutMask),
-          _SavedItem(image: "assets/images/museum_interior.jpg", name: l10n.ramesses2),
-          _SavedItem(image: "assets/images/canopic_jars.jpg", name: l10n.canopicJars),
+          _SavedItem(image: "assets/images/pharaoh_head.jpg", name: isArabic ? "قناع توت عنخ آمون" : "Tut Mask"),
+          _SavedItem(image: "assets/images/museum_interior.jpg", name: isArabic ? "تمثال رمسيس" : "Ramesses II"),
+          _SavedItem(image: "assets/images/canopic_jars.jpg", name: isArabic ? "أواني كانوبية" : "Canopic Jars"),
         ],
       ),
     );
@@ -272,10 +320,10 @@ class _SavedItem extends StatelessWidget {
 }
 
 class _LearningProgress extends StatelessWidget {
-  const _LearningProgress();
+  final bool isArabic;
+  const _LearningProgress({required this.isArabic});
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -285,11 +333,11 @@ class _LearningProgress extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _LearningRow(label: l10n.ancientEgyptHistory, progress: 0.4),
+          _LearningRow(label: isArabic ? "تاريخ مصر القديمة" : "Ancient Egypt History", progress: 0.4),
           const SizedBox(height: 16),
-          _LearningRow(label: l10n.hieroglyphBasics, progress: 0.1),
+          _LearningRow(label: isArabic ? "أساسيات الهيروغليفية" : "Hieroglyph Basics", progress: 0.1),
           const SizedBox(height: 16),
-          _LearningRow(label: l10n.pharaohDynastyKnowledge, progress: 0.7),
+          _LearningRow(label: isArabic ? "معرفة الأسر الفرعونية" : "Pharaoh Dynasty Knowledge", progress: 0.7),
         ],
       ),
     );
@@ -321,16 +369,16 @@ class _LearningRow extends StatelessWidget {
 }
 
 class _QuickPreferences extends StatelessWidget {
-  const _QuickPreferences();
+  final bool isArabic;
+  const _QuickPreferences({required this.isArabic});
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
-        _QuickAction(icon: Icons.language, label: l10n.lang),
-        _QuickAction(icon: Icons.dark_mode, label: l10n.dark),
-        _QuickAction(icon: Icons.volume_up, label: l10n.audio),
-        _QuickAction(icon: Icons.accessibility, label: l10n.access),
+        _QuickAction(icon: Icons.language, label: isArabic ? "اللغة" : "Lang"),
+        _QuickAction(icon: Icons.dark_mode, label: isArabic ? "المظهر" : "Dark"),
+        _QuickAction(icon: Icons.volume_up, label: isArabic ? "الصوت" : "Audio"),
+        _QuickAction(icon: Icons.accessibility, label: isArabic ? "الوصول" : "Access"),
       ],
     );
   }
@@ -360,10 +408,10 @@ class _QuickAction extends StatelessWidget {
 }
 
 class _MyTickets extends StatelessWidget {
-  const _MyTickets();
+  final bool isArabic;
+  const _MyTickets({required this.isArabic});
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(color: AppColors.darkSurface, borderRadius: BorderRadius.circular(20), border: Border.all(color: AppColors.darkDivider)),
@@ -375,7 +423,7 @@ class _MyTickets extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Grand Egyptian Museum", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                Text(isArabic ? "المتحف المصري الكبير" : "Grand Egyptian Museum", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 Text("Oct 25, 2023 • 10:00 AM", style: AppTextStyles.helper(context)),
               ],
             ),

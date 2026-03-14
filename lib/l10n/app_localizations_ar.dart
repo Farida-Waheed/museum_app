@@ -38,13 +38,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get fullView => 'عرض كامل';
 
   @override
-  String get horusBot => 'الدليل';
+  String get horusBot => 'حوروس';
 
   @override
-  String get talkToHorusBot => 'اسأل الدليل';
-
-  @override
-  String get assistantStatus => 'حالة المساعد';
+  String get talkToHorusBot => 'تحدث مع حوروس-بوت';
 
   @override
   String get askTheGuide => 'اسأل الدليل';
@@ -66,69 +63,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profile => 'الملف الشخصي';
-
-  @override
-  String get visitorStats => 'إحصائيات الزائر';
-
-  @override
-  String get myTours => 'جولاتي';
-
-  @override
-  String get savedExhibits => 'المعروضات المحفوظة';
-
-  @override
-  String get learningProgress => 'تقدم التعلم';
-
-  @override
-  String get quickPreferences => 'التفضيلات السريعة';
-
-  @override
-  String get myTickets => 'تذاكري';
-
-  @override
-  String get signOut => 'تسجيل الخروج';
-
-  @override
-  String get explorer => 'مستكشف';
-
-  @override
-  String get memberSince => 'عضو منذ أكتوبر ٢٠٢٣';
-
-  @override
-  String get newKingdomHighlights => 'أبرز مقتنيات الدولة الحديثة';
-
-  @override
-  String get tutankhamunTreasures => 'جولة كنوز توت عنخ آمون';
-
-  @override
-  String get completed => 'مكتمل';
-
-  @override
-  String get inProgress => 'قيد التنفيذ';
-
-  @override
-  String get tutMask => 'قناع توت';
-
-  @override
-  String get ramesses2 => 'رمسيس الثاني';
-
-  @override
-  String get ancientEgyptHistory => 'تاريخ مصر القديمة';
-
-  @override
-  String get hieroglyphBasics => 'أساسيات الهيروغليفية';
-
-  @override
-  String get pharaohDynastyKnowledge => 'معرفة الأسر الفرعونية';
-
-  @override
-  String get lang => 'اللغة';
-
-  @override
-  String get audio => 'الصوت';
-
-  @override
-  String get access => 'الوصول';
 
   @override
   String get map => 'الخريطة';
