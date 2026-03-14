@@ -26,16 +26,8 @@ class UserPreferencesModel extends ChangeNotifier {
   bool get hasSeenLocationPrompt => _hasSeenLocationPrompt;
   String get themeMode => _themeMode;
 
-  UserPreferencesModel();
-
-  static Future<UserPreferencesModel> init() async {
-    final model = UserPreferencesModel();
-    try {
-      await model._loadFromPrefs();
-    } catch (e) {
-      debugPrint("SharedPreferences init failed: $e");
-    }
-    return model;
+  UserPreferencesModel() {
+    _loadFromPrefs();
   }
 
   Future<void> _loadFromPrefs() async {

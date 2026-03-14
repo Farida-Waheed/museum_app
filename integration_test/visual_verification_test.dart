@@ -15,10 +15,12 @@ void main() {
 
     // 1. Initial Onboarding
     expect(find.byType(OnboardingScreen), findsOneWidget);
+    await tester.takeScreenshot('onboarding_1');
 
     // 2. Swipe through onboarding
     await tester.drag(find.byType(PageView), const Offset(-400, 0));
     await tester.pumpAndSettle();
+    await tester.takeScreenshot('onboarding_swiped');
 
     // 3. Start Exploring (Available on every slide now)
     final startExploringBtn = find.text('Start Exploring');
@@ -28,11 +30,13 @@ void main() {
 
     // 4. Verify Home Screen
     expect(find.byType(HomeScreen), findsOneWidget);
+    await tester.takeScreenshot('home_initial');
 
     // 5. Scroll and check App Bar
     final scrollable = find.byType(CustomScrollView);
     await tester.drag(scrollable, const Offset(0, -300));
     await tester.pumpAndSettle();
+    await tester.takeScreenshot('home_scrolled_new');
 
     // 6. Check FAB
     expect(find.text('Talk to Horus-Bot'), findsOneWidget);

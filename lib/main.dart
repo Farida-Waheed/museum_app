@@ -11,19 +11,13 @@ import 'models/chat_provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  try {
-    await initializeDateFormatting('en', null);
-    await initializeDateFormatting('ar', null);
-  } catch (e) {
-    debugPrint("DateFormatting init failed: $e");
-  }
-
-  final userPrefs = await UserPreferencesModel.init();
+  await initializeDateFormatting('en', null);
+  await initializeDateFormatting('ar', null);
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(value: userPrefs),
+        ChangeNotifierProvider(create: (_) => UserPreferencesModel()),
         ChangeNotifierProvider(create: (_) => ExhibitProvider()),
         ChangeNotifierProvider(create: (_) => TourProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),

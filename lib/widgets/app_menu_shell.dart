@@ -58,12 +58,11 @@ class _SideMenu extends StatelessWidget {
                           ),
                           const SizedBox(width: 16),
                           Text(
-                            "HORUS-BOT",
+                            l10n.appTitle,
                             style: TextStyle(
-                              fontSize: 22,
+                              fontSize: 24,
                               fontWeight: FontWeight.w900,
-                              letterSpacing: 2.0,
-                              fontFamily: 'Playfair Display',
+                              letterSpacing: 1.0,
                               color: isDark ? Colors.white : AppColors.darkInk,
                             ),
                           ),
