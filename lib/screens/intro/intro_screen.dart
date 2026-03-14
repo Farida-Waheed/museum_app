@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -5,6 +6,7 @@ import '../../app/router.dart';
 import '../../core/constants/text_styles.dart';
 import '../../models/user_preferences.dart';
 import '../onboarding/onboarding_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 class IntroScreen extends StatefulWidget {
   static const String routeName = '/intro';
@@ -20,6 +22,7 @@ class _IntroScreenState extends State<IntroScreen>
   late final AnimationController _animController;
   late final Animation<double> _fadeAnimation;
   late final Animation<double> _scaleAnimation;
+  Timer? _timer;
 
   @override
   void initState() {
@@ -43,11 +46,11 @@ class _IntroScreenState extends State<IntroScreen>
     _startTimer();
   }
 
-  void _startTimer() {
-    Future.delayed(const Duration(seconds: 2), () {
+  void _startTimer() async {
+    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+    await prefs.ready;
+    _timer = Timer(const Duration(seconds: 2), () {
       if (!mounted) return;
-
-      final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
 
       if (prefs.hasCompletedOnboarding) {
         Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
@@ -75,6 +78,7 @@ class _IntroScreenState extends State<IntroScreen>
 
   @override
   void dispose() {
+    _timer?.cancel();
     _animController.dispose();
     super.dispose();
   }
@@ -93,6 +97,8 @@ class _IntroScreenState extends State<IntroScreen>
     final TextStyle taglineStyle = AppTextStyles.body(context).copyWith(
       color: Colors.white70,
     );
+
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: Stack(
@@ -145,17 +151,17 @@ class _IntroScreenState extends State<IntroScreen>
                       text: TextSpan(
                         style: mainTitleStyle,
                         children: <TextSpan>[
-                          TextSpan(text: 'The ', style: smallTheStyle),
-                          const TextSpan(text: 'Egyptian'),
+                          TextSpan(
+                            text: l10n.introTitlePrefix,
+                            style: smallTheStyle,
+                          ),
+                          TextSpan(text: l10n.introTitleMain),
                         ],
                       ),
                     ),
-                    Text('Museums', style: mainTitleStyle),
+                    Text(l10n.introTitleSuffix, style: mainTitleStyle),
                     const SizedBox(height: 12),
-                    Text(
-                      'Explore Egypt with your Horus-Bot and its app.',
-                      style: taglineStyle,
-                    ),
+                    Text(l10n.introSubtitle, style: taglineStyle),
                   ],
                 ),
               ),
