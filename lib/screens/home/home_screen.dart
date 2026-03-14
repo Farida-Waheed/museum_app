@@ -551,7 +551,7 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             value,
-            style: AppTextStyles.cardTitle(context).copyWith(fontSize: 18),
+            style: AppTextStyles.statNumber(context),
           ),
           const SizedBox(height: 4),
           Text(
@@ -608,12 +608,12 @@ class _NextStopBadge extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    style: AppTextStyles.sectionTitle(context).copyWith(fontSize: 12),
+                    style: AppTextStyles.sectionTitle(context),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     location,
-                    style: AppTextStyles.cardTitle(context).copyWith(fontSize: 22),
+                    style: AppTextStyles.cardTitle(context),
                   ),
                   const SizedBox(height: 6),
                   Text(
@@ -699,7 +699,7 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
                     Expanded(
                       child: Text(
                         widget.title,
-                        style: AppTextStyles.cardTitle(context).copyWith(fontSize: 15),
+                        style: AppTextStyles.cardTitle(context),
                       ),
                     ),
                     if (widget.isHighlighted)
@@ -771,7 +771,7 @@ class _HighlightCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: AppTextStyles.cardTitle(context).copyWith(fontSize: 20),
+                    style: AppTextStyles.cardTitle(context),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -912,7 +912,7 @@ class _RobotStatusCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text("Horus-Bot Status", style: AppTextStyles.cardTitle(context).copyWith(fontSize: 15)),
+                    Text("Horus-Bot Status", style: AppTextStyles.cardTitle(context)),
                     const SizedBox(width: 8),
                     Container(
                       width: 7,

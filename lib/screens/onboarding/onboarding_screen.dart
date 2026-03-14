@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/router.dart';
+import '../../core/constants/text_styles.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/user_preferences.dart';
 
@@ -248,18 +249,15 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           Text(
                             pages[index]["title"]!,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: AppTextStyles.screenTitle(context).copyWith(
                               fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
                             ),
                           ),
                           const SizedBox(height: 14),
                           Text(
                             pages[index]["desc"]!,
                             textAlign: TextAlign.center,
-                            style: TextStyle(
+                            style: AppTextStyles.body(context).copyWith(
                               color: Colors.white.withOpacity(0.85),
                               fontSize: 15,
                               height: 1.5,
@@ -316,10 +314,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         style: primaryCtaButtonStyle,
                         child: Text(
                           l10n.startExploring.toUpperCase(),
-                          style: const TextStyle(
+                          style: AppTextStyles.button(context).copyWith(
                             fontSize: 15,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.2,
                           ),
                         ),
                       ),

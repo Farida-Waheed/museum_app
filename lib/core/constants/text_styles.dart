@@ -9,9 +9,9 @@ class AppTextStyles {
     return const TextStyle(
       fontFamily: _fontFamily,
       fontWeight: FontWeight.w300, // Light for editorial look
-      fontSize: 40,
+      fontSize: 44,
       color: Colors.white,
-      letterSpacing: 1.0,
+      letterSpacing: 1.5,
       height: 1.1,
     );
   }
@@ -47,7 +47,15 @@ class AppTextStyles {
   static TextStyle cardTitle(BuildContext context) {
     return const TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: 17,
+      fontSize: 19,
+      color: Colors.white,
+    );
+  }
+
+  static TextStyle statNumber(BuildContext context) {
+    return const TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 22,
       color: Colors.white,
     );
   }
@@ -81,6 +89,7 @@ class AppTextStyles {
   // Brand specific
   static TextStyle brandTitle(BuildContext context, {bool isDark = true}) {
     return TextStyle(
+      fontFamily: _fontFamily,
       fontWeight: FontWeight.w900,
       fontSize: 20,
       letterSpacing: 2.0,
