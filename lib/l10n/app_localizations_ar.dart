@@ -604,4 +604,38 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get program => 'كلية الحاسبات والذكاء الاصطناعي';
+
+  @override
+  String get tourStartingTitle => 'بدء الجولة';
+
+  @override
+  String get tourStartingMsg => 'جولتك الإرشادية ستبدأ الآن. اتبع حوروس-بوت.';
+
+  @override
+  String get nextExhibitTitle => 'المعروض التالي قادم';
+
+  @override
+  String nextExhibitMsg(Object location) {
+    return 'أنت تقترب من $location.';
+  }
+
+  @override
+  String get quizAvailableTitle => 'اختبار متاح';
+
+  @override
+  String quizAvailableMsg(Object location) {
+    return 'اختبر ما تعلمته عن $location.';
+  }
+
+  @override
+  String get takeQuiz => 'بدء الاختبار';
+
+  @override
+  String get smartTipTitle => 'نصيحة من حوروس';
+
+  @override
+  String get robotNearbyTitle => 'حوروس قريب منك';
+
+  @override
+  String get robotNearbyMsg => 'اتبع الروبوت لمواصلة جولتك.';
 }

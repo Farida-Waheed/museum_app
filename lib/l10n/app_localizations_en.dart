@@ -608,4 +608,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get program => 'Faculty of Computers and Artificial Intelligence';
+
+  @override
+  String get tourStartingTitle => 'Tour Starting';
+
+  @override
+  String get tourStartingMsg =>
+      'Your guided tour is starting. Follow Horus-Bot.';
+
+  @override
+  String get nextExhibitTitle => 'Next Exhibit Ahead';
+
+  @override
+  String nextExhibitMsg(Object location) {
+    return '$location is approaching.';
+  }
+
+  @override
+  String get quizAvailableTitle => 'Quiz Available';
+
+  @override
+  String quizAvailableMsg(Object location) {
+    return 'Test what you learned about $location.';
+  }
+
+  @override
+  String get takeQuiz => 'Take Quiz';
+
+  @override
+  String get smartTipTitle => 'Tip from Horus-Bot';
+
+  @override
+  String get robotNearbyTitle => 'Horus-Bot is nearby';
+
+  @override
+  String get robotNearbyMsg => 'Follow the robot to continue your tour.';
 }
