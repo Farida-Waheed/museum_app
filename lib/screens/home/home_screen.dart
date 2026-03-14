@@ -13,7 +13,7 @@ import '../../app/router.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
-import '../../widgets/dialogs/location_permission_dialog.dart';
+import '../../widgets/dialogs/branded_permission_dialog.dart';
 import '../../models/user_preferences.dart';
 import '../../models/tour_provider.dart';
 import '../chat/chat_screen.dart';
@@ -61,21 +61,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     exhibits = MockDataService.getAllExhibits();
     news = MockDataService.getAllNews();
 
-    Future.delayed(Duration.zero, () async {
+    Future.delayed(const Duration(seconds: 1), () async {
       if (mounted) {
         final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
-
         if (prefs.hasCompletedOnboarding && !prefs.hasSeenLocationPrompt) {
-          if (kIsWeb) {
-            prefs.setHasSeenLocationPrompt(true);
-            return;
-          }
-          final status = await Permission.locationWhenInUse.status;
-          if (!status.isGranted) {
-            _showPrivacyDialog();
-          } else {
-            prefs.setHasSeenLocationPrompt(true);
-          }
+          _requestInitialPermissions(context);
         }
       }
     });
@@ -101,26 +91,63 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void _showPrivacyDialog() {
+  Future<void> _requestInitialPermissions(BuildContext context) async {
     final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+    final l10n = AppLocalizations.of(context)!;
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      useSafeArea: false,
-      builder: (context) => LocationPermissionDialog(
-        isHighContrast: prefs.isHighContrast,
-        onAllow: () async {
-          Navigator.pop(context);
-          prefs.setHasSeenLocationPrompt(true);
-          await Permission.locationWhenInUse.request();
-        },
-        onDeny: () {
-          Navigator.pop(context);
-          prefs.setHasSeenLocationPrompt(true);
-        },
-      ),
-    );
+    if (kIsWeb) {
+      prefs.setHasSeenLocationPrompt(true);
+      return;
+    }
+
+    // Contextual Notification Prompt on Home load
+    final notifStatus = await Permission.notification.status;
+    if (!notifStatus.isGranted && mounted) {
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        useSafeArea: false,
+        builder: (context) => BrandedPermissionDialog(
+          icon: Icons.notifications_none_rounded,
+          title: l10n.notificationPermissionTitle,
+          description: l10n.notificationPermissionDesc,
+          isHighContrast: prefs.isHighContrast,
+          onAllow: () async {
+            Navigator.pop(context);
+            await Permission.notification.request();
+          },
+          onDeny: () => Navigator.pop(context),
+        ),
+      );
+    }
+
+    // Contextual Location Prompt on Home load (for robot sync/nearby exhibits)
+    final locStatus = await Permission.locationWhenInUse.status;
+    if (!locStatus.isGranted && mounted) {
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        useSafeArea: false,
+        builder: (context) => BrandedPermissionDialog(
+          icon: Icons.location_on_outlined,
+          title: l10n.locationPermissionTitle,
+          description: l10n.locationPermissionDesc,
+          helperText: l10n.dataReassurance,
+          isHighContrast: prefs.isHighContrast,
+          onAllow: () async {
+            Navigator.pop(context);
+            prefs.setHasSeenLocationPrompt(true);
+            await Permission.locationWhenInUse.request();
+          },
+          onDeny: () {
+            Navigator.pop(context);
+            prefs.setHasSeenLocationPrompt(true);
+          },
+        ),
+      );
+    } else {
+      prefs.setHasSeenLocationPrompt(true);
+    }
   }
 
   Widget _buildTopBar(BuildContext context, AppLocalizations l10n) {

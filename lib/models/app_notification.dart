@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 enum AppNotificationType {
   // Tour
   tourStart,
+  tourStarting, // Added
+  nextExhibit, // Added for compatibility
   tourNextExhibit,
+  robotNearby, // Added for compatibility
   tourRobotNearby,
   tourDelayed,
+  rerouted, // Added
   tourOffRoute,
   tourCompleted,
   // Quiz / Learning
@@ -20,17 +24,23 @@ enum AppNotificationType {
   ticketReady,
   // Exhibit / Features
   featureAR,
+  arAvailable, // Added
   featureAudioGuide,
+  audioGuideAvailable, // Added
   featureAccessibility,
+  accessibilityAvailable, // Added
   featureHighlight,
   smartTip,
   // System
   systemRobotDisconnected,
+  robotDisconnected, // Added
   systemRobotBatteryLow,
+  robotLowBattery, // Added
   systemConnectionRestored,
   systemSyncing,
   // Visit
   visitSummaryReady,
+  tourSummaryReady, // Added
   visitMemories,
   visitContinue,
 }

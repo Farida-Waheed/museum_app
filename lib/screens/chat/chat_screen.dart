@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/foundation.dart';
+import '../../widgets/dialogs/branded_permission_dialog.dart';
 import '../../models/user_preferences.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/dialogs/premium_dialog.dart';
@@ -319,7 +321,26 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           child: Row(
             children: [
               IconButton(
-                onPressed: () {}, // Mock microphone
+                onPressed: () async {
+                  if (kIsWeb) return;
+                  final status = await Permission.microphone.status;
+                  if (!status.isGranted && mounted) {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (context) => BrandedPermissionDialog(
+                        icon: Icons.mic_none_rounded,
+                        title: l10n.micPermissionTitle,
+                        description: l10n.micPermissionDesc,
+                        onAllow: () async {
+                          Navigator.pop(context);
+                          await Permission.microphone.request();
+                        },
+                        onDeny: () => Navigator.pop(context),
+                      ),
+                    );
+                  }
+                },
                 icon: const Icon(Icons.mic_none_rounded, color: AppColors.primaryGold),
               ),
               Expanded(

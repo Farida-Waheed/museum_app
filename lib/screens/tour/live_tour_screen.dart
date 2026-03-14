@@ -9,6 +9,9 @@ import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
 import '../../widgets/primary_button.dart';
+import '../../widgets/dialogs/branded_permission_dialog.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/foundation.dart';
 
 class LiveTourScreen extends StatefulWidget {
   const LiveTourScreen({super.key});
@@ -33,6 +36,11 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   @override
   void initState() {
     super.initState();
+
+    Future.delayed(Duration.zero, () {
+      _checkLocationPermission();
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final tourProvider = Provider.of<TourProvider>(context, listen: false);
       if (tourProvider.currentExhibitId == null) {
@@ -94,6 +102,28 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
 
   void _togglePause() {
     setState(() => _isPaused = !_isPaused);
+  }
+
+  Future<void> _checkLocationPermission() async {
+    if (kIsWeb) return;
+    final status = await Permission.locationWhenInUse.status;
+    if (!status.isGranted && mounted) {
+      final l10n = AppLocalizations.of(context)!;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => BrandedPermissionDialog(
+          icon: Icons.location_on_outlined,
+          title: l10n.locationPermissionTitle,
+          description: l10n.locationPermissionDesc,
+          onAllow: () async {
+            Navigator.pop(context);
+            await Permission.locationWhenInUse.request();
+          },
+          onDeny: () => Navigator.pop(context),
+        ),
+      );
+    }
   }
 
   void _skipExhibit() {
