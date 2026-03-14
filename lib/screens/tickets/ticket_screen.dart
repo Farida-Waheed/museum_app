@@ -120,7 +120,6 @@ class _TicketScreenState extends State<TicketScreen> {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
-    final theme = Theme.of(context);
 
     final String formattedDateEn = DateFormat('EEEE, MMM d, yyyy').format(_selectedDate);
     final String formattedDateAr = DateFormat.yMMMMEEEEd('ar').format(_selectedDate);

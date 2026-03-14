@@ -8,7 +8,6 @@ import '../../core/constants/text_styles.dart';
 import '../../app/router.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/app_menu_shell.dart';
-import '../../widgets/bottom_nav.dart';
 import '../../widgets/dialogs/branded_permission_dialog.dart';
 
 class AccessibilityScreen extends StatefulWidget {
@@ -29,15 +28,19 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
 
   Future<void> _checkAllPermissions() async {
     if (kIsWeb) return;
-    final statuses = await [
-      Permission.location,
-      Permission.notification,
-      Permission.camera,
-      Permission.microphone,
-      Permission.bluetooth,
-    ].request();
-    if (mounted) {
-      setState(() => _statuses = statuses);
+    try {
+      final statuses = await [
+        Permission.location,
+        Permission.notification,
+        Permission.camera,
+        Permission.microphone,
+        Permission.bluetooth,
+      ].request().timeout(const Duration(seconds: 2));
+      if (mounted) {
+        setState(() => _statuses = statuses);
+      }
+    } catch (e) {
+      debugPrint("Permission check failed: $e");
     }
   }
 

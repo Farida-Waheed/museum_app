@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../core/services/notification_service.dart';
 import 'app_notification.dart';
+import '../app/router.dart';
 
 enum RobotState {
   idle,
@@ -126,8 +127,7 @@ class TourProvider with ChangeNotifier {
           'topics': topics ?? ["History", "Symbolism", "Fun Facts"],
         },
         onTap: () {
-          // Logic to navigate to quiz screen
-          print("Navigating to quiz for $location");
+          Navigator.pushNamed(context, AppRoutes.quiz);
         },
       ),
     );
