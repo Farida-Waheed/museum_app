@@ -108,10 +108,11 @@ class _SideMenu extends StatelessWidget {
                   child: ListView(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     children: [
+                      _SectionHeader(label: l10n.visit),
                       _MenuItem(
-                        icon: Icons.language_outlined,
-                        label: l10n.appLanguage,
-                        onTap: () => onReplace(AppRoutes.language),
+                        icon: Icons.auto_awesome_mosaic_outlined,
+                        label: l10n.exhibits,
+                        onTap: () => onReplace(AppRoutes.exhibits),
                       ),
                       _MenuItem(
                         icon: Icons.route_outlined,
@@ -123,20 +124,13 @@ class _SideMenu extends StatelessWidget {
                         label: l10n.events,
                         onTap: () => onReplace(AppRoutes.events),
                       ),
+
+                      const SizedBox(height: 16),
+                      _SectionHeader(label: l10n.accountPreferences),
                       _MenuItem(
-                        icon: Icons.emoji_events_outlined,
-                        label: l10n.achievements,
-                        onTap: () => onReplace(AppRoutes.achievements),
-                      ),
-                      _MenuItem(
-                        icon: Icons.auto_awesome_mosaic_outlined,
-                        label: l10n.exhibits,
-                        onTap: () => onReplace(AppRoutes.exhibits),
-                      ),
-                      _MenuItem(
-                        icon: Icons.quiz_outlined,
-                        label: l10n.quiz,
-                        onTap: () => onReplace(AppRoutes.quiz),
+                        icon: Icons.language_outlined,
+                        label: l10n.appLanguage,
+                        onTap: () => onReplace(AppRoutes.language),
                       ),
                       _MenuItem(
                         icon: Icons.accessibility_new_outlined,
@@ -149,6 +143,19 @@ class _SideMenu extends StatelessWidget {
                         selected: currentRoute == AppRoutes.settings,
                         onTap: () => onReplace(AppRoutes.settings),
                       ),
+
+                      const SizedBox(height: 16),
+                      _SectionHeader(label: l10n.extras),
+                      _MenuItem(
+                        icon: Icons.emoji_events_outlined,
+                        label: l10n.achievements,
+                        onTap: () => onReplace(AppRoutes.achievements),
+                      ),
+                      _MenuItem(
+                        icon: Icons.quiz_outlined,
+                        label: l10n.quiz,
+                        onTap: () => onReplace(AppRoutes.quiz),
+                      ),
                       _MenuItem(
                         icon: Icons.help_outline_rounded,
                         label: isArabic ? "مساعدة" : "Help",
@@ -160,6 +167,28 @@ class _SideMenu extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  final String label;
+  const _SectionHeader({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(28, 8, 24, 8),
+      child: Text(
+        label.toUpperCase(),
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w900,
+          letterSpacing: 1.5,
+          color: isDark ? AppColors.primaryGold.withOpacity(0.7) : AppColors.primaryGold,
         ),
       ),
     );
