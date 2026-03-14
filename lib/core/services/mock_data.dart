@@ -134,10 +134,10 @@ class MockDataService {
   // -------------------------
   static final List<MockNews> news = [
     MockNews(
-      title: "New Discovery in Saqqara",
-      description: "Archaeologists have uncovered a well-preserved tomb from the Old Kingdom era.",
+      title: "Grand Egyptian Museum announces updated opening schedule",
+      description: "The museum will now be open for evening tours starting next month.",
       image: "assets/images/Onboarding.jpg",
-      source: "National Geographic",
+      source: "Official Museum Update",
       date: DateTime.now().subtract(const Duration(days: 1)),
     ),
     MockNews(

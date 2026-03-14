@@ -11,8 +11,61 @@ import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/dialogs/location_permission_dialog.dart';
 
-class AccessibilityScreen extends StatelessWidget {
+class AccessibilityScreen extends StatefulWidget {
   const AccessibilityScreen({super.key});
+
+  @override
+  State<AccessibilityScreen> createState() => _AccessibilityScreenState();
+}
+
+class _AccessibilityScreenState extends State<AccessibilityScreen> {
+  Map<Permission, PermissionStatus> _statuses = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAllPermissions();
+  }
+
+  Future<void> _checkAllPermissions() async {
+    if (kIsWeb) return;
+    final statuses = await [
+      Permission.location,
+      Permission.notification,
+      Permission.camera,
+      Permission.microphone,
+      Permission.bluetooth,
+    ].request();
+    if (mounted) {
+      setState(() => _statuses = statuses);
+    }
+  }
+
+  Future<void> _requestPermission(Permission p) async {
+    if (kIsWeb) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Permissions are managed by your browser settings on web.")),
+      );
+      return;
+    }
+    final status = await p.request();
+    if (mounted) {
+      setState(() => _statuses[p] = status);
+      if (status.isPermanentlyDenied) {
+        openAppSettings();
+      }
+    }
+  }
+
+  String _getStatusText(Permission p, AppLocalizations l10n) {
+    if (kIsWeb) return "Managed by browser";
+    final s = _statuses[p];
+    if (s == null) return l10n.settingsDisabled;
+    if (s.isGranted) return "Enabled";
+    if (s.isDenied) return l10n.settingsDisabled;
+    if (s.isPermanentlyDenied) return "Permanently Disabled";
+    return l10n.settingsDisabled;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -148,35 +201,40 @@ class AccessibilityScreen extends StatelessWidget {
                       icon: Icons.location_on_outlined,
                       title: l10n.locationService,
                       subtitle: l10n.locationServiceSub,
-                      onEnable: () {},
+                      status: _getStatusText(Permission.location, l10n),
+                      onEnable: () => _requestPermission(Permission.location),
                     ),
                     _Divider(),
                     _PermissionItem(
                       icon: Icons.bluetooth,
                       title: l10n.bluetooth,
                       subtitle: l10n.bluetoothSub,
-                      onEnable: () {},
+                      status: _getStatusText(Permission.bluetooth, l10n),
+                      onEnable: () => _requestPermission(Permission.bluetooth),
                     ),
                     _Divider(),
                     _PermissionItem(
                       icon: Icons.mic_none,
                       title: l10n.microphone,
                       subtitle: l10n.microphoneSub,
-                      onEnable: () {},
+                      status: _getStatusText(Permission.microphone, l10n),
+                      onEnable: () => _requestPermission(Permission.microphone),
                     ),
                     _Divider(),
                     _PermissionItem(
                       icon: Icons.camera_alt_outlined,
                       title: l10n.camera,
                       subtitle: l10n.cameraSub,
-                      onEnable: () {},
+                      status: _getStatusText(Permission.camera, l10n),
+                      onEnable: () => _requestPermission(Permission.camera),
                     ),
                     _Divider(),
                     _PermissionItem(
                       icon: Icons.notifications_none,
                       title: l10n.notifications,
                       subtitle: l10n.notificationsSub,
-                      onEnable: () {},
+                      status: _getStatusText(Permission.notification, l10n),
+                      onEnable: () => _requestPermission(Permission.notification),
                     ),
                   ],
                 ),
@@ -427,9 +485,16 @@ class _PermissionItem extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
+  final String status;
   final VoidCallback onEnable;
 
-  const _PermissionItem({required this.icon, required this.title, required this.subtitle, required this.onEnable});
+  const _PermissionItem({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.status,
+    required this.onEnable,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -460,12 +525,16 @@ class _PermissionItem extends StatelessWidget {
           Row(
             children: [
               Text(
-                l10n.settingsDisabled,
-                style: const TextStyle(color: Colors.white38, fontWeight: FontWeight.bold, fontSize: 13),
+                status,
+                style: TextStyle(
+                  color: status == "Enabled" ? Colors.green : Colors.white38,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
               ),
               const Spacer(),
               ElevatedButton(
-                onPressed: onEnable,
+                onPressed: status == "Enabled" ? null : onEnable,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryGold,
                   foregroundColor: AppColors.darkInk,
