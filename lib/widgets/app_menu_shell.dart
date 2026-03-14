@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../core/constants/colors.dart';
+import '../core/constants/text_styles.dart';
 
 import '../models/user_preferences.dart';
 import '../app/router.dart';
@@ -274,19 +275,19 @@ class AppMenuShellState extends State<AppMenuShell>
     setState(() => _isMenuOpen = true);
   }
 
-  void _closeMenu() {
+  void closeMenu() {
     if (!_isMenuOpen) return;
     _menuController.reverse();
     setState(() => _isMenuOpen = false);
   }
 
   void _goPush(String route) {
-    _closeMenu();
+    closeMenu();
     Navigator.pushNamed(context, route);
   }
 
   void _goReplace(String route) {
-    _closeMenu();
+    closeMenu();
     if (route == AppRoutes.mainHome) {
       Navigator.pushNamedAndRemoveUntil(context, route, (r) => false);
     } else {
@@ -326,7 +327,7 @@ class AppMenuShellState extends State<AppMenuShell>
               if (v > 0)
                 Positioned.fill(
                   child: GestureDetector(
-                    onTap: _closeMenu,
+                    onTap: closeMenu,
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
                       child: Container(
@@ -338,7 +339,7 @@ class AppMenuShellState extends State<AppMenuShell>
 
               _SideMenu(
                 isArabic: isArabic,
-                onClose: _closeMenu,
+                onClose: closeMenu,
                 onPush: _goPush,
                 onReplace: _goReplace,
                 currentRoute: currentRoute,
@@ -348,61 +349,70 @@ class AppMenuShellState extends State<AppMenuShell>
                 offset: Offset(dx, 0),
                 child: Transform.scale(
                   scale: scale,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: bgColor,
-                      borderRadius: BorderRadius.circular(radius),
-                      boxShadow: [
-                        if (v > 0)
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 20,
-                            spreadRadius: 5,
-                          ),
-                      ],
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(radius),
-                      child: widget.hideDefaultAppBar
-                          ? widget.body
-                          : Scaffold(
-                              backgroundColor: bgColor,
-                              appBar: AppBar(
-                                leading: IconButton(
-                                  icon: Icon(Navigator.canPop(context) ? Icons.arrow_back_ios_new : Icons.menu, size: Navigator.canPop(context) ? 20 : null),
-                                  onPressed: () {
-                                    if (Navigator.canPop(context)) {
-                                      Navigator.pop(context);
-                                    } else {
-                                      toggleMenu();
-                                    }
-                                  },
-                                ),
-                                title: Row(
-                                  children: [
-                                    Image.asset("assets/icons/ankh.png", width: 26, height: 26),
-                                    const SizedBox(width: 16),
-                                    Text(
-                                      widget.title ?? l10n.appTitle,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                actions: widget.actions,
-                                backgroundColor: isDark ? AppColors.darkHeader : AppColors.warmSurface,
-                                elevation: 0,
-                                bottom: widget.subHeader != null
-                                    ? PreferredSize(
-                                        preferredSize: const Size.fromHeight(48),
-                                        child: widget.subHeader!,
-                                      )
-                                    : null,
+                  child: GestureDetector(
+                    onTap: _isMenuOpen ? closeMenu : null,
+                    child: AbsorbPointer(
+                      absorbing: _isMenuOpen,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: bgColor,
+                          borderRadius: BorderRadius.circular(radius),
+                          boxShadow: [
+                            if (v > 0)
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 20,
+                                spreadRadius: 5,
                               ),
-                              body: widget.body,
-                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(radius),
+                          child: Builder(
+                            builder: (innerContext) {
+                              return widget.hideDefaultAppBar
+                                  ? widget.body
+                                  : Scaffold(
+                                      backgroundColor: bgColor,
+                                      appBar: AppBar(
+                                        leading: IconButton(
+                                          icon: Icon(Navigator.canPop(innerContext) ? Icons.arrow_back_ios_new : Icons.menu, size: Navigator.canPop(innerContext) ? 20 : null),
+                                          onPressed: () {
+                                            if (Navigator.canPop(innerContext)) {
+                                              Navigator.pop(innerContext);
+                                            } else {
+                                              toggleMenu();
+                                            }
+                                          },
+                                        ),
+                                        title: Row(
+                                          children: [
+                                            Image.asset("assets/icons/ankh.png", width: 26, height: 26),
+                                            const SizedBox(width: 16),
+                                            Text(
+                                              widget.title ?? l10n.appTitle,
+                                              style: AppTextStyles.brandTitle(innerContext, isDark: isDark).copyWith(
+                                                fontSize: 18,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        actions: widget.actions,
+                                        backgroundColor: isDark ? AppColors.darkHeader : AppColors.warmSurface,
+                                        elevation: 0,
+                                        bottom: widget.subHeader != null
+                                            ? PreferredSize(
+                                                preferredSize: const Size.fromHeight(48),
+                                                child: widget.subHeader!,
+                                              )
+                                            : null,
+                                      ),
+                                      body: widget.body,
+                                    );
+                            },
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
