@@ -47,6 +47,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get askTheGuide => 'اسأل الدليل';
 
   @override
+  String get guideStatus => 'حالة الدليل';
+
+  @override
+  String get alwaysAvailable => 'متاح دائماً';
+
+  @override
   String get aboutHorusBot => 'عن حوروس-بوت';
 
   @override
