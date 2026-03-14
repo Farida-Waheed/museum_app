@@ -155,14 +155,20 @@ abstract class AppLocalizations {
   /// No description provided for @horusBot.
   ///
   /// In en, this message translates to:
-  /// **'Horus'**
+  /// **'Guide'**
   String get horusBot;
 
   /// No description provided for @talkToHorusBot.
   ///
   /// In en, this message translates to:
-  /// **'Talk to Horus-Bot'**
+  /// **'Ask the Guide'**
   String get talkToHorusBot;
+
+  /// No description provided for @assistantStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Assistant Status'**
+  String get assistantStatus;
 
   /// No description provided for @askTheGuide.
   ///
@@ -205,6 +211,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile'**
   String get profile;
+
+  /// No description provided for @visitorStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Visitor Statistics'**
+  String get visitorStats;
+
+  /// No description provided for @myTours.
+  ///
+  /// In en, this message translates to:
+  /// **'My Tours'**
+  String get myTours;
+
+  /// No description provided for @savedExhibits.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Exhibits'**
+  String get savedExhibits;
+
+  /// No description provided for @learningProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Learning Progress'**
+  String get learningProgress;
+
+  /// No description provided for @quickPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Preferences'**
+  String get quickPreferences;
+
+  /// No description provided for @myTickets.
+  ///
+  /// In en, this message translates to:
+  /// **'My Tickets'**
+  String get myTickets;
+
+  /// No description provided for @signOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get signOut;
+
+  /// No description provided for @explorer.
+  ///
+  /// In en, this message translates to:
+  /// **'Explorer'**
+  String get explorer;
+
+  /// No description provided for @memberSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Member since Oct 2023'**
+  String get memberSince;
+
+  /// No description provided for @newKingdomHighlights.
+  ///
+  /// In en, this message translates to:
+  /// **'New Kingdom Highlights'**
+  String get newKingdomHighlights;
+
+  /// No description provided for @tutankhamunTreasures.
+  ///
+  /// In en, this message translates to:
+  /// **'Tutankhamun Treasures'**
+  String get tutankhamunTreasures;
+
+  /// No description provided for @completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completed;
+
+  /// No description provided for @inProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get inProgress;
+
+  /// No description provided for @tutMask.
+  ///
+  /// In en, this message translates to:
+  /// **'Tut Mask'**
+  String get tutMask;
+
+  /// No description provided for @ramesses2.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramesses II'**
+  String get ramesses2;
+
+  /// No description provided for @ancientEgyptHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Ancient Egypt History'**
+  String get ancientEgyptHistory;
+
+  /// No description provided for @hieroglyphBasics.
+  ///
+  /// In en, this message translates to:
+  /// **'Hieroglyph Basics'**
+  String get hieroglyphBasics;
+
+  /// No description provided for @pharaohDynastyKnowledge.
+  ///
+  /// In en, this message translates to:
+  /// **'Pharaoh Dynasty Knowledge'**
+  String get pharaohDynastyKnowledge;
+
+  /// No description provided for @lang.
+  ///
+  /// In en, this message translates to:
+  /// **'Lang'**
+  String get lang;
+
+  /// No description provided for @audio.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio'**
+  String get audio;
+
+  /// No description provided for @access.
+  ///
+  /// In en, this message translates to:
+  /// **'Access'**
+  String get access;
 
   /// No description provided for @map.
   ///

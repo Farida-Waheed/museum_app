@@ -163,6 +163,18 @@ class MockDataService {
 
   static List<MockNews> getAllNews() => news;
 
+  /// Map exhibitId -> high-quality asset for Live Tour
+  static String getExhibitImage(String id) {
+    const map = {
+      'gem_ramses2_colossus': 'assets/images/museum_interior.jpg',
+      'gem_ptolemaic_king_colossus': 'assets/images/Colossal Seated Statues.jpg',
+      'gem_ptolemaic_queen_colossus': 'assets/images/Black Granite Statue.jpg',
+      'gem_anubis_chest': 'assets/images/Grand Hall.jpg',
+      'gem_tut_golden_mask': 'assets/images/pharaoh_head.jpg',
+    };
+    return map[id] ?? 'assets/images/museum_interior.jpg';
+  }
+
   // -------------------------
   // Events (Happening Now / Today focus)
   // -------------------------
