@@ -139,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               IconButton(
                 icon: Icon(Icons.menu, color: isDark ? Colors.white : AppColors.darkInk, size: 28),
                 onPressed: () {
-                  AppMenuShell.of(context)?.openMenu();
+                  AppMenuShell.of(context)?.toggleMenu();
                 },
               ),
               Row(
