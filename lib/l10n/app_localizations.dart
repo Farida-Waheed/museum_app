@@ -155,14 +155,20 @@ abstract class AppLocalizations {
   /// No description provided for @horusBot.
   ///
   /// In en, this message translates to:
-  /// **'Horus'**
+  /// **'Guide'**
   String get horusBot;
 
   /// No description provided for @talkToHorusBot.
   ///
   /// In en, this message translates to:
-  /// **'Talk to Horus-Bot'**
+  /// **'Ask the Guide'**
   String get talkToHorusBot;
+
+  /// No description provided for @assistantStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Assistant Status'**
+  String get assistantStatus;
 
   /// No description provided for @askTheGuide.
   ///

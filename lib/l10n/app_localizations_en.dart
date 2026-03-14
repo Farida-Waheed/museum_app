@@ -38,10 +38,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fullView => 'Full View';
 
   @override
-  String get horusBot => 'Horus';
+  String get horusBot => 'Guide';
 
   @override
-  String get talkToHorusBot => 'Talk to Horus-Bot';
+  String get talkToHorusBot => 'Ask the Guide';
+
+  @override
+  String get assistantStatus => 'Assistant Status';
 
   @override
   String get askTheGuide => 'Ask the Guide';

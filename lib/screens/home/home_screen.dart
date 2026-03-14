@@ -203,12 +203,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.black.withOpacity(0.4),
-                Colors.black.withOpacity(0.0),
-                Colors.black.withOpacity(0.4),
-                AppColors.cinematicBackground,
+                Colors.transparent,
+                Colors.black.withOpacity(0.55),
               ],
-              stops: const [0.0, 0.3, 0.7, 1.0],
+              stops: const [0.6, 1.0],
             ),
           ),
           child: Image.asset(
@@ -680,12 +678,12 @@ class _NextStopBadge extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.cinematicElevated,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.primaryGold.withOpacity(0.2)),
+          border: Border.all(color: AppColors.primaryGold.withOpacity(0.5), width: 1.5),
           boxShadow: [
             BoxShadow(
               color: AppColors.primaryGold.withOpacity(0.15),
-              blurRadius: 30,
-              offset: const Offset(0, 10),
+              blurRadius: 20,
+              spreadRadius: 2,
             ),
             BoxShadow(
               color: Colors.black.withOpacity(0.5),
@@ -1016,7 +1014,7 @@ class _RobotStatusCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text("Horus-Bot Status", style: AppTextStyles.cardTitle(context)),
+                    Text(AppLocalizations.of(context)!.assistantStatus, style: AppTextStyles.cardTitle(context)),
                     const SizedBox(width: 8),
                     Container(
                       width: 7,
