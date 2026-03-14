@@ -188,7 +188,7 @@ class _BrandedPermissionDialogState extends State<BrandedPermissionDialog> with 
                                   ),
                                 ),
                                 child: Text(
-                                  widget.icon == Icons.quiz_rounded ? l10n.later : l10n.notNow,
+                                  l10n.notNow,
                                   style: TextStyle(
                                     color: goldAccent,
                                     fontSize: 14.5,
@@ -212,7 +212,7 @@ class _BrandedPermissionDialogState extends State<BrandedPermissionDialog> with 
                                   ),
                                 ),
                                 child: Text(
-                                  widget.icon == Icons.quiz_rounded ? l10n.takeNow : l10n.allow,
+                                  l10n.allow,
                                   style: const TextStyle(
                                     fontSize: 14.5,
                                     fontWeight: FontWeight.w900,

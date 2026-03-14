@@ -9,7 +9,6 @@ import '../../app/router.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
-import '../../widgets/section_title.dart';
 import '../../widgets/dialogs/branded_permission_dialog.dart';
 
 class AccessibilityScreen extends StatefulWidget {
@@ -187,7 +186,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
               const SizedBox(height: 32),
 
               // 2. MUSEUM EXPERIENCE
-              SectionTitle(title: l10n.museumExperience),
+              _SectionTitle(title: l10n.museumExperience.toUpperCase()),
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -230,7 +229,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
               const SizedBox(height: 32),
 
               // 3. PERMISSIONS
-              SectionTitle(title: l10n.permissionsCenter),
+              _SectionTitle(title: l10n.permissionsCenter.toUpperCase()),
               Container(
                 decoration: BoxDecoration(
                   color: AppColors.cinematicCard,
@@ -285,7 +284,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
               const SizedBox(height: 32),
 
               // 4. DISPLAY & TEXT
-              SectionTitle(title: l10n.displayText),
+              _SectionTitle(title: l10n.displayText.toUpperCase()),
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -379,7 +378,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
               const SizedBox(height: 32),
 
               // 5. LANGUAGE
-              SectionTitle(title: l10n.language),
+              _SectionTitle(title: l10n.language.toUpperCase()),
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -428,7 +427,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
               const SizedBox(height: 32),
 
               // 6. ABOUT HORUS-BOT
-              SectionTitle(title: l10n.aboutHorusBot),
+              _SectionTitle(title: l10n.aboutHorusBot.toUpperCase()),
               Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
@@ -470,6 +469,20 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
   }
 }
 
+class _SectionTitle extends StatelessWidget {
+  final String title;
+  const _SectionTitle({required this.title});
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 16),
+      child: Text(
+        title,
+        style: const TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.w900, fontSize: 12, letterSpacing: 1.5),
+      ),
+    );
+  }
+}
 
 class _SwitchItem extends StatelessWidget {
   final String title;

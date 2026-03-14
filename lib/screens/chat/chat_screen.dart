@@ -110,7 +110,7 @@ class _TypingIndicatorState extends State<_TypingIndicator>
 
   @override
   Widget build(BuildContext context) {
-    final text = widget.isArabic ? "المساعد يكتب..." : "Assistant is typing...";
+    final text = widget.isArabic ? "حوروس يكتب..." : "Horus-Bot is typing...";
     return Row(
       children: [
         Text(
@@ -554,8 +554,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   ),
                   decoration: InputDecoration(
                     hintText: isArabic
-                        ? "اسأل أي شيء..."
-                        : "Ask anything...",
+                        ? "اسأل حوروس عن أي شيء..."
+                        : "Ask Horus about anything...",
                     hintStyle: TextStyle(
                       color: isDark ? Colors.white38 : Colors.black38,
                     ),

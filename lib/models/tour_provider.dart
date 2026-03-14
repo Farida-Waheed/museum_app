@@ -122,32 +122,13 @@ class TourProvider with ChangeNotifier {
     String? exhibitId,
     List<String>? topics,
   }) {
-    final l10n = AppLocalizations.of(context)!;
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => BrandedPermissionDialog(
-        icon: Icons.quiz_rounded,
-        title: l10n.quizPromptTitle,
-        description: l10n.quizPromptDescription,
-        onAllow: () {
-          Navigator.pop(context);
-          Navigator.pushNamed(context, '/quiz', arguments: exhibitId);
-        },
-        onDeny: () {
-          Navigator.pop(context);
-          if (exhibitId != null) deferQuiz(exhibitId);
-        },
-      ),
-    );
-
     NotificationService.show(
       context,
       AppNotification(
         id: 'quiz_${exhibitId ?? DateTime.now().millisecondsSinceEpoch}',
-        title: l10n.quizPromptTitle,
-        message: l10n.quizPromptDescription,
+        title: "Test What You Learned",
+        message:
+            "Horus-Bot prepared a short quiz for this exhibit. Would you like to take it now or save it until after the tour?",
         type: AppNotificationType.quizAvailable,
         priority: AppNotificationPriority.medium,
         icon: Icons.quiz_rounded,
@@ -157,7 +138,8 @@ class TourProvider with ChangeNotifier {
           'topics': topics ?? ["History", "Symbolism", "Fun Facts"],
         },
         onTap: () {
-          Navigator.pushNamed(context, '/quiz', arguments: exhibitId);
+          // Logic to navigate to quiz screen
+          print("Navigating to quiz for $location");
         },
       ),
     );

@@ -9,7 +9,9 @@ import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
 import '../../widgets/primary_button.dart';
-import '../../core/services/permission_service.dart';
+import '../../widgets/dialogs/branded_permission_dialog.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/foundation.dart';
 
 class LiveTourScreen extends StatefulWidget {
   const LiveTourScreen({super.key});
@@ -25,14 +27,18 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   bool _isGuided = true;
   bool _isPaused = false;
 
+  final Map<String, String> _imageMap = {
+    '1': 'assets/images/Grand Hall.jpg',
+    '2': 'assets/images/Colossal Seated Statues.jpg',
+    '3': 'assets/images/Gold-Covered Sandals.jpg',
+  };
+
   @override
   void initState() {
     super.initState();
 
     Future.delayed(Duration.zero, () {
-      if (mounted) {
-        PermissionService.checkAndRequestLocation(context, forcePrompt: true);
-      }
+      _checkLocationPermission();
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -96,6 +102,28 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
 
   void _togglePause() {
     setState(() => _isPaused = !_isPaused);
+  }
+
+  Future<void> _checkLocationPermission() async {
+    if (kIsWeb) return;
+    final status = await Permission.locationWhenInUse.status;
+    if (!status.isGranted && mounted) {
+      final l10n = AppLocalizations.of(context)!;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => BrandedPermissionDialog(
+          icon: Icons.location_on_outlined,
+          title: l10n.locationPermissionTitle,
+          description: l10n.locationPermissionDesc,
+          onAllow: () async {
+            Navigator.pop(context);
+            await Permission.locationWhenInUse.request();
+          },
+          onDeny: () => Navigator.pop(context),
+        ),
+      );
+    }
   }
 
   void _skipExhibit() {
@@ -174,7 +202,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                         height: 180,
                         width: double.infinity,
                         child: Image.asset(
-                          MockDataService.getExhibitImage(currentExhibit.id),
+                          _imageMap[currentExhibit.id] ?? 'assets/images/museum_interior.jpg',
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -286,7 +314,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                    leading: ClipRRect(
                      borderRadius: BorderRadius.circular(8),
                      child: Image.asset(
-                       MockDataService.getExhibitImage(nextExhibit.id),
+                       _imageMap[nextExhibit.id] ?? 'assets/images/museum_interior.jpg',
                        width: 50,
                        height: 50,
                        fit: BoxFit.cover,
