@@ -646,4 +646,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get robotNearbyMsg => 'Follow the robot to continue your tour.';
+
+  @override
+  String get permissionsTitle => 'App Permissions';
+
+  @override
+  String get permissionsSubtitle =>
+      'Enable these features to get the most out of your museum visit.';
+
+  @override
+  String get locationPermissionTitle => 'Location Access';
+
+  @override
+  String get locationPermissionDesc =>
+      'Used for indoor navigation, finding nearby exhibits, and following the robot.';
+
+  @override
+  String get notificationPermissionTitle => 'Notifications';
+
+  @override
+  String get notificationPermissionDesc =>
+      'Receive alerts for tour starts, next exhibits, and quiz reminders.';
+
+  @override
+  String get cameraPermissionTitle => 'Camera Access';
+
+  @override
+  String get cameraPermissionDesc =>
+      'Needed for scanning QR tickets and future AR features.';
+
+  @override
+  String get micPermissionTitle => 'Microphone';
+
+  @override
+  String get micPermissionDesc =>
+      'Used for voice interaction and questions to Horus.';
+
+  @override
+  String get continueBtn => 'CONTINUE TO HOME';
 }

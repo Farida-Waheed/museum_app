@@ -641,4 +641,42 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get robotNearbyMsg => 'اتبع الروبوت لمواصلة جولتك.';
+
+  @override
+  String get permissionsTitle => 'أذونات التطبيق';
+
+  @override
+  String get permissionsSubtitle =>
+      'قم بتفعيل هذه الميزات لتحقيق أقصى استفادة من زيارتك للمتحف.';
+
+  @override
+  String get locationPermissionTitle => 'الوصول إلى الموقع';
+
+  @override
+  String get locationPermissionDesc =>
+      'يستخدم للملاحة الداخلية، والعثور على المعروضات القريبة، وتتبع الروبوت.';
+
+  @override
+  String get notificationPermissionTitle => 'التنبيهات';
+
+  @override
+  String get notificationPermissionDesc =>
+      'تلقي تنبيهات لبدء الجولات، والمعروضات التالية، وتذكيرات الاختبارات.';
+
+  @override
+  String get cameraPermissionTitle => 'الوصول إلى الكاميرا';
+
+  @override
+  String get cameraPermissionDesc =>
+      'مطلوب لمسح تذاكر QR وميزات الواقع المعزز المستقبلية.';
+
+  @override
+  String get micPermissionTitle => 'الميكروفون';
+
+  @override
+  String get micPermissionDesc =>
+      'يستخدم للتفاعل الصوتي وطرح الأسئلة على حوروس.';
+
+  @override
+  String get continueBtn => 'الاستمرار إلى الرئيسية';
 }
