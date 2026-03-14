@@ -38,7 +38,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
   void _completeOnboarding(UserPreferencesModel prefs) {
     prefs.setCompletedOnboarding(true);
-    Navigator.pushReplacementNamed(context, AppRoutes.permissionOnboarding);
+    Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
   }
 
   @override

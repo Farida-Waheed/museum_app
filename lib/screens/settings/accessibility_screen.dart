@@ -9,7 +9,7 @@ import '../../app/router.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
-import '../../widgets/dialogs/location_permission_dialog.dart';
+import '../../widgets/dialogs/branded_permission_dialog.dart';
 
 class AccessibilityScreen extends StatefulWidget {
   const AccessibilityScreen({super.key});
@@ -48,13 +48,54 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
       );
       return;
     }
-    final status = await p.request();
-    if (mounted) {
-      setState(() => _statuses[p] = status);
-      if (status.isPermanentlyDenied) {
-        openAppSettings();
-      }
+
+    final l10n = AppLocalizations.of(context)!;
+    IconData icon = Icons.settings;
+    String title = "";
+    String desc = "";
+
+    if (p == Permission.location) {
+      icon = Icons.location_on_outlined;
+      title = l10n.locationPermissionTitle;
+      desc = l10n.locationPermissionDesc;
+    } else if (p == Permission.notification) {
+      icon = Icons.notifications_none_rounded;
+      title = l10n.notificationPermissionTitle;
+      desc = l10n.notificationPermissionDesc;
+    } else if (p == Permission.camera) {
+      icon = Icons.camera_alt_outlined;
+      title = l10n.cameraPermissionTitle;
+      desc = l10n.cameraPermissionDesc;
+    } else if (p == Permission.microphone) {
+      icon = Icons.mic_none_rounded;
+      title = l10n.micPermissionTitle;
+      desc = l10n.micPermissionDesc;
+    } else if (p == Permission.bluetooth) {
+      icon = Icons.bluetooth;
+      title = l10n.bluetooth;
+      desc = l10n.bluetoothSub;
     }
+
+    await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => BrandedPermissionDialog(
+        icon: icon,
+        title: title,
+        description: desc,
+        onAllow: () async {
+          Navigator.pop(context);
+          final status = await p.request();
+          if (mounted) {
+            setState(() => _statuses[p] = status);
+            if (status.isPermanentlyDenied) {
+              openAppSettings();
+            }
+          }
+        },
+        onDeny: () => Navigator.pop(context),
+      ),
+    );
   }
 
   String _getStatusText(Permission p, AppLocalizations l10n) {

@@ -2,6 +2,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/foundation.dart';
+import '../../widgets/dialogs/branded_permission_dialog.dart';
 import '../../l10n/app_localizations.dart';
 
 class QrScannerScreen extends StatefulWidget {
@@ -18,6 +21,11 @@ class _QrScannerScreenState extends State<QrScannerScreen> with TickerProviderSt
   @override
   void initState() {
     super.initState();
+
+    Future.delayed(Duration.zero, () {
+      _checkCameraPermission();
+    });
+
     _scanAnim = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -28,6 +36,28 @@ class _QrScannerScreenState extends State<QrScannerScreen> with TickerProviderSt
   void dispose() {
     _scanAnim.dispose();
     super.dispose();
+  }
+
+  Future<void> _checkCameraPermission() async {
+    if (kIsWeb) return;
+    final status = await Permission.camera.status;
+    if (!status.isGranted && mounted) {
+      final l10n = AppLocalizations.of(context)!;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => BrandedPermissionDialog(
+          icon: Icons.camera_alt_outlined,
+          title: l10n.cameraPermissionTitle,
+          description: l10n.cameraPermissionDesc,
+          onAllow: () async {
+            Navigator.pop(context);
+            await Permission.camera.request();
+          },
+          onDeny: () => Navigator.pop(context),
+        ),
+      );
+    }
   }
 
   void _handleScan(BarcodeCapture capture) {

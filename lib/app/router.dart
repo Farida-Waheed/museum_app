@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../screens/intro/intro_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
-import '../screens/onboarding/permission_onboarding_screen.dart';
 import '../screens/home/home_screen.dart';
 
 import '../screens/map/map_screen.dart';
@@ -36,7 +35,6 @@ class AppRoutes {
   static const String intro = '/';
   static const String mainHome = '/home';
   static const String onboarding = '/onboarding';
-  static const String permissionOnboarding = '/permission_onboarding';
 
   static const String map = '/map';
   static const String exhibits = '/exhibits'; // Added for consistency
@@ -70,7 +68,6 @@ class AppRoutes {
     return {
       intro: (context) => const IntroScreen(),
       onboarding: (context) => const OnboardingScreen(),
-      permissionOnboarding: (context) => const PermissionOnboardingScreen(),
       mainHome: (context) => const HomeScreen(),
 
       map: (context) => const MapScreen(),
