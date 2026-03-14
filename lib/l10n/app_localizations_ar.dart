@@ -343,6 +343,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tickets => 'التذاكر';
 
   @override
+  String get museumNews => 'أخبار المتحف';
+
+  @override
   String get seeAll => 'عرض الكل';
 
   @override
