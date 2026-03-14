@@ -203,5 +203,16 @@
   "takeQuiz": "بدء الاختبار",
   "smartTipTitle": "نصيحة من حوروس",
   "robotNearbyTitle": "حوروس قريب منك",
-  "robotNearbyMsg": "اتبع الروبوت لمواصلة جولتك."
+  "robotNearbyMsg": "اتبع الروبوت لمواصلة جولتك.",
+  "permissionsTitle": "أذونات التطبيق",
+  "permissionsSubtitle": "قم بتفعيل هذه الميزات لتحقيق أقصى استفادة من زيارتك للمتحف.",
+  "locationPermissionTitle": "الوصول إلى الموقع",
+  "locationPermissionDesc": "يستخدم للملاحة الداخلية، والعثور على المعروضات القريبة، وتتبع الروبوت.",
+  "notificationPermissionTitle": "التنبيهات",
+  "notificationPermissionDesc": "تلقي تنبيهات لبدء الجولات، والمعروضات التالية، وتذكيرات الاختبارات.",
+  "cameraPermissionTitle": "الوصول إلى الكاميرا",
+  "cameraPermissionDesc": "مطلوب لمسح تذاكر QR وميزات الواقع المعزز المستقبلية.",
+  "micPermissionTitle": "الميكروفون",
+  "micPermissionDesc": "يستخدم للتفاعل الصوتي وطرح الأسئلة على حوروس.",
+  "continueBtn": "الاستمرار إلى الرئيسية"
 }

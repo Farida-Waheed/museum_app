@@ -1,11 +1,38 @@
 import 'package:flutter/material.dart';
 
 enum AppNotificationType {
+  // Tour
   tourStart,
-  nextExhibit,
+  tourNextExhibit,
+  tourRobotNearby,
+  tourDelayed,
+  tourOffRoute,
+  tourCompleted,
+  // Quiz / Learning
   quizAvailable,
+  quizReminder,
+  quizSummary,
+  achievementUnlocked,
+  // Tickets / Events
+  ticketBooked,
+  eventReminder,
+  ticketReminder,
+  ticketReady,
+  // Exhibit / Features
+  featureAR,
+  featureAudioGuide,
+  featureAccessibility,
+  featureHighlight,
   smartTip,
-  robotNearby,
+  // System
+  systemRobotDisconnected,
+  systemRobotBatteryLow,
+  systemConnectionRestored,
+  systemSyncing,
+  // Visit
+  visitSummaryReady,
+  visitMemories,
+  visitContinue,
 }
 
 enum AppNotificationPriority {

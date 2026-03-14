@@ -206,5 +206,16 @@
   "takeQuiz": "Take Quiz",
   "smartTipTitle": "Tip from Horus-Bot",
   "robotNearbyTitle": "Horus-Bot is nearby",
-  "robotNearbyMsg": "Follow the robot to continue your tour."
+  "robotNearbyMsg": "Follow the robot to continue your tour.",
+  "permissionsTitle": "App Permissions",
+  "permissionsSubtitle": "Enable these features to get the most out of your museum visit.",
+  "locationPermissionTitle": "Location Access",
+  "locationPermissionDesc": "Used for indoor navigation, finding nearby exhibits, and following the robot.",
+  "notificationPermissionTitle": "Notifications",
+  "notificationPermissionDesc": "Receive alerts for tour starts, next exhibits, and quiz reminders.",
+  "cameraPermissionTitle": "Camera Access",
+  "cameraPermissionDesc": "Needed for scanning QR tickets and future AR features.",
+  "micPermissionTitle": "Microphone",
+  "micPermissionDesc": "Used for voice interaction and questions to Horus.",
+  "continueBtn": "CONTINUE TO HOME"
 }

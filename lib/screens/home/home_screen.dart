@@ -511,8 +511,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
-                                      "LATEST",
-                                      style: TextStyle(color: AppColors.primaryGold, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
+                                      item.source.toUpperCase(),
+                                      style: const TextStyle(color: AppColors.primaryGold, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
                                     ),
                                   ),
                                   const SizedBox(height: 12),
