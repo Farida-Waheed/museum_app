@@ -444,6 +444,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onlineStatus => '● Online';
 
   @override
+  String get guideStatus => 'Guide Status';
+
+  @override
   String get mapSub => 'Find exhibits and routes';
 
   @override
