@@ -101,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
 
     // Contextual Notification Prompt on Home load
-    final notifStatus = await Permission.notification.status;
+    final notifStatus = await Permission.notification.status.timeout(const Duration(milliseconds: 500), onTimeout: () => PermissionStatus.denied);
     if (!notifStatus.isGranted && mounted) {
       await showDialog(
         context: context,
@@ -122,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
 
     // Contextual Location Prompt on Home load (for robot sync/nearby exhibits)
-    final locStatus = await Permission.locationWhenInUse.status;
+    final locStatus = await Permission.locationWhenInUse.status.timeout(const Duration(milliseconds: 500), onTimeout: () => PermissionStatus.denied);
     if (!locStatus.isGranted && mounted) {
       await showDialog(
         context: context,
@@ -175,8 +175,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   Image.asset("assets/icons/ankh.png", width: 24, height: 24),
                   const SizedBox(width: 8),
                   Text(
-                    "HORUS",
-                    style: brandStyle.copyWith(color: AppColors.primaryGold),
+                    "HORUS-BOT",
+                    style: brandStyle.copyWith(
+                      color: AppColors.primaryGold,
+                      letterSpacing: 1.5,
+                    ),
                   ),
                 ],
               ),
@@ -311,7 +314,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             barrierColor: Colors.black54,
             builder: (_) => const ChatScreen(isPopup: true),
           ),
-          label: l10n.talkToHorusBot,
+          label: Provider.of<UserPreferencesModel>(context).language == 'ar' ? "تحدث مع حوروس" : "Talk to Horus",
         ),
       ),
       body: Builder(
@@ -327,44 +330,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   child: _buildSummaryStats(innerContext, l10n),
                 ),
 
-                // 3. Quick Actions (Exhibits)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.exhibits.toUpperCase(),
-                          style: AppTextStyles.sectionTitle(innerContext),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _FeatureCard(
-                                icon: Icons.map_outlined,
-                                title: l10n.map,
-                                onTap: () => Navigator.pushNamed(innerContext, AppRoutes.map),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: _FeatureCard(
-                                icon: Icons.qr_code_scanner,
-                                title: l10n.scanTicket,
-                                isHighlighted: true,
-                                onTap: () => Navigator.pushNamed(innerContext, AppRoutes.qrScan),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SliverToBoxAdapter(child: SizedBox(height: 48)),
+                const SliverToBoxAdapter(child: SizedBox(height: 12)),
 
                 // 4. Discovery Carousel
                 SliverToBoxAdapter(
@@ -798,37 +764,9 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Icon(widget.icon, color: AppColors.primaryGold, size: 28),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        widget.title,
-                        style: AppTextStyles.cardTitle(context),
-                      ),
-                    ),
-                    if (widget.isHighlighted)
-                      Row(
-                        children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: Colors.green,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          const Text(
-                            "Online",
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                  ],
+                Text(
+                  widget.title,
+                  style: AppTextStyles.cardTitle(context),
                 ),
               ],
             ),
@@ -1104,26 +1042,15 @@ class _HorusFabState extends State<_HorusFab> with SingleTickerProviderStateMixi
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Icon(Icons.chat_bubble_rounded, color: AppColors.primaryGold, size: 22),
-                  const SizedBox(width: 14),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        widget.label,
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-                      ),
-                      Row(
-                        children: [
-                          Container(width: 7, height: 7, decoration: const BoxDecoration(color: Colors.green, shape: BoxShape.circle)),
-                          const SizedBox(width: 8),
-                          Text(
-                            AppLocalizations.of(context)!.onlineStatus.replaceAll('● ', ''),
-                            style: const TextStyle(color: Colors.green, fontSize: 11, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ],
+                  const SizedBox(width: 12),
+                  Text(
+                    widget.label,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 14,
+                      letterSpacing: 0.5,
+                    ),
                   ),
                 ],
               ),
