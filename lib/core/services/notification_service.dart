@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../constants/colors.dart';
 import '../../models/app_notification.dart';
+import '../../models/tour_provider.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -108,10 +110,16 @@ class NotificationService {
       context: context,
       barrierDismissible: true,
       barrierLabel: "Quiz",
-      pageBuilder: (context, anim1, anim2) => _QuizModal(
+      pageBuilder: (innerContext, anim1, anim2) => _QuizModal(
         notification: notification,
         onAction: (taken) {
-          Navigator.pop(context);
+          if (!taken) {
+            final exhibitId = notification.data?['exhibitId'] as String?;
+            if (exhibitId != null) {
+              Provider.of<TourProvider>(context, listen: false).deferQuiz(exhibitId);
+            }
+          }
+          Navigator.pop(innerContext);
           if (taken && notification.onTap != null) {
             notification.onTap!();
           }
@@ -275,59 +283,161 @@ class _QuizModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final topics = (notification.data?['topics'] as List<String>?) ?? [];
+
     return Center(
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 32),
-        padding: const EdgeInsets.all(28),
+        margin: const EdgeInsets.symmetric(horizontal: 24),
         decoration: BoxDecoration(
           color: AppColors.cinematicCard,
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: AppColors.primaryGold.withOpacity(0.4)),
+          border: Border.all(color: AppColors.primaryGold.withOpacity(0.3)),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.6), blurRadius: 40),
+            BoxShadow(color: Colors.black.withOpacity(0.7), blurRadius: 50, spreadRadius: 5),
           ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Header Area
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
               decoration: BoxDecoration(
-                color: AppColors.primaryGold.withOpacity(0.1),
-                shape: BoxShape.circle,
+                color: AppColors.cinematicElevated,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
               ),
-              child: const Icon(Icons.quiz_rounded, color: AppColors.primaryGold, size: 48),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              notification.title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              notification.message,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 15, color: Colors.white.withOpacity(0.7), height: 1.5),
-            ),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              height: 54,
-              child: ElevatedButton(
-                onPressed: () => onAction(true),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryGold,
-                  foregroundColor: AppColors.darkInk,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                ),
-                child: const Text("TAKE QUIZ NOW", style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.2)),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryGold.withOpacity(0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.quiz_rounded, color: AppColors.primaryGold, size: 28),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          notification.title.toUpperCase(),
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.primaryGold,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          "Exhibit: ${notification.data?['location'] ?? 'Artifact'}",
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white.withOpacity(0.9),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: () => onAction(false),
-              child: Text("LATER", style: TextStyle(color: Colors.white.withOpacity(0.5), fontWeight: FontWeight.bold, letterSpacing: 1.5)),
+
+            // Body Area (Conversational)
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: AppColors.cinematicElevated,
+                      borderRadius: const BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                      ),
+                    ),
+                    child: Text(
+                      notification.message,
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.white.withOpacity(0.85),
+                        height: 1.5,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Suggestion Chips
+                  if (topics.isNotEmpty)
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: topics.map((t) => Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryGold.withOpacity(0.08),
+                          border: Border.all(color: AppColors.primaryGold.withOpacity(0.2)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          t,
+                          style: const TextStyle(color: AppColors.primaryGold, fontSize: 12, fontWeight: FontWeight.w600),
+                        ),
+                      )).toList(),
+                    ),
+                ],
+              ),
+            ),
+
+            // Actions Area
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      onPressed: () => onAction(true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primaryGold,
+                        foregroundColor: AppColors.darkInk,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        elevation: 4,
+                        shadowColor: AppColors.primaryGold.withOpacity(0.4),
+                      ),
+                      child: const Text("TAKE QUIZ NOW", style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.2)),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: TextButton(
+                      onPressed: () => onAction(false),
+                      style: TextButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(color: Colors.white.withOpacity(0.1)),
+                        ),
+                      ),
+                      child: Text(
+                        "LATER / AFTER TOUR",
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.7),
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.0,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
