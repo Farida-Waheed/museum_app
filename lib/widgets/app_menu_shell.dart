@@ -54,11 +54,12 @@ class _SideMenu extends StatelessWidget {
                           Image.asset("assets/icons/ankh.png", width: 32, height: 32),
                           const SizedBox(width: 16),
                           Text(
-                            l10n.appTitle,
+                            "HORUS-BOT",
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 22,
                               fontWeight: FontWeight.w900,
-                              letterSpacing: 1.0,
+                              letterSpacing: 2.0,
+                              fontFamily: 'Playfair Display',
                               color: isDark ? Colors.white : AppColors.darkInk,
                             ),
                           ),

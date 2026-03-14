@@ -10,13 +10,19 @@ import 'models/tour_provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await initializeDateFormatting('en', null);
-  await initializeDateFormatting('ar', null);
+  try {
+    await initializeDateFormatting('en', null);
+    await initializeDateFormatting('ar', null);
+  } catch (e) {
+    debugPrint("DateFormatting init failed: $e");
+  }
+
+  final userPrefs = await UserPreferencesModel.init();
 
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => UserPreferencesModel()),
+        ChangeNotifierProvider.value(value: userPrefs),
         ChangeNotifierProvider(create: (_) => ExhibitProvider()),
         ChangeNotifierProvider(create: (_) => TourProvider()),
       ],
