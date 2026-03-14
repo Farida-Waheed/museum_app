@@ -118,9 +118,6 @@
   "dataReassurance": "بياناتك مجهولة الهوية وتستخدم فقط للملاحة.",
   "introTitle": "المتاحف المصرية",
   "introSubtitle": "استكشف المتاحف المصرية مع حورس-بوت.",
-  "introTitlePrefix": "",
-  "introTitleMain": "المصرية",
-  "introTitleSuffix": "المتاحف",
   "onboarding1Title": "مرحبًا بك في حورس-بوت",
   "onboarding1Desc": "دليلك الذكي داخل المتحف. تنقّل بين المعروضات، واتبع الروبوت، واكتشف القصص المخفية.",
   "onboarding2Title": "تعرّف على حورس-بوت",
@@ -195,5 +192,15 @@
   "version": "الإصدار ١.٠",
   "aboutDesc": "رفيقك الذكي.",
   "university": "جامعة بنها",
-  "program": "كلية الحاسبات والذكاء الاصطناعي"
+  "program": "كلية الحاسبات والذكاء الاصطناعي",
+  "tourStartingTitle": "بدء الجولة",
+  "tourStartingMsg": "جولتك الإرشادية ستبدأ الآن. اتبع حوروس-بوت.",
+  "nextExhibitTitle": "المعروض التالي قادم",
+  "nextExhibitMsg": "أنت تقترب من {location}.",
+  "quizAvailableTitle": "اختبار متاح",
+  "quizAvailableMsg": "اختبر ما تعلمته عن {location}.",
+  "takeQuiz": "بدء الاختبار",
+  "smartTipTitle": "نصيحة من حوروس",
+  "robotNearbyTitle": "حوروس قريب منك",
+  "robotNearbyMsg": "اتبع الروبوت لمواصلة جولتك."
 }

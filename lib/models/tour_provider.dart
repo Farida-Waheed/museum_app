@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../core/services/notification_service.dart';
+import 'app_notification.dart';
 
 enum RobotState {
   idle,
@@ -46,11 +48,96 @@ class TourProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setRobotState(RobotState state, {String? msgEn, String? msgAr}) {
+  void setRobotState(RobotState state, {String? msgEn, String? msgAr, BuildContext? context}) {
+    final oldState = _robotState;
     _robotState = state;
     if (msgEn != null) _statusMessageEn = msgEn;
     if (msgAr != null) _statusMessageAr = msgAr;
+
+    // Trigger notifications if context is provided
+    if (context != null && oldState != state) {
+      if (state == RobotState.syncing && oldState == RobotState.idle) {
+        _triggerTourStartNotification(context);
+      } else if (state == RobotState.approaching) {
+        _triggerNextExhibitNotification(context);
+      }
+    }
+
     notifyListeners();
+  }
+
+  void _triggerTourStartNotification(BuildContext context) {
+    NotificationService.show(
+      context,
+      AppNotification(
+        id: 'tour_start_${DateTime.now().millisecondsSinceEpoch}',
+        title: "Tour Starting",
+        message: "Your guided tour is starting. Follow Horus-Bot.",
+        type: AppNotificationType.tourStart,
+        priority: AppNotificationPriority.high,
+        icon: Icons.play_circle_filled_rounded,
+      ),
+    );
+  }
+
+  void _triggerNextExhibitNotification(BuildContext context) {
+    NotificationService.show(
+      context,
+      AppNotification(
+        id: 'next_exhibit_${DateTime.now().millisecondsSinceEpoch}',
+        title: "Next Exhibit Ahead",
+        message: "You are approaching the next exhibit.",
+        type: AppNotificationType.nextExhibit,
+        priority: AppNotificationPriority.high,
+        icon: Icons.location_on_rounded,
+      ),
+    );
+  }
+
+  void triggerRobotNearby(BuildContext context) {
+    NotificationService.show(
+      context,
+      AppNotification(
+        id: 'robot_nearby_${DateTime.now().millisecondsSinceEpoch}',
+        title: "Horus-Bot is nearby",
+        message: "Follow the robot to continue your tour.",
+        type: AppNotificationType.robotNearby,
+        priority: AppNotificationPriority.high,
+        icon: Icons.smart_toy_rounded,
+      ),
+    );
+  }
+
+  void triggerQuizAvailable(BuildContext context, String location) {
+    NotificationService.show(
+      context,
+      AppNotification(
+        id: 'quiz_${DateTime.now().millisecondsSinceEpoch}',
+        title: "Quiz Available",
+        message: "Test what you learned about $location.",
+        type: AppNotificationType.quizAvailable,
+        priority: AppNotificationPriority.medium,
+        icon: Icons.quiz_rounded,
+        onTap: () {
+          // Logic to navigate to quiz
+          print("Navigating to quiz for $location");
+        },
+      ),
+    );
+  }
+
+  void triggerSmartTip(BuildContext context, String title, String message) {
+    NotificationService.show(
+      context,
+      AppNotification(
+        id: 'tip_${DateTime.now().millisecondsSinceEpoch}',
+        title: title,
+        message: message,
+        type: AppNotificationType.smartTip,
+        priority: AppNotificationPriority.low,
+        icon: Icons.lightbulb_outline_rounded,
+      ),
+    );
   }
 
   void setCurrentExhibit(String? id) {
