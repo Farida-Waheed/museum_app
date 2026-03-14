@@ -441,6 +441,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get onlineStatus => '● متصل';
 
   @override
+  String get guideStatus => 'حالة الدليل';
+
+  @override
   String get mapSub => 'ابحث عن المعروضات والمسارات';
 
   @override

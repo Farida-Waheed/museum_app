@@ -938,6 +938,12 @@ abstract class AppLocalizations {
   /// **'● Online'**
   String get onlineStatus;
 
+  /// No description provided for @guideStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Guide Status'**
+  String get guideStatus;
+
   /// No description provided for @mapSub.
   ///
   /// In en, this message translates to:

@@ -203,12 +203,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.black.withOpacity(0.4),
-                Colors.black.withOpacity(0.0),
-                Colors.black.withOpacity(0.4),
-                AppColors.cinematicBackground,
+                Colors.transparent,
+                Colors.black.withOpacity(0.55),
               ],
-              stops: const [0.0, 0.3, 0.7, 1.0],
+              stops: const [0.0, 1.0],
             ),
           ),
           child: Image.asset(
@@ -311,7 +309,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             barrierColor: Colors.black54,
             builder: (_) => const ChatScreen(isPopup: true),
           ),
-          label: l10n.talkToHorusBot,
+          label: l10n.askTheGuide,
         ),
       ),
       body: Builder(
@@ -680,11 +678,11 @@ class _NextStopBadge extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.cinematicElevated,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.primaryGold.withOpacity(0.2)),
+          border: Border.all(color: AppColors.primaryGold, width: 1.5),
           boxShadow: [
             BoxShadow(
               color: AppColors.primaryGold.withOpacity(0.15),
-              blurRadius: 30,
+              blurRadius: 20,
               offset: const Offset(0, 10),
             ),
             BoxShadow(
@@ -989,6 +987,7 @@ class _GridPainter extends CustomPainter {
 class _RobotStatusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final tourProvider = Provider.of<TourProvider>(context);
     final isOnline = tourProvider.robotState != RobotState.disconnected;
 
@@ -1016,7 +1015,7 @@ class _RobotStatusCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text("Horus-Bot Status", style: AppTextStyles.cardTitle(context)),
+                    Text(l10n.guideStatus, style: AppTextStyles.cardTitle(context)),
                     const SizedBox(width: 8),
                     Container(
                       width: 7,
