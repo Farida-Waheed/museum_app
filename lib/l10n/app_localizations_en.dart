@@ -9,10 +9,10 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Horus-Bot';
+  String get appTitle => 'Horus';
 
   @override
-  String get exploreEgypt => 'Explore Egypt With Horus-Bot';
+  String get exploreEgypt => 'Explore Egypt With Horus';
 
   @override
   String nextStop(Object location, Object time) {
@@ -38,7 +38,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fullView => 'Full View';
 
   @override
-  String get horusBot => 'Horus-Bot';
+  String get horusBot => 'Horus';
 
   @override
   String get you => 'You';
@@ -344,6 +344,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tickets => 'Tickets';
 
   @override
+  String get museumNews => 'Museum News';
+
+  @override
   String get seeAll => 'See All';
 
   @override
@@ -373,14 +376,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get introSubtitle => 'Explore Egyptian museums with Horus-Bot.';
 
   @override
-  String get onboarding1Title => 'Welcome to Horus-Bot';
+  String get onboarding1Title => 'Welcome to Horus';
 
   @override
   String get onboarding1Desc =>
       'Your smart guide to the museum. Navigate exhibits, follow the robot, and discover hidden stories.';
 
   @override
-  String get onboarding2Title => 'Meet Horus-Bot';
+  String get onboarding2Title => 'Meet Horus';
 
   @override
   String get onboarding2Desc =>
@@ -410,7 +413,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recommendedForYou => 'Discover Artifacts';
 
   @override
-  String get talkToHorusBot => 'Talk to Horus-Bot';
+  String get talkToHorusBot => 'Talk to Horus';
 
   @override
   String get didYouKnow => 'Did You Know?';
@@ -608,4 +611,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get program => 'Faculty of Computers and Artificial Intelligence';
+
+  @override
+  String get tourStartingTitle => 'Tour Starting';
+
+  @override
+  String get tourStartingMsg =>
+      'Your guided tour is starting. Follow Horus-Bot.';
+
+  @override
+  String get nextExhibitTitle => 'Next Exhibit Ahead';
+
+  @override
+  String nextExhibitMsg(Object location) {
+    return '$location is approaching.';
+  }
+
+  @override
+  String get quizAvailableTitle => 'Quiz Available';
+
+  @override
+  String quizAvailableMsg(Object location) {
+    return 'Test what you learned about $location.';
+  }
+
+  @override
+  String get takeQuiz => 'Take Quiz';
+
+  @override
+  String get smartTipTitle => 'Tip from Horus-Bot';
+
+  @override
+  String get robotNearbyTitle => 'Horus-Bot is nearby';
+
+  @override
+  String get robotNearbyMsg => 'Follow the robot to continue your tour.';
 }

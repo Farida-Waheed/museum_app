@@ -16,6 +16,7 @@ import '../../widgets/app_menu_shell.dart';
 import '../../widgets/dialogs/location_permission_dialog.dart';
 import '../../models/user_preferences.dart';
 import '../../models/tour_provider.dart';
+import '../chat/chat_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -150,10 +151,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     "HORUS",
                     style: brandStyle.copyWith(color: AppColors.primaryGold),
                   ),
-                  Text(
-                    "-BOT",
-                    style: brandStyle,
-                  ),
                 ],
               ),
               IconButton(
@@ -282,7 +279,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       floatingActionButton: ScaleTransition(
         scale: _fabScale,
         child: _HorusFab(
-          onPressed: () => Navigator.pushNamed(context, AppRoutes.chat),
+          onPressed: () => showDialog(
+            context: context,
+            barrierColor: Colors.black54,
+            builder: (_) => const ChatScreen(isPopup: true),
+          ),
           label: l10n.talkToHorusBot,
         ),
       ),
@@ -323,10 +324,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             const SizedBox(width: 16),
                             Expanded(
                               child: _FeatureCard(
-                                icon: Icons.chat_bubble_outline_rounded,
-                                title: l10n.talkToHorusBot,
+                                icon: Icons.qr_code_scanner,
+                                title: l10n.scanTicket,
                                 isHighlighted: true,
-                                onTap: () => Navigator.pushNamed(innerContext, AppRoutes.chat),
+                                onTap: () => Navigator.pushNamed(innerContext, AppRoutes.qrScan),
                               ),
                             ),
                           ],
@@ -473,7 +474,78 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
                 const SliverToBoxAdapter(child: SizedBox(height: 48)),
 
-                // 7. Did You Know
+                // 7. Museum News
+                SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(l10n.museumNews.toUpperCase(), style: AppTextStyles.sectionTitle(innerContext)),
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        height: 180,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          itemCount: news.length,
+                          itemBuilder: (context, index) {
+                            final item = news[index];
+                            return Container(
+                              width: 300,
+                              margin: const EdgeInsets.only(right: 16),
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: AppColors.cinematicCard,
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primaryGold.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      "LATEST",
+                                      style: TextStyle(color: AppColors.primaryGold, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    item.title,
+                                    style: AppTextStyles.cardTitle(context),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const Spacer(),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Read More",
+                                        style: TextStyle(color: AppColors.primaryGold, fontSize: 12, fontWeight: FontWeight.bold),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Icon(Icons.arrow_forward, color: AppColors.primaryGold, size: 14),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SliverToBoxAdapter(child: SizedBox(height: 48)),
+
+                // 8. Did You Know
                 SliverToBoxAdapter(
                   child: Container(
                     margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -581,12 +653,17 @@ class _NextStopBadge extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.cinematicElevated,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withOpacity(0.1)),
+          border: Border.all(color: AppColors.primaryGold.withOpacity(0.2)),
           boxShadow: [
             BoxShadow(
+              color: AppColors.primaryGold.withOpacity(0.15),
+              blurRadius: 30,
+              offset: const Offset(0, 10),
+            ),
+            BoxShadow(
               color: Colors.black.withOpacity(0.5),
-              blurRadius: 32,
-              offset: const Offset(0, 16),
+              blurRadius: 40,
+              offset: const Offset(0, 20),
             ),
           ],
         ),
@@ -948,6 +1025,7 @@ class _HorusFab extends StatefulWidget {
   @override
   State<_HorusFab> createState() => _HorusFabState();
 }
+
 
 
 class _HorusFabState extends State<_HorusFab> with SingleTickerProviderStateMixin {

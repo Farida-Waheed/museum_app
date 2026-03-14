@@ -21,6 +21,7 @@ class TourProvider with ChangeNotifier {
   // Quiz state
   final Map<String, int> _quizScores = {}; // exhibitId -> score
   final Set<String> _skippedQuizzes = {}; // exhibitIds
+  final Set<String> _pendingQuizzes = {}; // exhibitIds for "Later"
 
   // New state fields
   RobotState _robotState = RobotState.idle;
@@ -40,6 +41,7 @@ class TourProvider with ChangeNotifier {
 
   Map<String, int> get quizScores => _quizScores;
   Set<String> get skippedQuizzes => _skippedQuizzes;
+  Set<String> get pendingQuizzes => _pendingQuizzes;
 
   String getStatusMessage(String lang) => lang == 'ar' ? _statusMessageAr : _statusMessageEn;
 
@@ -108,22 +110,33 @@ class TourProvider with ChangeNotifier {
     );
   }
 
-  void triggerQuizAvailable(BuildContext context, String location) {
+  void triggerQuizAvailable(BuildContext context, String location, {String? exhibitId, List<String>? topics}) {
     NotificationService.show(
       context,
       AppNotification(
-        id: 'quiz_${DateTime.now().millisecondsSinceEpoch}',
-        title: "Quiz Available",
-        message: "Test what you learned about $location.",
+        id: 'quiz_${exhibitId ?? DateTime.now().millisecondsSinceEpoch}',
+        title: "Test What You Learned",
+        message: "Horus-Bot prepared a short quiz for this exhibit. Would you like to take it now or save it until after the tour?",
         type: AppNotificationType.quizAvailable,
         priority: AppNotificationPriority.medium,
         icon: Icons.quiz_rounded,
+        data: {
+          'exhibitId': exhibitId,
+          'location': location,
+          'topics': topics ?? ["History", "Symbolism", "Fun Facts"],
+        },
         onTap: () {
-          // Logic to navigate to quiz
+          // Logic to navigate to quiz screen
           print("Navigating to quiz for $location");
         },
       ),
     );
+  }
+
+  void deferQuiz(String exhibitId) {
+    _pendingQuizzes.add(exhibitId);
+    _skippedQuizzes.remove(exhibitId);
+    notifyListeners();
   }
 
   void triggerSmartTip(BuildContext context, String title, String message) {

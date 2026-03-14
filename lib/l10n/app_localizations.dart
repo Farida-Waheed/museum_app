@@ -101,13 +101,13 @@ abstract class AppLocalizations {
   /// The title of the application
   ///
   /// In en, this message translates to:
-  /// **'Horus-Bot'**
+  /// **'Horus'**
   String get appTitle;
 
   /// No description provided for @exploreEgypt.
   ///
   /// In en, this message translates to:
-  /// **'Explore Egypt With Horus-Bot'**
+  /// **'Explore Egypt With Horus'**
   String get exploreEgypt;
 
   /// No description provided for @nextStop.
@@ -155,7 +155,7 @@ abstract class AppLocalizations {
   /// No description provided for @horusBot.
   ///
   /// In en, this message translates to:
-  /// **'Horus-Bot'**
+  /// **'Horus'**
   String get horusBot;
 
   /// No description provided for @you.
@@ -752,6 +752,12 @@ abstract class AppLocalizations {
   /// **'Tickets'**
   String get tickets;
 
+  /// No description provided for @museumNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Museum News'**
+  String get museumNews;
+
   /// No description provided for @seeAll.
   ///
   /// In en, this message translates to:
@@ -809,7 +815,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding1Title.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to Horus-Bot'**
+  /// **'Welcome to Horus'**
   String get onboarding1Title;
 
   /// No description provided for @onboarding1Desc.
@@ -821,7 +827,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding2Title.
   ///
   /// In en, this message translates to:
-  /// **'Meet Horus-Bot'**
+  /// **'Meet Horus'**
   String get onboarding2Title;
 
   /// No description provided for @onboarding2Desc.
@@ -875,7 +881,7 @@ abstract class AppLocalizations {
   /// No description provided for @talkToHorusBot.
   ///
   /// In en, this message translates to:
-  /// **'Talk to Horus-Bot'**
+  /// **'Talk to Horus'**
   String get talkToHorusBot;
 
   /// No description provided for @didYouKnow.
@@ -1255,6 +1261,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Faculty of Computers and Artificial Intelligence'**
   String get program;
+
+  /// No description provided for @tourStartingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour Starting'**
+  String get tourStartingTitle;
+
+  /// No description provided for @tourStartingMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your guided tour is starting. Follow Horus-Bot.'**
+  String get tourStartingMsg;
+
+  /// No description provided for @nextExhibitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Exhibit Ahead'**
+  String get nextExhibitTitle;
+
+  /// No description provided for @nextExhibitMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'{location} is approaching.'**
+  String nextExhibitMsg(Object location);
+
+  /// No description provided for @quizAvailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiz Available'**
+  String get quizAvailableTitle;
+
+  /// No description provided for @quizAvailableMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Test what you learned about {location}.'**
+  String quizAvailableMsg(Object location);
+
+  /// No description provided for @takeQuiz.
+  ///
+  /// In en, this message translates to:
+  /// **'Take Quiz'**
+  String get takeQuiz;
+
+  /// No description provided for @smartTipTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip from Horus-Bot'**
+  String get smartTipTitle;
+
+  /// No description provided for @robotNearbyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot is nearby'**
+  String get robotNearbyTitle;
+
+  /// No description provided for @robotNearbyMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow the robot to continue your tour.'**
+  String get robotNearbyMsg;
 }
 
 class _AppLocalizationsDelegate
