@@ -58,12 +58,12 @@ class _SideMenu extends StatelessWidget {
                           ),
                           const SizedBox(width: 16),
                           Text(
-                            l10n.appTitle,
+                    "HORUS",
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w900,
                               letterSpacing: 1.0,
-                              color: isDark ? Colors.white : AppColors.darkInk,
+                      color: isDark ? AppColors.primaryGold : AppColors.primaryGold,
                             ),
                           ),
                         ],
@@ -140,6 +140,24 @@ class _SideMenu extends StatelessWidget {
                         label: l10n.quiz,
                         selected: currentRoute == AppRoutes.quiz,
                         onTap: () => onReplace(AppRoutes.quiz),
+                      ),
+                      _MenuItem(
+                        icon: Icons.map_outlined,
+                        label: l10n.map,
+                        selected: currentRoute == AppRoutes.map,
+                        onTap: () => onReplace(AppRoutes.map),
+                      ),
+                      _MenuItem(
+                        icon: Icons.route_outlined,
+                        label: l10n.tour,
+                        selected: currentRoute == AppRoutes.liveTour,
+                        onTap: () => onReplace(AppRoutes.liveTour),
+                      ),
+                      _MenuItem(
+                        icon: Icons.confirmation_number_outlined,
+                        label: l10n.tickets,
+                        selected: currentRoute == AppRoutes.myTickets,
+                        onTap: () => onReplace(AppRoutes.myTickets),
                       ),
 
                       const SizedBox(height: 16),

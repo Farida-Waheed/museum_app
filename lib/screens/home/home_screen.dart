@@ -2,18 +2,18 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 
 import '../../models/exhibit.dart';
 import '../../core/services/mock_data.dart';
+import '../../core/services/permission_service.dart';
 import '../../app/router.dart';
 import 'package:provider/provider.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
-import '../../widgets/dialogs/branded_permission_dialog.dart';
+import '../../widgets/stat_card.dart';
 import '../../models/user_preferences.dart';
 import '../../models/tour_provider.dart';
 import '../chat/chat_screen.dart';
@@ -65,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       if (mounted) {
         final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
         if (prefs.hasCompletedOnboarding && !prefs.hasSeenLocationPrompt) {
-          _requestInitialPermissions(context);
+          PermissionService.requestInitialPermissions(context);
         }
       }
     });
@@ -89,65 +89,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _robotPulseCtrl.dispose();
     _fabPulseCtrl.dispose();
     super.dispose();
-  }
-
-  Future<void> _requestInitialPermissions(BuildContext context) async {
-    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
-    final l10n = AppLocalizations.of(context)!;
-
-    if (kIsWeb) {
-      prefs.setHasSeenLocationPrompt(true);
-      return;
-    }
-
-    // Contextual Notification Prompt on Home load
-    final notifStatus = await Permission.notification.status;
-    if (!notifStatus.isGranted && mounted) {
-      await showDialog(
-        context: context,
-        barrierDismissible: false,
-        useSafeArea: false,
-        builder: (context) => BrandedPermissionDialog(
-          icon: Icons.notifications_none_rounded,
-          title: l10n.notificationPermissionTitle,
-          description: l10n.notificationPermissionDesc,
-          isHighContrast: prefs.isHighContrast,
-          onAllow: () async {
-            Navigator.pop(context);
-            await Permission.notification.request();
-          },
-          onDeny: () => Navigator.pop(context),
-        ),
-      );
-    }
-
-    // Contextual Location Prompt on Home load (for robot sync/nearby exhibits)
-    final locStatus = await Permission.locationWhenInUse.status;
-    if (!locStatus.isGranted && mounted) {
-      await showDialog(
-        context: context,
-        barrierDismissible: false,
-        useSafeArea: false,
-        builder: (context) => BrandedPermissionDialog(
-          icon: Icons.location_on_outlined,
-          title: l10n.locationPermissionTitle,
-          description: l10n.locationPermissionDesc,
-          helperText: l10n.dataReassurance,
-          isHighContrast: prefs.isHighContrast,
-          onAllow: () async {
-            Navigator.pop(context);
-            prefs.setHasSeenLocationPrompt(true);
-            await Permission.locationWhenInUse.request();
-          },
-          onDeny: () {
-            Navigator.pop(context);
-            prefs.setHasSeenLocationPrompt(true);
-          },
-        ),
-      );
-    } else {
-      prefs.setHasSeenLocationPrompt(true);
-    }
   }
 
   Widget _buildTopBar(BuildContext context, AppLocalizations l10n) {
@@ -262,7 +203,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           Row(
             children: [
               Expanded(
-                child: _StatCard(
+                child: StatCard(
                   label: l10n.visited,
                   value: visitedCount.toString(),
                   icon: Icons.check_circle_outline_rounded,
@@ -270,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _StatCard(
+                child: StatCard(
                   label: l10n.exhibits,
                   value: exhibits.length.toString(),
                   icon: Icons.account_balance_outlined,
@@ -278,7 +219,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _StatCard(
+                child: StatCard(
                   label: l10n.duration,
                   value: "$durationMinutes min",
                   icon: Icons.timer_outlined,
@@ -351,7 +292,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               child: _FeatureCard(
                                 icon: Icons.qr_code_scanner,
                                 title: l10n.scanTicket,
-                                isHighlighted: true,
                                 onTap: () => Navigator.pushNamed(innerContext, AppRoutes.qrScan),
                               ),
                             ),
@@ -620,42 +560,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             _buildTopBar(innerContext, l10n),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final String label;
-  final String value;
-  final IconData icon;
-
-  const _StatCard({required this.label, required this.value, required this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.cinematicCard,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: AppColors.primaryGold, size: 20),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: AppTextStyles.statNumber(context),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: AppTextStyles.helper(context),
-          ),
-        ],
       ),
     );
   }
@@ -1028,7 +932,7 @@ class _RobotStatusCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  isOnline ? "Online • At Jewelry Gallery" : "Offline",
+                  isOnline ? "Active • At Jewelry Gallery" : "Ready to Assist",
                   style: AppTextStyles.helper(context),
                 ),
               ],
@@ -1111,15 +1015,9 @@ class _HorusFabState extends State<_HorusFab> with SingleTickerProviderStateMixi
                         widget.label,
                         style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                       ),
-                      Row(
-                        children: [
-                          Container(width: 7, height: 7, decoration: const BoxDecoration(color: Colors.green, shape: BoxShape.circle)),
-                          const SizedBox(width: 8),
-                          Text(
-                            AppLocalizations.of(context)!.onlineStatus.replaceAll('● ', ''),
-                            style: const TextStyle(color: Colors.green, fontSize: 11, fontWeight: FontWeight.bold),
-                          ),
-                        ],
+                      const Text(
+                        "Always available",
+                        style: TextStyle(color: Colors.green, fontSize: 11, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),

@@ -68,6 +68,69 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile => 'Profile';
 
   @override
+  String get visitorStats => 'Visitor Statistics';
+
+  @override
+  String get myTours => 'My Tours';
+
+  @override
+  String get savedExhibits => 'Saved Exhibits';
+
+  @override
+  String get learningProgress => 'Learning Progress';
+
+  @override
+  String get quickPreferences => 'Quick Preferences';
+
+  @override
+  String get myTickets => 'My Tickets';
+
+  @override
+  String get signOut => 'Sign Out';
+
+  @override
+  String get explorer => 'Explorer';
+
+  @override
+  String get memberSince => 'Member since Oct 2023';
+
+  @override
+  String get newKingdomHighlights => 'New Kingdom Highlights';
+
+  @override
+  String get tutankhamunTreasures => 'Tutankhamun Treasures';
+
+  @override
+  String get completed => 'Completed';
+
+  @override
+  String get inProgress => 'In Progress';
+
+  @override
+  String get tutMask => 'Tut Mask';
+
+  @override
+  String get ramesses2 => 'Ramesses II';
+
+  @override
+  String get ancientEgyptHistory => 'Ancient Egypt History';
+
+  @override
+  String get hieroglyphBasics => 'Hieroglyph Basics';
+
+  @override
+  String get pharaohDynastyKnowledge => 'Pharaoh Dynasty Knowledge';
+
+  @override
+  String get lang => 'Lang';
+
+  @override
+  String get audio => 'Audio';
+
+  @override
+  String get access => 'Access';
+
+  @override
   String get map => 'Map';
 
   @override
