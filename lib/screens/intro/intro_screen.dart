@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/router.dart';
+import '../../core/constants/text_styles.dart';
 import '../../models/user_preferences.dart';
 import '../onboarding/onboarding_screen.dart';
 import '../../l10n/app_localizations.dart';
@@ -84,29 +85,17 @@ class _IntroScreenState extends State<IntroScreen>
 
   @override
   Widget build(BuildContext context) {
-    const String fontFamily = 'Playfair Display';
+    final heroStyle = AppTextStyles.heroTitle(context);
 
-    const TextStyle smallTheStyle = TextStyle(
-      color: Colors.white,
+    final TextStyle smallTheStyle = heroStyle.copyWith(
       fontSize: 30,
-      fontWeight: FontWeight.w300,
-      fontFamily: fontFamily,
       letterSpacing: 0.5,
     );
 
-    const TextStyle mainTitleStyle = TextStyle(
-      color: Colors.white,
-      fontSize: 44,
-      fontWeight: FontWeight.w300,
-      fontFamily: fontFamily,
-      letterSpacing: 1.5,
-      height: 1.1,
-    );
+    final TextStyle mainTitleStyle = heroStyle;
 
-    const TextStyle taglineStyle = TextStyle(
+    final TextStyle taglineStyle = AppTextStyles.body(context).copyWith(
       color: Colors.white70,
-      fontSize: 14,
-      fontWeight: FontWeight.w400,
     );
 
     final l10n = AppLocalizations.of(context)!;
