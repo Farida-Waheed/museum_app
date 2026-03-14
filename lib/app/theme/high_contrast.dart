@@ -37,25 +37,20 @@ final ThemeData highContrastTheme = ThemeData(
       fontWeight: FontWeight.bold,
     ),
     titleLarge: TextStyle(
+      fontFamily: 'Playfair Display',
       color: Colors.yellow,
       fontSize: 28,
       fontWeight: FontWeight.w900,
     ),
   ),
 
-  iconTheme: const IconThemeData(
-    color: Colors.yellow,
-    size: 34,
-  ),
+  iconTheme: const IconThemeData(color: Colors.yellow, size: 34),
 
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       backgroundColor: Colors.yellow,
       foregroundColor: Colors.black,
-      textStyle: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-      ),
+      textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
     ),
   ),
 );

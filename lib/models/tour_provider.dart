@@ -43,14 +43,20 @@ class TourProvider with ChangeNotifier {
   Set<String> get skippedQuizzes => _skippedQuizzes;
   Set<String> get pendingQuizzes => _pendingQuizzes;
 
-  String getStatusMessage(String lang) => lang == 'ar' ? _statusMessageAr : _statusMessageEn;
+  String getStatusMessage(String lang) =>
+      lang == 'ar' ? _statusMessageAr : _statusMessageEn;
 
   void updateProgress(double progress) {
     _progress = progress;
     notifyListeners();
   }
 
-  void setRobotState(RobotState state, {String? msgEn, String? msgAr, BuildContext? context}) {
+  void setRobotState(
+    RobotState state, {
+    String? msgEn,
+    String? msgAr,
+    BuildContext? context,
+  }) {
     final oldState = _robotState;
     _robotState = state;
     if (msgEn != null) _statusMessageEn = msgEn;
@@ -110,13 +116,19 @@ class TourProvider with ChangeNotifier {
     );
   }
 
-  void triggerQuizAvailable(BuildContext context, String location, {String? exhibitId, List<String>? topics}) {
+  void triggerQuizAvailable(
+    BuildContext context,
+    String location, {
+    String? exhibitId,
+    List<String>? topics,
+  }) {
     NotificationService.show(
       context,
       AppNotification(
         id: 'quiz_${exhibitId ?? DateTime.now().millisecondsSinceEpoch}',
         title: "Test What You Learned",
-        message: "Horus-Bot prepared a short quiz for this exhibit. Would you like to take it now or save it until after the tour?",
+        message:
+            "Horus-Bot prepared a short quiz for this exhibit. Would you like to take it now or save it until after the tour?",
         type: AppNotificationType.quizAvailable,
         priority: AppNotificationPriority.medium,
         icon: Icons.quiz_rounded,
@@ -178,6 +190,14 @@ class TourProvider with ChangeNotifier {
   void skipQuiz(String exhibitId) {
     if (!_quizScores.containsKey(exhibitId)) {
       _skippedQuizzes.add(exhibitId);
+      notifyListeners();
+    }
+  }
+
+  void postponeQuiz(String exhibitId) {
+    if (!_quizScores.containsKey(exhibitId) &&
+        !_skippedQuizzes.contains(exhibitId)) {
+      _pendingQuizzes.add(exhibitId);
       notifyListeners();
     }
   }

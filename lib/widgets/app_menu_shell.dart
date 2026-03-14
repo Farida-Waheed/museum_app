@@ -51,7 +51,11 @@ class _SideMenu extends StatelessWidget {
                     children: [
                       Row(
                         children: [
-                          Image.asset("assets/icons/ankh.png", width: 32, height: 32),
+                          Image.asset(
+                            "assets/icons/ankh.png",
+                            width: 32,
+                            height: 32,
+                          ),
                           const SizedBox(width: 16),
                           Text(
                             l10n.appTitle,
@@ -69,8 +73,14 @@ class _SideMenu extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             radius: 28,
-                            backgroundColor: isDark ? AppColors.darkSurfaceSecondary : AppColors.softSurface,
-                            child: const Icon(Icons.person_outline, color: AppColors.primaryGold, size: 32),
+                            backgroundColor: isDark
+                                ? AppColors.darkSurfaceSecondary
+                                : AppColors.softSurface,
+                            child: const Icon(
+                              Icons.person_outline,
+                              color: AppColors.primaryGold,
+                              size: 32,
+                            ),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -82,14 +92,18 @@ class _SideMenu extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
-                                    color: isDark ? Colors.white : AppColors.darkInk,
+                                    color: isDark
+                                        ? Colors.white
+                                        : AppColors.darkInk,
                                   ),
                                 ),
                                 Text(
                                   l10n.exploreTheMuseum,
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: isDark ? AppColors.darkMutedText : AppColors.mutedText,
+                                    color: isDark
+                                        ? AppColors.darkMutedText
+                                        : AppColors.mutedText,
                                   ),
                                 ),
                               ],
@@ -101,7 +115,13 @@ class _SideMenu extends StatelessWidget {
                   ),
                 ),
 
-                Divider(height: 1, thickness: 1, color: isDark ? AppColors.darkDivider : const Color(0xFFF5F5F5)),
+                Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: isDark
+                      ? AppColors.darkDivider
+                      : const Color(0xFFF5F5F5),
+                ),
 
                 // --- MENU ITEMS ---
                 Expanded(
@@ -112,29 +132,34 @@ class _SideMenu extends StatelessWidget {
                       _MenuItem(
                         icon: Icons.auto_awesome_mosaic_outlined,
                         label: l10n.exhibits,
+                        selected: currentRoute == AppRoutes.exhibits,
                         onTap: () => onReplace(AppRoutes.exhibits),
                       ),
                       _MenuItem(
-                        icon: Icons.route_outlined,
-                        label: l10n.tourPlanner,
-                        onTap: () => onReplace(AppRoutes.tourPlanner),
-                      ),
-                      _MenuItem(
-                        icon: Icons.event_note_outlined,
-                        label: l10n.events,
-                        onTap: () => onReplace(AppRoutes.events),
+                        icon: Icons.quiz_outlined,
+                        label: l10n.quiz,
+                        selected: currentRoute == AppRoutes.quiz,
+                        onTap: () => onReplace(AppRoutes.quiz),
                       ),
 
                       const SizedBox(height: 16),
                       _SectionHeader(label: l10n.accountPreferences),
                       _MenuItem(
+                        icon: Icons.person_outline,
+                        label: l10n.profile,
+                        selected: currentRoute == AppRoutes.profile,
+                        onTap: () => onReplace(AppRoutes.profile),
+                      ),
+                      _MenuItem(
                         icon: Icons.language_outlined,
-                        label: l10n.appLanguage,
+                        label: l10n.language,
+                        selected: currentRoute == AppRoutes.language,
                         onTap: () => onReplace(AppRoutes.language),
                       ),
                       _MenuItem(
-                        icon: Icons.accessibility_new_outlined,
+                        icon: Icons.accessibility_outlined,
                         label: l10n.accessibility,
+                        selected: currentRoute == AppRoutes.accessibility,
                         onTap: () => onReplace(AppRoutes.accessibility),
                       ),
                       _MenuItem(
@@ -147,19 +172,34 @@ class _SideMenu extends StatelessWidget {
                       const SizedBox(height: 16),
                       _SectionHeader(label: l10n.extras),
                       _MenuItem(
+                        icon: Icons.event_note_outlined,
+                        label: l10n.tourPlanner,
+                        selected: currentRoute == AppRoutes.tourPlanner,
+                        onTap: () => onReplace(AppRoutes.tourPlanner),
+                      ),
+                      _MenuItem(
+                        icon: Icons.event_outlined,
+                        label: l10n.events,
+                        selected: currentRoute == AppRoutes.events,
+                        onTap: () => onReplace(AppRoutes.events),
+                      ),
+                      _MenuItem(
                         icon: Icons.emoji_events_outlined,
                         label: l10n.achievements,
+                        selected: currentRoute == AppRoutes.achievements,
                         onTap: () => onReplace(AppRoutes.achievements),
                       ),
                       _MenuItem(
-                        icon: Icons.quiz_outlined,
-                        label: l10n.quiz,
-                        onTap: () => onReplace(AppRoutes.quiz),
+                        icon: Icons.feedback_outlined,
+                        label: l10n.feedback,
+                        selected: currentRoute == AppRoutes.feedback,
+                        onTap: () => onReplace(AppRoutes.feedback),
                       ),
                       _MenuItem(
-                        icon: Icons.help_outline_rounded,
-                        label: isArabic ? "مساعدة" : "Help",
-                        onTap: () => onReplace(AppRoutes.feedback),
+                        icon: Icons.info_outline,
+                        label: l10n.about,
+                        selected: currentRoute == AppRoutes.projectInfo,
+                        onTap: () => onReplace(AppRoutes.projectInfo),
                       ),
                     ],
                   ),
@@ -188,7 +228,9 @@ class _SectionHeader extends StatelessWidget {
           fontSize: 11,
           fontWeight: FontWeight.w900,
           letterSpacing: 1.5,
-          color: isDark ? AppColors.primaryGold.withOpacity(0.7) : AppColors.primaryGold,
+          color: isDark
+              ? AppColors.primaryGold.withOpacity(0.7)
+              : AppColors.primaryGold,
         ),
       ),
     );
@@ -221,17 +263,23 @@ class _MenuItem extends StatelessWidget {
         leading: Icon(
           icon,
           size: 22,
-          color: selected ? AppColors.primaryGold : (isDark ? Colors.white : AppColors.darkInk),
+          color: selected
+              ? AppColors.primaryGold
+              : (isDark ? Colors.white : AppColors.darkInk),
         ),
         title: Text(
           label,
           style: TextStyle(
             fontSize: 16,
             fontWeight: selected ? FontWeight.bold : FontWeight.w500,
-            color: selected ? AppColors.primaryGold : (isDark ? Colors.white : AppColors.darkInk),
+            color: selected
+                ? AppColors.primaryGold
+                : (isDark ? Colors.white : AppColors.darkInk),
           ),
         ),
-        tileColor: selected ? AppColors.primaryGold.withOpacity(0.08) : Colors.transparent,
+        tileColor: selected
+            ? AppColors.primaryGold.withOpacity(0.08)
+            : Colors.transparent,
       ),
     );
   }
@@ -334,7 +382,9 @@ class AppMenuShellState extends State<AppMenuShell>
 
     final currentRoute = ModalRoute.of(context)?.settings.name;
 
-    final bgColor = widget.backgroundColor ?? (isDark ? AppColors.darkBackground : Colors.white);
+    final bgColor =
+        widget.backgroundColor ??
+        (isDark ? AppColors.darkBackground : Colors.white);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -405,9 +455,18 @@ class AppMenuShellState extends State<AppMenuShell>
                                       backgroundColor: bgColor,
                                       appBar: AppBar(
                                         leading: IconButton(
-                                          icon: Icon(Navigator.canPop(innerContext) ? Icons.arrow_back_ios_new : Icons.menu, size: Navigator.canPop(innerContext) ? 20 : null),
+                                          icon: Icon(
+                                            Navigator.canPop(innerContext)
+                                                ? Icons.arrow_back_ios_new
+                                                : Icons.menu,
+                                            size: Navigator.canPop(innerContext)
+                                                ? 20
+                                                : null,
+                                          ),
                                           onPressed: () {
-                                            if (Navigator.canPop(innerContext)) {
+                                            if (Navigator.canPop(
+                                              innerContext,
+                                            )) {
                                               Navigator.pop(innerContext);
                                             } else {
                                               toggleMenu();
@@ -416,22 +475,30 @@ class AppMenuShellState extends State<AppMenuShell>
                                         ),
                                         title: Row(
                                           children: [
-                                            Image.asset("assets/icons/ankh.png", width: 26, height: 26),
+                                            Image.asset(
+                                              "assets/icons/ankh.png",
+                                              width: 26,
+                                              height: 26,
+                                            ),
                                             const SizedBox(width: 16),
                                             Text(
                                               widget.title ?? l10n.appTitle,
-                                              style: AppTextStyles.brandTitle(innerContext, isDark: isDark).copyWith(
-                                                fontSize: 18,
-                                              ),
+                                              style: AppTextStyles.brandTitle(
+                                                innerContext,
+                                                isDark: isDark,
+                                              ).copyWith(fontSize: 18),
                                             ),
                                           ],
                                         ),
                                         actions: widget.actions,
-                                        backgroundColor: isDark ? AppColors.darkHeader : AppColors.warmSurface,
+                                        backgroundColor: isDark
+                                            ? AppColors.darkHeader
+                                            : AppColors.warmSurface,
                                         elevation: 0,
                                         bottom: widget.subHeader != null
                                             ? PreferredSize(
-                                                preferredSize: const Size.fromHeight(48),
+                                                preferredSize:
+                                                    const Size.fromHeight(48),
                                                 child: widget.subHeader!,
                                               )
                                             : null,

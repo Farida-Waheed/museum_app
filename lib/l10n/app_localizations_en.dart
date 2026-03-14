@@ -41,6 +41,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get horusBot => 'Horus';
 
   @override
+  String get talkToHorusBot => 'Talk to Horus-Bot';
+
+  @override
+  String get askTheGuide => 'Ask the Guide';
+
+  @override
+  String get aboutHorusBot => 'About Horus-Bot';
+
+  @override
   String get you => 'You';
 
   @override
@@ -413,7 +422,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recommendedForYou => 'Discover Artifacts';
 
   @override
-  String get talkToHorusBot => 'Talk to Horus';
+  String get quizPromptTitle => 'Quiz Time';
+
+  @override
+  String get quizPromptDescription =>
+      'Would you like to take the quiz for this exhibit?';
+
+  @override
+  String get later => 'Later';
+
+  @override
+  String get takeNow => 'Take Now';
 
   @override
   String get didYouKnow => 'Did You Know?';
@@ -518,7 +537,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsDisabled => 'Settings: Disabled';
 
   @override
-  String get aboutHorusBot => 'About Horus-Bot';
+  String get about => 'About';
 
   @override
   String get appVersion => 'Version 1.0';

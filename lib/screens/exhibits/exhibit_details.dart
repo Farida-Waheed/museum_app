@@ -28,6 +28,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
   late final AnimationController _playController;
 
   bool _isPlaying = false;
+  bool _quizPromptShown = false;
 
   @override
   void initState() {
@@ -65,7 +66,11 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
     }
   }
 
-  void _toggleBookmark(Exhibit exhibit, AppLocalizations l10n, ExhibitProvider provider) {
+  void _toggleBookmark(
+    Exhibit exhibit,
+    AppLocalizations l10n,
+    ExhibitProvider provider,
+  ) {
     provider.toggleBookmark(exhibit.id);
     final isBookmarked = provider.isBookmarked(exhibit.id);
     ScaffoldMessenger.of(context).showSnackBar(
@@ -94,7 +99,43 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
 
     // Mark as visited when viewing details
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<TourProvider>(context, listen: false).setCurrentExhibit(exhibit.id);
+      Provider.of<TourProvider>(
+        context,
+        listen: false,
+      ).setCurrentExhibit(exhibit.id);
+      if (!_quizPromptShown &&
+          !tourProvider.quizScores.containsKey(exhibit.id) &&
+          !tourProvider.skippedQuizzes.contains(exhibit.id) &&
+          !tourProvider.pendingQuizzes.contains(exhibit.id)) {
+        _quizPromptShown = true;
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (_) => AlertDialog(
+            title: Text(l10n.quizPromptTitle ?? 'Quiz Time'),
+            content: Text(
+              l10n.quizPromptDescription ??
+                  'Would you like to take the quiz for this exhibit?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  tourProvider.postponeQuiz(exhibit.id);
+                },
+                child: Text(l10n.later ?? 'Later'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/quiz', arguments: exhibit.id);
+                },
+                child: Text(l10n.takeNow ?? 'Take Now'),
+              ),
+            ],
+          ),
+        );
+      }
     });
 
     final hasCompletedQuiz = tourProvider.quizScores.containsKey(exhibit.id);
@@ -104,7 +145,14 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
       floatingActionButton: const RoboGuideEntry(),
       body: CustomScrollView(
         slivers: [
-          _buildSliverAppBar(exhibit, prefs.language, cs, l10n, isBookmarked, exhibitProvider),
+          _buildSliverAppBar(
+            exhibit,
+            prefs.language,
+            cs,
+            l10n,
+            isBookmarked,
+            exhibitProvider,
+          ),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(
@@ -138,7 +186,12 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                   if (!hasCompletedQuiz)
                     _buildQuizPrompt(l10n, cs, exhibit.id, isArabic)
                   else
-                    _buildQuizCompletedChip(l10n, cs, tourProvider.quizScores[exhibit.id]!, isArabic),
+                    _buildQuizCompletedChip(
+                      l10n,
+                      cs,
+                      tourProvider.quizScores[exhibit.id]!,
+                      isArabic,
+                    ),
 
                   const SizedBox(height: 28),
                   _buildRouteButtons(l10n, cs),
@@ -152,7 +205,12 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
     );
   }
 
-  Widget _buildQuizPrompt(AppLocalizations l10n, ColorScheme cs, String exhibitId, bool isArabic) {
+  Widget _buildQuizPrompt(
+    AppLocalizations l10n,
+    ColorScheme cs,
+    String exhibitId,
+    bool isArabic,
+  ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(20),
@@ -166,7 +224,11 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
         children: [
           Row(
             children: [
-              const Icon(Icons.quiz_outlined, color: AppColors.primaryGold, size: 24),
+              const Icon(
+                Icons.quiz_outlined,
+                color: AppColors.primaryGold,
+                size: 24,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -190,20 +252,32 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                       context: context,
                       builder: (context) => PremiumDialog(
                         title: isArabic ? "هل أنت مستعد؟" : "Are you ready?",
-                        icon: const Icon(Icons.quiz_outlined, color: AppColors.primaryGold),
+                        icon: const Icon(
+                          Icons.quiz_outlined,
+                          color: AppColors.primaryGold,
+                        ),
                         content: Text(
                           isArabic
-                            ? "أنهيت عرض توت عنخ آمون. هل تريد بدء الاختبار؟"
-                            : "You finished the Tutankhamun exhibit. Ready to start the quiz?",
-                          style: const TextStyle(color: Colors.white70, fontSize: 16),
+                              ? "أنهيت عرض توت عنخ آمون. هل تريد بدء الاختبار؟"
+                              : "You finished the Tutankhamun exhibit. Ready to start the quiz?",
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 16,
+                          ),
                         ),
                         actions: [
                           TextButton(
                             onPressed: () {
                               Navigator.pop(context);
-                              Provider.of<TourProvider>(context, listen: false).skipQuiz(exhibitId);
+                              Provider.of<TourProvider>(
+                                context,
+                                listen: false,
+                              ).skipQuiz(exhibitId);
                             },
-                            child: Text(isArabic ? "لاحقاً" : "Later", style: const TextStyle(color: Colors.white60)),
+                            child: Text(
+                              isArabic ? "لاحقاً" : "Later",
+                              style: const TextStyle(color: Colors.white60),
+                            ),
                           ),
                           ElevatedButton(
                             onPressed: () {
@@ -211,16 +285,24 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => QuizScreen(exhibitId: exhibitId),
+                                  builder: (context) =>
+                                      QuizScreen(exhibitId: exhibitId),
                                 ),
                               );
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primaryGold,
                               foregroundColor: AppColors.darkInk,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
-                            child: Text(l10n.startQuiz, style: const TextStyle(fontWeight: FontWeight.bold)),
+                            child: Text(
+                              l10n.startQuiz,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -229,20 +311,30 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryGold,
                     foregroundColor: AppColors.darkInk,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     elevation: 0,
                   ),
-                  child: Text(l10n.startQuiz, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  child: Text(
+                    l10n.startQuiz,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
               TextButton(
                 onPressed: () {
-                  Provider.of<TourProvider>(context, listen: false).skipQuiz(exhibitId);
+                  Provider.of<TourProvider>(
+                    context,
+                    listen: false,
+                  ).skipQuiz(exhibitId);
                 },
                 child: Text(
                   isArabic ? "تخطي" : "Skip",
-                  style: TextStyle(color: isDark ? Colors.white70 : AppColors.mutedText),
+                  style: TextStyle(
+                    color: isDark ? Colors.white70 : AppColors.mutedText,
+                  ),
                 ),
               ),
             ],
@@ -252,7 +344,12 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
     );
   }
 
-  Widget _buildQuizCompletedChip(AppLocalizations l10n, ColorScheme cs, int score, bool isArabic) {
+  Widget _buildQuizCompletedChip(
+    AppLocalizations l10n,
+    ColorScheme cs,
+    int score,
+    bool isArabic,
+  ) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -266,12 +363,18 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
           const SizedBox(width: 10),
           Text(
             isArabic ? "الاختبار مكتمل" : "Quiz Completed",
-            style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              color: Colors.green,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const Spacer(),
           Text(
             isArabic ? "النتيجة: $score" : "Score: $score",
-            style: TextStyle(color: Colors.green.shade800, fontWeight: FontWeight.w900),
+            style: TextStyle(
+              color: Colors.green.shade800,
+              fontWeight: FontWeight.w900,
+            ),
           ),
         ],
       ),
@@ -337,15 +440,26 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
 
   // ---------- AUDIO CARD ----------
 
-  Widget _buildAudioCard(Exhibit exhibit, AppLocalizations l10n, ColorScheme cs) {
+  Widget _buildAudioCard(
+    Exhibit exhibit,
+    AppLocalizations l10n,
+    ColorScheme cs,
+  ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
         color: isDark ? AppColors.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: isDark ? AppColors.darkDivider : Colors.transparent),
+        border: Border.all(
+          color: isDark ? AppColors.darkDivider : Colors.transparent,
+        ),
         boxShadow: [
-          if (!isDark) BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+          if (!isDark)
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
         ],
       ),
       child: Padding(
@@ -385,7 +499,10 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                   const SizedBox(height: 4),
                   Text(
                     l10n.audioNarration,
-                    style: TextStyle(fontSize: 12, color: isDark ? AppColors.helperText : Colors.black54),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? AppColors.helperText : Colors.black54,
+                    ),
                   ),
                 ],
               ),
@@ -398,24 +515,20 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
 
   // ---------- FACT CHIPS ----------
 
-  Widget _buildFactChips(Exhibit exhibit, AppLocalizations l10n, ColorScheme cs) {
+  Widget _buildFactChips(
+    Exhibit exhibit,
+    AppLocalizations l10n,
+    ColorScheme cs,
+  ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final facts = <Map<String, dynamic>>[
-      {
-        'icon': Icons.public,
-        'label': l10n.origin,
-        'value': 'Ancient Egypt',
-      },
+      {'icon': Icons.public, 'label': l10n.origin, 'value': 'Ancient Egypt'},
       {
         'icon': Icons.calendar_today,
         'label': l10n.period,
         'value': 'New Kingdom',
       },
-      {
-        'icon': Icons.location_on,
-        'label': l10n.gallery,
-        'value': 'Hall A',
-      },
+      {'icon': Icons.location_on, 'label': l10n.gallery, 'value': 'Hall A'},
     ];
 
     return Wrap(
@@ -429,11 +542,13 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                 '${f['label']}: ${f['value']}',
                 style: const TextStyle(fontSize: 12),
               ),
-            backgroundColor: AppColors.primaryGold.withOpacity(0.1),
-            labelStyle: TextStyle(color: isDark ? Colors.white : Colors.black),
+              backgroundColor: AppColors.primaryGold.withOpacity(0.1),
+              labelStyle: TextStyle(
+                color: isDark ? Colors.white : Colors.black,
+              ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
-              side: BorderSide(color: AppColors.primaryGold.withOpacity(0.2)),
+                side: BorderSide(color: AppColors.primaryGold.withOpacity(0.2)),
               ),
             ),
           )
@@ -449,11 +564,9 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
       children: [
         OutlinedButton.icon(
           onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(l10n.addedToRoute),
-              ),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(l10n.addedToRoute)));
           },
           icon: const Icon(Icons.route),
           label: Text(l10n.addToMyRoute),
@@ -469,14 +582,15 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
         const SizedBox(width: 12),
         TextButton.icon(
           onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(l10n.openingMap),
-              ),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(l10n.openingMap)));
           },
           icon: const Icon(Icons.map_outlined, color: AppColors.primaryGold),
-          label: Text(l10n.viewOnMap, style: const TextStyle(color: AppColors.primaryGold)),
+          label: Text(
+            l10n.viewOnMap,
+            style: const TextStyle(color: AppColors.primaryGold),
+          ),
           style: TextButton.styleFrom(foregroundColor: AppColors.primaryGold),
         ),
       ],

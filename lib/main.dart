@@ -6,6 +6,7 @@ import 'app/app.dart';
 import 'models/user_preferences.dart';
 import 'models/exhibit_provider.dart';
 import 'models/tour_provider.dart';
+import 'models/chat_provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,6 +20,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => UserPreferencesModel()),
         ChangeNotifierProvider(create: (_) => ExhibitProvider()),
         ChangeNotifierProvider(create: (_) => TourProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
       child: const MuseumApp(),
     ),

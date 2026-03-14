@@ -6,6 +6,7 @@ class UserPreferencesModel extends ChangeNotifier {
   static const String _kIsHighContrast = 'isHighContrast';
   static const String _kFontScale = 'fontScale';
   static const String _kHasCompletedOnboarding = 'hasCompletedOnboarding';
+  static const String _kHasSeenPermissionsPrompt = 'hasSeenPermissionsPrompt';
   static const String _kHasSeenLocationPrompt = 'hasSeenLocationPrompt';
   static const String _kThemeMode = 'themeMode';
 
@@ -13,6 +14,7 @@ class UserPreferencesModel extends ChangeNotifier {
   bool _isHighContrast = false;
   double _fontScale = 1.0;
   bool _hasCompletedOnboarding = false;
+  bool _hasSeenPermissionsPrompt = false;
   bool _hasSeenLocationPrompt = false;
   String _themeMode = 'dark';
 
@@ -20,6 +22,7 @@ class UserPreferencesModel extends ChangeNotifier {
   bool get isHighContrast => _isHighContrast;
   double get fontScale => _fontScale;
   bool get hasCompletedOnboarding => _hasCompletedOnboarding;
+  bool get hasSeenPermissionsPrompt => _hasSeenPermissionsPrompt;
   bool get hasSeenLocationPrompt => _hasSeenLocationPrompt;
   String get themeMode => _themeMode;
 
@@ -33,6 +36,7 @@ class UserPreferencesModel extends ChangeNotifier {
     _isHighContrast = prefs.getBool(_kIsHighContrast) ?? false;
     _fontScale = prefs.getDouble(_kFontScale) ?? 1.0;
     _hasCompletedOnboarding = prefs.getBool(_kHasCompletedOnboarding) ?? false;
+    _hasSeenPermissionsPrompt = prefs.getBool(_kHasSeenPermissionsPrompt) ?? false;
     _hasSeenLocationPrompt = prefs.getBool(_kHasSeenLocationPrompt) ?? false;
     _themeMode = prefs.getString(_kThemeMode) ?? 'dark';
     notifyListeners();
@@ -71,6 +75,15 @@ class UserPreferencesModel extends ChangeNotifier {
       _hasCompletedOnboarding = value;
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_kHasCompletedOnboarding, value);
+      notifyListeners();
+    }
+  }
+
+  Future<void> setHasSeenPermissionsPrompt(bool value) async {
+    if (_hasSeenPermissionsPrompt != value) {
+      _hasSeenPermissionsPrompt = value;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_kHasSeenPermissionsPrompt, value);
       notifyListeners();
     }
   }

@@ -158,6 +158,24 @@ abstract class AppLocalizations {
   /// **'Horus'**
   String get horusBot;
 
+  /// No description provided for @talkToHorusBot.
+  ///
+  /// In en, this message translates to:
+  /// **'Talk to Horus-Bot'**
+  String get talkToHorusBot;
+
+  /// No description provided for @askTheGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the Guide'**
+  String get askTheGuide;
+
+  /// No description provided for @aboutHorusBot.
+  ///
+  /// In en, this message translates to:
+  /// **'About Horus-Bot'**
+  String get aboutHorusBot;
+
   /// No description provided for @you.
   ///
   /// In en, this message translates to:
@@ -878,11 +896,29 @@ abstract class AppLocalizations {
   /// **'Discover Artifacts'**
   String get recommendedForYou;
 
-  /// No description provided for @talkToHorusBot.
+  /// No description provided for @quizPromptTitle.
   ///
   /// In en, this message translates to:
-  /// **'Talk to Horus'**
-  String get talkToHorusBot;
+  /// **'Quiz Time'**
+  String get quizPromptTitle;
+
+  /// No description provided for @quizPromptDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Would you like to take the quiz for this exhibit?'**
+  String get quizPromptDescription;
+
+  /// No description provided for @later.
+  ///
+  /// In en, this message translates to:
+  /// **'Later'**
+  String get later;
+
+  /// No description provided for @takeNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Take Now'**
+  String get takeNow;
 
   /// No description provided for @didYouKnow.
   ///
@@ -1076,11 +1112,11 @@ abstract class AppLocalizations {
   /// **'Settings: Disabled'**
   String get settingsDisabled;
 
-  /// No description provided for @aboutHorusBot.
+  /// No description provided for @about.
   ///
   /// In en, this message translates to:
-  /// **'About Horus-Bot'**
-  String get aboutHorusBot;
+  /// **'About'**
+  String get about;
 
   /// No description provided for @appVersion.
   ///

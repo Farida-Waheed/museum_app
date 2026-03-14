@@ -113,8 +113,18 @@ class MockDataService {
       id: 'q2',
       questionEn: 'What were Canopic Jars used for?',
       questionAr: 'فيما كانت تستخدم الأواني الكانوبية؟',
-      optionsEn: ['Drinking water', 'Storing organs', 'Cooking food', 'Storing jewelry'],
-      optionsAr: ['شرب الماء', 'تخزين الأعضاء', 'طهي الطعام', 'تخزين المجوهرات'],
+      optionsEn: [
+        'Drinking water',
+        'Storing organs',
+        'Cooking food',
+        'Storing jewelry',
+      ],
+      optionsAr: [
+        'شرب الماء',
+        'تخزين الأعضاء',
+        'طهي الطعام',
+        'تخزين المجوهرات',
+      ],
       correctAnswerIndex: 1,
     ),
     QuizQuestion(
@@ -130,21 +140,23 @@ class MockDataService {
   static List<QuizQuestion> getAllQuestions() => questions;
 
   // -------------------------
-  // Museum News
+  // Museum News (Mocked - Trusted Sources Only)
   // -------------------------
   static final List<MockNews> news = [
     MockNews(
-      title: "Grand Egyptian Museum announces updated opening schedule",
-      description: "The museum will now be open for evening tours starting next month.",
+      title: "Grand Egyptian Museum Opening Extended Hours Announced",
+      description:
+          "The museum will now offer evening visits on Fridays and Saturdays to accommodate more visitors from around the world.",
       image: "assets/images/Onboarding.jpg",
-      source: "Official Museum Update",
+      source: "Grand Egyptian Museum Official",
       date: DateTime.now().subtract(const Duration(days: 1)),
     ),
     MockNews(
-      title: "Digital Preservation of Artifacts",
-      description: "The museum starts a new initiative to scan all artifacts in 3D.",
+      title: "UNESCO Recognizes GEM's Digital Preservation Efforts",
+      description:
+          "The Grand Egyptian Museum receives commendation for its innovative 3D scanning project to preserve ancient artifacts digitally.",
       image: "assets/images/Grand Hall.jpg",
-      source: "UNESCO",
+      source: "UNESCO Heritage News",
       date: DateTime.now().subtract(const Duration(days: 3)),
     ),
   ];
@@ -161,7 +173,8 @@ class MockDataService {
       dateTime: DateTime.now().add(const Duration(minutes: 15)),
       locationEn: 'Main Entrance Hall',
       locationAr: 'ردهة المدخل الرئيسي',
-      descriptionEn: 'A live guided tour led by Horus-Bot and a museum specialist.',
+      descriptionEn:
+          'A live guided tour led by Horus-Bot and a museum specialist.',
       descriptionAr: 'جولة إرشادية حية بقيادة حوروس-بوت وأخصائي متحف.',
       isLive: true,
     ),
@@ -181,7 +194,8 @@ class MockDataService {
       dateTime: DateTime.now().add(const Duration(hours: 3)),
       locationEn: 'Auditorium',
       locationAr: 'الأوديتوريوم',
-      descriptionEn: 'Deep dive into the latest findings from the Valley of the Kings.',
+      descriptionEn:
+          'Deep dive into the latest findings from the Valley of the Kings.',
       descriptionAr: 'غوص عميق في أحدث النتائج من وادي الملوك.',
       isLive: false,
     ),
@@ -246,7 +260,8 @@ class MockEvent {
 
   String getTitle(String lang) => lang == 'ar' ? titleAr : titleEn;
   String getLocation(String lang) => lang == 'ar' ? locationAr : locationEn;
-  String getDescription(String lang) => lang == 'ar' ? descriptionAr : descriptionEn;
+  String getDescription(String lang) =>
+      lang == 'ar' ? descriptionAr : descriptionEn;
 }
 
 class MockNews {

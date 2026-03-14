@@ -41,6 +41,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get horusBot => 'حوروس';
 
   @override
+  String get talkToHorusBot => 'تحدث مع حوروس-بوت';
+
+  @override
+  String get askTheGuide => 'اسأل الدليل';
+
+  @override
+  String get aboutHorusBot => 'عن حوروس-بوت';
+
+  @override
   String get you => 'أنت';
 
   @override
@@ -411,7 +420,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get recommendedForYou => 'اكتشف القطع الأثرية';
 
   @override
-  String get talkToHorusBot => 'تحدث مع حوروس';
+  String get quizPromptTitle => 'وقت الاختبار';
+
+  @override
+  String get quizPromptDescription => 'هل تريد أخذ الاختبار لهذا المعرض؟';
+
+  @override
+  String get later => 'لاحقاً';
+
+  @override
+  String get takeNow => 'خذ الآن';
 
   @override
   String get didYouKnow => 'هل تعلم؟';
@@ -516,7 +534,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsDisabled => 'الإعدادات: معطل';
 
   @override
-  String get aboutHorusBot => 'عن حوروس-بوت';
+  String get about => 'حول';
 
   @override
   String get appVersion => 'الإصدار ١.٠';

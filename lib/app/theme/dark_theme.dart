@@ -9,8 +9,6 @@ final ThemeData darkTheme = ThemeData(
     primary: AppColors.primaryGold,
     secondary: AppColors.primaryGold,
     surface: AppColors.darkSurface,
-    background: AppColors.darkBackground,
-    onBackground: Colors.white,
     onSurface: Colors.white,
     error: AppColors.alertRed,
   ),
@@ -47,29 +45,25 @@ final ThemeData darkTheme = ThemeData(
 
   textTheme: const TextTheme(
     displayLarge: TextStyle(
+      fontFamily: 'Playfair Display',
       fontSize: 28,
       fontWeight: FontWeight.bold,
       color: Colors.white,
     ),
     headlineMedium: TextStyle(
+      fontFamily: 'Playfair Display',
       fontSize: 22,
       fontWeight: FontWeight.w600,
       color: Colors.white,
     ),
     titleMedium: TextStyle(
+      fontFamily: 'Playfair Display',
       fontSize: 17,
       fontWeight: FontWeight.w600,
       color: Colors.white,
     ),
-    bodyLarge: TextStyle(
-      fontSize: 14,
-      color: Colors.white,
-      height: 1.5,
-    ),
-    bodySmall: TextStyle(
-      fontSize: 12,
-      color: AppColors.darkMutedText,
-    ),
+    bodyLarge: TextStyle(fontSize: 14, color: Colors.white, height: 1.5),
+    bodySmall: TextStyle(fontSize: 12, color: AppColors.darkMutedText),
   ),
 
   dividerTheme: const DividerThemeData(
