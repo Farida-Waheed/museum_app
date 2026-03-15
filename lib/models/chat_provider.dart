@@ -39,8 +39,8 @@ class ChatProvider extends ChangeNotifier {
     if (_messages.isNotEmpty) return;
 
     final greeting = isArabic
-        ? "مرحباً! أنا حوروس، كيف يمكنني مساعدتك؟"
-        : "Welcome! I’m Horus, how can I help you today?";
+        ? "مرحباً! أنا دليلك في المتحف، كيف يمكنني مساعدتك؟"
+        : "Welcome! I am your museum guide. How can I help you today?";
 
     addMessage(ChatMessageModel.text(
       id: DateTime.now().microsecondsSinceEpoch.toString(),

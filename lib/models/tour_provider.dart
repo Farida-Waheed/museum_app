@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import '../core/services/notification_service.dart';
 import 'app_notification.dart';
+import '../widgets/dialogs/branded_permission_dialog.dart';
+import '../models/user_preferences.dart';
+import 'package:provider/provider.dart';
 
 enum RobotState {
   idle,
@@ -165,12 +168,36 @@ class TourProvider with ChangeNotifier {
     );
   }
 
-  void setCurrentExhibit(String? id) {
+  void setCurrentExhibit(String? id, {BuildContext? context}) {
     _currentExhibitId = id;
     if (id != null && !_visitedExhibitIds.contains(id)) {
       _visitedExhibitIds.add(id);
+      if (context != null) {
+        _showQuizPrompt(context, id);
+      }
     }
     notifyListeners();
+  }
+
+  void _showQuizPrompt(BuildContext context, String exhibitId) {
+    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+    showDialog(
+      context: context,
+      builder: (context) => BrandedPermissionDialog(
+        icon: Icons.quiz_outlined,
+        title: "Quiz Available",
+        description: "Would you like to take a quick quiz for this exhibit?",
+        onAllow: () {
+          Navigator.pop(context);
+          // Navigate to quiz
+        },
+        onDeny: () {
+          Navigator.pop(context);
+          postponeQuiz(exhibitId);
+        },
+        isHighContrast: prefs.isHighContrast,
+      ),
+    );
   }
 
   void setNextDestination(String? id, double seconds) {

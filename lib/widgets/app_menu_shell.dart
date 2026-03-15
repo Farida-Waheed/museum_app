@@ -119,6 +119,12 @@ class _SideMenu extends StatelessWidget {
                     children: [
                       _SectionHeader(label: l10n.visit),
                       _MenuItem(
+                        icon: Icons.home_outlined,
+                        label: l10n.home,
+                        selected: currentRoute == AppRoutes.mainHome,
+                        onTap: () => onReplace(AppRoutes.mainHome),
+                      ),
+                      _MenuItem(
                         icon: Icons.auto_awesome_mosaic_outlined,
                         label: l10n.exhibits,
                         selected: currentRoute == AppRoutes.exhibits,
@@ -209,10 +215,14 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(28, 8, 24, 8),
+      padding: const EdgeInsets.fromLTRB(28, 24, 24, 12),
       child: Text(
         label.toUpperCase(),
-        style: AppTextStyles.sectionTitle(context),
+        style: AppTextStyles.sectionTitle(context).copyWith(
+          fontSize: 11,
+          letterSpacing: 1.5,
+          color: AppColors.primaryGold.withOpacity(0.7),
+        ),
       ),
     );
   }
@@ -235,7 +245,7 @@ class _MenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: ListTile(
         onTap: onTap,
         dense: true,
@@ -320,23 +330,26 @@ class AppMenuShellState extends State<AppMenuShell>
 
   void toggleMenu() {
     if (_isMenuOpen) {
-      _menuController.reverse();
+      closeMenu();
     } else {
-      _menuController.forward();
+      openMenu();
     }
-    setState(() => _isMenuOpen = !_isMenuOpen);
   }
 
   void openMenu() {
     if (_isMenuOpen) return;
     _menuController.forward();
-    setState(() => _isMenuOpen = true);
+    setState(() {
+      _isMenuOpen = true;
+    });
   }
 
   void closeMenu() {
     if (!_isMenuOpen) return;
     _menuController.reverse();
-    setState(() => _isMenuOpen = false);
+    setState(() {
+      _isMenuOpen = false;
+    });
   }
 
   void _goPush(String route) {
@@ -411,6 +424,17 @@ class AppMenuShellState extends State<AppMenuShell>
                   scale: scale,
                   child: GestureDetector(
                     onTap: _isMenuOpen ? closeMenu : null,
+                    onHorizontalDragUpdate: (details) {
+                      if (isArabic) {
+                        if (details.primaryDelta! > 10 && _isMenuOpen) {
+                          closeMenu();
+                        }
+                      } else {
+                        if (details.primaryDelta! < -10 && _isMenuOpen) {
+                          closeMenu();
+                        }
+                      }
+                    },
                     child: AbsorbPointer(
                       absorbing: _isMenuOpen,
                       child: Container(
