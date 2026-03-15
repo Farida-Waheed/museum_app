@@ -106,7 +106,7 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
         children: [
           // Header Info
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             color: AppColors.darkBackground,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -284,7 +284,12 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
             shape: BoxShape.circle,
             border: Border.all(color: isVisited ? Colors.green : AppColors.primaryGold, width: 2),
             boxShadow: [
-              if (!isVisited) BoxShadow(color: AppColors.primaryGold.withOpacity(0.3), blurRadius: 8, spreadRadius: 1),
+              if (!isVisited)
+                BoxShadow(
+                  color: AppColors.primaryGold.withOpacity(0.4),
+                  blurRadius: 15,
+                  spreadRadius: 1,
+                ),
             ],
           ),
           child: Icon(
@@ -386,8 +391,8 @@ class _MapActionBtn extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.darkSurface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.darkDivider),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: IconButton(
         icon: Icon(icon, color: AppColors.primaryGold, size: 20),
