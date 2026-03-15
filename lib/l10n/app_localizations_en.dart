@@ -41,7 +41,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get horusBot => 'Horus';
 
   @override
-  String get talkToHorusBot => 'Talk to Horus-Bot';
+  String get talkToHorusBot => 'Ask the Guide';
 
   @override
   String get askTheGuide => 'Ask the Guide';
@@ -53,7 +53,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get alwaysAvailable => 'Always available';
 
   @override
-  String get aboutHorusBot => 'About Horus-Bot';
+  String get aboutHorusBot => 'About the Guide';
 
   @override
   String get you => 'You';
@@ -105,7 +105,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyText =>
-      'Horus-Bot uses Bluetooth and Location to guide you inside the museum.';
+      'The app uses Bluetooth and Location to guide you inside the museum.';
 
   @override
   String get deny => 'Deny';
@@ -388,7 +388,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get introTitle => 'The Egyptian Museums';
 
   @override
-  String get introSubtitle => 'Explore Egyptian museums with Horus-Bot.';
+  String get introSubtitle => 'Explore Egyptian museums with your smart guide.';
 
   @override
   String get onboarding1Title => 'Welcome to Horus';
@@ -398,18 +398,18 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your smart guide to the museum. Navigate exhibits, follow the robot, and discover hidden stories.';
 
   @override
-  String get onboarding2Title => 'Meet Horus';
+  String get onboarding2Title => 'Your AI Guide';
 
   @override
   String get onboarding2Desc =>
-      'Your intelligent museum guide. Ask questions, listen to explanations, and explore during your visit.';
+      'Your intelligent museum assistant. Ask questions, listen to explanations, and explore during your visit.';
 
   @override
   String get onboarding3Title => 'Guided Tour Mode';
 
   @override
   String get onboarding3Desc =>
-      'Automatic guidance through exhibits. Stay connected with Horus-Bot throughout your journey.';
+      'Automatic guidance through exhibits. Stay connected with your guide throughout your journey.';
 
   @override
   String get onboarding4Title => 'Explore & Learn';
@@ -664,10 +664,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get takeQuiz => 'Take Quiz';
 
   @override
-  String get smartTipTitle => 'Tip from Horus-Bot';
+  String get smartTipTitle => 'Tip from the Guide';
 
   @override
-  String get robotNearbyTitle => 'Horus-Bot is nearby';
+  String get robotNearbyTitle => 'The Guide is nearby';
 
   @override
   String get robotNearbyMsg => 'Follow the robot to continue your tour.';

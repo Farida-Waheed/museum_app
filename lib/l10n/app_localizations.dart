@@ -161,7 +161,7 @@ abstract class AppLocalizations {
   /// No description provided for @talkToHorusBot.
   ///
   /// In en, this message translates to:
-  /// **'Talk to Horus-Bot'**
+  /// **'Ask the Guide'**
   String get talkToHorusBot;
 
   /// No description provided for @askTheGuide.
@@ -185,7 +185,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutHorusBot.
   ///
   /// In en, this message translates to:
-  /// **'About Horus-Bot'**
+  /// **'About the Guide'**
   String get aboutHorusBot;
 
   /// No description provided for @you.
@@ -287,7 +287,7 @@ abstract class AppLocalizations {
   /// No description provided for @privacyText.
   ///
   /// In en, this message translates to:
-  /// **'Horus-Bot uses Bluetooth and Location to guide you inside the museum.'**
+  /// **'The app uses Bluetooth and Location to guide you inside the museum.'**
   String get privacyText;
 
   /// No description provided for @deny.
@@ -839,7 +839,7 @@ abstract class AppLocalizations {
   /// No description provided for @introSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Explore Egyptian museums with Horus-Bot.'**
+  /// **'Explore Egyptian museums with your smart guide.'**
   String get introSubtitle;
 
   /// No description provided for @onboarding1Title.
@@ -857,13 +857,13 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding2Title.
   ///
   /// In en, this message translates to:
-  /// **'Meet Horus'**
+  /// **'Your AI Guide'**
   String get onboarding2Title;
 
   /// No description provided for @onboarding2Desc.
   ///
   /// In en, this message translates to:
-  /// **'Your intelligent museum guide. Ask questions, listen to explanations, and explore during your visit.'**
+  /// **'Your intelligent museum assistant. Ask questions, listen to explanations, and explore during your visit.'**
   String get onboarding2Desc;
 
   /// No description provided for @onboarding3Title.
@@ -875,7 +875,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding3Desc.
   ///
   /// In en, this message translates to:
-  /// **'Automatic guidance through exhibits. Stay connected with Horus-Bot throughout your journey.'**
+  /// **'Automatic guidance through exhibits. Stay connected with your guide throughout your journey.'**
   String get onboarding3Desc;
 
   /// No description provided for @onboarding4Title.
@@ -1355,13 +1355,13 @@ abstract class AppLocalizations {
   /// No description provided for @smartTipTitle.
   ///
   /// In en, this message translates to:
-  /// **'Tip from Horus-Bot'**
+  /// **'Tip from the Guide'**
   String get smartTipTitle;
 
   /// No description provided for @robotNearbyTitle.
   ///
   /// In en, this message translates to:
-  /// **'Horus-Bot is nearby'**
+  /// **'The Guide is nearby'**
   String get robotNearbyTitle;
 
   /// No description provided for @robotNearbyMsg.

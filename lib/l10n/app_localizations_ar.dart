@@ -41,7 +41,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get horusBot => 'حوروس';
 
   @override
-  String get talkToHorusBot => 'تحدث مع حوروس-بوت';
+  String get talkToHorusBot => 'اسأل الدليل';
 
   @override
   String get askTheGuide => 'اسأل الدليل';
@@ -53,7 +53,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get alwaysAvailable => 'متاح دائماً';
 
   @override
-  String get aboutHorusBot => 'عن حوروس-بوت';
+  String get aboutHorusBot => 'عن الدليل';
 
   @override
   String get you => 'أنت';
@@ -105,7 +105,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get privacyText =>
-      'حوروس يستخدم البلوتوث والموقع لإرشادك داخل المتحف.';
+      'يستخدم التطبيق البلوتوث والموقع لإرشادك داخل المتحف.';
 
   @override
   String get deny => 'رفض';
@@ -386,17 +386,17 @@ class AppLocalizationsAr extends AppLocalizations {
   String get introTitle => 'المتاحف المصرية';
 
   @override
-  String get introSubtitle => 'استكشف المتاحف المصرية مع حورس-بوت.';
+  String get introSubtitle => 'استكشف المتاحف المصرية مع دليلك الذكي.';
 
   @override
-  String get onboarding1Title => 'مرحبًا بك في حورس-بوت';
+  String get onboarding1Title => 'مرحبًا بك في حوروس';
 
   @override
   String get onboarding1Desc =>
       'دليلك الذكي داخل المتحف. تنقّل بين المعروضات، واتبع الروبوت، واكتشف القصص المخفية.';
 
   @override
-  String get onboarding2Title => 'تعرّف على حورس-بوت';
+  String get onboarding2Title => 'دليلك الذكي';
 
   @override
   String get onboarding2Desc =>
@@ -407,7 +407,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get onboarding3Desc =>
-      'إرشاد تلقائي عبر المعروضات. ابقَ متصلًا بحورس-بوت طوال رحلتك.';
+      'إرشاد تلقائي عبر المعروضات. ابقَ متصلًا بدليلك طوال رحلتك.';
 
   @override
   String get onboarding4Title => 'استكشف وتعلّم';
@@ -501,10 +501,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get museumExperienceSub =>
-      'خصص كيف يقوم حوروس-بوت بإرشادك عبر المتحف.';
+      'خصص كيف يقوم دليلك الذكي بإرشادك عبر المتحف.';
 
   @override
-  String get autoFollow => 'التتبع التلقائي لحوروس';
+  String get autoFollow => 'التتبع التلقائي للدليل';
 
   @override
   String get nearbyAlerts => 'إظهار المعروضات القريبة';
@@ -597,7 +597,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get bluetoothSub => 'اتصل بمنارات الروبوت القريبة';
 
   @override
-  String get microphoneSub => 'يستخدم للأوامر الصوتية لحوروس-بوت';
+  String get microphoneSub => 'يستخدم للأوامر الصوتية للدليل';
 
   @override
   String get cameraSub => 'يستخدم لمسح تذاكر QR وعرض الواقع المعزز';
@@ -636,7 +636,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tourStartingTitle => 'بدء الجولة';
 
   @override
-  String get tourStartingMsg => 'جولتك الإرشادية ستبدأ الآن. اتبع حوروس-بوت.';
+  String get tourStartingMsg =>
+      'جولتك الإرشادية ستبدأ الآن. اتبع الدليل الذكي.';
 
   @override
   String get nextExhibitTitle => 'المعروض التالي قادم';
@@ -658,10 +659,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get takeQuiz => 'بدء الاختبار';
 
   @override
-  String get smartTipTitle => 'نصيحة من حوروس';
+  String get smartTipTitle => 'نصيحة من الدليل';
 
   @override
-  String get robotNearbyTitle => 'حوروس قريب منك';
+  String get robotNearbyTitle => 'الدليل قريب منك';
 
   @override
   String get robotNearbyMsg => 'اتبع الروبوت لمواصلة جولتك.';

@@ -257,8 +257,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
       child: Column(
         children: [
-          _RobotStatusCard(),
-          const SizedBox(height: 16),
           Row(
             children: [
               Expanded(
@@ -309,7 +307,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             barrierColor: Colors.black54,
             builder: (_) => const ChatScreen(isPopup: true),
           ),
-          label: l10n.talkToHorusBot,
         ),
       ),
       body: Builder(
@@ -325,44 +322,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   child: _buildSummaryStats(innerContext, l10n),
                 ),
 
-                // 3. Quick Actions (Exhibits)
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.exhibits.toUpperCase(),
-                          style: AppTextStyles.sectionTitle(innerContext),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _FeatureCard(
-                                icon: Icons.map_outlined,
-                                title: l10n.map,
-                                onTap: () => Navigator.pushNamed(innerContext, AppRoutes.map),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: _FeatureCard(
-                                icon: Icons.qr_code_scanner,
-                                title: l10n.scanTicket,
-                                isHighlighted: true,
-                                onTap: () => Navigator.pushNamed(innerContext, AppRoutes.qrScan),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SliverToBoxAdapter(child: SizedBox(height: 48)),
+                const SliverToBoxAdapter(child: SizedBox(height: 24)),
 
                 // 4. Discovery Carousel
                 SliverToBoxAdapter(
@@ -987,68 +947,12 @@ class _GridPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-class _RobotStatusCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.cinematicCard,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.primaryGold.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.smart_toy, color: AppColors.primaryGold, size: 20),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(l10n.guideStatus, style: AppTextStyles.cardTitle(context)),
-                    const SizedBox(width: 8),
-                    Container(
-                      width: 7,
-                      height: 7,
-                      decoration: const BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  l10n.alwaysAvailable,
-                  style: AppTextStyles.helper(context),
-                ),
-              ],
-            ),
-          ),
-          const Icon(Icons.bolt_rounded, color: AppColors.primaryGold, size: 16),
-        ],
-      ),
-    );
-  }
-}
 
 
 
 class _HorusFab extends StatefulWidget {
-  final String label;
   final VoidCallback onPressed;
-  const _HorusFab({required this.label, required this.onPressed});
+  const _HorusFab({required this.onPressed});
   @override
   State<_HorusFab> createState() => _HorusFabState();
 }
@@ -1100,31 +1004,20 @@ class _HorusFabState extends State<_HorusFab> with SingleTickerProviderStateMixi
                   ),
                 ],
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Icon(Icons.chat_bubble_rounded, color: AppColors.primaryGold, size: 22),
                   const SizedBox(width: 14),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        l10n.askTheGuide,
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-                      ),
-                      Row(
-                        children: [
-                          Container(width: 7, height: 7, decoration: const BoxDecoration(color: Colors.green, shape: BoxShape.circle)),
-                          const SizedBox(width: 8),
-                          Text(
-                            l10n.alwaysAvailable,
-                            style: const TextStyle(color: Colors.green, fontSize: 11, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ],
+                  Text(
+                    l10n.askTheGuide.toUpperCase(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 13,
+                      letterSpacing: 1.0,
+                    ),
                   ),
                 ],
               ),
