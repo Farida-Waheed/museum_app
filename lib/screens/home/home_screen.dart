@@ -27,9 +27,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late List<Exhibit> exhibits;
   late List<MockNews> news;
-  int visitedCount = 0;
-  int durationMinutes = 0;
-  Timer? _simTimer;
+  Timer? _factTimer;
+  int _factIndex = 0;
 
   double robotX = 140;
   double robotY = 80;
@@ -70,21 +69,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       }
     });
 
-    _simTimer = Timer.periodic(const Duration(seconds: 4), (timer) {
-      if (!mounted) return;
-      setState(() {
-        final r = Random();
-        robotX = 100 + r.nextDouble() * 100;
-        robotY = 60 + r.nextDouble() * 60;
-        if (timer.tick % 15 == 0) visitedCount++;
-        if (timer.tick % 15 == 0) durationMinutes += 5;
-      });
-    });
   }
 
   @override
   void dispose() {
-    _simTimer?.cancel();
+    _factTimer?.cancel();
     _pageCtrl.dispose();
     _robotPulseCtrl.dispose();
     _fabPulseCtrl.dispose();
@@ -150,86 +139,94 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-  Widget _buildTopBar(BuildContext context, AppLocalizations l10n) {
+
+  Widget _buildSliverHeader(BuildContext context, AppLocalizations l10n) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final brandStyle = AppTextStyles.brandTitle(context, isDark: isDark);
 
-    return Positioned(
-      top: 0,
-      left: 0,
-      right: 0,
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              IconButton(
-                icon: Icon(Icons.menu, color: isDark ? Colors.white : AppColors.darkInk, size: 28),
-                onPressed: () {
-                  AppMenuShell.of(context)?.toggleMenu();
-                },
-              ),
-              Row(
-                children: [
-                  Image.asset("assets/icons/ankh.png", width: 24, height: 24),
-                  const SizedBox(width: 8),
-                  Text(
-                    "HORUS",
-                    style: brandStyle.copyWith(color: AppColors.primaryGold),
-                  ),
-                ],
-              ),
-              IconButton(
-                icon: Icon(Icons.qr_code_scanner, color: isDark ? Colors.white : AppColors.darkInk, size: 28),
-                onPressed: () => Navigator.pushNamed(context, AppRoutes.qrScan),
-              ),
-            ],
-          ),
-        ),
+    return SliverAppBar(
+      expandedHeight: 560,
+      pinned: true,
+      stretch: true,
+      backgroundColor: Colors.black.withOpacity(0.8),
+      surfaceTintColor: Colors.transparent,
+      elevation: 0,
+      leading: IconButton(
+        icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+        onPressed: () => AppMenuShell.of(context)?.toggleMenu(),
       ),
-    );
-  }
-
-  Widget _buildHeroSection(BuildContext context, AppLocalizations l10n) {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          height: 520,
-          width: double.infinity,
-          foregroundDecoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.black.withOpacity(0.15),
-                Colors.transparent,
-                Colors.black.withOpacity(0.55),
-              ],
-              stops: const [0.0, 0.3, 1.0],
+      centerTitle: true,
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.smart_toy, color: AppColors.primaryGold, size: 22),
+          const SizedBox(width: 8),
+          Text(
+            "HORUS-BOT",
+            style: brandStyle.copyWith(
+              color: AppColors.primaryGold,
+              fontSize: 18,
+              letterSpacing: 1.5,
             ),
           ),
-          child: Image.asset(
-            'assets/images/museum_interior.jpg',
-            fit: BoxFit.cover,
-          ),
+        ],
+      ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.qr_code_scanner, color: Colors.white, size: 26),
+          onPressed: () => Navigator.pushNamed(context, AppRoutes.qrScan),
         ),
-        Positioned(
-          left: 24,
-          right: 24,
-          bottom: 140,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.exploreTheMuseum,
-                style: AppTextStyles.heroTitle(context),
+        const SizedBox(width: 8),
+      ],
+      flexibleSpace: FlexibleSpaceBar(
+        collapseMode: CollapseMode.parallax,
+        background: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              'assets/images/museum_interior.jpg',
+              fit: BoxFit.cover,
+            ),
+            // Cinematic Gradient Overlay
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.black.withOpacity(0.5),
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.95),
+                  ],
+                  stops: const [0.0, 0.45, 1.0],
+                ),
               ),
-              const SizedBox(height: 12),
-              Text(
-                l10n.followAndDiscover,
-                style: AppTextStyles.heroSubtitle(context),
+            ),
+            // Hero Text
+            Positioned(
+              left: 24,
+              right: 48,
+              bottom: 120,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.exploreTheMuseum,
+                    style: AppTextStyles.heroTitle(context).copyWith(
+                      fontSize: 40,
+                      height: 1.1,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.followAndDiscover,
+                    style: AppTextStyles.heroSubtitle(context).copyWith(
+                      fontSize: 17,
+                      color: Colors.white.withOpacity(0.85),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -253,44 +250,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildSummaryStats(BuildContext context, AppLocalizations l10n) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 60, 20, 20),
-      child: Column(
-        children: [
-          _RobotStatusCard(),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _StatCard(
-                  label: l10n.visited,
-                  value: visitedCount.toString(),
-                  icon: Icons.check_circle_outline_rounded,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StatCard(
-                  label: l10n.exhibits,
-                  value: exhibits.length.toString(),
-                  icon: Icons.account_balance_outlined,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _StatCard(
-                  label: l10n.duration,
-                  value: "$durationMinutes min",
-                  icon: Icons.timer_outlined,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -313,21 +272,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       ),
       body: Builder(
-        builder: (innerContext) => Stack(
-          children: [
-            CustomScrollView(
-              slivers: [
-                // 1. Cinematic Hero Section
-                SliverToBoxAdapter(
-                  child: _buildHeroSection(innerContext, l10n),
-                ),
-                SliverToBoxAdapter(
-                  child: _buildSummaryStats(innerContext, l10n),
-                ),
+        builder: (innerContext) => CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            // 1. Cinematic Header with Parallax Hero
+            _buildSliverHeader(innerContext, l10n),
 
-                // 3. Quick Actions (Exhibits)
-                SliverToBoxAdapter(
-                  child: Padding(
+            // 2. Main Dashboard Content
+            SliverToBoxAdapter(
+              child: Column(
+                children: [
+                  Transform.translate(
+                    offset: const Offset(0, -60),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: _buildNextStopCard(innerContext, l10n),
+                    ),
+                  ),
+
+                  // 3. AI Assistant Card (Prominent Highlight)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, -20, 20, 48),
+                    child: _HorusFab(
+                      onPressed: () => showDialog(
+                        context: context,
+                        barrierColor: Colors.black54,
+                        builder: (_) => const ChatScreen(isPopup: true),
+                      ),
+                      label: l10n.askTheGuide,
+                    ),
+                  ),
+
+                  // 4. Quick Actions (Grouped under EXHIBITS)
+                  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -349,10 +326,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             const SizedBox(width: 16),
                             Expanded(
                               child: _FeatureCard(
-                                icon: Icons.qr_code_scanner,
-                                title: l10n.scanTicket,
+                                icon: Icons.play_circle_outline_rounded,
+                                title: l10n.liveTour,
                                 isHighlighted: true,
-                                onTap: () => Navigator.pushNamed(innerContext, AppRoutes.qrScan),
+                                onTap: () => Navigator.pushNamedAndRemoveUntil(innerContext, AppRoutes.liveTour, (r) => false),
                               ),
                             ),
                           ],
@@ -360,25 +337,71 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       ],
                     ),
                   ),
-                ),
+                ],
+              ),
+            ),
 
-                const SliverToBoxAdapter(child: SizedBox(height: 48)),
+            const SliverToBoxAdapter(child: SizedBox(height: 48)),
 
-                // 4. Discovery Carousel
-                SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Text(l10n.recommendedForYou.toUpperCase(), style: AppTextStyles.sectionTitle(innerContext)),
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        height: 240,
-                        child: PageView(
-                          controller: _pageCtrl,
-                          onPageChanged: (i) => setState(() => pageIndex = i),
+            // 5. Discovery Carousel
+            SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(l10n.recommendedForYou.toUpperCase(), style: AppTextStyles.sectionTitle(innerContext)),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    height: 240,
+                    child: PageView.builder(
+                      controller: _pageCtrl,
+                      itemCount: exhibits.take(3).length,
+                      onPageChanged: (i) => setState(() => pageIndex = i),
+                      itemBuilder: (context, index) {
+                        final e = exhibits[index];
+                        return _HighlightCard(
+                          title: e.getName(Localizations.localeOf(context).languageCode),
+                          subtitle: l10n.goldenHallRecommended,
+                          image: e.imageAsset,
+                          onTap: () => Navigator.pushNamed(context, AppRoutes.exhibitDetails, arguments: e),
+                        );
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  _Dots(count: 3, index: pageIndex),
+                ],
+              ),
+            ),
+
+            const SliverToBoxAdapter(child: SizedBox(height: 48)),
+
+            // 6. Map Preview
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(l10n.mapPreview.toUpperCase(), style: AppTextStyles.sectionTitle(innerContext)),
+                        _LiveBadge(label: l10n.live),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(28),
+                      child: Container(
+                        height: 260,
+                        decoration: BoxDecoration(
+                          color: AppColors.cinematicSection,
+                          border: Border.all(color: Colors.white.withOpacity(0.05)),
+                        ),
+                        child: Stack(
                           children: [
                             _HighlightCard(
                               title: l10n.tutankhamunMask,
@@ -625,43 +648,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 }
 
-class _StatCard extends StatelessWidget {
-  final String label;
-  final String value;
-  final IconData icon;
 
-  const _StatCard({required this.label, required this.value, required this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.cinematicCard,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: AppColors.primaryGold, size: 20),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: AppTextStyles.statNumber(context),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: AppTextStyles.helper(context),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _NextStopBadge extends StatelessWidget {
+class _NextStopBadge extends StatefulWidget {
   final String label;
   final String location;
   final String time;
@@ -669,68 +657,84 @@ class _NextStopBadge extends StatelessWidget {
   const _NextStopBadge({required this.label, required this.location, required this.time, required this.onTap});
 
   @override
+  State<_NextStopBadge> createState() => _NextStopBadgeState();
+}
+
+class _NextStopBadgeState extends State<_NextStopBadge> {
+  bool _isHovered = false;
+
+  @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(24),
-      child: Container(
-        padding: const EdgeInsets.all(28),
-        decoration: BoxDecoration(
-          color: AppColors.cinematicElevated,
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      cursor: SystemMouseCursors.click,
+      child: AnimatedScale(
+        scale: _isHovered ? 1.01 : 1.0,
+        duration: const Duration(milliseconds: 200),
+        child: InkWell(
+          onTap: widget.onTap,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(
-            color: AppColors.primaryGold.withOpacity(0.55),
-            width: 1.8,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            padding: const EdgeInsets.all(28),
+            decoration: BoxDecoration(
+              color: AppColors.cinematicElevated,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: AppColors.primaryGold.withOpacity(_isHovered ? 0.25 : 0.15),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primaryGold.withOpacity(0.15),
+                  blurRadius: 40,
+                  offset: const Offset(0, 15),
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.5),
+                  blurRadius: 40,
+                  offset: const Offset(0, 20),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryGold.withOpacity(0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.near_me_rounded, color: AppColors.primaryGold, size: 32),
+                ),
+                const SizedBox(width: 24),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.label,
+                        style: AppTextStyles.sectionTitle(context),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        widget.location,
+                        style: AppTextStyles.cardTitle(context),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        widget.time,
+                        style: AppTextStyles.body(context),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios_rounded, color: AppColors.neutralDark, size: 20),
+              ],
+            ),
           ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primaryGold.withOpacity(0.2),
-              blurRadius: 30,
-              spreadRadius: 2,
-              offset: const Offset(0, 10),
-            ),
-            BoxShadow(
-              color: Colors.black.withOpacity(0.5),
-              blurRadius: 40,
-              offset: const Offset(0, 20),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                color: AppColors.primaryGold.withOpacity(0.12),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.near_me_rounded, color: AppColors.primaryGold, size: 32),
-            ),
-            const SizedBox(width: 24),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    label,
-                    style: AppTextStyles.sectionTitle(context),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    location,
-                    style: AppTextStyles.cardTitle(context),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    time,
-                    style: AppTextStyles.body(context),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.arrow_forward_ios_rounded, color: AppColors.neutralDark, size: 20),
-          ],
         ),
       ),
     );
@@ -755,6 +759,7 @@ class _FeatureCard extends StatefulWidget {
 }
 
 class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderStateMixin {
+  bool _isHovered = false;
   late final AnimationController _glowCtrl = AnimationController(
     vsync: this,
     duration: const Duration(seconds: 2),
@@ -771,44 +776,58 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
     return AnimatedBuilder(
       animation: _glowCtrl,
       builder: (context, child) {
-        return InkWell(
-          onTap: widget.onTap,
-          borderRadius: BorderRadius.circular(24),
-          child: Container(
-            height: 120,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
+        return MouseRegion(
+          onEnter: (_) => setState(() => _isHovered = true),
+          onExit: (_) => setState(() => _isHovered = false),
+          cursor: SystemMouseCursors.click,
+          child: AnimatedScale(
+            scale: _isHovered ? 1.02 : 1.0,
+            duration: const Duration(milliseconds: 200),
+            child: InkWell(
+              onTap: widget.onTap,
               borderRadius: BorderRadius.circular(24),
-              color: AppColors.cinematicCard,
-              border: Border.all(
-                color: widget.isHighlighted
-                    ? AppColors.primaryGold.withOpacity(0.3 + (_glowCtrl.value * 0.4))
-                    : Colors.white.withOpacity(0.05),
-                width: widget.isHighlighted ? 1.5 : 1.0,
-              ),
-              boxShadow: [
-                if (widget.isHighlighted)
-                  BoxShadow(
-                    color: AppColors.primaryGold.withOpacity(0.1 + (_glowCtrl.value * 0.15)),
-                    blurRadius: 15,
-                    spreadRadius: 2,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  color: AppColors.cinematicCard,
+                  border: Border.all(
+                    color: widget.isHighlighted
+                        ? AppColors.primaryGold.withOpacity(0.4 + (_glowCtrl.value * 0.4))
+                        : (_isHovered ? Colors.white.withOpacity(0.2) : Colors.white.withOpacity(0.05)),
+                    width: (widget.isHighlighted || _isHovered) ? 1.5 : 1.0,
                   ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Icon(widget.icon, color: AppColors.primaryGold, size: 28),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        widget.title,
-                        style: AppTextStyles.cardTitle(context),
+                  boxShadow: [
+                    if (widget.isHighlighted || _isHovered)
+                      BoxShadow(
+                        color: AppColors.primaryGold.withOpacity(0.1 + (_glowCtrl.value * 0.15)),
+                        blurRadius: _isHovered ? 20 : 15,
+                        spreadRadius: _isHovered ? 3 : 2,
                       ),
-                    ),
                   ],
+                ),
+                child: widget.child ?? Container(
+                  height: 120,
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(widget.icon, color: AppColors.primaryGold, size: 28),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              widget.title ?? "",
+                              style: AppTextStyles.cardTitle(context).copyWith(
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -819,48 +838,67 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
   }
 }
 
-class _HighlightCard extends StatelessWidget {
+class _HighlightCard extends StatefulWidget {
   final String title;
   final String subtitle;
   final String image;
   const _HighlightCard({required this.title, required this.subtitle, required this.image});
 
   @override
+  State<_HighlightCard> createState() => _HighlightCardState();
+}
+
+class _HighlightCardState extends State<_HighlightCard> {
+  bool _isHovered = false;
+
+  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(28),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.asset(image, fit: BoxFit.cover),
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [Colors.black.withOpacity(0.95), Colors.transparent],
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: 28,
-              right: 28,
-              bottom: 28,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _isHovered = true),
+        onExit: (_) => setState(() => _isHovered = false),
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: widget.onTap,
+          child: AnimatedScale(
+            scale: _isHovered ? 1.02 : 1.0,
+            duration: const Duration(milliseconds: 300),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(28),
+              child: Stack(
+                fit: StackFit.expand,
                 children: [
-                  Text(
-                    title,
-                    style: AppTextStyles.cardTitle(context),
+                  Image.asset(widget.image, fit: BoxFit.cover),
+                  Positioned.fill(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          colors: [Colors.black.withOpacity(0.95), Colors.transparent],
+                        ),
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    subtitle,
-                    style: AppTextStyles.body(context).copyWith(color: Colors.white70),
+                  Positioned(
+                    left: 28,
+                    right: 28,
+                    bottom: 28,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.title,
+                          style: AppTextStyles.cardTitle(context),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          widget.subtitle,
+                          style: AppTextStyles.body(context).copyWith(color: Colors.white70),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -1036,6 +1074,7 @@ class _HorusFab extends StatefulWidget {
 
 class _HorusFabState extends State<_HorusFab> with SingleTickerProviderStateMixin {
   bool _pressed = false;
+  bool _isHovered = false;
   late final AnimationController _glowCtrl = AnimationController(
     vsync: this,
     duration: const Duration(seconds: 2),
@@ -1053,59 +1092,71 @@ class _HorusFabState extends State<_HorusFab> with SingleTickerProviderStateMixi
     return AnimatedBuilder(
       animation: _glowCtrl,
       builder: (context, child) {
-        return AnimatedScale(
-          scale: _pressed ? 0.92 : 1.0,
-          duration: const Duration(milliseconds: 120),
-          child: GestureDetector(
-            onTapDown: (_) => setState(() => _pressed = true),
-            onTapUp: (_) => setState(() => _pressed = false),
-            onTapCancel: () => setState(() => _pressed = false),
-            onTap: widget.onPressed,
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.cinematicElevated,
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: AppColors.primaryGold.withOpacity(0.6 + (_glowCtrl.value * 0.4)), width: 1.2),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.6),
-                    blurRadius: 24,
-                    offset: const Offset(0, 12),
+        return MouseRegion(
+          onEnter: (_) => setState(() => _isHovered = true),
+          onExit: (_) => setState(() => _isHovered = false),
+          cursor: SystemMouseCursors.click,
+          child: AnimatedScale(
+            scale: _pressed ? 0.96 : (_isHovered ? 1.02 : 1.0),
+            duration: const Duration(milliseconds: 200),
+            child: GestureDetector(
+              onTapDown: (_) => setState(() => _pressed = true),
+              onTapUp: (_) => setState(() => _pressed = false),
+              onTapCancel: () => setState(() => _pressed = false),
+              onTap: widget.onPressed,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                decoration: BoxDecoration(
+                  color: AppColors.cinematicElevated,
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: AppColors.primaryGold.withOpacity(0.6 + (_glowCtrl.value * 0.4)),
+                    width: _isHovered ? 1.8 : 1.2,
                   ),
-                  BoxShadow(
-                    color: AppColors.primaryGold.withOpacity(0.15 + (_glowCtrl.value * 0.25)),
-                    blurRadius: 18,
-                    spreadRadius: 3,
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.chat_bubble_rounded, color: AppColors.primaryGold, size: 22),
-                  const SizedBox(width: 14),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        l10n.askTheGuide,
-                        style: AppTextStyles.button(context).copyWith(color: Colors.white, fontSize: 14),
-                      ),
-                      Row(
-                        children: [
-                          Container(width: 7, height: 7, decoration: const BoxDecoration(color: Colors.green, shape: BoxShape.circle)),
-                          const SizedBox(width: 8),
-                          Text(
-                            l10n.alwaysAvailable,
-                            style: const TextStyle(color: Colors.green, fontSize: 11, fontWeight: FontWeight.bold),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.6),
+                      blurRadius: 24,
+                      offset: const Offset(0, 12),
+                    ),
+                    BoxShadow(
+                      color: AppColors.primaryGold.withOpacity(0.15 + (_glowCtrl.value * 0.25)),
+                      blurRadius: _isHovered ? 25 : 18,
+                      spreadRadius: _isHovered ? 5 : 3,
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.auto_awesome, color: AppColors.primaryGold, size: 24),
+                    const SizedBox(width: 16),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          l10n.askTheGuide,
+                          style: AppTextStyles.button(context).copyWith(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          l10n.alwaysAvailable,
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.6),
+                            fontSize: 12,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
