@@ -260,7 +260,7 @@ class _MenuItem extends StatelessWidget {
         ),
         title: Text(
           label,
-          style: TextStyle(
+          style: AppTextStyles.body(context).copyWith(
             fontSize: 16,
             fontWeight: selected ? FontWeight.bold : FontWeight.w500,
             color: selected

@@ -75,7 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   backgroundColor: AppColors.darkSurface,
                 ),
-                child: Text(isArabic ? "تسجيل الخروج" : "Sign Out", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                child: Text(isArabic ? "تسجيل الخروج" : "Sign Out", style: AppTextStyles.button(context).copyWith(color: AppColors.alertRed)),
               ),
             ),
             const SizedBox(height: 48),
@@ -149,7 +149,7 @@ class _VisitorHeader extends StatelessWidget {
                   ),
                   child: Text(
                     isArabic ? "مستكشف" : "Explorer",
-                    style: const TextStyle(color: AppColors.primaryGold, fontSize: 11, fontWeight: FontWeight.bold),
+                    style: AppTextStyles.helper(context).copyWith(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 11),
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -209,7 +209,7 @@ class _StatCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text(count, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+              Text(count, style: AppTextStyles.statNumber(context)),
               const SizedBox(width: 4),
               Flexible(child: Text(label, style: AppTextStyles.helper(context).copyWith(fontSize: 10), overflow: TextOverflow.ellipsis)),
             ],
@@ -258,7 +258,7 @@ class _TourRow extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(name, style: AppTextStyles.cardTitle(context).copyWith(fontSize: 15)),
-            Text(status, style: TextStyle(color: status == "Completed" ? Colors.green : AppColors.primaryGold, fontSize: 11, fontWeight: FontWeight.bold)),
+            Text(status, style: AppTextStyles.helper(context).copyWith(color: status == "Completed" ? Colors.green : AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 11)),
           ],
         ),
         const SizedBox(height: 12),
@@ -312,7 +312,7 @@ class _SavedItem extends StatelessWidget {
       child: Column(
         children: [
           Expanded(child: ClipRRect(borderRadius: const BorderRadius.vertical(top: Radius.circular(15)), child: Image.asset(image, fit: BoxFit.cover, width: double.infinity))),
-          Padding(padding: const EdgeInsets.all(8.0), child: Text(name, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis)),
+          Padding(padding: const EdgeInsets.all(8.0), child: Text(name, style: AppTextStyles.helper(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11), maxLines: 1, overflow: TextOverflow.ellipsis)),
         ],
       ),
     );
@@ -352,7 +352,7 @@ class _LearningRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: Text(label, style: const TextStyle(color: Colors.white, fontSize: 13))),
+        Expanded(child: Text(label, style: AppTextStyles.body(context).copyWith(color: Colors.white, fontSize: 13))),
         const SizedBox(width: 16),
         SizedBox(
           width: 80,
@@ -362,7 +362,7 @@ class _LearningRow extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        Text("${(progress * 100).round()}%", style: const TextStyle(color: AppColors.primaryGold, fontSize: 11, fontWeight: FontWeight.bold)),
+        Text("${(progress * 100).round()}%", style: AppTextStyles.helper(context).copyWith(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 11)),
       ],
     );
   }
@@ -399,7 +399,7 @@ class _QuickAction extends StatelessWidget {
           children: [
             Icon(icon, color: AppColors.primaryGold, size: 20),
             const SizedBox(height: 4),
-            Text(label, style: const TextStyle(color: Colors.white, fontSize: 10)),
+            Text(label, style: AppTextStyles.helper(context).copyWith(color: Colors.white, fontSize: 10)),
           ],
         ),
       ),
@@ -423,7 +423,7 @@ class _MyTickets extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(isArabic ? "المتحف المصري الكبير" : "Grand Egyptian Museum", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                Text(isArabic ? "المتحف المصري الكبير" : "Grand Egyptian Museum", style: AppTextStyles.body(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
                 Text("Oct 25, 2023 • 10:00 AM", style: AppTextStyles.helper(context)),
               ],
             ),

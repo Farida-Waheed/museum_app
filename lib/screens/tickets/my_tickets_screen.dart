@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
+import '../../widgets/app_menu_shell.dart';
+import '../../widgets/bottom_nav.dart';
 
 import '../../models/user_preferences.dart';
 
@@ -33,22 +36,14 @@ class MyTicketsScreen extends StatelessWidget {
       },
     ];
 
-    return Scaffold(
+    return AppMenuShell(
+      title: isArabic ? "تذاكري" : "My Tickets",
       backgroundColor: AppColors.darkBackground,
-      appBar: AppBar(
-        title: Text(
-          isArabic ? "تذاكري" : "My tickets",
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: AppColors.darkHeader,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
+      bottomNavigationBar: const BottomNav(currentIndex: 3),
       body: tickets.isEmpty
-          ? _buildEmptyState(isArabic, theme)
+          ? _buildEmptyState(context, isArabic, theme)
           : ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               itemCount: tickets.length,
               itemBuilder: (context, index) {
                 final t = tickets[index];
@@ -61,7 +56,7 @@ class MyTicketsScreen extends StatelessWidget {
   // -------------------------------------------------------
   // EMPTY STATE
   // -------------------------------------------------------
-  Widget _buildEmptyState(bool isArabic, ThemeData theme) {
+  Widget _buildEmptyState(BuildContext context, bool isArabic, ThemeData theme) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -76,7 +71,7 @@ class MyTicketsScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               isArabic ? "لا توجد تذاكر بعد" : "No tickets yet",
-              style: const TextStyle(
+              style: AppTextStyles.cardTitle(context).copyWith(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
                 color: Colors.white,
@@ -88,9 +83,8 @@ class MyTicketsScreen extends StatelessWidget {
                   ? "عند شراء تذاكر من شاشة الحجز، ستظهر هنا لعرضها عند الدخول."
                   : "When you buy tickets from the booking screen, they will appear here for entry.",
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: AppTextStyles.helper(context).copyWith(
                 fontSize: 13,
-                color: AppColors.helperText,
               ),
             ),
           ],
@@ -132,12 +126,12 @@ class MyTicketsScreen extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: AppColors.darkSurface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.darkDivider),
+        color: AppColors.cinematicCard,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment:
               isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
@@ -168,7 +162,7 @@ class MyTicketsScreen extends StatelessWidget {
                         isArabic
                             ? "تذكرة دخول المتحف"
                             : "Museum entry ticket",
-                        style: const TextStyle(
+                        style: AppTextStyles.body(context).copyWith(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -177,9 +171,8 @@ class MyTicketsScreen extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         "$type • $formattedDate",
-                        style: const TextStyle(
+                        style: AppTextStyles.helper(context).copyWith(
                           fontSize: 13,
-                          color: AppColors.helperText,
                         ),
                         textAlign:
                             isArabic ? TextAlign.right : TextAlign.left,
@@ -206,15 +199,14 @@ class MyTicketsScreen extends StatelessWidget {
                     children: [
                     Text(
                         isArabic ? "معرّف التذكرة" : "Ticket ID",
-                      style: const TextStyle(
+                      style: AppTextStyles.helper(context).copyWith(
                           fontSize: 12,
-                          color: AppColors.helperText,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         ticket['id'] as String,
-                        style: const TextStyle(
+                        style: AppTextStyles.body(context).copyWith(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
@@ -230,15 +222,14 @@ class MyTicketsScreen extends StatelessWidget {
                   children: [
                     Text(
                       isArabic ? "السعر" : "Price",
-                      style: const TextStyle(
+                      style: AppTextStyles.helper(context).copyWith(
                         fontSize: 12,
-                        color: AppColors.helperText,
                       ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       "\$${price.toStringAsFixed(2)}",
-                      style: const TextStyle(
+                      style: AppTextStyles.statNumber(context).copyWith(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: AppColors.primaryGold,
@@ -279,7 +270,7 @@ class MyTicketsScreen extends StatelessWidget {
                         isArabic
                             ? (isActive ? "سارية" : "منتهية")
                             : (isActive ? "Active" : "Expired"),
-                        style: TextStyle(
+                        style: AppTextStyles.helper(context).copyWith(
                           fontSize: 12,
                           color: isActive ? Colors.green : AppColors.helperText,
                           fontWeight: FontWeight.w500,
@@ -300,9 +291,8 @@ class MyTicketsScreen extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       isArabic ? "إظهار رمز الدخول" : "Show entry code",
-                      style: const TextStyle(
+                      style: AppTextStyles.helper(context).copyWith(
                         fontSize: 12,
-                        color: AppColors.helperText,
                       ),
                     ),
                   ],

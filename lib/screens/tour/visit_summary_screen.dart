@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
 import '../../models/tour_provider.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/primary_button.dart';
@@ -48,12 +49,12 @@ class VisitSummaryScreen extends StatelessWidget {
             const SizedBox(height: 32),
 
             // 2. Main Congrats
-            Text(l10n.congrats, style: const TextStyle(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -0.5, color: Colors.white)),
+            Text(l10n.congrats, style: AppTextStyles.screenTitle(context).copyWith(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -0.5, color: Colors.white)),
             const SizedBox(height: 12),
             Text(
               l10n.visitComplete,
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 16, color: AppColors.helperText, height: 1.5),
+              style: AppTextStyles.body(context).copyWith(fontSize: 16, color: AppColors.helperText, height: 1.5),
             ),
             const SizedBox(height: 48),
 
@@ -67,11 +68,12 @@ class VisitSummaryScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _buildStatRow(l10n.exhibitsVisited, "$visitedCount", Icons.museum_outlined),
+                  _buildStatRow(context, l10n.exhibitsVisited, "$visitedCount", Icons.museum_outlined),
                   const Divider(height: 32, thickness: 1, color: AppColors.darkDivider),
-                  _buildStatRow(l10n.totalTime, "45 min", Icons.timer_outlined),
+                  _buildStatRow(context, l10n.totalTime, "45 min", Icons.timer_outlined),
                   const Divider(height: 32, thickness: 1, color: AppColors.darkDivider),
                   _buildStatRow(
+                    context,
                     isArabic ? "الاختبارات المكتملة" : "Quizzes Completed",
                     "$totalQuizzesCompleted",
                     Icons.quiz_outlined,
@@ -79,6 +81,7 @@ class VisitSummaryScreen extends StatelessWidget {
                   if (totalQuizzesCompleted > 0) ...[
                     const SizedBox(height: 8),
                     _buildStatRow(
+                      context,
                       isArabic ? "إجمالي النقاط" : "Total Quiz Score",
                       "$totalQuizScore",
                       Icons.star_outline,
@@ -88,6 +91,7 @@ class VisitSummaryScreen extends StatelessWidget {
                   if (skippedQuizzesCount > 0) ...[
                     const Divider(height: 32, thickness: 1, color: AppColors.darkDivider),
                     _buildStatRow(
+                      context,
                       isArabic ? "اختبارات لم تُحل" : "Skipped Quizzes",
                       "$skippedQuizzesCount",
                       Icons.help_outline,
@@ -119,7 +123,7 @@ class VisitSummaryScreen extends StatelessWidget {
                 ),
                 child: Text(
                   l10n.done,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  style: AppTextStyles.button(context).copyWith(color: AppColors.primaryGold),
                 ),
               ),
             ),
@@ -130,14 +134,14 @@ class VisitSummaryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatRow(String label, String value, IconData icon, {Color valueColor = AppColors.primaryGold}) {
+  Widget _buildStatRow(BuildContext context, String label, String value, IconData icon, {Color valueColor = AppColors.primaryGold}) {
     return Row(
       children: [
         Icon(icon, size: 22, color: AppColors.helperText),
         const SizedBox(width: 16),
-        Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.white)),
+        Text(label, style: AppTextStyles.body(context).copyWith(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.white)),
         const Spacer(),
-        Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: valueColor)),
+        Text(value, style: AppTextStyles.statNumber(context).copyWith(fontSize: 18, fontWeight: FontWeight.w900, color: valueColor)),
       ],
     );
   }

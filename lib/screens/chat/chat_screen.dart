@@ -11,6 +11,7 @@ import '../../models/chat_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/dialogs/premium_dialog.dart';
 import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
 
 // ======================= Chat Screen ==========================
 class ChatScreen extends StatefulWidget {
@@ -115,7 +116,7 @@ class _TypingIndicatorState extends State<_TypingIndicator>
       children: [
         Text(
           text,
-          style: const TextStyle(
+          style: AppTextStyles.helper(context).copyWith(
             color: AppColors.neutralMedium,
             fontSize: 11,
             fontStyle: FontStyle.italic,
@@ -199,7 +200,7 @@ class ChatBubble extends StatelessWidget {
         : Text(
             msg.text,
             textDirection: dir,
-            style: TextStyle(
+            style: AppTextStyles.body(context).copyWith(
               color: textColor,
               fontSize: 15,
               height: 1.5,
@@ -262,7 +263,7 @@ class _InfoCardBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final titleStyle = TextStyle(
+    final titleStyle = AppTextStyles.cardTitle(context).copyWith(
       fontWeight: FontWeight.w900,
       color: isUser
           ? AppColors.darkInk
@@ -271,7 +272,7 @@ class _InfoCardBubble extends StatelessWidget {
       letterSpacing: 0.2,
     );
 
-    final itemStyle = TextStyle(
+    final itemStyle = AppTextStyles.body(context).copyWith(
       color: isUser
           ? AppColors.darkInk.withOpacity(0.8)
           : (isDark ? Colors.white.withOpacity(0.9) : Colors.black87),
@@ -549,14 +550,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       ? TextDirection.rtl
                       : TextDirection.ltr,
                   onSubmitted: _submit,
-                  style: TextStyle(
+                  style: AppTextStyles.body(context).copyWith(
                     color: isDark ? Colors.white : AppColors.darkInk,
                   ),
                   decoration: InputDecoration(
                     hintText: isArabic
                         ? "اسأل الدليل عن أي شيء..."
                         : "Ask the Guide about anything...",
-                    hintStyle: TextStyle(
+                    hintStyle: AppTextStyles.body(context).copyWith(
                       color: isDark ? Colors.white38 : Colors.black38,
                     ),
                     fillColor: isDark
@@ -617,7 +618,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       appBar: AppBar(
         title: Text(
           l10n.askTheGuide,
-          style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
+          style: AppTextStyles.screenTitle(context).copyWith(fontWeight: FontWeight.w900, fontSize: 18),
         ),
         backgroundColor: isDark ? AppColors.darkHeader : Colors.white,
         elevation: 0,
@@ -654,7 +655,7 @@ class _QuickChip extends StatelessWidget {
         onPressed: onTap,
         label: Text(
           label,
-          style: TextStyle(
+          style: AppTextStyles.helper(context).copyWith(
             fontSize: 12,
             fontWeight: FontWeight.bold,
             color: isDark ? Colors.white : AppColors.darkInk,
@@ -709,7 +710,7 @@ class RoboGuideEntry extends StatelessWidget {
       icon: const Icon(Icons.smart_toy_rounded),
       label: Text(
         l10n.talkToHorusBot,
-        style: const TextStyle(fontWeight: FontWeight.bold),
+        style: AppTextStyles.button(context).copyWith(fontWeight: FontWeight.bold),
       ),
       backgroundColor: AppColors.primaryGold,
       foregroundColor: AppColors.darkInk,

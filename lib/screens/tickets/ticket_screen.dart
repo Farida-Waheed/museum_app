@@ -166,12 +166,12 @@ class _TicketScreenState extends State<TicketScreen> {
                             children: [
                               Text(
                                 isArabic ? "تذاكر المتحف" : "Museum Tickets",
-                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.white),
+                                style: AppTextStyles.body(context).copyWith(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.white),
                               ),
                               const SizedBox(height: 4),
                               Text(
                                 isArabic ? "احجز تذاكرك قبل الوصول لتوفير الوقت." : "Book your tickets early to save time.",
-                                style: const TextStyle(fontSize: 13, color: AppColors.helperText),
+                                style: AppTextStyles.helper(context).copyWith(fontSize: 13),
                               ),
                             ],
                           ),
@@ -205,12 +205,12 @@ class _TicketScreenState extends State<TicketScreen> {
                           Expanded(
                             child: Text(
                               formattedDate,
-                              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                              style: AppTextStyles.body(context).copyWith(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
                             ),
                           ),
                           Text(
                             isArabic ? "تغيير" : "Change",
-                            style: const TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.w900, fontSize: 13),
+                            style: AppTextStyles.sectionTitle(context).copyWith(fontSize: 13),
                           ),
                         ],
                       ),
@@ -252,8 +252,8 @@ class _TicketScreenState extends State<TicketScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(isArabic ? "المجموع" : "Total", style: const TextStyle(fontSize: 13, color: AppColors.helperText)),
-                      Text("\$${_totalPrice.toStringAsFixed(2)}", style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: AppColors.primaryGold)),
+                      Text(isArabic ? "المجموع" : "Total", style: AppTextStyles.helper(context).copyWith(fontSize: 13)),
+                      Text("\$${_totalPrice.toStringAsFixed(2)}", style: AppTextStyles.statNumber(context).copyWith(fontSize: 24, color: AppColors.primaryGold)),
                     ],
                   ),
                   const SizedBox(width: 24),
@@ -268,7 +268,7 @@ class _TicketScreenState extends State<TicketScreen> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                           elevation: 0,
                         ),
-                        child: Text(isArabic ? "متابعة" : "Continue", style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        child: Text(isArabic ? "متابعة" : "Continue", style: AppTextStyles.button(context).copyWith(fontSize: 16)),
                       ),
                     ),
                   ),
@@ -304,10 +304,10 @@ class _TicketScreenState extends State<TicketScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.white)),
-                Text(subtitle, style: const TextStyle(fontSize: 12, color: AppColors.helperText)),
+                Text(label, style: AppTextStyles.body(context).copyWith(fontSize: 16, fontWeight: FontWeight.w900, color: Colors.white)),
+                Text(subtitle, style: AppTextStyles.helper(context).copyWith(fontSize: 12)),
                 const SizedBox(height: 4),
-                Text("\$${price.toStringAsFixed(2)}", style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primaryGold)),
+                Text("\$${price.toStringAsFixed(2)}", style: AppTextStyles.body(context).copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primaryGold)),
               ],
             ),
           ),
@@ -320,7 +320,7 @@ class _TicketScreenState extends State<TicketScreen> {
                   onPressed: qty > 0 ? () => _updateQuantity(typeKey, -1) : null,
                   color: qty > 0 ? Colors.white70 : Colors.white24,
                 ),
-                SizedBox(width: 24, child: Text("$qty", textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.white))),
+                SizedBox(width: 24, child: Text("$qty", textAlign: TextAlign.center, style: AppTextStyles.body(context).copyWith(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.white))),
                 IconButton(
                   icon: const Icon(Icons.add_rounded, size: 20),
                   onPressed: () => _updateQuantity(typeKey, 1),
@@ -371,13 +371,13 @@ class _TicketConfirmationDialog extends StatelessWidget {
             const SizedBox(height: 24),
             Text(
               isArabic ? "تم تأكيد التذاكر" : "Tickets Confirmed",
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white),
+              style: AppTextStyles.cardTitle(context).copyWith(fontSize: 22, fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 12),
             Text(
               isArabic ? "حجزنا لك $totalTickets تذكرة ليوم $shortDate." : "Reserved $totalTickets ticket(s) for $shortDate.",
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.helperText, fontSize: 15, height: 1.4),
+              style: AppTextStyles.body(context).copyWith(color: AppColors.helperText, fontSize: 15, height: 1.4),
             ),
             const SizedBox(height: 32),
             SizedBox(
@@ -390,13 +390,13 @@ class _TicketConfirmationDialog extends StatelessWidget {
                   foregroundColor: AppColors.darkInk,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
-                child: Text(isArabic ? "عرض تذاكري" : "View My Tickets", style: const TextStyle(fontWeight: FontWeight.bold)),
+                child: Text(isArabic ? "عرض تذاكري" : "View My Tickets", style: AppTextStyles.button(context)),
               ),
             ),
             const SizedBox(height: 12),
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(isArabic ? "إغلاق" : "Close", style: const TextStyle(color: AppColors.helperText)),
+              child: Text(isArabic ? "إغلاق" : "Close", style: AppTextStyles.helper(context)),
             ),
           ],
         ),

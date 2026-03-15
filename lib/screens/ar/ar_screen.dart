@@ -6,6 +6,8 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/dialogs/branded_permission_dialog.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
 
 class ArScreen extends StatefulWidget {
   const ArScreen({super.key});
@@ -141,7 +143,7 @@ class _ArScreenState extends State<ArScreen> with SingleTickerProviderStateMixin
                           const SizedBox(width: 6),
                           Text(
                             l10n.live.toUpperCase(),
-                            style: const TextStyle(color: Colors.redAccent, fontSize: 10, fontWeight: FontWeight.w900, letterSpacing: 1),
+                            style: AppTextStyles.sectionTitle(context).copyWith(color: Colors.redAccent, fontSize: 10, letterSpacing: 1),
                           ),
                         ],
                       ),
@@ -174,12 +176,12 @@ class _ArScreenState extends State<ArScreen> with SingleTickerProviderStateMixin
                       children: [
                         Text(
                           l10n.scanExhibitsAR,
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                          style: AppTextStyles.cardTitle(context).copyWith(color: Colors.white, fontSize: 15),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           l10n.followAndDiscover,
-                          style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 12),
+                          style: AppTextStyles.helper(context).copyWith(color: Colors.white.withOpacity(0.6), fontSize: 12),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -216,13 +218,13 @@ class _ArScreenState extends State<ArScreen> with SingleTickerProviderStateMixin
             const SizedBox(height: 24),
             Text(
               l10n.privacyPermissions,
-              style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+              style: AppTextStyles.screenTitle(context).copyWith(color: Colors.white, fontSize: 20),
             ),
             const SizedBox(height: 12),
             Text(
               l10n.privacyText,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+              style: AppTextStyles.body(context).copyWith(color: Colors.grey.shade500),
             ),
             const SizedBox(height: 32),
             SizedBox(
@@ -235,7 +237,7 @@ class _ArScreenState extends State<ArScreen> with SingleTickerProviderStateMixin
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: Text(l10n.allow),
+                child: Text(l10n.allow, style: AppTextStyles.button(context)),
               ),
             )
           ],
@@ -289,11 +291,11 @@ class _ArScreenState extends State<ArScreen> with SingleTickerProviderStateMixin
                         children: [
                           Text(
                             title,
-                            style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13, color: Colors.black),
+                            style: AppTextStyles.body(context).copyWith(fontWeight: FontWeight.w900, fontSize: 13, color: Colors.black),
                           ),
                           Text(
                             subtitle,
-                            style: TextStyle(fontSize: 10, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
+                            style: AppTextStyles.helper(context).copyWith(fontSize: 10, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
                           ),
                         ],
                       ),
