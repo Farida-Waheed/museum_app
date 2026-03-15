@@ -29,20 +29,24 @@ class UserPreferencesModel extends ChangeNotifier {
   UserPreferencesModel({
     String initialLanguage = 'en',
     bool initialOnboardingCompleted = false,
+    bool initialIsHighContrast = false,
+    double initialFontScale = 1.0,
+    String initialThemeMode = 'dark',
+    bool initialHasSeenPermissionsPrompt = false,
+    bool initialHasSeenLocationPrompt = false,
+    bool skipLoad = false,
   }) {
     _language = initialLanguage;
     _hasCompletedOnboarding = initialOnboardingCompleted;
-    _loadFromPrefs();
-  }
+    _isHighContrast = initialIsHighContrast;
+    _fontScale = initialFontScale;
+    _themeMode = initialThemeMode;
+    _hasSeenPermissionsPrompt = initialHasSeenPermissionsPrompt;
+    _hasSeenLocationPrompt = initialHasSeenLocationPrompt;
 
-  static Future<String> getInitialLanguage() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(_kLanguage) ?? 'en';
-  }
-
-  static Future<bool> getInitialOnboardingStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_kHasCompletedOnboarding) ?? false;
+    if (!skipLoad) {
+      _loadFromPrefs();
+    }
   }
 
   static Future<Map<String, dynamic>> getInitialPrefs() async {
@@ -51,6 +55,12 @@ class UserPreferencesModel extends ChangeNotifier {
       'language': prefs.getString(_kLanguage) ?? 'en',
       'hasCompletedOnboarding':
           prefs.getBool(_kHasCompletedOnboarding) ?? false,
+      'isHighContrast': prefs.getBool(_kIsHighContrast) ?? false,
+      'fontScale': prefs.getDouble(_kFontScale) ?? 1.0,
+      'themeMode': prefs.getString(_kThemeMode) ?? 'dark',
+      'hasSeenPermissionsPrompt':
+          prefs.getBool(_kHasSeenPermissionsPrompt) ?? false,
+      'hasSeenLocationPrompt': prefs.getBool(_kHasSeenLocationPrompt) ?? false,
     };
   }
 
