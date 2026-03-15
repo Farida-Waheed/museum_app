@@ -161,25 +161,25 @@ abstract class AppLocalizations {
   /// No description provided for @talkToHorusBot.
   ///
   /// In en, this message translates to:
-  /// **'Ask the Guide'**
+  /// **'Talk to the Assistant'**
   String get talkToHorusBot;
 
   /// No description provided for @askTheGuide.
   ///
   /// In en, this message translates to:
-  /// **'Ask the Guide'**
+  /// **'Museum AI Assistant'**
   String get askTheGuide;
 
   /// No description provided for @guideStatus.
   ///
   /// In en, this message translates to:
-  /// **'Guide Status'**
+  /// **'AI Assistant Status'**
   String get guideStatus;
 
   /// No description provided for @alwaysAvailable.
   ///
   /// In en, this message translates to:
-  /// **'Always available'**
+  /// **'Ready to help'**
   String get alwaysAvailable;
 
   /// No description provided for @aboutHorusBot.
@@ -221,7 +221,7 @@ abstract class AppLocalizations {
   /// No description provided for @map.
   ///
   /// In en, this message translates to:
-  /// **'Map'**
+  /// **'Explore Map'**
   String get map;
 
   /// No description provided for @quiz.
@@ -233,7 +233,7 @@ abstract class AppLocalizations {
   /// No description provided for @liveTour.
   ///
   /// In en, this message translates to:
-  /// **'Live Tour'**
+  /// **'Start Guided Tour'**
   String get liveTour;
 
   /// No description provided for @tourPlanner.
@@ -968,6 +968,30 @@ abstract class AppLocalizations {
   /// **'Tutankhamun\'s mask contains 10kg of gold.'**
   String get didYouKnowFact;
 
+  /// No description provided for @didYouKnowFact1.
+  ///
+  /// In en, this message translates to:
+  /// **'Tutankhamun’s mask contains over 10 kg of gold.'**
+  String get didYouKnowFact1;
+
+  /// No description provided for @didYouKnowFact2.
+  ///
+  /// In en, this message translates to:
+  /// **'The Rosetta Stone helped unlock Egyptian hieroglyphs.'**
+  String get didYouKnowFact2;
+
+  /// No description provided for @didYouKnowFact3.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramses II ruled Egypt for around 66 years.'**
+  String get didYouKnowFact3;
+
+  /// No description provided for @didYouKnowFact4.
+  ///
+  /// In en, this message translates to:
+  /// **'The Grand Egyptian Museum is one of the largest archaeological museums in the world.'**
+  String get didYouKnowFact4;
+
   /// No description provided for @onlineStatus.
   ///
   /// In en, this message translates to:
@@ -1055,7 +1079,7 @@ abstract class AppLocalizations {
   /// No description provided for @exploreTheMuseum.
   ///
   /// In en, this message translates to:
-  /// **'Explore the Museum'**
+  /// **'Explore Egypt With Horus-Bot'**
   String get exploreTheMuseum;
 
   /// No description provided for @followAndDiscover.

@@ -83,7 +83,12 @@ class _IntroScreenState extends State<IntroScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final heroStyle = AppTextStyles.heroTitle(context);
+    // Overriding the weight for Intro Screen specifically to match its original light editorial look
+    // while the global heroTitle is now bold for the Home Screen hero.
+    final heroStyle = AppTextStyles.heroTitle(context).copyWith(
+      fontWeight: FontWeight.w300,
+      letterSpacing: 1.5,
+    );
 
     final TextStyle mainTitleStyle = heroStyle;
 
@@ -127,10 +132,10 @@ class _IntroScreenState extends State<IntroScreen>
             ),
           ),
 
-          PositionedDirectional(
+          Positioned(
             top: MediaQuery.of(context).padding.top + 50,
-            start: 20,
-            end: 20,
+            left: 20,
+            right: 20,
             child: FadeTransition(
               opacity: _fadeAnimation,
               child: ScaleTransition(
