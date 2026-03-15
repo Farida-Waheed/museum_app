@@ -203,10 +203,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
+                Colors.black.withOpacity(0.15),
                 Colors.transparent,
                 Colors.black.withOpacity(0.55),
               ],
-              stops: const [0.0, 1.0],
+              stops: const [0.0, 0.3, 1.0],
             ),
           ),
           child: Image.asset(
@@ -294,8 +295,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return AppMenuShell(
       hideDefaultAppBar: true,
@@ -309,7 +309,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             barrierColor: Colors.black54,
             builder: (_) => const ChatScreen(isPopup: true),
           ),
-          label: l10n.talkToHorusBot,
+          label: l10n.askTheGuide,
         ),
       ),
       body: Builder(
@@ -483,7 +483,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       const Spacer(),
                                       TextButton(
                                         onPressed: () => Navigator.pushNamed(innerContext, AppRoutes.map),
-                                        child: Text(l10n.fullView, style: const TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.bold)),
+                                        child: Text(l10n.fullView, style: AppTextStyles.button(context).copyWith(color: AppColors.primaryGold, fontSize: 13)),
                                       ),
                                     ],
                                   ),
@@ -552,7 +552,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     children: [
                                       Text(
                                         "Read More",
-                                        style: TextStyle(color: AppColors.primaryGold, fontSize: 12, fontWeight: FontWeight.bold),
+                                        style: AppTextStyles.button(context).copyWith(color: AppColors.primaryGold, fontSize: 12),
                                       ),
                                       const SizedBox(width: 4),
                                       Icon(Icons.arrow_forward, color: AppColors.primaryGold, size: 14),
@@ -679,14 +679,15 @@ class _NextStopBadge extends StatelessWidget {
           color: AppColors.cinematicElevated,
           borderRadius: BorderRadius.circular(24),
           border: Border.all(
-            color: AppColors.primaryGold.withOpacity(0.4),
-            width: 1.5,
+            color: AppColors.primaryGold.withOpacity(0.55),
+            width: 1.8,
           ),
           boxShadow: [
             BoxShadow(
-              color: AppColors.primaryGold.withOpacity(0.15),
-              blurRadius: 40,
-              offset: const Offset(0, 15),
+              color: AppColors.primaryGold.withOpacity(0.2),
+              blurRadius: 30,
+              spreadRadius: 2,
+              offset: const Offset(0, 10),
             ),
             BoxShadow(
               color: Colors.black.withOpacity(0.5),
@@ -807,28 +808,6 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
                         style: AppTextStyles.cardTitle(context),
                       ),
                     ),
-                    if (widget.isHighlighted)
-                      Row(
-                        children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: const BoxDecoration(
-                              color: Colors.green,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          const Text(
-                            "Online",
-                            style: TextStyle(
-                              color: Colors.green,
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
                   ],
                 ),
               ],
@@ -941,7 +920,7 @@ class _LiveBadge extends StatelessWidget {
           const SizedBox(width: 10),
           Text(
             label.toUpperCase(),
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: AppColors.alertRed, letterSpacing: 1.5),
+            style: AppTextStyles.sectionTitle(context).copyWith(fontSize: 11, color: AppColors.alertRed, letterSpacing: 1.5),
           ),
         ],
       ),
@@ -959,7 +938,7 @@ class _LegendDot extends StatelessWidget {
       children: [
         Icon(Icons.circle, size: 9, color: color),
         const SizedBox(width: 10),
-        Text(label, style: const TextStyle(fontSize: 13, color: AppColors.neutralMedium)),
+        Text(label, style: AppTextStyles.body(context).copyWith(fontSize: 13)),
       ],
     );
   }
@@ -1112,7 +1091,7 @@ class _HorusFabState extends State<_HorusFab> with SingleTickerProviderStateMixi
                     children: [
                       Text(
                         l10n.askTheGuide,
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                        style: AppTextStyles.button(context).copyWith(color: Colors.white, fontSize: 14),
                       ),
                       Row(
                         children: [

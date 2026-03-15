@@ -110,7 +110,7 @@ class _TypingIndicatorState extends State<_TypingIndicator>
 
   @override
   Widget build(BuildContext context) {
-    final text = widget.isArabic ? "حوروس يكتب..." : "Horus-Bot is typing...";
+    final text = widget.isArabic ? "الدليل يكتب..." : "The Guide is typing...";
     return Row(
       children: [
         Text(
@@ -554,8 +554,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   ),
                   decoration: InputDecoration(
                     hintText: isArabic
-                        ? "اسأل حوروس عن أي شيء..."
-                        : "Ask Horus about anything...",
+                        ? "اسأل الدليل عن أي شيء..."
+                        : "Ask the Guide about anything...",
                     hintStyle: TextStyle(
                       color: isDark ? Colors.white38 : Colors.black38,
                     ),
@@ -603,7 +603,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
     if (widget.isPopup) {
       return PremiumDialog(
-        title: l10n.talkToHorusBot,
+        title: l10n.askTheGuide,
         icon: Image.asset("assets/icons/ankh.png", width: 24, height: 24),
         content: SizedBox(
           height: MediaQuery.of(context).size.height * 0.65,
@@ -616,7 +616,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
       appBar: AppBar(
         title: Text(
-          l10n.talkToHorusBot,
+          l10n.askTheGuide,
           style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18),
         ),
         backgroundColor: isDark ? AppColors.darkHeader : Colors.white,
