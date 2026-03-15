@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'exhibit_content.dart';
 
 class Exhibit {
   final String id;
@@ -9,6 +10,7 @@ class Exhibit {
   final String imageAsset;
   final double x; // Map X coordinate
   final double y; // Map Y coordinate
+  final List<ExhibitContent> contents;
 
   Exhibit({
     required this.id,
@@ -19,6 +21,7 @@ class Exhibit {
     required this.imageAsset,
     required this.x,
     required this.y,
+    this.contents = const [],
   });
 
   // Helper to get text based on current language
