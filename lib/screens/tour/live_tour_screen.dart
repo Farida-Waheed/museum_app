@@ -12,6 +12,7 @@ import '../../widgets/primary_button.dart';
 import '../../widgets/dialogs/branded_permission_dialog.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
+import '../../core/constants/colors.dart';
 
 class LiveTourScreen extends StatefulWidget {
   const LiveTourScreen({super.key});
@@ -154,7 +155,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       subHeader: const RobotStatusBanner(),
       bottomNavigationBar: const BottomNav(currentIndex: 2),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -191,7 +192,10 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
             const SizedBox(height: 8),
             Card(
               elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+                side: BorderSide(color: Colors.white.withOpacity(0.05)),
+              ),
               clipBehavior: Clip.antiAlias,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -274,9 +278,9 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
             Container(
               height: 200,
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.grey.shade200),
+                color: AppColors.cinematicSection,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
               ),
               child: ListView.builder(
                 controller: _scrollController,
@@ -290,7 +294,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                       _transcript[index],
                       style: TextStyle(
                         fontSize: 14,
-                        color: isLast ? Colors.black : Colors.grey,
+                        color: isLast ? Colors.white : AppColors.neutralMedium,
                         fontWeight: isLast ? FontWeight.w600 : FontWeight.normal,
                       ),
                     ),
@@ -307,9 +311,10 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                Card(
                  elevation: 0,
                  shape: RoundedRectangleBorder(
-                   borderRadius: BorderRadius.circular(12),
-                   side: BorderSide(color: Colors.grey.shade200),
+                   borderRadius: BorderRadius.circular(24),
+                   side: BorderSide(color: Colors.white.withOpacity(0.05)),
                  ),
+                 color: AppColors.cinematicCard,
                  child: ListTile(
                    leading: ClipRRect(
                      borderRadius: BorderRadius.circular(8),
@@ -471,7 +476,11 @@ class _TourProgressTimeline extends StatelessWidget {
                 height: 6,
                 margin: const EdgeInsets.symmetric(horizontal: 2),
                 decoration: BoxDecoration(
-                  color: isCompleted ? Colors.blue : (isCurrent ? Colors.blue.withOpacity(0.3) : Colors.grey.shade200),
+                  color: isCompleted
+                      ? AppColors.primaryGold
+                      : (isCurrent
+                          ? AppColors.primaryGold.withOpacity(0.3)
+                          : AppColors.cinematicSection),
                   borderRadius: BorderRadius.circular(3),
                 ),
               ),

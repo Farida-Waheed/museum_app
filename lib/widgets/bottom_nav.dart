@@ -38,11 +38,7 @@ class BottomNav extends StatelessWidget {
           break;
       }
 
-      if (ModalRoute.of(context)?.settings.name == AppRoutes.mainHome) {
-        Navigator.pushNamed(context, route);
-      } else {
-        Navigator.pushReplacementNamed(context, route);
-      }
+      Navigator.pushNamedAndRemoveUntil(context, route, (r) => false);
     }
 
     return Container(
