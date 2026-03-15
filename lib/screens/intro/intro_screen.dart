@@ -127,10 +127,10 @@ class _IntroScreenState extends State<IntroScreen>
             ),
           ),
 
-          Positioned(
+          PositionedDirectional(
             top: MediaQuery.of(context).padding.top + 50,
-            left: 20,
-            right: 20,
+            start: 20,
+            end: 20,
             child: FadeTransition(
               opacity: _fadeAnimation,
               child: ScaleTransition(
