@@ -133,102 +133,104 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-  Widget _buildHeroAppBar(BuildContext context, AppLocalizations l10n) {
+  Widget _buildHeroSection(BuildContext context, AppLocalizations l10n) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final brandStyle = AppTextStyles.brandTitle(context, isDark: isDark);
 
-    return SliverAppBar(
-      expandedHeight: 560,
-      pinned: true,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      backgroundColor: Colors.transparent,
-      surfaceTintColor: Colors.transparent,
-      leading: IconButton(
-        icon: const Icon(Icons.menu, color: Colors.white, size: 28),
-        onPressed: () => AppMenuShell.of(context)?.toggleMenu(),
-      ),
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(
-            Icons.smart_toy,
-            color: AppColors.primaryGold,
-            size: 20,
-          ),
-          const SizedBox(width: 8),
-          Text(
-            'HORUS-BOT',
-            style: brandStyle.copyWith(
-              color: AppColors.primaryGold,
-              fontSize: 18,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 4.0,
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          height: 560,
+          width: double.infinity,
+          foregroundDecoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withOpacity(0.18),
+                Colors.transparent,
+                Colors.black.withOpacity(0.70),
+              ],
+              stops: const [0.0, 0.32, 1.0],
             ),
           ),
-        ],
-      ),
-      centerTitle: true,
-      actions: [
-        IconButton(
-          icon: const Icon(
-            Icons.qr_code_scanner,
-            color: Colors.white,
-            size: 26,
+          child: Image.asset(
+            'assets/images/museum_interior.jpg',
+            fit: BoxFit.cover,
           ),
-          onPressed: () => Navigator.pushNamed(context, AppRoutes.qrScan),
         ),
-        const SizedBox(width: 8),
-      ],
-      flexibleSpace: FlexibleSpaceBar(
-        background: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.asset(
-              'assets/images/museum_interior.jpg',
-              fit: BoxFit.cover,
-            ),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.40),
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.85),
-                  ],
-                  stops: const [0.0, 0.4, 1.0],
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+                  onPressed: () => AppMenuShell.of(context)?.toggleMenu(),
                 ),
-              ),
-            ),
-            Positioned(
-              left: 24,
-              right: 24,
-              bottom: 120,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.exploreTheMuseum,
-                    style: AppTextStyles.heroTitle(context).copyWith(
-                      fontWeight: FontWeight.w700,
-                      fontSize: 42,
-                      letterSpacing: -0.5,
+                Expanded(
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.smart_toy,
+                          color: AppColors.primaryGold,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'HORUS-BOT',
+                          style: brandStyle.copyWith(
+                            color: AppColors.primaryGold,
+                            fontSize: 18,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.followAndDiscover,
-                    style: AppTextStyles.heroSubtitle(context),
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.qr_code_scanner,
+                    color: Colors.white,
+                    size: 26,
                   ),
-                ],
-              ),
+                  onPressed: () =>
+                      Navigator.pushNamed(context, AppRoutes.qrScan),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+        Positioned(
+          left: 24,
+          right: 24,
+          bottom: 150,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.exploreTheMuseum,
+                style: AppTextStyles.heroTitle(context),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                l10n.followAndDiscover,
+                style: AppTextStyles.heroSubtitle(context),
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          left: 20,
+          right: 20,
+          bottom: -40,
+          child: _buildNextStopCard(context, l10n),
+        ),
+      ],
     );
   }
 
@@ -308,21 +310,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         builder: (innerContext) => CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
-            _buildHeroAppBar(innerContext, l10n),
-            SliverToBoxAdapter(
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  const SizedBox(height: 72),
-                  Positioned(
-                    top: -40,
-                    left: 20,
-                    right: 20,
-                    child: _buildNextStopCard(innerContext, l10n),
-                  ),
-                ],
-              ),
-            ),
+            SliverToBoxAdapter(child: _buildHeroSection(innerContext, l10n)),
+            const SliverToBoxAdapter(child: SizedBox(height: 72)),
             SliverToBoxAdapter(child: _buildSummaryStats(innerContext, l10n)),
             SliverToBoxAdapter(
               child: Padding(
