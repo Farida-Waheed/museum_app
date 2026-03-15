@@ -41,16 +41,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get horusBot => 'Horus';
 
   @override
-  String get talkToHorusBot => 'Ask the Guide';
+  String get talkToHorusBot => 'Talk to the Assistant';
 
   @override
-  String get askTheGuide => 'Ask the Guide';
+  String get askTheGuide => 'Museum AI Assistant';
 
   @override
-  String get guideStatus => 'Guide Status';
+  String get guideStatus => 'AI Assistant Status';
 
   @override
-  String get alwaysAvailable => 'Always available';
+  String get alwaysAvailable => 'Ready to help';
 
   @override
   String get aboutHorusBot => 'About the Guide';
@@ -71,13 +71,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profile => 'Profile';
 
   @override
-  String get map => 'Map';
+  String get map => 'Explore Map';
 
   @override
   String get quiz => 'Quiz';
 
   @override
-  String get liveTour => 'Live Tour';
+  String get liveTour => 'Start Guided Tour';
 
   @override
   String get tourPlanner => 'Tour Planner';
@@ -460,6 +460,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get didYouKnowFact => 'Tutankhamun\'s mask contains 10kg of gold.';
 
   @override
+  String get didYouKnowFact1 =>
+      'Tutankhamun’s mask contains over 10 kg of gold.';
+
+  @override
+  String get didYouKnowFact2 =>
+      'The Rosetta Stone helped unlock Egyptian hieroglyphs.';
+
+  @override
+  String get didYouKnowFact3 => 'Ramses II ruled Egypt for around 66 years.';
+
+  @override
+  String get didYouKnowFact4 =>
+      'The Grand Egyptian Museum is one of the largest archaeological museums in the world.';
+
+  @override
   String get onlineStatus => '● Online';
 
   @override
@@ -506,7 +521,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get exploreTheMuseum => 'Explore the Museum';
+  String get exploreTheMuseum => 'Explore Egypt With Horus-Bot';
 
   @override
   String get followAndDiscover =>
