@@ -148,11 +148,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.black.withOpacity(0.40), // Increased for top readability
+                Colors.black.withOpacity(0.18),
                 Colors.transparent,
-                Colors.black.withOpacity(0.85), // Darker bottom for text contrast
+                Colors.black.withOpacity(0.70),
               ],
-              stops: const [0.0, 0.40, 1.0],
+              stops: const [0.0, 0.32, 1.0],
             ),
           ),
           child: Image.asset(
@@ -162,11 +162,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
         SafeArea(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
             child: Row(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.menu, color: Colors.white, size: 26),
+                  icon: const Icon(Icons.menu, color: Colors.white, size: 28),
                   onPressed: () => AppMenuShell.of(context)?.toggleMenu(),
                 ),
                 Expanded(
@@ -177,13 +177,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         const Icon(
                           Icons.smart_toy,
                           color: AppColors.primaryGold,
-                          size: 18,
+                          size: 20,
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 8),
                         Text(
                           'HORUS-BOT',
                           style: brandStyle.copyWith(
                             color: AppColors.primaryGold,
+                            fontSize: 18,
+                            letterSpacing: 1.2,
                           ),
                         ),
                       ],
@@ -194,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   icon: const Icon(
                     Icons.qr_code_scanner,
                     color: Colors.white,
-                    size: 24,
+                    size: 26,
                   ),
                   onPressed: () =>
                       Navigator.pushNamed(context, AppRoutes.qrScan),
@@ -204,20 +206,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ),
         Positioned(
-          left: 28,
-          right: 28,
-          bottom: 160,
+          left: 24,
+          right: 24,
+          bottom: 150,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 l10n.exploreTheMuseum,
-                style: AppTextStyles.homeHeroTitle(context),
+                style: AppTextStyles.heroTitle(context),
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 12),
               Text(
                 l10n.followAndDiscover,
-                style: AppTextStyles.homeHeroSubtitle(context),
+                style: AppTextStyles.heroSubtitle(context),
               ),
             ],
           ),
@@ -703,17 +705,12 @@ class _NextStopBadgeState extends State<_NextStopBadge> {
                     children: [
                       Text(
                         widget.label,
-                        style: AppTextStyles.sectionTitle(context).copyWith(
-                          fontSize: 12,
-                          letterSpacing: 2.2,
-                        ),
+                        style: AppTextStyles.sectionTitle(context),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 8),
                       Text(
                         widget.location,
-                        style: AppTextStyles.cardTitle(context).copyWith(
-                          fontSize: 21,
-                        ),
+                        style: AppTextStyles.cardTitle(context),
                       ),
                       const SizedBox(height: 6),
                       Text(widget.time, style: AppTextStyles.body(context)),
@@ -1024,20 +1021,10 @@ class _StatCard extends StatelessWidget {
             value,
             style: AppTextStyles.heroSubtitle(
               context,
-            ).copyWith(
-              fontSize: 22,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-            ),
+            ).copyWith(fontSize: 20, fontWeight: FontWeight.w800),
           ),
-          const SizedBox(height: 6),
-          Text(
-            label,
-            style: AppTextStyles.body(context).copyWith(
-              fontSize: 13,
-              color: Colors.white.withOpacity(0.5),
-            ),
-          ),
+          const SizedBox(height: 4),
+          Text(label, style: AppTextStyles.body(context)),
         ],
       ),
     );
