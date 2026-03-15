@@ -23,6 +23,13 @@ Future<void> main() async {
           create: (_) => UserPreferencesModel(
             initialLanguage: initialPrefs['language'],
             initialOnboardingCompleted: initialPrefs['hasCompletedOnboarding'],
+            initialIsHighContrast: initialPrefs['isHighContrast'],
+            initialFontScale: initialPrefs['fontScale'],
+            initialThemeMode: initialPrefs['themeMode'],
+            initialHasSeenPermissionsPrompt:
+                initialPrefs['hasSeenPermissionsPrompt'],
+            initialHasSeenLocationPrompt: initialPrefs['hasSeenLocationPrompt'],
+            skipLoad: true,
           ),
         ),
         ChangeNotifierProvider(create: (_) => ExhibitProvider()),

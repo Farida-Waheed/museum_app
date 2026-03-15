@@ -8,10 +8,10 @@ class AppTextStyles {
   static TextStyle heroTitle(BuildContext context) {
     return const TextStyle(
       fontFamily: _fontFamily,
-      fontWeight: FontWeight.w800, // Bold for impactful editorial look
+      fontWeight: FontWeight.w300, // Light for editorial look
       fontSize: 44,
       color: Colors.white,
-      letterSpacing: -0.5,
+      letterSpacing: 1.5,
       height: 1.1,
     );
   }
@@ -38,17 +38,16 @@ class AppTextStyles {
   static TextStyle sectionTitle(BuildContext context) {
     return const TextStyle(
       fontWeight: FontWeight.w900,
-      fontSize: 12,
+      fontSize: 13,
       color: AppColors.primaryGold,
-      letterSpacing: 3.0,
+      letterSpacing: 2.0,
     );
   }
 
   static TextStyle cardTitle(BuildContext context) {
     return const TextStyle(
-      fontFamily: _fontFamily,
       fontWeight: FontWeight.bold,
-      fontSize: 20,
+      fontSize: 19,
       color: Colors.white,
     );
   }
@@ -91,9 +90,9 @@ class AppTextStyles {
   static TextStyle brandTitle(BuildContext context, {bool isDark = true}) {
     return TextStyle(
       fontFamily: _fontFamily,
-      fontWeight: FontWeight.w800,
-      fontSize: 18,
-      letterSpacing: 4.0,
+      fontWeight: FontWeight.w900,
+      fontSize: 20,
+      letterSpacing: 2.0,
       color: isDark ? Colors.white : AppColors.darkInk,
     );
   }

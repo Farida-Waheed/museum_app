@@ -1,58 +1,57 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../../l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+
+import '../../app/router.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
-
-import '../../models/exhibit.dart';
 import '../../core/services/mock_data.dart';
-import '../../app/router.dart';
-import 'package:provider/provider.dart';
-import '../../widgets/bottom_nav.dart';
-import '../../widgets/app_menu_shell.dart';
-import '../../widgets/dialogs/branded_permission_dialog.dart';
+import '../../l10n/app_localizations.dart';
+import '../../models/exhibit.dart';
 import '../../models/user_preferences.dart';
-import '../../models/tour_provider.dart';
+import '../../widgets/app_menu_shell.dart';
+import '../../widgets/bottom_nav.dart';
+import '../../widgets/dialogs/branded_permission_dialog.dart';
 import '../chat/chat_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
-  late List<Exhibit> exhibits;
-  late List<MockNews> news;
-  Timer? _factTimer;
-  int _factIndex = 0;
+  late final List<Exhibit> exhibits;
+  late final List<MockNews> news;
 
   double robotX = 140;
   double robotY = 80;
 
   int pageIndex = 0;
-  final PageController _pageCtrl = PageController(viewportFraction: .85);
+  final PageController _pageCtrl = PageController(viewportFraction: 0.85);
 
   late final AnimationController _robotPulseCtrl = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 1800),
   )..repeat(reverse: true);
 
-  late final Animation<double> _robotScale = Tween<double>(begin: 1.0, end: 1.15).animate(
-    CurvedAnimation(parent: _robotPulseCtrl, curve: Curves.easeInOut),
-  );
+  late final Animation<double> _robotScale = Tween<double>(
+    begin: 1.0,
+    end: 1.15,
+  ).animate(CurvedAnimation(parent: _robotPulseCtrl, curve: Curves.easeInOut));
 
   late final AnimationController _fabPulseCtrl = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 2000),
   )..repeat(reverse: true);
 
-  late final Animation<double> _fabScale = Tween<double>(begin: 1.0, end: 1.05).animate(
-    CurvedAnimation(parent: _fabPulseCtrl, curve: Curves.easeInOut),
-  );
+  late final Animation<double> _fabScale = Tween<double>(
+    begin: 1.0,
+    end: 1.05,
+  ).animate(CurvedAnimation(parent: _fabPulseCtrl, curve: Curves.easeInOut));
 
   @override
   void initState() {
@@ -60,28 +59,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     exhibits = MockDataService.getAllExhibits();
     news = MockDataService.getAllNews();
 
-    _factTimer = Timer.periodic(const Duration(seconds: 9), (timer) {
-      if (mounted) {
-        setState(() {
-          _factIndex = (_factIndex + 1) % 4;
-        });
-      }
-    });
-
     Future.delayed(const Duration(seconds: 1), () async {
-      if (mounted) {
-        final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
-        if (prefs.hasCompletedOnboarding && !prefs.hasSeenLocationPrompt) {
-          _requestInitialPermissions(context);
-        }
+      if (!mounted) return;
+      final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+      if (prefs.hasCompletedOnboarding && !prefs.hasSeenLocationPrompt) {
+        await _requestInitialPermissions(context);
       }
     });
-
   }
 
   @override
   void dispose() {
-    _factTimer?.cancel();
     _pageCtrl.dispose();
     _robotPulseCtrl.dispose();
     _fabPulseCtrl.dispose();
@@ -97,7 +85,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       return;
     }
 
-    // Contextual Notification Prompt on Home load
     final notifStatus = await Permission.notification.status;
     if (!notifStatus.isGranted && mounted) {
       await showDialog(
@@ -118,7 +105,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       );
     }
 
-    // Contextual Location Prompt on Home load (for robot sync/nearby exhibits)
     final locStatus = await Permission.locationWhenInUse.status;
     if (!locStatus.isGranted && mounted) {
       await showDialog(
@@ -147,93 +133,104 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-
-  Widget _buildSliverHeader(BuildContext context, AppLocalizations l10n) {
+  Widget _buildHeroSection(BuildContext context, AppLocalizations l10n) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final brandStyle = AppTextStyles.brandTitle(context, isDark: isDark);
 
-    return SliverAppBar(
-      expandedHeight: 580,
-      pinned: true,
-      stretch: true,
-      backgroundColor: Colors.black.withOpacity(0.85),
-      surfaceTintColor: Colors.transparent,
-      elevation: 0,
-      leading: IconButton(
-        icon: const Icon(Icons.menu, color: Colors.white, size: 26),
-        onPressed: () => AppMenuShell.of(context)?.toggleMenu(),
-      ),
-      centerTitle: true,
-      title: Text(
-        "HORUS-BOT",
-        style: brandStyle.copyWith(
-          color: AppColors.primaryGold,
-        ),
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.qr_code_scanner, color: Colors.white, size: 24),
-          onPressed: () => Navigator.pushNamed(context, AppRoutes.qrScan),
-        ),
-        const SizedBox(width: 10),
-      ],
-      flexibleSpace: FlexibleSpaceBar(
-        collapseMode: CollapseMode.parallax,
-        background: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.asset(
-              'assets/images/museum_interior.jpg',
-              fit: BoxFit.cover,
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          height: 560,
+          width: double.infinity,
+          foregroundDecoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withOpacity(0.18),
+                Colors.transparent,
+                Colors.black.withOpacity(0.70),
+              ],
+              stops: const [0.0, 0.32, 1.0],
             ),
-            // Cinematic Gradient Overlay (Deeper at bottom for text readability)
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.45),
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.98),
-                  ],
-                  stops: const [0.0, 0.4, 1.0],
+          ),
+          child: Image.asset(
+            'assets/images/museum_interior.jpg',
+            fit: BoxFit.cover,
+          ),
+        ),
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+                  onPressed: () => AppMenuShell.of(context)?.toggleMenu(),
                 ),
-              ),
-            ),
-            // Hero Text
-            Positioned(
-              left: 28,
-              right: 60,
-              bottom: 110,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.exploreTheMuseum, // "Explore Egypt With Horus-Bot"
-                    style: AppTextStyles.heroTitle(context).copyWith(
-                      fontSize: 42,
-                      height: 1.05,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0,
+                Expanded(
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.smart_toy,
+                          color: AppColors.primaryGold,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'HORUS-BOT',
+                          style: brandStyle.copyWith(
+                            color: AppColors.primaryGold,
+                            fontSize: 18,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 18),
-                  Text(
-                    l10n.followAndDiscover, // "Follow the robot and uncover the stories..."
-                    style: AppTextStyles.heroSubtitle(context).copyWith(
-                      fontSize: 18,
-                      height: 1.4,
-                      color: Colors.white.withOpacity(0.7),
-                      fontWeight: FontWeight.w400,
-                    ),
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.qr_code_scanner,
+                    color: Colors.white,
+                    size: 26,
                   ),
-                ],
-              ),
+                  onPressed: () =>
+                      Navigator.pushNamed(context, AppRoutes.qrScan),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
-      ),
+        Positioned(
+          left: 24,
+          right: 24,
+          bottom: 150,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.exploreTheMuseum,
+                style: AppTextStyles.heroTitle(context),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                l10n.followAndDiscover,
+                style: AppTextStyles.heroSubtitle(context),
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          left: 20,
+          right: 20,
+          bottom: -40,
+          child: _buildNextStopCard(context, l10n),
+        ),
+      ],
     );
   }
 
@@ -242,124 +239,184 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       label: l10n.nextStopLabel.toUpperCase(),
       location: l10n.tutankhamunHall,
       time: l10n.fiveMinutesAway,
-      onTap: () => Navigator.pushNamedAndRemoveUntil(context, AppRoutes.liveTour, (r) => false),
+      onTap: () => Navigator.pushNamedAndRemoveUntil(
+        context,
+        AppRoutes.liveTour,
+        (r) => false,
+      ),
     );
   }
 
+  Widget _buildSummaryStats(BuildContext context, AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+      child: Row(
+        children: [
+          Expanded(
+            child: _StatCard(
+              icon: Icons.check_circle_outline_rounded,
+              value: '1',
+              label: l10n.visited,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: _StatCard(
+              icon: Icons.account_balance_outlined,
+              value: '${exhibits.length}',
+              label: l10n.exhibits,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: _StatCard(
+              icon: Icons.timer_outlined,
+              value: '5 min',
+              label: l10n.duration,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _openChat(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black54,
+      builder: (_) => const ChatScreen(isPopup: true),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final facts = [
-      l10n.didYouKnowFact1,
-      l10n.didYouKnowFact2,
-      l10n.didYouKnowFact3,
-      l10n.didYouKnowFact4,
-    ];
-
     return AppMenuShell(
       hideDefaultAppBar: true,
-      backgroundColor: isDark ? AppColors.darkBackground : AppColors.warmSurface,
+      backgroundColor: isDark
+          ? AppColors.darkBackground
+          : AppColors.warmSurface,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
+      floatingActionButton: ScaleTransition(
+        scale: _fabScale,
+        child: _HorusFab(
+          onPressed: () => _openChat(context),
+          label: l10n.askTheGuide,
+        ),
+      ),
       body: Builder(
         builder: (innerContext) => CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
-            // 1. Cinematic Header with Parallax Hero
-            _buildSliverHeader(innerContext, l10n),
-
-            // 2. Main Dashboard Content
+            SliverToBoxAdapter(child: _buildHeroSection(innerContext, l10n)),
+            const SliverToBoxAdapter(child: SizedBox(height: 72)),
+            SliverToBoxAdapter(child: _buildSummaryStats(innerContext, l10n)),
             SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  Transform.translate(
-                    offset: const Offset(0, -60),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: _buildNextStopCard(innerContext, l10n),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.exhibits.toUpperCase(),
+                      style: AppTextStyles.sectionTitle(innerContext),
                     ),
-                  ),
-
-                  // 3. AI Assistant Card (Prominent Highlight)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(20, -20, 20, 48),
-                    child: _HorusFab(
-                      onPressed: () => showDialog(
-                        context: context,
-                        barrierColor: Colors.black54,
-                        builder: (_) => const ChatScreen(isPopup: true),
-                      ),
-                      label: l10n.askTheGuide,
-                    ),
-                  ),
-
-                  // 4. Quick Actions (Grouped under EXHIBITS)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    const SizedBox(height: 20),
+                    Row(
                       children: [
-                        Text(
-                          l10n.exhibits.toUpperCase(),
-                          style: AppTextStyles.sectionTitle(innerContext),
+                        Expanded(
+                          child: _FeatureCard(
+                            icon: Icons.map_outlined,
+                            title: l10n.map,
+                            onTap: () => Navigator.pushNamedAndRemoveUntil(
+                              innerContext,
+                              AppRoutes.map,
+                              (r) => false,
+                            ),
+                          ),
                         ),
-                        const SizedBox(height: 24),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _FeatureCard(
-                                icon: Icons.map_outlined,
-                                title: l10n.map,
-                                onTap: () => Navigator.pushNamedAndRemoveUntil(innerContext, AppRoutes.map, (r) => false),
-                              ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _FeatureCard(
+                            icon: Icons.qr_code_scanner,
+                            title: l10n.scanTicket,
+                            isHighlighted: true,
+                            onTap: () => Navigator.pushNamed(
+                              innerContext,
+                              AppRoutes.qrScan,
                             ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: _FeatureCard(
-                                icon: Icons.play_circle_outline_rounded,
-                                title: l10n.liveTour,
-                                isHighlighted: true,
-                                onTap: () => Navigator.pushNamedAndRemoveUntil(innerContext, AppRoutes.liveTour, (r) => false),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-
             const SliverToBoxAdapter(child: SizedBox(height: 48)),
-
-            // 5. Discovery Carousel
             SliverToBoxAdapter(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Text(l10n.recommendedForYou.toUpperCase(), style: AppTextStyles.sectionTitle(innerContext)),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      l10n.recommendedForYou.toUpperCase(),
+                      style: AppTextStyles.sectionTitle(innerContext),
+                    ),
                   ),
                   const SizedBox(height: 20),
                   SizedBox(
                     height: 240,
-                    child: PageView.builder(
+                    child: PageView(
                       controller: _pageCtrl,
-                      itemCount: exhibits.take(3).length,
                       onPageChanged: (i) => setState(() => pageIndex = i),
-                      itemBuilder: (context, index) {
-                        final e = exhibits[index];
-                        return _HighlightCard(
-                          title: e.getName(Localizations.localeOf(context).languageCode),
+                      children: [
+                        _HighlightCard(
+                          title: l10n.tutankhamunMask,
                           subtitle: l10n.goldenHallRecommended,
-                          image: e.imageAsset,
-                          onTap: () => Navigator.pushNamed(context, AppRoutes.exhibitDetails, arguments: e),
-                        );
-                      },
+                          image: 'assets/images/pharaoh_head.jpg',
+                          onTap: () {
+                            if (exhibits.isNotEmpty) {
+                              Navigator.pushNamed(
+                                innerContext,
+                                AppRoutes.exhibitDetails,
+                                arguments: exhibits.first,
+                              );
+                            }
+                          },
+                        ),
+                        _HighlightCard(
+                          title: l10n.ancientPapyrus,
+                          subtitle: l10n.westWingStory,
+                          image: 'assets/images/hieroglyphs.jpg',
+                          onTap: () {
+                            if (exhibits.length > 1) {
+                              Navigator.pushNamed(
+                                innerContext,
+                                AppRoutes.exhibitDetails,
+                                arguments: exhibits[1],
+                              );
+                            }
+                          },
+                        ),
+                        _HighlightCard(
+                          title: l10n.canopicJars,
+                          subtitle: l10n.southHallMummification,
+                          image: 'assets/images/canopic_jars.jpg',
+                          onTap: () {
+                            if (exhibits.length > 2) {
+                              Navigator.pushNamed(
+                                innerContext,
+                                AppRoutes.exhibitDetails,
+                                arguments: exhibits[2],
+                              );
+                            }
+                          },
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -367,20 +424,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ],
               ),
             ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 48)),
-
-            // 6. Map Preview
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(l10n.mapPreview.toUpperCase(), style: AppTextStyles.sectionTitle(innerContext)),
+                        Text(
+                          l10n.mapPreview.toUpperCase(),
+                          style: AppTextStyles.sectionTitle(innerContext),
+                        ),
                         _LiveBadge(label: l10n.live),
                       ],
                     ),
@@ -391,27 +448,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         height: 260,
                         decoration: BoxDecoration(
                           color: AppColors.cinematicSection,
-                          border: Border.all(color: Colors.white.withOpacity(0.05)),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.05),
+                          ),
                         ),
                         child: Stack(
                           children: [
-                            // Grid Background
                             Positioned.fill(
                               child: CustomPaint(
-                                painter: _GridPainter(gridColor: Colors.white.withOpacity(0.025)),
+                                painter: _GridPainter(
+                                  gridColor: Colors.white.withOpacity(0.025),
+                                ),
                               ),
                             ),
-                            // Map Content (Simplified)
-                            Center(
+                            const Center(
                               child: Opacity(
                                 opacity: 0.15,
-                                child: const Icon(Icons.museum, size: 140, color: Colors.white),
+                                child: Icon(
+                                  Icons.museum,
+                                  size: 140,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                            // Robot Marker
-                            AnimatedPositioned(
-                              duration: const Duration(seconds: 4),
-                              curve: Curves.easeInOut,
+                            Positioned(
                               left: robotX,
                               top: robotY,
                               child: ScaleTransition(
@@ -424,30 +484,52 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                     shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: AppColors.primaryGold.withOpacity(0.4),
+                                        color: AppColors.primaryGold
+                                            .withOpacity(0.4),
                                         blurRadius: 15,
                                         spreadRadius: 5,
                                       ),
                                     ],
                                   ),
-                                  child: const Icon(Icons.smart_toy, color: AppColors.darkInk, size: 16),
+                                  child: const Icon(
+                                    Icons.smart_toy,
+                                    color: AppColors.darkInk,
+                                    size: 16,
+                                  ),
                                 ),
                               ),
                             ),
-                            // Map Overlay Info
                             Positioned(
                               bottom: 20,
                               left: 20,
                               right: 20,
                               child: Row(
                                 children: [
-                                  _LegendDot(color: AppColors.primaryGold, label: l10n.horusBot),
+                                  _LegendDot(
+                                    color: AppColors.primaryGold,
+                                    label: l10n.horusBot,
+                                  ),
                                   const SizedBox(width: 20),
-                                  _LegendDot(color: Colors.blueAccent, label: l10n.you),
+                                  _LegendDot(
+                                    color: Colors.blueAccent,
+                                    label: l10n.you,
+                                  ),
                                   const Spacer(),
                                   TextButton(
-                                    onPressed: () => Navigator.pushNamedAndRemoveUntil(innerContext, AppRoutes.map, (r) => false),
-                                    child: Text(l10n.fullView, style: AppTextStyles.button(context).copyWith(color: AppColors.primaryGold, fontSize: 13)),
+                                    onPressed: () =>
+                                        Navigator.pushNamedAndRemoveUntil(
+                                          innerContext,
+                                          AppRoutes.map,
+                                          (r) => false,
+                                        ),
+                                    child: Text(
+                                      l10n.fullView,
+                                      style: AppTextStyles.button(context)
+                                          .copyWith(
+                                            color: AppColors.primaryGold,
+                                            fontSize: 13,
+                                          ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -460,17 +542,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
-
             const SliverToBoxAdapter(child: SizedBox(height: 48)),
-
-            // 7. Museum News
             SliverToBoxAdapter(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Text(l10n.museumNews.toUpperCase(), style: AppTextStyles.sectionTitle(innerContext)),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      l10n.museumNews.toUpperCase(),
+                      style: AppTextStyles.sectionTitle(innerContext),
+                    ),
                   ),
                   const SizedBox(height: 20),
                   SizedBox(
@@ -481,61 +563,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       itemCount: news.length,
                       itemBuilder: (context, index) {
                         final item = news[index];
-                        return _FeatureCard(
-                          onTap: () => Navigator.pushNamed(context, AppRoutes.events),
-                          child: Container(
-                            width: 300,
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primaryGold.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    item.source.toUpperCase(),
-                                    style: const TextStyle(color: AppColors.primaryGold, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  item.title,
-                                  style: AppTextStyles.cardTitle(context),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const Spacer(),
-                                Row(
-                                  children: [
-                                    Text(
-                                      "Read More",
-                                      style: AppTextStyles.button(context).copyWith(color: AppColors.primaryGold, fontSize: 12),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    const Icon(Icons.arrow_forward, color: AppColors.primaryGold, size: 14),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
+                        return _NewsCard(item: item);
                       },
                     ),
                   ),
                 ],
               ),
             ),
-
             const SliverToBoxAdapter(child: SizedBox(height: 48)),
-
-            // 8. Did You Know
             SliverToBoxAdapter(
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 24),
-                padding: const EdgeInsets.all(32),
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.all(28),
                 decoration: BoxDecoration(
                   color: AppColors.cinematicSection,
                   borderRadius: BorderRadius.circular(28),
@@ -547,32 +586,32 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: AppColors.primaryGold.withOpacity(0.12),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(Icons.auto_awesome, color: AppColors.primaryGold, size: 24),
+                          child: const Icon(
+                            Icons.auto_awesome,
+                            color: AppColors.primaryGold,
+                            size: 22,
+                          ),
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 14),
                         Text(
                           l10n.didYouKnow.toUpperCase(),
                           style: AppTextStyles.sectionTitle(innerContext),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 24),
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 800),
-                      child: Text(
-                        facts[_factIndex],
-                        key: ValueKey<int>(_factIndex),
-                        style: AppTextStyles.body(innerContext).copyWith(
-                          color: Colors.white.withOpacity(0.9),
-                          fontSize: 17,
-                          height: 1.8,
-                          fontStyle: FontStyle.italic,
-                        ),
+                    const SizedBox(height: 20),
+                    Text(
+                      l10n.didYouKnowFact,
+                      style: AppTextStyles.body(innerContext).copyWith(
+                        color: Colors.white,
+                        fontSize: 16,
+                        height: 1.7,
+                        fontStyle: FontStyle.italic,
                       ),
                     ),
                   ],
@@ -587,13 +626,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 }
 
-
 class _NextStopBadge extends StatefulWidget {
   final String label;
   final String location;
   final String time;
   final VoidCallback onTap;
-  const _NextStopBadge({required this.label, required this.location, required this.time, required this.onTap});
+
+  const _NextStopBadge({
+    required this.label,
+    required this.location,
+    required this.time,
+    required this.onTap,
+  });
 
   @override
   State<_NextStopBadge> createState() => _NextStopBadgeState();
@@ -621,7 +665,9 @@ class _NextStopBadgeState extends State<_NextStopBadge> {
               color: AppColors.cinematicElevated,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: AppColors.primaryGold.withOpacity(_isHovered ? 0.25 : 0.15),
+                color: AppColors.primaryGold.withOpacity(
+                  _isHovered ? 0.25 : 0.15,
+                ),
                 width: 1.5,
               ),
               boxShadow: [
@@ -646,7 +692,11 @@ class _NextStopBadgeState extends State<_NextStopBadge> {
                     color: AppColors.primaryGold.withOpacity(0.12),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.near_me_rounded, color: AppColors.primaryGold, size: 32),
+                  child: const Icon(
+                    Icons.near_me_rounded,
+                    color: AppColors.primaryGold,
+                    size: 32,
+                  ),
                 ),
                 const SizedBox(width: 24),
                 Expanded(
@@ -663,14 +713,15 @@ class _NextStopBadgeState extends State<_NextStopBadge> {
                         style: AppTextStyles.cardTitle(context),
                       ),
                       const SizedBox(height: 6),
-                      Text(
-                        widget.time,
-                        style: AppTextStyles.body(context),
-                      ),
+                      Text(widget.time, style: AppTextStyles.body(context)),
                     ],
                   ),
                 ),
-                const Icon(Icons.arrow_forward_ios_rounded, color: AppColors.neutralDark, size: 20),
+                const Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: AppColors.neutralDark,
+                  size: 20,
+                ),
               ],
             ),
           ),
@@ -681,26 +732,26 @@ class _NextStopBadgeState extends State<_NextStopBadge> {
 }
 
 class _FeatureCard extends StatefulWidget {
-  final IconData? icon;
-  final String? title;
+  final IconData icon;
+  final String title;
   final VoidCallback onTap;
   final bool isHighlighted;
-  final Widget? child;
 
   const _FeatureCard({
-    this.icon,
-    this.title,
+    required this.icon,
+    required this.title,
     required this.onTap,
     this.isHighlighted = false,
-    this.child,
   });
 
   @override
   State<_FeatureCard> createState() => _FeatureCardState();
 }
 
-class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderStateMixin {
+class _FeatureCardState extends State<_FeatureCard>
+    with SingleTickerProviderStateMixin {
   bool _isHovered = false;
+
   late final AnimationController _glowCtrl = AnimationController(
     vsync: this,
     duration: const Duration(seconds: 2),
@@ -729,46 +780,50 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
               borderRadius: BorderRadius.circular(24),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
+                height: 120,
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(24),
                   color: AppColors.cinematicCard,
                   border: Border.all(
                     color: widget.isHighlighted
-                        ? AppColors.primaryGold.withOpacity(0.4 + (_glowCtrl.value * 0.4))
-                        : (_isHovered ? Colors.white.withOpacity(0.2) : Colors.white.withOpacity(0.05)),
+                        ? AppColors.primaryGold.withOpacity(
+                            0.35 + (_glowCtrl.value * 0.35),
+                          )
+                        : (_isHovered
+                              ? Colors.white.withOpacity(0.16)
+                              : Colors.white.withOpacity(0.05)),
                     width: (widget.isHighlighted || _isHovered) ? 1.5 : 1.0,
                   ),
                   boxShadow: [
                     if (widget.isHighlighted || _isHovered)
                       BoxShadow(
-                        color: AppColors.primaryGold.withOpacity(0.1 + (_glowCtrl.value * 0.15)),
+                        color: AppColors.primaryGold.withOpacity(
+                          0.10 + (_glowCtrl.value * 0.12),
+                        ),
                         blurRadius: _isHovered ? 20 : 15,
                         spreadRadius: _isHovered ? 3 : 2,
                       ),
                   ],
                 ),
-                child: widget.child ?? Container(
-                  height: 120,
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(widget.icon, color: AppColors.primaryGold, size: 28),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              widget.title ?? "",
-                              style: AppTextStyles.cardTitle(context).copyWith(
-                                fontSize: 17,
-                              ),
-                            ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Icon(widget.icon, color: AppColors.primaryGold, size: 28),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            widget.title,
+                            style: AppTextStyles.cardTitle(
+                              context,
+                            ).copyWith(fontSize: 17),
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -783,8 +838,14 @@ class _HighlightCard extends StatefulWidget {
   final String title;
   final String subtitle;
   final String image;
-  final VoidCallback onTap;
-  const _HighlightCard({required this.title, required this.subtitle, required this.image, required this.onTap});
+  final VoidCallback? onTap;
+
+  const _HighlightCard({
+    required this.title,
+    required this.subtitle,
+    required this.image,
+    this.onTap,
+  });
 
   @override
   State<_HighlightCard> createState() => _HighlightCardState();
@@ -818,7 +879,10 @@ class _HighlightCardState extends State<_HighlightCard> {
                         gradient: LinearGradient(
                           begin: Alignment.bottomCenter,
                           end: Alignment.topCenter,
-                          colors: [Colors.black.withOpacity(0.95), Colors.transparent],
+                          colors: [
+                            Colors.black.withOpacity(0.95),
+                            Colors.transparent,
+                          ],
                         ),
                       ),
                     ),
@@ -837,7 +901,9 @@ class _HighlightCardState extends State<_HighlightCard> {
                         const SizedBox(height: 8),
                         Text(
                           widget.subtitle,
-                          style: AppTextStyles.body(context).copyWith(color: Colors.white70),
+                          style: AppTextStyles.body(
+                            context,
+                          ).copyWith(color: Colors.white70),
                         ),
                       ],
                     ),
@@ -852,10 +918,125 @@ class _HighlightCardState extends State<_HighlightCard> {
   }
 }
 
+class _NewsCard extends StatelessWidget {
+  final MockNews item;
+
+  const _NewsCard({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(item.title)));
+      },
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        width: 300,
+        margin: const EdgeInsets.only(right: 16),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.cinematicCard,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: Colors.white.withOpacity(0.05)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.primaryGold.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                item.source.toUpperCase(),
+                style: const TextStyle(
+                  color: AppColors.primaryGold,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              item.title,
+              style: AppTextStyles.cardTitle(context),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const Spacer(),
+            Row(
+              children: [
+                Text(
+                  'Read More',
+                  style: AppTextStyles.button(
+                    context,
+                  ).copyWith(color: AppColors.primaryGold, fontSize: 12),
+                ),
+                const SizedBox(width: 4),
+                const Icon(
+                  Icons.arrow_forward,
+                  color: AppColors.primaryGold,
+                  size: 14,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final String value;
+  final String label;
+
+  const _StatCard({
+    required this.icon,
+    required this.value,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 136,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.cinematicCard,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppColors.primaryGold, size: 24),
+          const Spacer(),
+          Text(
+            value,
+            style: AppTextStyles.heroSubtitle(
+              context,
+            ).copyWith(fontSize: 20, fontWeight: FontWeight.w800),
+          ),
+          const SizedBox(height: 4),
+          Text(label, style: AppTextStyles.body(context)),
+        ],
+      ),
+    );
+  }
+}
+
 class _Dots extends StatelessWidget {
   final int count;
   final int index;
+
   const _Dots({required this.count, required this.index});
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -868,7 +1049,9 @@ class _Dots extends StatelessWidget {
           width: active ? 32 : 10,
           height: 10,
           decoration: BoxDecoration(
-            color: active ? AppColors.primaryGold : AppColors.neutralDark.withOpacity(0.4),
+            color: active
+                ? AppColors.primaryGold
+                : AppColors.neutralDark.withOpacity(0.4),
             borderRadius: BorderRadius.circular(5),
           ),
         );
@@ -879,7 +1062,9 @@ class _Dots extends StatelessWidget {
 
 class _LiveBadge extends StatelessWidget {
   final String label;
+
   const _LiveBadge({required this.label});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -895,12 +1080,19 @@ class _LiveBadge extends StatelessWidget {
           Container(
             width: 7,
             height: 7,
-            decoration: const BoxDecoration(color: AppColors.alertRed, shape: BoxShape.circle),
+            decoration: const BoxDecoration(
+              color: AppColors.alertRed,
+              shape: BoxShape.circle,
+            ),
           ),
           const SizedBox(width: 10),
           Text(
             label.toUpperCase(),
-            style: AppTextStyles.sectionTitle(context).copyWith(fontSize: 11, color: AppColors.alertRed, letterSpacing: 1.5),
+            style: AppTextStyles.sectionTitle(context).copyWith(
+              fontSize: 11,
+              color: AppColors.alertRed,
+              letterSpacing: 1.5,
+            ),
           ),
         ],
       ),
@@ -911,7 +1103,9 @@ class _LiveBadge extends StatelessWidget {
 class _LegendDot extends StatelessWidget {
   final Color color;
   final String label;
+
   const _LegendDot({required this.color, required this.label});
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -926,6 +1120,7 @@ class _LegendDot extends StatelessWidget {
 
 class _GridPainter extends CustomPainter {
   final Color gridColor;
+
   _GridPainter({required this.gridColor});
 
   @override
@@ -946,77 +1141,21 @@ class _GridPainter extends CustomPainter {
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
-class _RobotStatusCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.cinematicCard,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: AppColors.primaryGold.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.smart_toy, color: AppColors.primaryGold, size: 20),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(l10n.guideStatus, style: AppTextStyles.cardTitle(context)),
-                    const SizedBox(width: 8),
-                    Container(
-                      width: 7,
-                      height: 7,
-                      decoration: const BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  l10n.alwaysAvailable,
-                  style: AppTextStyles.helper(context),
-                ),
-              ],
-            ),
-          ),
-          const Icon(Icons.bolt_rounded, color: AppColors.primaryGold, size: 16),
-        ],
-      ),
-    );
-  }
-}
-
-
-
 class _HorusFab extends StatefulWidget {
   final String label;
   final VoidCallback onPressed;
+
   const _HorusFab({required this.label, required this.onPressed});
+
   @override
   State<_HorusFab> createState() => _HorusFabState();
 }
 
-
-
-class _HorusFabState extends State<_HorusFab> with SingleTickerProviderStateMixin {
+class _HorusFabState extends State<_HorusFab>
+    with SingleTickerProviderStateMixin {
   bool _pressed = false;
   bool _isHovered = false;
+
   late final AnimationController _glowCtrl = AnimationController(
     vsync: this,
     duration: const Duration(seconds: 2),
@@ -1031,6 +1170,7 @@ class _HorusFabState extends State<_HorusFab> with SingleTickerProviderStateMixi
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
     return AnimatedBuilder(
       animation: _glowCtrl,
       builder: (context, child) {
@@ -1052,7 +1192,9 @@ class _HorusFabState extends State<_HorusFab> with SingleTickerProviderStateMixi
                   color: AppColors.cinematicElevated,
                   borderRadius: BorderRadius.circular(30),
                   border: Border.all(
-                    color: AppColors.primaryGold.withOpacity(0.6 + (_glowCtrl.value * 0.4)),
+                    color: AppColors.primaryGold.withOpacity(
+                      0.6 + (_glowCtrl.value * 0.4),
+                    ),
                     width: _isHovered ? 1.8 : 1.2,
                   ),
                   boxShadow: [
@@ -1062,24 +1204,33 @@ class _HorusFabState extends State<_HorusFab> with SingleTickerProviderStateMixi
                       offset: const Offset(0, 12),
                     ),
                     BoxShadow(
-                      color: AppColors.primaryGold.withOpacity(0.15 + (_glowCtrl.value * 0.25)),
+                      color: AppColors.primaryGold.withOpacity(
+                        0.15 + (_glowCtrl.value * 0.25),
+                      ),
                       blurRadius: _isHovered ? 25 : 18,
                       spreadRadius: _isHovered ? 5 : 3,
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 28,
+                  vertical: 20,
+                ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.auto_awesome, color: AppColors.primaryGold, size: 24),
+                    const Icon(
+                      Icons.auto_awesome,
+                      color: AppColors.primaryGold,
+                      size: 24,
+                    ),
                     const SizedBox(width: 16),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          l10n.askTheGuide,
+                          widget.label,
                           style: AppTextStyles.button(context).copyWith(
                             color: Colors.white,
                             fontSize: 16,

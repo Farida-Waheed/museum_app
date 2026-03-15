@@ -36,16 +36,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     super.dispose();
   }
 
-  void _handleNavigation(UserPreferencesModel prefs) {
-    if (_currentPage < 3) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
-      );
-    } else {
-      prefs.setCompletedOnboarding(true);
-      Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
-    }
+  void _completeOnboarding(UserPreferencesModel prefs) {
+    prefs.setCompletedOnboarding(true);
+    Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
   }
 
   @override
@@ -317,7 +310,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () => _handleNavigation(prefs),
+                        onPressed: () => _completeOnboarding(prefs),
                         style: primaryCtaButtonStyle,
                         child: Text(
                           l10n.startExploring.toUpperCase(),
