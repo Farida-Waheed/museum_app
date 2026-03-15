@@ -310,16 +310,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () {
-                          if (_currentPage == pages.length - 1) {
-                            _completeOnboarding(prefs);
-                          } else {
-                            _pageController.nextPage(
-                              duration: const Duration(milliseconds: 400),
-                              curve: Curves.easeInOut,
-                            );
-                          }
-                        },
+                        onPressed: () => _completeOnboarding(prefs),
                         style: primaryCtaButtonStyle,
                         child: Text(
                           l10n.startExploring.toUpperCase(),
