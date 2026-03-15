@@ -249,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       label: l10n.nextStopLabel.toUpperCase(),
       location: l10n.tutankhamunHall,
       time: l10n.fiveMinutesAway,
-      onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
+      onTap: () => Navigator.pushNamedAndRemoveUntil(context, AppRoutes.liveTour, (r) => false),
     );
   }
 
@@ -343,7 +343,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               child: _FeatureCard(
                                 icon: Icons.map_outlined,
                                 title: l10n.map,
-                                onTap: () => Navigator.pushNamed(innerContext, AppRoutes.map),
+                                onTap: () => Navigator.pushNamedAndRemoveUntil(innerContext, AppRoutes.map, (r) => false),
                               ),
                             ),
                             const SizedBox(width: 16),
@@ -482,7 +482,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                       _LegendDot(color: Colors.blueAccent, label: l10n.you),
                                       const Spacer(),
                                       TextButton(
-                                        onPressed: () => Navigator.pushNamed(innerContext, AppRoutes.map),
+                                        onPressed: () => Navigator.pushNamedAndRemoveUntil(innerContext, AppRoutes.map, (r) => false),
                                         child: Text(l10n.fullView, style: AppTextStyles.button(context).copyWith(color: AppColors.primaryGold, fontSize: 13)),
                                       ),
                                     ],

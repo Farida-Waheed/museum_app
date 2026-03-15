@@ -359,11 +359,7 @@ class AppMenuShellState extends State<AppMenuShell>
 
   void _goReplace(String route) {
     closeMenu();
-    if (route == AppRoutes.mainHome) {
-      Navigator.pushNamedAndRemoveUntil(context, route, (r) => false);
-    } else {
-      Navigator.pushReplacementNamed(context, route);
-    }
+    Navigator.pushNamedAndRemoveUntil(context, route, (r) => false);
   }
 
   @override
@@ -491,7 +487,10 @@ class AppMenuShellState extends State<AppMenuShell>
                                               style: AppTextStyles.brandTitle(
                                                 innerContext,
                                                 isDark: isDark,
-                                              ).copyWith(fontSize: 18),
+                                              ).copyWith(
+                                                fontSize: 18,
+                                                color: AppColors.primaryGold,
+                                              ),
                                             ),
                                           ],
                                         ),

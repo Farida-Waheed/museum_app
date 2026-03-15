@@ -27,7 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       backgroundColor: AppColors.darkBackground,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
           children: [
             // A. Visitor Identity Header
@@ -94,7 +94,7 @@ class _SectionTitle extends StatelessWidget {
     return Align(
       alignment: Alignment.centerLeft,
       child: Padding(
-        padding: const EdgeInsets.only(left: 4, bottom: 16, right: 4),
+        padding: const EdgeInsets.only(bottom: 20),
         child: Text(title.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
       ),
     );
@@ -107,11 +107,11 @@ class _VisitorHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.darkSurface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.darkDivider),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Row(
         children: [
@@ -193,11 +193,11 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.darkSurface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.darkDivider),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

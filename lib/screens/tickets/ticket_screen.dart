@@ -8,6 +8,7 @@ import '../../models/user_preferences.dart';
 import '../../app/router.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
+import '../../core/constants/text_styles.dart';
 
 class TicketScreen extends StatefulWidget {
   const TicketScreen({super.key});
@@ -140,7 +141,7 @@ class _TicketScreenState extends State<TicketScreen> {
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -150,7 +151,7 @@ class _TicketScreenState extends State<TicketScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.darkSurface,
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: AppColors.primaryGold.withOpacity(0.1)),
+                      border: Border.all(color: Colors.white.withOpacity(0.05)),
                     ),
                     child: Row(
                       children: [
@@ -184,7 +185,7 @@ class _TicketScreenState extends State<TicketScreen> {
                   // Date Selector
                   Text(
                     isArabic ? "اختر التاريخ" : "Select Date",
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white),
+                    style: AppTextStyles.sectionTitle(context),
                   ),
                   const SizedBox(height: 12),
                   InkWell(
@@ -221,7 +222,7 @@ class _TicketScreenState extends State<TicketScreen> {
                   // Ticket Types
                   Text(
                     isArabic ? "أنواع التذاكر" : "Ticket Types",
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.white),
+                    style: AppTextStyles.sectionTitle(context),
                   ),
                   const SizedBox(height: 16),
                   _ticketRow("Adult", isArabic ? "بالغ" : "Adult", isArabic ? "١٢+ سنة" : "Ages 12+", _prices["Adult"]!, isArabic),
@@ -284,11 +285,15 @@ class _TicketScreenState extends State<TicketScreen> {
     final qty = _quantities[typeKey]!;
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.darkSurface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: qty > 0 ? AppColors.primaryGold.withOpacity(0.3) : AppColors.darkDivider),
+        color: AppColors.cinematicCard,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: qty > 0
+              ? AppColors.primaryGold.withOpacity(0.3)
+              : Colors.white.withOpacity(0.05),
+        ),
         boxShadow: [
           if (qty > 0) BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 4)),
         ],
