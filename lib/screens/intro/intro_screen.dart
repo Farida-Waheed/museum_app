@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../app/router.dart';
 import '../../core/constants/text_styles.dart';
 import '../../models/user_preferences.dart';
+import '../../l10n/app_localizations.dart';
 import '../onboarding/onboarding_screen.dart';
 
 class IntroScreen extends StatefulWidget {
@@ -81,18 +82,14 @@ class _IntroScreenState extends State<IntroScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final heroStyle = AppTextStyles.heroTitle(context);
-
-    final TextStyle smallTheStyle = heroStyle.copyWith(
-      fontSize: 30,
-      letterSpacing: 0.5,
-    );
 
     final TextStyle mainTitleStyle = heroStyle;
 
-    final TextStyle taglineStyle = AppTextStyles.body(context).copyWith(
-      color: Colors.white70,
-    );
+    final TextStyle taglineStyle = AppTextStyles.body(
+      context,
+    ).copyWith(color: Colors.white70);
 
     return Scaffold(
       body: Stack(
@@ -141,21 +138,9 @@ class _IntroScreenState extends State<IntroScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    RichText(
-                      text: TextSpan(
-                        style: mainTitleStyle,
-                        children: <TextSpan>[
-                          TextSpan(text: 'The ', style: smallTheStyle),
-                          const TextSpan(text: 'Egyptian'),
-                        ],
-                      ),
-                    ),
-                    Text('Museums', style: mainTitleStyle),
+                    Text(l10n.introTitle, style: mainTitleStyle),
                     const SizedBox(height: 12),
-                    Text(
-                      'Explore Egypt with your Horus-Bot and its app.',
-                      style: taglineStyle,
-                    ),
+                    Text(l10n.introSubtitle, style: taglineStyle),
                   ],
                 ),
               ),

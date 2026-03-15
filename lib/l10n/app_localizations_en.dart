@@ -391,6 +391,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get introSubtitle => 'Explore Egyptian museums with Horus-Bot.';
 
   @override
+  String get introThe => 'The ';
+
+  @override
+  String get introEgyptian => 'Egyptian';
+
+  @override
+  String get introMuseums => 'Museums';
+
+  @override
+  String get introSubtitleFull =>
+      'Explore Egypt with your Horus-Bot and its app.';
+
+  @override
   String get onboarding1Title => 'Welcome to Horus';
 
   @override

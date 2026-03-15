@@ -389,6 +389,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get introSubtitle => 'استكشف المتاحف المصرية مع حورس-بوت.';
 
   @override
+  String get introThe => '';
+
+  @override
+  String get introEgyptian => 'المصرية';
+
+  @override
+  String get introMuseums => 'المتاحف';
+
+  @override
+  String get introSubtitleFull => 'استكشف مصر مع حورس-بوت وتطبيقه.';
+
+  @override
   String get onboarding1Title => 'مرحبًا بك في حورس-بوت';
 
   @override

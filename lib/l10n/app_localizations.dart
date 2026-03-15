@@ -842,6 +842,30 @@ abstract class AppLocalizations {
   /// **'Explore Egyptian museums with Horus-Bot.'**
   String get introSubtitle;
 
+  /// No description provided for @introThe.
+  ///
+  /// In en, this message translates to:
+  /// **'The '**
+  String get introThe;
+
+  /// No description provided for @introEgyptian.
+  ///
+  /// In en, this message translates to:
+  /// **'Egyptian'**
+  String get introEgyptian;
+
+  /// No description provided for @introMuseums.
+  ///
+  /// In en, this message translates to:
+  /// **'Museums'**
+  String get introMuseums;
+
+  /// No description provided for @introSubtitleFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore Egypt with your Horus-Bot and its app.'**
+  String get introSubtitleFull;
+
   /// No description provided for @onboarding1Title.
   ///
   /// In en, this message translates to:

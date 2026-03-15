@@ -14,10 +14,17 @@ Future<void> main() async {
   await initializeDateFormatting('en', null);
   await initializeDateFormatting('ar', null);
 
+  final initialPrefs = await UserPreferencesModel.getInitialPrefs();
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => UserPreferencesModel()),
+        ChangeNotifierProvider(
+          create: (_) => UserPreferencesModel(
+            initialLanguage: initialPrefs['language'],
+            initialOnboardingCompleted: initialPrefs['hasCompletedOnboarding'],
+          ),
+        ),
         ChangeNotifierProvider(create: (_) => ExhibitProvider()),
         ChangeNotifierProvider(create: (_) => TourProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),

@@ -26,8 +26,32 @@ class UserPreferencesModel extends ChangeNotifier {
   bool get hasSeenLocationPrompt => _hasSeenLocationPrompt;
   String get themeMode => _themeMode;
 
-  UserPreferencesModel() {
+  UserPreferencesModel({
+    String initialLanguage = 'en',
+    bool initialOnboardingCompleted = false,
+  }) {
+    _language = initialLanguage;
+    _hasCompletedOnboarding = initialOnboardingCompleted;
     _loadFromPrefs();
+  }
+
+  static Future<String> getInitialLanguage() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_kLanguage) ?? 'en';
+  }
+
+  static Future<bool> getInitialOnboardingStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_kHasCompletedOnboarding) ?? false;
+  }
+
+  static Future<Map<String, dynamic>> getInitialPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    return {
+      'language': prefs.getString(_kLanguage) ?? 'en',
+      'hasCompletedOnboarding':
+          prefs.getBool(_kHasCompletedOnboarding) ?? false,
+    };
   }
 
   Future<void> _loadFromPrefs() async {
@@ -36,7 +60,8 @@ class UserPreferencesModel extends ChangeNotifier {
     _isHighContrast = prefs.getBool(_kIsHighContrast) ?? false;
     _fontScale = prefs.getDouble(_kFontScale) ?? 1.0;
     _hasCompletedOnboarding = prefs.getBool(_kHasCompletedOnboarding) ?? false;
-    _hasSeenPermissionsPrompt = prefs.getBool(_kHasSeenPermissionsPrompt) ?? false;
+    _hasSeenPermissionsPrompt =
+        prefs.getBool(_kHasSeenPermissionsPrompt) ?? false;
     _hasSeenLocationPrompt = prefs.getBool(_kHasSeenLocationPrompt) ?? false;
     _themeMode = prefs.getString(_kThemeMode) ?? 'dark';
     notifyListeners();
