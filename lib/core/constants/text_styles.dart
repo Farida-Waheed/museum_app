@@ -8,11 +8,11 @@ class AppTextStyles {
   static TextStyle heroTitle(BuildContext context) {
     return const TextStyle(
       fontFamily: _fontFamily,
-      fontWeight: FontWeight.w800, // Bold for impactful editorial look
+      fontWeight: FontWeight.w700, // Classic editorial weight
       fontSize: 44,
       color: Colors.white,
-      letterSpacing: -0.5,
-      height: 1.1,
+      letterSpacing: -1.0,
+      height: 1.05,
     );
   }
 
@@ -40,7 +40,7 @@ class AppTextStyles {
       fontWeight: FontWeight.w900,
       fontSize: 12,
       color: AppColors.primaryGold,
-      letterSpacing: 3.0,
+      letterSpacing: 3.5,
     );
   }
 
@@ -71,10 +71,11 @@ class AppTextStyles {
   }
 
   static TextStyle helper(BuildContext context) {
-    return const TextStyle(
+    return TextStyle(
       fontWeight: FontWeight.w400,
-      fontSize: 12.5,
-      color: AppColors.helperText,
+      fontSize: 12,
+      color: Colors.white.withOpacity(0.5),
+      letterSpacing: 0.2,
     );
   }
 
@@ -91,9 +92,9 @@ class AppTextStyles {
   static TextStyle brandTitle(BuildContext context, {bool isDark = true}) {
     return TextStyle(
       fontFamily: _fontFamily,
-      fontWeight: FontWeight.w800,
+      fontWeight: FontWeight.w700,
       fontSize: 18,
-      letterSpacing: 4.0,
+      letterSpacing: 5.0,
       color: isDark ? Colors.white : AppColors.darkInk,
     );
   }

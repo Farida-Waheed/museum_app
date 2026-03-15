@@ -159,9 +159,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       backgroundColor: Colors.black.withOpacity(0.85),
       surfaceTintColor: Colors.transparent,
       elevation: 0,
-      leading: IconButton(
-        icon: const Icon(Icons.menu, color: Colors.white, size: 26),
-        onPressed: () => AppMenuShell.of(context)?.toggleMenu(),
+      leading: Padding(
+        padding: const EdgeInsets.only(left: 16),
+        child: IconButton(
+          icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+          onPressed: () => AppMenuShell.of(context)?.toggleMenu(),
+        ),
       ),
       centerTitle: true,
       title: Text(
@@ -172,10 +175,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.qr_code_scanner, color: Colors.white, size: 24),
+          icon: const Icon(Icons.qr_code_scanner, color: Colors.white, size: 28),
           onPressed: () => Navigator.pushNamed(context, AppRoutes.qrScan),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 16),
       ],
       flexibleSpace: FlexibleSpaceBar(
         collapseMode: CollapseMode.parallax,
@@ -193,11 +196,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.45),
+                    Colors.black.withOpacity(0.55),
                     Colors.transparent,
-                    Colors.black.withOpacity(0.98),
+                    Colors.black.withOpacity(0.95),
                   ],
-                  stops: const [0.0, 0.4, 1.0],
+                  stops: const [0.0, 0.45, 1.0],
                 ),
               ),
             ),
@@ -210,21 +213,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    l10n.exploreTheMuseum, // "Explore Egypt With Horus-Bot"
-                    style: AppTextStyles.heroTitle(context).copyWith(
-                      fontSize: 42,
-                      height: 1.05,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0,
-                    ),
+                    l10n.exploreTheMuseum.replaceFirst(' With ', '\nWith '),
+                    style: AppTextStyles.heroTitle(context),
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 20),
                   Text(
-                    l10n.followAndDiscover, // "Follow the robot and uncover the stories..."
+                    l10n.followAndDiscover,
                     style: AppTextStyles.heroSubtitle(context).copyWith(
                       fontSize: 18,
-                      height: 1.4,
-                      color: Colors.white.withOpacity(0.7),
+                      height: 1.5,
+                      color: Colors.white.withOpacity(0.65),
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -621,12 +619,12 @@ class _NextStopBadgeState extends State<_NextStopBadge> {
               color: AppColors.cinematicElevated,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: AppColors.primaryGold.withOpacity(_isHovered ? 0.25 : 0.15),
+                color: AppColors.primaryGold.withOpacity(_isHovered ? 0.35 : 0.2),
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primaryGold.withOpacity(0.15),
+                  color: AppColors.primaryGold.withOpacity(0.12),
                   blurRadius: 40,
                   offset: const Offset(0, 15),
                 ),
@@ -655,22 +653,30 @@ class _NextStopBadgeState extends State<_NextStopBadge> {
                     children: [
                       Text(
                         widget.label,
-                        style: AppTextStyles.sectionTitle(context),
+                        style: AppTextStyles.sectionTitle(context).copyWith(
+                          fontSize: 11,
+                          letterSpacing: 3.0,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        widget.location,
+                        style: AppTextStyles.cardTitle(context).copyWith(
+                          fontSize: 22,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        widget.location,
-                        style: AppTextStyles.cardTitle(context),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
                         widget.time,
-                        style: AppTextStyles.body(context),
+                        style: AppTextStyles.helper(context).copyWith(
+                          fontSize: 14,
+                          color: Colors.white.withOpacity(0.6),
+                        ),
                       ),
                     ],
                   ),
                 ),
-                const Icon(Icons.arrow_forward_ios_rounded, color: AppColors.neutralDark, size: 20),
+                const Icon(Icons.arrow_forward_ios_rounded, color: AppColors.neutralDark, size: 18),
               ],
             ),
           ),
@@ -832,12 +838,12 @@ class _HighlightCardState extends State<_HighlightCard> {
                       children: [
                         Text(
                           widget.title,
-                          style: AppTextStyles.cardTitle(context),
+                        style: AppTextStyles.cardTitle(context).copyWith(fontSize: 22),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           widget.subtitle,
-                          style: AppTextStyles.body(context).copyWith(color: Colors.white70),
+                        style: AppTextStyles.helper(context).copyWith(fontSize: 14),
                         ),
                       ],
                     ),
@@ -1080,20 +1086,14 @@ class _HorusFabState extends State<_HorusFab> with SingleTickerProviderStateMixi
                       children: [
                         Text(
                           l10n.askTheGuide,
-                          style: AppTextStyles.button(context).copyWith(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                          style: AppTextStyles.cardTitle(context).copyWith(
+                            fontSize: 18,
                           ),
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 6),
                         Text(
                           l10n.alwaysAvailable,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
-                            fontSize: 12,
-                            letterSpacing: 0.5,
-                          ),
+                          style: AppTextStyles.helper(context),
                         ),
                       ],
                     ),
