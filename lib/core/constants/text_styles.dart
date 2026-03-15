@@ -16,12 +16,35 @@ class AppTextStyles {
     );
   }
 
+  /// Specialized for Home Screen to have a bolder, more editorial feel
+  /// without affecting the Intro screen.
+  static TextStyle homeHeroTitle(BuildContext context) {
+    return const TextStyle(
+      fontFamily: _fontFamily,
+      fontWeight: FontWeight.w700, // Bolder for high-end editorial feel
+      fontSize: 42,
+      color: Colors.white,
+      letterSpacing: -0.5, // Tighter for premium look
+      height: 1.1,
+    );
+  }
+
   static TextStyle heroSubtitle(BuildContext context) {
     return const TextStyle(
       fontWeight: FontWeight.w400,
       fontSize: 16,
       color: Colors.white70,
       height: 1.5,
+    );
+  }
+
+  static TextStyle homeHeroSubtitle(BuildContext context) {
+    return TextStyle(
+      fontWeight: FontWeight.w500,
+      fontSize: 16,
+      color: Colors.white.withOpacity(0.85),
+      height: 1.6,
+      letterSpacing: 0.2,
     );
   }
 
@@ -40,15 +63,16 @@ class AppTextStyles {
       fontWeight: FontWeight.w900,
       fontSize: 13,
       color: AppColors.primaryGold,
-      letterSpacing: 2.0,
+      letterSpacing: 1.8,
     );
   }
 
   static TextStyle cardTitle(BuildContext context) {
     return const TextStyle(
-      fontWeight: FontWeight.bold,
+      fontWeight: FontWeight.w700,
       fontSize: 19,
       color: Colors.white,
+      letterSpacing: 0.2,
     );
   }
 
@@ -90,9 +114,9 @@ class AppTextStyles {
   static TextStyle brandTitle(BuildContext context, {bool isDark = true}) {
     return TextStyle(
       fontFamily: _fontFamily,
-      fontWeight: FontWeight.w900,
-      fontSize: 20,
-      letterSpacing: 2.0,
+      fontWeight: FontWeight.w800,
+      fontSize: 18,
+      letterSpacing: 4.0, // More spaced for premium branding
       color: isDark ? Colors.white : AppColors.darkInk,
     );
   }
