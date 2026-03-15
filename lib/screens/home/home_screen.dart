@@ -203,12 +203,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.black.withOpacity(0.4),
-                Colors.black.withOpacity(0.0),
-                Colors.black.withOpacity(0.4),
-                AppColors.cinematicBackground,
+                Colors.transparent,
+                Colors.black.withOpacity(0.55),
               ],
-              stops: const [0.0, 0.3, 0.7, 1.0],
+              stops: const [0.0, 1.0],
             ),
           ),
           child: Image.asset(
@@ -224,7 +222,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                l10n.exploreEgypt,
+                l10n.exploreTheMuseum,
                 style: AppTextStyles.heroTitle(context),
               ),
               const SizedBox(height: 12),
@@ -680,12 +678,15 @@ class _NextStopBadge extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.cinematicElevated,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.primaryGold.withOpacity(0.2)),
+          border: Border.all(
+            color: AppColors.primaryGold.withOpacity(0.4),
+            width: 1.5,
+          ),
           boxShadow: [
             BoxShadow(
               color: AppColors.primaryGold.withOpacity(0.15),
-              blurRadius: 30,
-              offset: const Offset(0, 10),
+              blurRadius: 40,
+              offset: const Offset(0, 15),
             ),
             BoxShadow(
               color: Colors.black.withOpacity(0.5),
@@ -989,8 +990,7 @@ class _GridPainter extends CustomPainter {
 class _RobotStatusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final tourProvider = Provider.of<TourProvider>(context);
-    final isOnline = tourProvider.robotState != RobotState.disconnected;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -1016,13 +1016,13 @@ class _RobotStatusCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text("Horus-Bot Status", style: AppTextStyles.cardTitle(context)),
+                    Text(l10n.guideStatus, style: AppTextStyles.cardTitle(context)),
                     const SizedBox(width: 8),
                     Container(
                       width: 7,
                       height: 7,
-                      decoration: BoxDecoration(
-                        color: isOnline ? Colors.green : Colors.red,
+                      decoration: const BoxDecoration(
+                        color: Colors.green,
                         shape: BoxShape.circle,
                       ),
                     ),
@@ -1030,7 +1030,7 @@ class _RobotStatusCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  isOnline ? "Online • At Jewelry Gallery" : "Offline",
+                  l10n.alwaysAvailable,
                   style: AppTextStyles.helper(context),
                 ),
               ],
@@ -1070,6 +1070,7 @@ class _HorusFabState extends State<_HorusFab> with SingleTickerProviderStateMixi
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AnimatedBuilder(
       animation: _glowCtrl,
       builder: (context, child) {
@@ -1110,7 +1111,7 @@ class _HorusFabState extends State<_HorusFab> with SingleTickerProviderStateMixi
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        widget.label,
+                        l10n.askTheGuide,
                         style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                       ),
                       Row(
@@ -1118,7 +1119,7 @@ class _HorusFabState extends State<_HorusFab> with SingleTickerProviderStateMixi
                           Container(width: 7, height: 7, decoration: const BoxDecoration(color: Colors.green, shape: BoxShape.circle)),
                           const SizedBox(width: 8),
                           Text(
-                            AppLocalizations.of(context)!.onlineStatus.replaceAll('● ', ''),
+                            l10n.alwaysAvailable,
                             style: const TextStyle(color: Colors.green, fontSize: 11, fontWeight: FontWeight.bold),
                           ),
                         ],

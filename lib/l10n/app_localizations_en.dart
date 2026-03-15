@@ -47,6 +47,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get askTheGuide => 'Ask the Guide';
 
   @override
+  String get guideStatus => 'Guide Status';
+
+  @override
+  String get alwaysAvailable => 'Always available';
+
+  @override
   String get aboutHorusBot => 'About Horus-Bot';
 
   @override

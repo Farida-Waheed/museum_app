@@ -58,12 +58,9 @@ class _SideMenu extends StatelessWidget {
                           ),
                           const SizedBox(width: 16),
                           Text(
-                            l10n.appTitle,
-                            style: TextStyle(
+                            l10n.appTitle.toUpperCase(),
+                            style: AppTextStyles.brandTitle(context, isDark: isDark).copyWith(
                               fontSize: 24,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 1.0,
-                              color: isDark ? Colors.white : AppColors.darkInk,
                             ),
                           ),
                         ],
@@ -89,22 +86,14 @@ class _SideMenu extends StatelessWidget {
                               children: [
                                 Text(
                                   l10n.guestUser,
-                                  style: TextStyle(
+                                  style: AppTextStyles.cardTitle(context).copyWith(
                                     fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: isDark
-                                        ? Colors.white
-                                        : AppColors.darkInk,
+                                    color: isDark ? Colors.white : AppColors.darkInk,
                                   ),
                                 ),
                                 Text(
                                   l10n.exploreTheMuseum,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: isDark
-                                        ? AppColors.darkMutedText
-                                        : AppColors.mutedText,
-                                  ),
+                                  style: AppTextStyles.body(context),
                                 ),
                               ],
                             ),
@@ -219,19 +208,11 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.fromLTRB(28, 8, 24, 8),
       child: Text(
         label.toUpperCase(),
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 1.5,
-          color: isDark
-              ? AppColors.primaryGold.withOpacity(0.7)
-              : AppColors.primaryGold,
-        ),
+        style: AppTextStyles.sectionTitle(context),
       ),
     );
   }

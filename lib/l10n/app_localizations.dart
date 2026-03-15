@@ -170,6 +170,18 @@ abstract class AppLocalizations {
   /// **'Ask the Guide'**
   String get askTheGuide;
 
+  /// No description provided for @guideStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Guide Status'**
+  String get guideStatus;
+
+  /// No description provided for @alwaysAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Always available'**
+  String get alwaysAvailable;
+
   /// No description provided for @aboutHorusBot.
   ///
   /// In en, this message translates to:
