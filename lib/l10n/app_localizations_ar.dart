@@ -41,19 +41,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get horusBot => 'حوروس';
 
   @override
-  String get talkToHorusBot => 'تحدث مع المساعد';
+  String get talkToHorusBot => 'اسأل الدليل';
 
   @override
-  String get askTheGuide => 'المساعد الذكي للمتحف';
+  String get askTheGuide => 'اسأل الدليل';
 
   @override
-  String get guideStatus => 'حالة المساعد الذكي';
+  String get guideStatus => 'حالة الدليل';
 
   @override
-  String get alwaysAvailable => 'مستعد للمساعدة';
+  String get alwaysAvailable => 'متاح دائماً';
 
   @override
-  String get aboutHorusBot => 'عن الدليل';
+  String get aboutHorusBot => 'عن حوروس-بوت';
 
   @override
   String get you => 'أنت';
@@ -71,13 +71,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get profile => 'الملف الشخصي';
 
   @override
-  String get map => 'استكشف الخريطة';
+  String get map => 'الخريطة';
 
   @override
   String get quiz => 'الاختبار';
 
   @override
-  String get liveTour => 'بدء جولة إرشادية';
+  String get liveTour => 'جولة حية';
 
   @override
   String get tourPlanner => 'مخطط الجولة';
@@ -456,21 +456,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get didYouKnowFact => 'قناع توت عنخ آمون الذهبي يحتوي على ١٠ كجم ذهب.';
 
   @override
-  String get didYouKnowFact1 =>
-      'يحتوي قناع توت عنخ آمون على أكثر من ١٠ كجم من الذهب.';
-
-  @override
-  String get didYouKnowFact2 =>
-      'ساعد حجر رشيد في فك رموز الهيروغليفية المصرية.';
-
-  @override
-  String get didYouKnowFact3 => 'حكم رمسيس الثاني مصر لمدة ٦٦ عاماً تقريباً.';
-
-  @override
-  String get didYouKnowFact4 =>
-      'يعد المتحف المصري الكبير من أكبر المتاحف الأثرية في العالم.';
-
-  @override
   String get onlineStatus => '● متصل';
 
   @override
@@ -517,7 +502,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get exploreTheMuseum => 'استكشف مصر مع حورس-بوت';
+  String get exploreTheMuseum => 'استكشف المتحف';
 
   @override
   String get followAndDiscover =>

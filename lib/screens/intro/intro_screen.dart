@@ -138,29 +138,7 @@ class _IntroScreenState extends State<IntroScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (Localizations.localeOf(context).languageCode == 'en')
-                      RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: l10n.introThe,
-                              style: mainTitleStyle.copyWith(fontSize: 24, fontWeight: FontWeight.w300),
-                            ),
-                            TextSpan(
-                              text: "\n${l10n.introEgyptian} ${l10n.introMuseums}",
-                              style: mainTitleStyle,
-                            ),
-                          ],
-                        ),
-                      )
-                    else
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(l10n.introEgyptian, style: mainTitleStyle),
-                          Text(l10n.introMuseums, style: mainTitleStyle),
-                        ],
-                      ),
+                    Text(l10n.introTitle, style: mainTitleStyle),
                     const SizedBox(height: 12),
                     Text(l10n.introSubtitle, style: taglineStyle),
                   ],
