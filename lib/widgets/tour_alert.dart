@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../core/constants/assets.dart';
 import '../core/constants/sizes.dart';
 import '../core/constants/text_styles.dart';
+import '../core/constants/colors.dart';
 
 /// Shows tour alerts safely and avoids random glitches.
 /// You can show it "once per key" (e.g., once per hall or tour).
@@ -65,11 +66,6 @@ void showTourAlertOnce(
       barrierColor: Colors.black.withOpacity(0.45),
       transitionDuration: const Duration(milliseconds: 260),
       pageBuilder: (ctx, _, __) {
-        final theme = Theme.of(ctx);
-        final primary = theme.colorScheme.primary;
-        final surface = theme.colorScheme.surface;
-        final onSurface = theme.colorScheme.onSurface;
-
         return SafeArea(
           child: Align(
             alignment: Alignment.topCenter,
@@ -78,7 +74,7 @@ void showTourAlertOnce(
               child: Material(
                 elevation: 12,
                 borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-                color: surface,
+                color: AppColors.cinematicElevated,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(
                     AppSizes.md,
@@ -101,12 +97,12 @@ void showTourAlertOnce(
                           Expanded(
                             child: Text(
                               title,
-                              style: AppTextStyles.title(ctx),
+                              style: AppTextStyles.cardTitle(ctx).copyWith(fontSize: 16),
                             ),
                           ),
                           IconButton(
                             onPressed: () => navigator.pop(),
-                            icon: const Icon(Icons.close, size: 18),
+                            icon: const Icon(Icons.close, size: 18, color: Colors.white54),
                             tooltip: 'Close',
                           ),
                         ],
@@ -120,7 +116,7 @@ void showTourAlertOnce(
                           bodyText,
                           textAlign: isArabic ? TextAlign.right : TextAlign.left,
                           style: AppTextStyles.body(ctx).copyWith(
-                            color: onSurface.withOpacity(0.92),
+                            color: Colors.white.withOpacity(0.92),
                           ),
                         ),
                       ),
@@ -130,13 +126,13 @@ void showTourAlertOnce(
                         children: [
                           TextButton(
                             onPressed: () => navigator.pop(),
-                            child: Text(isArabic ? "لاحقاً" : "Later"),
+                            child: Text(isArabic ? "لاحقاً" : "Later", style: AppTextStyles.button(ctx).copyWith(color: AppColors.neutralMedium)),
                           ),
                           const SizedBox(width: AppSizes.sm),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: primary,
-                              foregroundColor: theme.colorScheme.onPrimary,
+                              backgroundColor: AppColors.primaryGold,
+                              foregroundColor: AppColors.darkInk,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                               ),
@@ -145,7 +141,7 @@ void showTourAlertOnce(
                               navigator.pop();
                               onViewMap?.call();
                             },
-                            child: Text(isArabic ? "افتح الخريطة" : "Open Map"),
+                            child: Text(isArabic ? "افتح الخريطة" : "Open Map", style: AppTextStyles.button(ctx)),
                           ),
                         ],
                       ),

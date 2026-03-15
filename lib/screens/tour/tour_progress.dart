@@ -6,6 +6,9 @@ import '../../models/exhibit.dart';
 import '../../core/services/mock_data.dart';
 import '../../app/router.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../widgets/app_menu_shell.dart';
+import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
 
 class TourProgressScreen extends StatefulWidget {
   const TourProgressScreen({super.key});
@@ -48,80 +51,67 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
         ? 0.0
         : _visitedExhibitIds.length / _allExhibits.length;
 
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
+    return AppMenuShell(
+      title: isArabic ? "تقدم الجولة" : "Tour Progress",
+      backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 2),
-      appBar: AppBar(
-        title: Text(
-          isArabic ? "تقدم الجولة" : "Tour progress",
-          style: const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0.5,
-        iconTheme: const IconThemeData(color: Colors.black),
-      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
           crossAxisAlignment:
               isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           children: [
             // overview
-            Card(
-              elevation: 1,
-              shape:
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            Container(
+              decoration: BoxDecoration(
+                color: AppColors.cinematicCard,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: Colors.white.withOpacity(0.05)),
+              ),
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment:
                       isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isArabic ? "الجولة الحالية" : "Current tour",
-                      style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w700,
-                      ),
+                      (isArabic ? "الجولة الحالية" : "Current tour").toUpperCase(),
+                      style: AppTextStyles.sectionTitle(context),
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
                           isArabic ? "التقدم" : "Progress",
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.black54,
-                          ),
+                          style: AppTextStyles.helper(context).copyWith(color: Colors.white70),
                         ),
                         Text(
                           "${visited.length} / ${_allExhibits.length} "
                           "${isArabic ? 'معروضات' : 'exhibits'}",
-                          style: const TextStyle(fontSize: 13),
+                          style: AppTextStyles.helper(context).copyWith(color: AppColors.primaryGold, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    LinearProgressIndicator(
-                      value: progress,
-                      minHeight: 8,
-                      backgroundColor: Colors.grey[200],
-                      color: cs.primary,
-                      borderRadius: BorderRadius.circular(4),
+                    const SizedBox(height: 12),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: LinearProgressIndicator(
+                        value: progress,
+                        minHeight: 8,
+                        backgroundColor: Colors.white.withOpacity(0.05),
+                        color: AppColors.primaryGold,
+                      ),
                     ),
+                    const SizedBox(height: 24),
+                    Divider(color: Colors.white.withOpacity(0.05)),
                     const SizedBox(height: 16),
-                    const Divider(),
-                    const SizedBox(height: 8),
                     Row(
                       children: [
                         Expanded(
                           child: _statItem(
                             icon: Icons.access_time,
-                            color: cs.primary,
+                            color: AppColors.primaryGold,
                             label: isArabic ? "المدة" : "Duration",
                             value: _formatDuration(_durationMinutes),
                           ),
@@ -199,29 +189,26 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.08),
+            color: color.withOpacity(0.1),
             shape: BoxShape.circle,
           ),
           child: Icon(icon, size: 18, color: color),
         ),
-        const SizedBox(width: 10),
+        const SizedBox(width: 12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: const TextStyle(
-                fontSize: 12,
-                color: Colors.black54,
-              ),
+              style: AppTextStyles.helper(context).copyWith(fontSize: 11),
             ),
             Text(
               value,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
+              style: AppTextStyles.body(context).copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],
@@ -238,13 +225,10 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
     return Row(
       children: [
         Icon(icon, size: 18, color: color),
-        const SizedBox(width: 8),
+        const SizedBox(width: 10),
         Text(
-          title,
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-          ),
+          title.toUpperCase(),
+          style: AppTextStyles.sectionTitle(context).copyWith(color: color, fontSize: 12),
         ),
       ],
     );
@@ -257,12 +241,13 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
     required bool isArabic,
     required bool visited,
   }) {
-    final cs = Theme.of(context).colorScheme;
-
-    return Card(
-      elevation: 0,
+    return Container(
       margin: const EdgeInsets.symmetric(vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+        color: AppColors.cinematicCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.03)),
+      ),
       child: InkWell(
         onTap: () {
           Navigator.pushNamed(
@@ -271,26 +256,26 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
             arguments: exhibit,
           );
         },
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: visited
-                      ? Colors.green.withOpacity(0.08)
-                      : cs.primary.withOpacity(0.04),
+                      ? Colors.green.withOpacity(0.12)
+                      : AppColors.primaryGold.withOpacity(0.05),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   visited ? Icons.check : Icons.circle_outlined,
                   size: 16,
-                  color: visited ? Colors.green : cs.primary,
+                  color: visited ? Colors.green : AppColors.primaryGold,
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment:
@@ -298,9 +283,9 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
                   children: [
                     Text(
                       exhibit.getName(prefs.language),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
+                      style: AppTextStyles.body(context).copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -308,16 +293,13 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
                       visited
                           ? (isArabic ? "تمت الزيارة" : "Visited")
                           : (isArabic ? "لم تُزر بعد" : "Not visited yet"),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black54,
-                      ),
+                      style: AppTextStyles.helper(context),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 6),
-              const Icon(Icons.chevron_right_rounded, size: 18),
+              const Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.neutralMedium),
             ],
           ),
         ),

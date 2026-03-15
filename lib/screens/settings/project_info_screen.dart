@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
 
@@ -31,16 +32,16 @@ class ProjectInfoScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     "Horus-Bot",
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: textColor, letterSpacing: 1),
+                    style: AppTextStyles.screenTitle(context).copyWith(fontSize: 28, fontWeight: FontWeight.w900, color: textColor, letterSpacing: 1),
                   ),
                   Text(
                     "Version 1.0",
-                    style: TextStyle(fontSize: 14, color: AppColors.primaryGold, fontWeight: FontWeight.bold),
+                    style: AppTextStyles.helper(context).copyWith(fontSize: 14, color: AppColors.primaryGold, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     "Smart Autonomous Museum Guide",
-                    style: TextStyle(fontSize: 16, color: secondaryTextColor, fontWeight: FontWeight.w500),
+                    style: AppTextStyles.body(context).copyWith(fontSize: 16, color: secondaryTextColor, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -51,7 +52,7 @@ class ProjectInfoScreen extends StatelessWidget {
             _InfoCard(
               child: Text(
                 "Horus-Bot is a smart autonomous museum guide robot designed to enhance museum visitor experience through autonomous navigation, multilingual interaction, and a companion mobile application.",
-                style: TextStyle(fontSize: 15, color: textColor, height: 1.6),
+                style: AppTextStyles.body(context).copyWith(fontSize: 15, color: textColor, height: 1.6),
               ),
             ),
 
@@ -78,9 +79,11 @@ class ProjectInfoScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Benha University", style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: textColor)),
-                  Text("Faculty of Engineering at Shoubra", style: TextStyle(fontSize: 15, color: secondaryTextColor)),
-                  Text("Computer & Communication Engineering Program", style: TextStyle(fontSize: 14, color: AppColors.primaryGold)),
+                  Text("Benha University", style: AppTextStyles.cardTitle(context).copyWith(fontSize: 17, fontWeight: FontWeight.bold, color: textColor)),
+                  const SizedBox(height: 4),
+                  Text("Faculty of Engineering at Shoubra", style: AppTextStyles.body(context).copyWith(fontSize: 15, color: secondaryTextColor)),
+                  const SizedBox(height: 4),
+                  Text("Computer & Communication Engineering Program", style: AppTextStyles.helper(context).copyWith(fontSize: 14, color: AppColors.primaryGold, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -105,7 +108,7 @@ class ProjectInfoScreen extends StatelessWidget {
             const SizedBox(height: 32),
             _SectionTitle(title: "Supervisor"),
             _InfoCard(
-              child: Text("Dr. Mohamed Hussein", style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: textColor)),
+              child: Text("Dr. Mohamed Hussein", style: AppTextStyles.cardTitle(context).copyWith(fontSize: 17, fontWeight: FontWeight.bold, color: textColor)),
             ),
 
             const SizedBox(height: 48),
@@ -114,7 +117,7 @@ class ProjectInfoScreen extends StatelessWidget {
                 children: [
                   Text(
                     "Copyright © 2026 Horus-Bot Project",
-                    style: TextStyle(fontSize: 12, color: secondaryTextColor),
+                    style: AppTextStyles.helper(context).copyWith(fontSize: 12, color: secondaryTextColor),
                   ),
                   const SizedBox(height: 32),
                 ],
@@ -164,10 +167,8 @@ class _SectionTitle extends StatelessWidget {
       padding: const EdgeInsets.only(left: 4, bottom: 12),
       child: Text(
         title.toUpperCase(),
-        style: const TextStyle(
+        style: AppTextStyles.sectionTitle(context).copyWith(
           fontSize: 13,
-          fontWeight: FontWeight.w900,
-          color: AppColors.primaryGold,
           letterSpacing: 1.2,
         ),
       ),
@@ -190,7 +191,7 @@ class _TechChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: const TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 13),
+        style: AppTextStyles.helper(context).copyWith(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 13),
       ),
     );
   }
@@ -211,7 +212,7 @@ class _TeamMember extends StatelessWidget {
           Expanded(
             child: Text(
               name,
-              style: TextStyle(
+              style: AppTextStyles.body(context).copyWith(
                 fontSize: 15,
                 color: Theme.of(context).brightness == Brightness.dark ? Colors.white : AppColors.darkInk,
                 fontWeight: FontWeight.w500,

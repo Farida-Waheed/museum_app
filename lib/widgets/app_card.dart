@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/constants/sizes.dart';
+import '../core/constants/colors.dart';
 
 class AppCard extends StatelessWidget {
   final Widget child;
@@ -21,18 +22,18 @@ class AppCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Card(
-      color: color ?? theme.cardTheme.color,
-      elevation: elevation ?? theme.cardTheme.elevation,
-      shape: shape ?? theme.cardTheme.shape,
+    return Container(
+      decoration: BoxDecoration(
+        color: color ?? AppColors.cinematicCard,
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      ),
       clipBehavior: Clip.antiAlias,
-      margin: EdgeInsets.zero,
       child: InkWell(
         onTap: onTap,
+        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         child: Padding(
-          padding: padding ?? const EdgeInsets.all(AppSizes.md),
+          padding: padding ?? const EdgeInsets.all(20),
           child: child,
         ),
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../core/constants/text_styles.dart';
 import '../core/constants/sizes.dart';
+import '../core/constants/colors.dart';
 
 class EmptyStateWidget extends StatelessWidget {
   final String title;
@@ -21,7 +22,7 @@ class EmptyStateWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 48),
+          Icon(icon, size: 48, color: AppColors.primaryGold),
           const SizedBox(height: AppSizes.md),
           Text(title, style: AppTextStyles.title(context), textAlign: TextAlign.center),
           if (subtitle != null) ...[

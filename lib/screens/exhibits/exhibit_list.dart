@@ -9,6 +9,7 @@ import '../../models/user_preferences.dart';
 import '../../app/router.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../core/constants/text_styles.dart';
 
 class ExhibitListScreen extends StatelessWidget {
   const ExhibitListScreen({super.key});
@@ -104,10 +105,9 @@ class _ExhibitListTile extends StatelessWidget {
                   children: [
                     Text(
                       exhibit.getName(prefs.language),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w900,
+                      style: AppTextStyles.cardTitle(context).copyWith(
                         fontSize: 16,
-                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -115,14 +115,13 @@ class _ExhibitListTile extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        Icon(Icons.location_on_outlined, size: 12, color: AppColors.helperText),
+                        const Icon(Icons.location_on_outlined, size: 12, color: AppColors.helperText),
                         const SizedBox(width: 4),
                         Text(
                           l10n.mainGallery,
-                          style: const TextStyle(
+                          style: AppTextStyles.helper(context).copyWith(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: AppColors.helperText,
                           ),
                         ),
                       ],

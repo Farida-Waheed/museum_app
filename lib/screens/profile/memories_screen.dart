@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
 
 class MemoriesScreen extends StatelessWidget {
   const MemoriesScreen({super.key});
@@ -37,14 +38,14 @@ class MemoriesScreen extends StatelessWidget {
 
     return AppMenuShell(
       title: isArabic ? 'ذكرياتي' : 'My Memories',
-      backgroundColor: const Color(0xFF121212),
+      backgroundColor: AppColors.cinematicBackground,
       body: GridView.builder(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
-          childAspectRatio: 0.75,
+          childAspectRatio: 0.72,
         ),
         itemCount: memories.length,
         itemBuilder: (context, index) {
@@ -75,9 +76,9 @@ class _MemoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1912),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE6C068).withOpacity(0.2)),
+        color: AppColors.cinematicCard,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
@@ -87,7 +88,7 @@ class _MemoryCard extends StatelessWidget {
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -99,14 +100,13 @@ class _MemoryCard extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     exhibit,
-                    style: const TextStyle(
-                      color: Color(0xFFF5F1E8),
+                    style: AppTextStyles.cardTitle(context).copyWith(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
                     ),
@@ -116,8 +116,7 @@ class _MemoryCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     date,
-                    style: TextStyle(
-                      color: const Color(0xFFF5F1E8).withOpacity(0.6),
+                    style: AppTextStyles.helper(context).copyWith(
                       fontSize: 11,
                     ),
                   ),
@@ -152,11 +151,11 @@ class _ActionButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: const Color(0xFF121212),
+          color: AppColors.cinematicBackground,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFFE6C068).withOpacity(0.3)),
+          border: Border.all(color: AppColors.primaryGold.withOpacity(0.3)),
         ),
-        child: Icon(icon, color: const Color(0xFFE6C068), size: 18),
+        child: Icon(icon, color: AppColors.primaryGold, size: 18),
       ),
     );
   }

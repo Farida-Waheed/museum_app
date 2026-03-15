@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../app/router.dart';
 import '../l10n/app_localizations.dart';
 import '../core/constants/colors.dart';
+import '../core/constants/text_styles.dart';
 
 class BottomNav extends StatelessWidget {
   final int currentIndex;
@@ -59,7 +60,8 @@ class BottomNav extends StatelessWidget {
             showUnselectedLabels: true,
             selectedFontSize: 11,
             unselectedFontSize: 11,
-            selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+            selectedLabelStyle: AppTextStyles.helper(context).copyWith(fontSize: 11, fontWeight: FontWeight.bold),
+            unselectedLabelStyle: AppTextStyles.helper(context).copyWith(fontSize: 11),
             elevation: 0,
             backgroundColor: Colors.transparent,
             items: [

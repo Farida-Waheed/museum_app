@@ -8,6 +8,8 @@ import '../../models/exhibit.dart';
 import '../../app/router.dart';
 import '../../widgets/bottom_nav.dart';
 import '../chat/chat_screen.dart';
+import '../../widgets/app_menu_shell.dart';
+import '../../core/constants/text_styles.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -66,23 +68,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
     const int currentIndex = 2; // assuming Search tab index
 
-    return Scaffold(
+    return AppMenuShell(
+      title: isArabic ? "البحث في المعروضات" : "Search Exhibits",
       backgroundColor: AppColors.darkBackground,
       floatingActionButton: const RoboGuideEntry(),
-      appBar: AppBar(
-        title: Text(
-          isArabic ? "البحث في المعروضات" : "Search exhibits",
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        elevation: 0,
-        backgroundColor: AppColors.darkHeader,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
       body: ListView(
-        padding: EdgeInsets.zero,
+        padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
           // search field
           Padding(
@@ -105,12 +96,12 @@ class _SearchScreenState extends State<SearchScreen> {
                     : null,
                 hintText:
                     isArabic ? "ابحث باسم القطعة..." : "Search by exhibit name...",
-                hintStyle: TextStyle(color: AppColors.helperText),
+                hintStyle: AppTextStyles.helper(context),
                 filled: true,
                 fillColor: AppColors.darkSurface,
                 contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 14,
+                  horizontal: 20,
+                  vertical: 16,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(26),
@@ -163,25 +154,19 @@ class _SearchScreenState extends State<SearchScreen> {
       padding: const EdgeInsets.all(32),
       child: Column(
         children: [
-          Icon(Icons.search_off, size: 56, color: cs.primary),
+          const Icon(Icons.search_off, size: 56, color: AppColors.primaryGold),
           const SizedBox(height: 16),
           Text(
             isArabic ? "لا توجد نتائج" : "No results found",
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w600,
-            ),
+            style: AppTextStyles.cardTitle(context),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
             isArabic
                 ? "جرّب كلمة مختلفة أو تحقق من الهجاء."
                 : "Try a different word or check the spelling.",
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 13,
-              color: Colors.black54,
-            ),
+            style: AppTextStyles.helper(context),
           ),
         ],
       ),
@@ -207,15 +192,15 @@ class _SearchResultTile extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
       decoration: BoxDecoration(
         color: AppColors.darkSurface,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.darkDivider),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withOpacity(0.05)),
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(20),
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Row(
@@ -241,10 +226,9 @@ class _SearchResultTile extends StatelessWidget {
                   children: [
                     Text(
                       exhibit.getName(prefs.language),
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
+                      style: AppTextStyles.cardTitle(context).copyWith(
+                        fontWeight: FontWeight.w900,
                         fontSize: 15,
-                        color: Colors.white,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -254,9 +238,8 @@ class _SearchResultTile extends StatelessWidget {
                       isArabic
                           ? "اضغط لعرض تفاصيل المعروض"
                           : "Tap to view details and audio guide",
-                      style: TextStyle(
+                      style: AppTextStyles.helper(context).copyWith(
                         fontSize: 12,
-                        color: AppColors.helperText,
                       ),
                     ),
                   ],

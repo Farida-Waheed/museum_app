@@ -179,7 +179,7 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                                   padding: const EdgeInsets.only(top: 10),
                                   child: Text(
                                     isArabic ? "المدخل" : "Entrance",
-                                    style: const TextStyle(
+                                    style: AppTextStyles.helper(context).copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: AppColors.neutralMedium,
                                       fontSize: 12,
@@ -376,7 +376,7 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 10),
-        Text(label, style: const TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold)),
+        Text(label, style: AppTextStyles.helper(context).copyWith(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -414,7 +414,7 @@ class _FilterChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.primaryGold.withOpacity(0.3)),
       ),
-      child: Text(label, style: const TextStyle(color: AppColors.primaryGold, fontSize: 11, fontWeight: FontWeight.bold)),
+      child: Text(label, style: AppTextStyles.helper(context).copyWith(color: AppColors.primaryGold, fontSize: 11, fontWeight: FontWeight.bold)),
     );
   }
 }
@@ -487,7 +487,7 @@ class _PopupBtn extends StatelessWidget {
     return ElevatedButton.icon(
       onPressed: onTap,
       icon: Icon(icon, size: 16),
-      label: Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+      label: Text(label, style: AppTextStyles.button(context).copyWith(fontSize: 12)),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primaryGold,
         foregroundColor: AppColors.darkInk,

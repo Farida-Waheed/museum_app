@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../constants/colors.dart';
+import '../constants/text_styles.dart';
 import '../../models/app_notification.dart';
 import '../../models/tour_provider.dart';
 
@@ -260,12 +261,12 @@ class _NotificationContent extends StatelessWidget {
             children: [
               Text(
                 notification.title,
-                style: const TextStyle(fontWeight: FontWeight.w900, color: Colors.white, fontSize: 15, letterSpacing: 0.5),
+                style: AppTextStyles.body(context).copyWith(fontWeight: FontWeight.w900, color: Colors.white, fontSize: 15, letterSpacing: 0.5),
               ),
               const SizedBox(height: 2),
               Text(
                 notification.message,
-                style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 13),
+                style: AppTextStyles.helper(context).copyWith(color: Colors.white.withOpacity(0.7), fontSize: 13),
               ),
             ],
           ),
@@ -323,17 +324,15 @@ class _QuizModal extends StatelessWidget {
                       children: [
                         Text(
                           notification.title.toUpperCase(),
-                          style: const TextStyle(
+                          style: AppTextStyles.sectionTitle(context).copyWith(
                             fontSize: 13,
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.primaryGold,
                             letterSpacing: 1.5,
                           ),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           "Exhibit: ${notification.data?['location'] ?? 'Artifact'}",
-                          style: TextStyle(
+                          style: AppTextStyles.body(context).copyWith(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                             color: Colors.white.withOpacity(0.9),
@@ -363,7 +362,7 @@ class _QuizModal extends StatelessWidget {
                     ),
                     child: Text(
                       notification.message,
-                      style: TextStyle(
+                      style: AppTextStyles.body(context).copyWith(
                         fontSize: 15,
                         color: Colors.white.withOpacity(0.85),
                         height: 1.5,
@@ -386,7 +385,7 @@ class _QuizModal extends StatelessWidget {
                         ),
                         child: Text(
                           t,
-                          style: const TextStyle(color: AppColors.primaryGold, fontSize: 12, fontWeight: FontWeight.w600),
+                          style: AppTextStyles.helper(context).copyWith(color: AppColors.primaryGold, fontSize: 12, fontWeight: FontWeight.w600),
                         ),
                       )).toList(),
                     ),
@@ -411,7 +410,7 @@ class _QuizModal extends StatelessWidget {
                         elevation: 4,
                         shadowColor: AppColors.primaryGold.withOpacity(0.4),
                       ),
-                      child: const Text("TAKE QUIZ NOW", style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: 1.2)),
+                      child: Text("TAKE QUIZ NOW", style: AppTextStyles.button(context).copyWith(letterSpacing: 1.2)),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -428,10 +427,8 @@ class _QuizModal extends StatelessWidget {
                       ),
                       child: Text(
                         "LATER / AFTER TOUR",
-                        style: TextStyle(
+                        style: AppTextStyles.button(context).copyWith(
                           color: Colors.white.withOpacity(0.7),
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.0,
                         ),
                       ),
                     ),

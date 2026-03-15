@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/tour_provider.dart';
 import '../models/user_preferences.dart';
+import '../core/constants/colors.dart';
+import '../core/constants/text_styles.dart';
 
 class RobotStatusBanner extends StatelessWidget {
   const RobotStatusBanner({super.key});
@@ -62,7 +64,7 @@ class RobotStatusBanner extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.9),
+        color: AppColors.cinematicNav.withOpacity(0.85),
       ),
       child: ClipRect(
         child: BackdropFilter(
@@ -70,7 +72,7 @@ class RobotStatusBanner extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
+              border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.05))),
             ),
             child: Row(
               children: [
@@ -87,20 +89,19 @@ class RobotStatusBanner extends StatelessWidget {
                     children: [
                       Text(
                         (isArabic ? "حالة حوروس" : "HORUS-BOT STATUS").toUpperCase(),
-                        style: TextStyle(
+                        style: AppTextStyles.sectionTitle(context).copyWith(
                           fontSize: 10,
-                          fontWeight: FontWeight.w900,
                           letterSpacing: 1.2,
-                          color: Colors.grey.shade500,
+                          color: Colors.white38,
                         ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         statusMsg,
-                        style: const TextStyle(
+                        style: AppTextStyles.body(context).copyWith(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
-                          color: Colors.black87,
+                          color: Colors.white,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -220,7 +221,7 @@ class _EstimatedArrival extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: color),
+        style: AppTextStyles.helper(context).copyWith(fontSize: 11, fontWeight: FontWeight.w900, color: color),
       ),
     );
   }

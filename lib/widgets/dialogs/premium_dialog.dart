@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
 
 class PremiumDialog extends StatelessWidget {
   final String title;
@@ -55,7 +56,7 @@ class PremiumDialog extends StatelessWidget {
                       Expanded(
                         child: Text(
                           title,
-                          style: const TextStyle(
+                          style: AppTextStyles.cardTitle(context).copyWith(
                             color: Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.w900,

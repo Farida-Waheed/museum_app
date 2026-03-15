@@ -13,6 +13,7 @@ import '../../widgets/dialogs/branded_permission_dialog.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
 
 class LiveTourScreen extends StatefulWidget {
   const LiveTourScreen({super.key});
@@ -188,7 +189,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
             const SizedBox(height: 24),
 
             // --- CURRENT STOP CARD ---
-            Text(l10n.currentStop, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+            Text(l10n.currentStop.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
             const SizedBox(height: 8),
             Card(
               elevation: 4,
@@ -225,7 +226,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                           ),
                           child: Text(
                             currentExhibit.getName(Localizations.localeOf(context).languageCode),
-                            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                            style: AppTextStyles.cardTitle(context).copyWith(fontSize: 18),
                           ),
                         ),
                       ),
@@ -239,7 +240,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                           children: [
                             const Icon(Icons.smart_toy, color: Colors.blue, size: 20),
                             const SizedBox(width: 8),
-                            Expanded(child: Text(l10n.robotDescribing, style: const TextStyle(fontSize: 13))),
+                            Expanded(child: Text(l10n.robotDescribing, style: AppTextStyles.helper(context).copyWith(fontSize: 13))),
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -271,7 +272,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
               children: [
                 const Icon(Icons.subject, color: Colors.grey),
                 const SizedBox(width: 8),
-                Text(l10n.liveTranscript, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+                Text(l10n.liveTranscript.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
               ],
             ),
             const SizedBox(height: 8),
@@ -292,7 +293,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Text(
                       _transcript[index],
-                      style: TextStyle(
+                      style: AppTextStyles.body(context).copyWith(
                         fontSize: 14,
                         color: isLast ? Colors.white : AppColors.neutralMedium,
                         fontWeight: isLast ? FontWeight.w600 : FontWeight.normal,
@@ -306,7 +307,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
 
             // --- NEXT UP ---
             if (nextExhibit != null) ...[
-               Text(l10n.nextStopLabel, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+               Text(l10n.nextStopLabel.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
                const SizedBox(height: 8),
                Card(
                  elevation: 0,
@@ -325,9 +326,9 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                        fit: BoxFit.cover,
                      ),
                    ),
-                   title: Text(nextExhibit.getName(Localizations.localeOf(context).languageCode)),
-                   subtitle: Text(l10n.robotWaiting, style: const TextStyle(fontSize: 12)),
-                   trailing: const Icon(Icons.chevron_right),
+                   title: Text(nextExhibit.getName(Localizations.localeOf(context).languageCode), style: AppTextStyles.cardTitle(context).copyWith(fontSize: 16)),
+                   subtitle: Text(l10n.robotWaiting, style: AppTextStyles.helper(context).copyWith(fontSize: 12)),
+                   trailing: const Icon(Icons.chevron_right, color: AppColors.neutralMedium),
                    onTap: _skipExhibit,
                  ),
                ),
@@ -377,7 +378,7 @@ class _StatusChip extends StatelessWidget {
           children: [
             isPulsing ? _PulsingDot(color: color) : Icon(icon, size: 16, color: color),
             const SizedBox(width: 8),
-            Text(label, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12)),
+            Text(label, style: AppTextStyles.helper(context).copyWith(color: color, fontWeight: FontWeight.bold, fontSize: 12)),
           ],
         ),
       ),
@@ -440,7 +441,7 @@ class _ControlButton extends StatelessWidget {
           iconSize: 28,
         ),
         const SizedBox(height: 4),
-        Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500)),
+        Text(label, style: AppTextStyles.helper(context).copyWith(fontSize: 12, fontWeight: FontWeight.w500)),
       ],
     );
   }
@@ -461,8 +462,8 @@ class _TourProgressTimeline extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-            Text("${currentIndex + 1} / $total", style: const TextStyle(color: Colors.grey)),
+            Text(label.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
+            Text("${currentIndex + 1} / $total", style: AppTextStyles.helper(context).copyWith(color: Colors.white70)),
           ],
         ),
         const SizedBox(height: 12),

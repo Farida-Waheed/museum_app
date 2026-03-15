@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../core/constants/sizes.dart';
+import '../core/constants/colors.dart';
+import '../core/constants/text_styles.dart';
 
 class PrimaryButton extends StatelessWidget {
   final String label;
@@ -38,16 +40,17 @@ class PrimaryButton extends StatelessWidget {
             Icon(icon, size: 20),
             const SizedBox(width: 8),
           ],
-          Text(label),
+          Text(label, style: AppTextStyles.button(context)),
         ],
       ],
     );
 
     final buttonStyle = ElevatedButton.styleFrom(
-      backgroundColor: color ?? theme.colorScheme.primary,
-      foregroundColor: theme.colorScheme.onPrimary,
+      backgroundColor: color ?? AppColors.primaryGold,
+      foregroundColor: AppColors.darkInk,
       minimumSize: fullWidth ? const Size(double.infinity, AppSizes.buttonHeight) : const Size(0, AppSizes.buttonHeight),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+      elevation: 0,
     );
 
     return ElevatedButton(

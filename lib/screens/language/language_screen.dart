@@ -5,6 +5,8 @@ import '../../l10n/app_localizations.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
+import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
 
 class LanguageOption {
   final String code;
@@ -34,70 +36,65 @@ class LanguageScreen extends StatelessWidget {
 
     return AppMenuShell(
       title: l10n.language,
+      backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         children: [
-          // Header card (simple, no glass)
-          Card(
-            elevation: 1,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: cs.primary.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.language,
-                      color: cs.primary,
-                      size: 26,
-                    ),
+          // Header card
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppColors.cinematicCard,
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: Colors.white.withOpacity(0.05)),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryGold.withOpacity(0.1),
+                    shape: BoxShape.circle,
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          isArabic ? "اختر لغتك" : "Choose your language",
-                          style: const TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          isArabic
-                              ? "سيتم تطبيق اللغة على جميع شاشات التطبيق."
-                              : "Your choice applies across the whole app.",
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: Colors.black54,
-                          ),
-                        ),
-                      ],
-                    ),
+                  child: const Icon(
+                    Icons.language,
+                    color: AppColors.primaryGold,
+                    size: 26,
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isArabic ? "اختر لغتك" : "Choose your language",
+                        style: AppTextStyles.cardTitle(context).copyWith(fontSize: 17),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        isArabic
+                            ? "سيتم تطبيق اللغة على جميع شاشات التطبيق."
+                            : "Your choice applies across the whole app.",
+                        style: AppTextStyles.helper(context).copyWith(fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 32),
 
-          // language options – grid but calm
+          // language options
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              childAspectRatio: 2.6,
+              childAspectRatio: 2.2,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
             ),
@@ -113,12 +110,12 @@ class LanguageScreen extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.cinematicCard,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                       color: isSelected
-                          ? cs.primary
-                          : Colors.grey.shade300,
+                          ? AppColors.primaryGold
+                          : Colors.white.withOpacity(0.05),
                       width: isSelected ? 2 : 1,
                     ),
                   ),
@@ -129,18 +126,18 @@ class LanguageScreen extends StatelessWidget {
                       Expanded(
                         child: Text(
                           lang.name,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
+                          style: AppTextStyles.body(context).copyWith(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
                             color: isSelected
-                                ? cs.primary
-                                : Colors.black87,
+                                ? AppColors.primaryGold
+                                : Colors.white70,
                           ),
                         ),
                       ),
                       if (isSelected)
-                        Icon(Icons.check_circle,
-                            size: 20, color: cs.primary),
+                        const Icon(Icons.check_circle,
+                            size: 18, color: AppColors.primaryGold),
                     ],
                   ),
                 ),
@@ -148,39 +145,34 @@ class LanguageScreen extends StatelessWidget {
             },
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
 
-          // small info card
-          Card(
-            elevation: 0,
-            color: cs.primary.withOpacity(0.06),
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isArabic ? "ماذا يتغير؟" : "What changes?",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: cs.primary,
-                    ),
+          // info card
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppColors.primaryGold.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: AppColors.primaryGold.withOpacity(0.1)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isArabic ? "ماذا يتغير؟" : "What changes?",
+                  style: AppTextStyles.sectionTitle(context).copyWith(fontSize: 12),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  isArabic
+                      ? "واجهات التطبيق، نصوص المعروضات، والروبوت سيستخدمون اللغة التي تختارها."
+                      : "App screens, exhibit text, and the robot guide will follow your language choice.",
+                  style: AppTextStyles.body(context).copyWith(
+                    fontSize: 13,
+                    color: Colors.white70,
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    isArabic
-                        ? "واجهات التطبيق، نصوص المعروضات، والروبوت سيستخدمون اللغة التي تختارها."
-                        : "App screens, exhibit text, and the robot guide will follow your language choice.",
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
