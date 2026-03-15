@@ -301,7 +301,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         scale: _fabScale,
         child: _HorusFab(
           onPressed: () => _openChat(context),
-          label: l10n.askTheGuide,
         ),
       ),
       body: Builder(
@@ -1153,10 +1152,9 @@ class _GridPainter extends CustomPainter {
 }
 
 class _HorusFab extends StatefulWidget {
-  final String label;
   final VoidCallback onPressed;
 
-  const _HorusFab({required this.label, required this.onPressed});
+  const _HorusFab({required this.onPressed});
 
   @override
   State<_HorusFab> createState() => _HorusFabState();
@@ -1181,6 +1179,7 @@ class _HorusFabState extends State<_HorusFab>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return AnimatedBuilder(
       animation: _glowCtrl,
@@ -1225,7 +1224,7 @@ class _HorusFabState extends State<_HorusFab>
                 ),
                 padding: const EdgeInsets.symmetric(
                   horizontal: 28,
-                  vertical: 20,
+                  vertical: 18,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -1241,20 +1240,21 @@ class _HorusFabState extends State<_HorusFab>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          widget.label,
+                          isArabic ? 'مساعد المتحف الذكي' : 'Museum AI Assistant',
                           style: AppTextStyles.button(context).copyWith(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
+                            letterSpacing: isArabic ? 0 : 0.5,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          l10n.alwaysAvailable,
+                          isArabic ? 'مستعد للمساعدة' : 'Ready to help',
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.6),
                             fontSize: 12,
-                            letterSpacing: 0.5,
+                            letterSpacing: isArabic ? 0 : 0.5,
                           ),
                         ),
                       ],
