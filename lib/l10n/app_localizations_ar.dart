@@ -41,7 +41,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get horusBot => 'حوروس';
 
   @override
-  String get talkToHorusBot => 'تحدث مع حوروس-بوت';
+  String get talkToHorusBot => 'اسأل الدليل';
 
   @override
   String get askTheGuide => 'اسأل الدليل';
@@ -396,7 +396,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'دليلك الذكي داخل المتحف. تنقّل بين المعروضات، واتبع الروبوت، واكتشف القصص المخفية.';
 
   @override
-  String get onboarding2Title => 'تعرّف على حورس-بوت';
+  String get onboarding2Title => 'تعرّف على الدليل';
 
   @override
   String get onboarding2Desc =>
@@ -658,7 +658,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get takeQuiz => 'بدء الاختبار';
 
   @override
-  String get smartTipTitle => 'نصيحة من حوروس';
+  String get smartTipTitle => 'نصيحة من الدليل';
 
   @override
   String get robotNearbyTitle => 'حوروس قريب منك';

@@ -41,7 +41,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get horusBot => 'Horus';
 
   @override
-  String get talkToHorusBot => 'Talk to Horus-Bot';
+  String get talkToHorusBot => 'Ask the Guide';
 
   @override
   String get askTheGuide => 'Ask the Guide';
@@ -53,7 +53,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get alwaysAvailable => 'Always available';
 
   @override
-  String get aboutHorusBot => 'About Horus-Bot';
+  String get aboutHorusBot => 'About the Guide';
 
   @override
   String get you => 'You';
@@ -398,7 +398,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your smart guide to the museum. Navigate exhibits, follow the robot, and discover hidden stories.';
 
   @override
-  String get onboarding2Title => 'Meet Horus';
+  String get onboarding2Title => 'Meet the Guide';
 
   @override
   String get onboarding2Desc =>
@@ -664,7 +664,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get takeQuiz => 'Take Quiz';
 
   @override
-  String get smartTipTitle => 'Tip from Horus-Bot';
+  String get smartTipTitle => 'Tip from the Guide';
 
   @override
   String get robotNearbyTitle => 'Horus-Bot is nearby';

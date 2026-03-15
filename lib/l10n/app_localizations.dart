@@ -161,7 +161,7 @@ abstract class AppLocalizations {
   /// No description provided for @talkToHorusBot.
   ///
   /// In en, this message translates to:
-  /// **'Talk to Horus-Bot'**
+  /// **'Ask the Guide'**
   String get talkToHorusBot;
 
   /// No description provided for @askTheGuide.
@@ -185,7 +185,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutHorusBot.
   ///
   /// In en, this message translates to:
-  /// **'About Horus-Bot'**
+  /// **'About the Guide'**
   String get aboutHorusBot;
 
   /// No description provided for @you.
@@ -857,7 +857,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding2Title.
   ///
   /// In en, this message translates to:
-  /// **'Meet Horus'**
+  /// **'Meet the Guide'**
   String get onboarding2Title;
 
   /// No description provided for @onboarding2Desc.
@@ -1355,7 +1355,7 @@ abstract class AppLocalizations {
   /// No description provided for @smartTipTitle.
   ///
   /// In en, this message translates to:
-  /// **'Tip from Horus-Bot'**
+  /// **'Tip from the Guide'**
   String get smartTipTitle;
 
   /// No description provided for @robotNearbyTitle.
