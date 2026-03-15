@@ -25,6 +25,7 @@ Future<void> main() async {
             initialOnboardingCompleted: initialPrefs['hasCompletedOnboarding'],
             initialIsHighContrast: initialPrefs['isHighContrast'],
             initialFontScale: initialPrefs['fontScale'],
+            initialIsFirstLaunch: initialPrefs['isFirstLaunch'],
             initialThemeMode: initialPrefs['themeMode'],
             initialHasSeenPermissionsPrompt:
                 initialPrefs['hasSeenPermissionsPrompt'],
