@@ -21,7 +21,6 @@ class _IntroScreenState extends State<IntroScreen>
   late final AnimationController _animController;
   late final Animation<double> _fadeAnimation;
   late final Animation<double> _scaleAnimation;
-  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -47,42 +46,32 @@ class _IntroScreenState extends State<IntroScreen>
 
   void _startTimer() {
     Future.delayed(const Duration(seconds: 2), () {
-      _navigateToNext();
+      if (!mounted) return;
+
+      final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+
+      if (prefs.hasCompletedOnboarding) {
+        Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
+      } else {
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            settings: const RouteSettings(name: AppRoutes.onboarding),
+            transitionDuration: const Duration(milliseconds: 600),
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const OnboardingScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  final curved = CurvedAnimation(
+                    parent: animation,
+                    curve: Curves.easeOutCubic,
+                  );
+
+                  return FadeTransition(opacity: curved, child: child);
+                },
+          ),
+        );
+      }
     });
-  }
-
-  void _navigateToNext() {
-    if (!mounted || _isNavigating) return;
-    _isNavigating = true;
-
-    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
-
-    // If it was first launch, mark it as false now that we are moving past intro
-    if (prefs.isFirstLaunch) {
-      prefs.setIsFirstLaunch(false);
-
-      // Navigate to onboarding for first launch
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          settings: const RouteSettings(name: AppRoutes.onboarding),
-          transitionDuration: const Duration(milliseconds: 600),
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              const OnboardingScreen(),
-          transitionsBuilder:
-              (context, animation, secondaryAnimation, child) {
-            final curved = CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeOutCubic,
-            );
-
-            return FadeTransition(opacity: curved, child: child);
-          },
-        ),
-      );
-    } else {
-      // Subsequent launches go straight to home (skipping onboarding)
-      Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
-    }
   }
 
   @override
@@ -103,12 +92,9 @@ class _IntroScreenState extends State<IntroScreen>
     ).copyWith(color: Colors.white70);
 
     return Scaffold(
-      body: GestureDetector(
-        onTap: _navigateToNext,
-        behavior: HitTestBehavior.opaque,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
           Image.asset(
             'assets/images/GEM.jpg',
             fit: BoxFit.cover,
@@ -160,8 +146,7 @@ class _IntroScreenState extends State<IntroScreen>
               ),
             ),
           ),
-          ],
-        ),
+        ],
       ),
     );
   }

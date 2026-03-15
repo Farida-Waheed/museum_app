@@ -5,7 +5,6 @@ class UserPreferencesModel extends ChangeNotifier {
   static const String _kLanguage = 'language';
   static const String _kIsHighContrast = 'isHighContrast';
   static const String _kFontScale = 'fontScale';
-  static const String _kIsFirstLaunch = 'isFirstLaunch';
   static const String _kHasCompletedOnboarding = 'hasCompletedOnboarding';
   static const String _kHasSeenPermissionsPrompt = 'hasSeenPermissionsPrompt';
   static const String _kHasSeenLocationPrompt = 'hasSeenLocationPrompt';
@@ -14,7 +13,6 @@ class UserPreferencesModel extends ChangeNotifier {
   String _language = 'en';
   bool _isHighContrast = false;
   double _fontScale = 1.0;
-  bool _isFirstLaunch = true;
   bool _hasCompletedOnboarding = false;
   bool _hasSeenPermissionsPrompt = false;
   bool _hasSeenLocationPrompt = false;
@@ -23,7 +21,6 @@ class UserPreferencesModel extends ChangeNotifier {
   String get language => _language;
   bool get isHighContrast => _isHighContrast;
   double get fontScale => _fontScale;
-  bool get isFirstLaunch => _isFirstLaunch;
   bool get hasCompletedOnboarding => _hasCompletedOnboarding;
   bool get hasSeenPermissionsPrompt => _hasSeenPermissionsPrompt;
   bool get hasSeenLocationPrompt => _hasSeenLocationPrompt;
@@ -34,7 +31,6 @@ class UserPreferencesModel extends ChangeNotifier {
     bool initialOnboardingCompleted = false,
     bool initialIsHighContrast = false,
     double initialFontScale = 1.0,
-    bool initialIsFirstLaunch = true,
     String initialThemeMode = 'dark',
     bool initialHasSeenPermissionsPrompt = false,
     bool initialHasSeenLocationPrompt = false,
@@ -44,7 +40,6 @@ class UserPreferencesModel extends ChangeNotifier {
     _hasCompletedOnboarding = initialOnboardingCompleted;
     _isHighContrast = initialIsHighContrast;
     _fontScale = initialFontScale;
-    _isFirstLaunch = initialIsFirstLaunch;
     _themeMode = initialThemeMode;
     _hasSeenPermissionsPrompt = initialHasSeenPermissionsPrompt;
     _hasSeenLocationPrompt = initialHasSeenLocationPrompt;
@@ -56,11 +51,8 @@ class UserPreferencesModel extends ChangeNotifier {
 
   static Future<Map<String, dynamic>> getInitialPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    final isFirstLaunch = prefs.getBool(_kIsFirstLaunch) ?? true;
-
     return {
-      'language': isFirstLaunch ? 'en' : (prefs.getString(_kLanguage) ?? 'en'),
-      'isFirstLaunch': isFirstLaunch,
+      'language': prefs.getString(_kLanguage) ?? 'en',
       'hasCompletedOnboarding':
           prefs.getBool(_kHasCompletedOnboarding) ?? false,
       'isHighContrast': prefs.getBool(_kIsHighContrast) ?? false,
@@ -74,8 +66,7 @@ class UserPreferencesModel extends ChangeNotifier {
 
   Future<void> _loadFromPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    _isFirstLaunch = prefs.getBool(_kIsFirstLaunch) ?? true;
-    _language = _isFirstLaunch ? 'en' : (prefs.getString(_kLanguage) ?? 'en');
+    _language = prefs.getString(_kLanguage) ?? 'en';
     _isHighContrast = prefs.getBool(_kIsHighContrast) ?? false;
     _fontScale = prefs.getDouble(_kFontScale) ?? 1.0;
     _hasCompletedOnboarding = prefs.getBool(_kHasCompletedOnboarding) ?? false;
@@ -119,15 +110,6 @@ class UserPreferencesModel extends ChangeNotifier {
       _hasCompletedOnboarding = value;
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_kHasCompletedOnboarding, value);
-      notifyListeners();
-    }
-  }
-
-  Future<void> setIsFirstLaunch(bool value) async {
-    if (_isFirstLaunch != value) {
-      _isFirstLaunch = value;
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool(_kIsFirstLaunch, value);
       notifyListeners();
     }
   }

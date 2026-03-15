@@ -19,7 +19,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   final PageController _pageController = PageController();
   int _currentPage = 0;
   late final AnimationController _floatController;
-  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -38,15 +37,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   }
 
   void _completeOnboarding(UserPreferencesModel prefs) {
-    if (_isNavigating) return;
-    _isNavigating = true;
-
     prefs.setCompletedOnboarding(true);
-    // Also ensure isFirstLaunch is false if it wasn't already marked by intro
-    if (prefs.isFirstLaunch) {
-      prefs.setIsFirstLaunch(false);
-    }
-
     Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
   }
 
@@ -178,107 +169,101 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     setState(() => _currentPage = value);
                   },
                   itemBuilder: (context, index) {
-                    return SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 28,
-                          vertical: 20,
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            AnimatedBuilder(
-                              animation: _floatController,
-                              builder: (context, child) {
-                                final offset =
-                                    math.sin(_floatController.value * math.pi) *
-                                    8;
-                                return Transform.translate(
-                                  offset: Offset(0, -offset),
-                                  child: child,
-                                );
-                              },
-                              child: Container(
-                                width: 110,
-                                height: 110,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: const Color(
-                                        0xFFE6C068,
-                                      ).withOpacity(0.12),
-                                      blurRadius: 20,
-                                      spreadRadius: 4,
-                                    ),
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 28),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AnimatedBuilder(
+                            animation: _floatController,
+                            builder: (context, child) {
+                              final offset =
+                                  math.sin(_floatController.value * math.pi) *
+                                  8;
+                              return Transform.translate(
+                                offset: Offset(0, -offset),
+                                child: child,
+                              );
+                            },
+                            child: Container(
+                              width: 110,
+                              height: 110,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: const Color(
+                                      0xFFE6C068,
+                                    ).withOpacity(0.12),
+                                    blurRadius: 20,
+                                    spreadRadius: 4,
+                                  ),
+                                ],
+                                gradient: RadialGradient(
+                                  colors: [
+                                    const Color(0xFFE6C068).withOpacity(0.12),
+                                    const Color(0xFFE6C068).withOpacity(0.0),
                                   ],
-                                  gradient: RadialGradient(
-                                    colors: [
-                                      const Color(0xFFE6C068).withOpacity(0.12),
-                                      const Color(0xFFE6C068).withOpacity(0.0),
+                                ),
+                              ),
+                              child: Center(
+                                child: Transform.scale(
+                                  scale: pages[index]["iconScale"] ?? 1.0,
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      // Optional shadow layer to unify different icon styles
+                                      if (pages[index]["useShadow"] == true)
+                                        Transform.translate(
+                                          offset: const Offset(0, 2),
+                                          child: Image.asset(
+                                            pages[index]["iconPath"]!,
+                                            width:
+                                                pages[index]["iconSize"] ??
+                                                82.0,
+                                            height:
+                                                pages[index]["iconSize"] ??
+                                                82.0,
+                                            fit: BoxFit.contain,
+                                            color: Colors.black.withOpacity(
+                                              0.2,
+                                            ),
+                                          ),
+                                        ),
+
+                                      // Main Icon
+                                      Image.asset(
+                                        pages[index]["iconPath"]!,
+                                        width: pages[index]["iconSize"] ?? 82.0,
+                                        height:
+                                            pages[index]["iconSize"] ?? 82.0,
+                                        fit: BoxFit.contain,
+                                      ),
                                     ],
                                   ),
                                 ),
-                                child: Center(
-                                  child: Transform.scale(
-                                    scale: pages[index]["iconScale"] ?? 1.0,
-                                    child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        // Optional shadow layer to unify different icon styles
-                                        if (pages[index]["useShadow"] == true)
-                                          Transform.translate(
-                                            offset: const Offset(0, 2),
-                                            child: Image.asset(
-                                              pages[index]["iconPath"]!,
-                                              width:
-                                                  pages[index]["iconSize"] ??
-                                                  82.0,
-                                              height:
-                                                  pages[index]["iconSize"] ??
-                                                  82.0,
-                                              fit: BoxFit.contain,
-                                              color: Colors.black.withOpacity(
-                                                0.2,
-                                              ),
-                                            ),
-                                          ),
-
-                                        // Main Icon
-                                        Image.asset(
-                                          pages[index]["iconPath"]!,
-                                          width:
-                                              pages[index]["iconSize"] ?? 82.0,
-                                          height:
-                                              pages[index]["iconSize"] ?? 82.0,
-                                          fit: BoxFit.contain,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
                               ),
                             ),
-                            const SizedBox(height: 28),
-                            Text(
-                              pages[index]["title"]!,
-                              textAlign: TextAlign.center,
-                              style: AppTextStyles.screenTitle(
-                                context,
-                              ).copyWith(fontSize: 24),
+                          ),
+                          const SizedBox(height: 28),
+                          Text(
+                            pages[index]["title"]!,
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.screenTitle(context).copyWith(
+                              fontSize: 24,
                             ),
-                            const SizedBox(height: 14),
-                            Text(
-                              pages[index]["desc"]!,
-                              textAlign: TextAlign.center,
-                              style: AppTextStyles.body(context).copyWith(
-                                color: Colors.white.withOpacity(0.85),
-                                fontSize: 15,
-                                height: 1.5,
-                              ),
+                          ),
+                          const SizedBox(height: 14),
+                          Text(
+                            pages[index]["desc"]!,
+                            textAlign: TextAlign.center,
+                            style: AppTextStyles.body(context).copyWith(
+                              color: Colors.white.withOpacity(0.85),
+                              fontSize: 15,
+                              height: 1.5,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   },
