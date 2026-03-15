@@ -30,8 +30,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int visitedCount = 0;
   int durationMinutes = 0;
   Timer? _simTimer;
-  Timer? _factTimer;
-  int _factIndex = 0;
 
   double robotX = 140;
   double robotY = 80;
@@ -63,14 +61,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     exhibits = MockDataService.getAllExhibits();
     news = MockDataService.getAllNews();
 
-    _factTimer = Timer.periodic(const Duration(seconds: 9), (timer) {
-      if (mounted) {
-        setState(() {
-          _factIndex = (_factIndex + 1) % 4;
-        });
-      }
-    });
-
     Future.delayed(const Duration(seconds: 1), () async {
       if (mounted) {
         final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
@@ -95,7 +85,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void dispose() {
     _simTimer?.cancel();
-    _factTimer?.cancel();
     _pageCtrl.dispose();
     _robotPulseCtrl.dispose();
     _fabPulseCtrl.dispose();
@@ -202,81 +191,56 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildSliverHeader(BuildContext context, AppLocalizations l10n) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final brandStyle = AppTextStyles.brandTitle(context, isDark: isDark);
-
-    return SliverAppBar(
-      expandedHeight: 520,
-      pinned: true,
-      backgroundColor: AppColors.cinematicNav,
-      elevation: 0,
-      leading: IconButton(
-        icon: const Icon(Icons.menu, color: Colors.white, size: 28),
-        onPressed: () => AppMenuShell.of(context)?.toggleMenu(),
-      ),
-      centerTitle: true,
-      title: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset("assets/icons/ankh.png", width: 24, height: 24),
-          const SizedBox(width: 8),
-          Text(
-            "HORUS",
-            style: brandStyle.copyWith(color: AppColors.primaryGold),
+  Widget _buildHeroSection(BuildContext context, AppLocalizations l10n) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          height: 520,
+          width: double.infinity,
+          foregroundDecoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.black.withOpacity(0.15),
+                Colors.transparent,
+                Colors.black.withOpacity(0.55),
+              ],
+              stops: const [0.0, 0.3, 1.0],
+            ),
           ),
-        ],
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.qr_code_scanner, color: Colors.white, size: 28),
-          onPressed: () => Navigator.pushNamed(context, AppRoutes.qrScan),
+          child: Image.asset(
+            'assets/images/museum_interior.jpg',
+            fit: BoxFit.cover,
+          ),
+        ),
+        Positioned(
+          left: 24,
+          right: 24,
+          bottom: 140,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.exploreTheMuseum,
+                style: AppTextStyles.heroTitle(context),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                l10n.followAndDiscover,
+                style: AppTextStyles.heroSubtitle(context),
+              ),
+            ],
+          ),
+        ),
+        Positioned(
+          left: 20,
+          right: 20,
+          bottom: -40,
+          child: _buildNextStopCard(context, l10n),
         ),
       ],
-      flexibleSpace: FlexibleSpaceBar(
-        background: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.asset(
-              'assets/images/museum_interior.jpg',
-              fit: BoxFit.cover,
-            ),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.4),
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.8),
-                  ],
-                  stops: const [0.0, 0.4, 1.0],
-                ),
-              ),
-            ),
-            Positioned(
-              left: 24,
-              right: 24,
-              bottom: 140,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.exploreTheMuseum,
-                    style: AppTextStyles.heroTitle(context),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    l10n.followAndDiscover,
-                    style: AppTextStyles.heroSubtitle(context),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -333,341 +297,327 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final facts = [
-      l10n.didYouKnowFact1,
-      l10n.didYouKnowFact2,
-      l10n.didYouKnowFact3,
-      l10n.didYouKnowFact4,
-    ];
-
     return AppMenuShell(
       hideDefaultAppBar: true,
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.warmSurface,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
+      floatingActionButton: ScaleTransition(
+        scale: _fabScale,
+        child: _HorusFab(
+          onPressed: () => showDialog(
+            context: context,
+            barrierColor: Colors.black54,
+            builder: (_) => const ChatScreen(isPopup: true),
+          ),
+          label: l10n.askTheGuide,
+        ),
+      ),
       body: Builder(
-        builder: (innerContext) => CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            // 1. Cinematic Header with Parallax Hero
-            _buildSliverHeader(innerContext, l10n),
-
-            // 2. Main Dashboard Content
-            SliverToBoxAdapter(
-              child: Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Positioned(
-                    top: -40,
-                    left: 20,
-                    right: 20,
-                    child: _buildNextStopCard(innerContext, l10n),
-                  ),
-                  _buildSummaryStats(innerContext, l10n),
-                ],
-              ),
-            ),
-
-            // 3. Quick Actions
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.exhibits.toUpperCase(),
-                      style: AppTextStyles.sectionTitle(innerContext),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _FeatureCard(
-                            icon: Icons.map_outlined,
-                            title: l10n.map,
-                            onTap: () => Navigator.pushNamedAndRemoveUntil(innerContext, AppRoutes.map, (r) => false),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _FeatureCard(
-                            icon: Icons.play_circle_outline_rounded,
-                            title: l10n.liveTour,
-                            isHighlighted: true,
-                            onTap: () => Navigator.pushNamedAndRemoveUntil(innerContext, AppRoutes.liveTour, (r) => false),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+        builder: (innerContext) => Stack(
+          children: [
+            CustomScrollView(
+              slivers: [
+                // 1. Cinematic Hero Section
+                SliverToBoxAdapter(
+                  child: _buildHeroSection(innerContext, l10n),
                 ),
-              ),
-            ),
+                SliverToBoxAdapter(
+                  child: _buildSummaryStats(innerContext, l10n),
+                ),
 
-            const SliverToBoxAdapter(child: SizedBox(height: 48)),
-
-            // 4. Discovery Carousel
-            SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
+                // 3. Quick Actions (Exhibits)
+                SliverToBoxAdapter(
+                  child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(l10n.recommendedForYou.toUpperCase(), style: AppTextStyles.sectionTitle(innerContext)),
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    height: 240,
-                    child: PageView.builder(
-                      controller: _pageCtrl,
-                      itemCount: exhibits.take(3).length,
-                      onPageChanged: (i) => setState(() => pageIndex = i),
-                      itemBuilder: (context, index) {
-                        final e = exhibits[index];
-                        return _HighlightCard(
-                          title: e.getName(Localizations.localeOf(context).languageCode),
-                          subtitle: l10n.goldenHallRecommended,
-                          image: e.imageAsset,
-                          onTap: () => Navigator.pushNamed(context, AppRoutes.exhibitDetails, arguments: e),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  _Dots(count: 3, index: pageIndex),
-                ],
-              ),
-            ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 48)),
-
-            // 5. AI Assistant Card
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: _HorusFab(
-                  onPressed: () => showDialog(
-                    context: context,
-                    barrierColor: Colors.black54,
-                    builder: (_) => const ChatScreen(isPopup: true),
-                  ),
-                  label: l10n.askTheGuide,
-                ),
-              ),
-            ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 48)),
-
-            // 6. Map Preview
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(l10n.mapPreview.toUpperCase(), style: AppTextStyles.sectionTitle(innerContext)),
-                        _LiveBadge(label: l10n.live),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(28),
-                      child: Container(
-                        height: 260,
-                        decoration: BoxDecoration(
-                          color: AppColors.cinematicSection,
-                          border: Border.all(color: Colors.white.withOpacity(0.05)),
+                        Text(
+                          l10n.exhibits.toUpperCase(),
+                          style: AppTextStyles.sectionTitle(innerContext),
                         ),
-                        child: Stack(
+                        const SizedBox(height: 20),
+                        Row(
                           children: [
-                            // Grid Background
-                            Positioned.fill(
-                              child: CustomPaint(
-                                painter: _GridPainter(gridColor: Colors.white.withOpacity(0.025)),
+                            Expanded(
+                              child: _FeatureCard(
+                                icon: Icons.map_outlined,
+                                title: l10n.map,
+                                onTap: () => Navigator.pushNamedAndRemoveUntil(innerContext, AppRoutes.map, (r) => false),
                               ),
                             ),
-                            // Map Content (Simplified)
-                            Center(
-                              child: Opacity(
-                                opacity: 0.15,
-                                child: const Icon(Icons.museum, size: 140, color: Colors.white),
-                              ),
-                            ),
-                            // Robot Marker
-                            AnimatedPositioned(
-                              duration: const Duration(seconds: 4),
-                              curve: Curves.easeInOut,
-                              left: robotX,
-                              top: robotY,
-                              child: ScaleTransition(
-                                scale: _robotScale,
-                                child: Container(
-                                  width: 28,
-                                  height: 28,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primaryGold,
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppColors.primaryGold.withOpacity(0.4),
-                                        blurRadius: 15,
-                                        spreadRadius: 5,
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Icon(Icons.smart_toy, color: AppColors.darkInk, size: 16),
-                                ),
-                              ),
-                            ),
-                            // Map Overlay Info
-                            Positioned(
-                              bottom: 20,
-                              left: 20,
-                              right: 20,
-                              child: Row(
-                                children: [
-                                  _LegendDot(color: AppColors.primaryGold, label: l10n.horusBot),
-                                  const SizedBox(width: 20),
-                                  _LegendDot(color: Colors.blueAccent, label: l10n.you),
-                                  const Spacer(),
-                                  TextButton(
-                                    onPressed: () => Navigator.pushNamedAndRemoveUntil(innerContext, AppRoutes.map, (r) => false),
-                                    child: Text(l10n.fullView, style: AppTextStyles.button(context).copyWith(color: AppColors.primaryGold, fontSize: 13)),
-                                  ),
-                                ],
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: _FeatureCard(
+                                icon: Icons.qr_code_scanner,
+                                title: l10n.scanTicket,
+                                isHighlighted: true,
+                                onTap: () => Navigator.pushNamed(innerContext, AppRoutes.qrScan),
                               ),
                             ),
                           ],
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 48)),
-
-            // 7. Museum News
-            SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(l10n.museumNews.toUpperCase(), style: AppTextStyles.sectionTitle(innerContext)),
                   ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    height: 180,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: news.length,
-                      itemBuilder: (context, index) {
-                        final item = news[index];
-                        return _FeatureCard(
-                          onTap: () => Navigator.pushNamed(context, AppRoutes.events),
+                ),
+
+                const SliverToBoxAdapter(child: SizedBox(height: 48)),
+
+                // 4. Discovery Carousel
+                SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(l10n.recommendedForYou.toUpperCase(), style: AppTextStyles.sectionTitle(innerContext)),
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        height: 240,
+                        child: PageView(
+                          controller: _pageCtrl,
+                          onPageChanged: (i) => setState(() => pageIndex = i),
+                          children: [
+                            _HighlightCard(
+                              title: l10n.tutankhamunMask,
+                              subtitle: l10n.goldenHallRecommended,
+                              image: "assets/images/pharaoh_head.jpg",
+                            ),
+                            _HighlightCard(
+                              title: l10n.ancientPapyrus,
+                              subtitle: l10n.westWingStory,
+                              image: "assets/images/hieroglyphs.jpg",
+                            ),
+                            _HighlightCard(
+                              title: l10n.canopicJars,
+                              subtitle: l10n.southHallMummification,
+                              image: "assets/images/canopic_jars.jpg",
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      _Dots(count: 3, index: pageIndex),
+                    ],
+                  ),
+                ),
+
+                const SliverToBoxAdapter(child: SizedBox(height: 32)),
+
+                // 6. Map Preview
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(l10n.mapPreview.toUpperCase(), style: AppTextStyles.sectionTitle(innerContext)),
+                            _LiveBadge(label: l10n.live),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(28),
                           child: Container(
-                            width: 300,
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            height: 260,
+                            decoration: BoxDecoration(
+                              color: AppColors.cinematicSection,
+                              border: Border.all(color: Colors.white.withOpacity(0.05)),
+                            ),
+                            child: Stack(
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primaryGold.withOpacity(0.1),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    item.source.toUpperCase(),
-                                    style: const TextStyle(color: AppColors.primaryGold, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
+                                // Grid Background
+                                Positioned.fill(
+                                  child: CustomPaint(
+                                    painter: _GridPainter(gridColor: Colors.white.withOpacity(0.025)),
                                   ),
                                 ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  item.title,
-                                  style: AppTextStyles.cardTitle(context),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                                // Map Content (Simplified)
+                                Center(
+                                  child: Opacity(
+                                    opacity: 0.15,
+                                    child: Icon(Icons.museum, size: 140, color: Colors.white),
+                                  ),
                                 ),
-                                const Spacer(),
-                                Row(
-                                  children: [
-                                    Text(
-                                      "Read More",
-                                      style: AppTextStyles.button(context).copyWith(color: AppColors.primaryGold, fontSize: 12),
+                                // Robot Marker
+                                AnimatedPositioned(
+                                  duration: const Duration(seconds: 4),
+                                  curve: Curves.easeInOut,
+                                  left: robotX,
+                                  top: robotY,
+                                  child: ScaleTransition(
+                                    scale: _robotScale,
+                                    child: Container(
+                                      width: 28,
+                                      height: 28,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primaryGold,
+                                        shape: BoxShape.circle,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: AppColors.primaryGold.withOpacity(0.4),
+                                            blurRadius: 15,
+                                            spreadRadius: 5,
+                                          ),
+                                        ],
+                                      ),
+                                      child: const Icon(Icons.smart_toy, color: AppColors.darkInk, size: 16),
                                     ),
-                                    const SizedBox(width: 4),
-                                    const Icon(Icons.arrow_forward, color: AppColors.primaryGold, size: 14),
-                                  ],
+                                  ),
+                                ),
+                                // Map Overlay Info
+                                Positioned(
+                                  bottom: 20,
+                                  left: 20,
+                                  right: 20,
+                                  child: Row(
+                                    children: [
+                                      _LegendDot(color: AppColors.primaryGold, label: l10n.horusBot),
+                                      const SizedBox(width: 20),
+                                      _LegendDot(color: Colors.blueAccent, label: l10n.you),
+                                      const Spacer(),
+                                      TextButton(
+                                        onPressed: () => Navigator.pushNamedAndRemoveUntil(innerContext, AppRoutes.map, (r) => false),
+                                        child: Text(l10n.fullView, style: AppTextStyles.button(context).copyWith(color: AppColors.primaryGold, fontSize: 13)),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
                           ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 48)),
-
-            // 8. Did You Know
-            SliverToBoxAdapter(
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: const EdgeInsets.all(28),
-                decoration: BoxDecoration(
-                  color: AppColors.cinematicSection,
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: Colors.white.withOpacity(0.04)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryGold.withOpacity(0.12),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.auto_awesome, color: AppColors.primaryGold, size: 22),
-                        ),
-                        const SizedBox(width: 14),
-                        Text(
-                          l10n.didYouKnow.toUpperCase(),
-                          style: AppTextStyles.sectionTitle(innerContext),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 800),
-                      child: Text(
-                        facts[_factIndex],
-                        key: ValueKey<int>(_factIndex),
-                        style: AppTextStyles.body(innerContext).copyWith(
-                          color: Colors.white,
-                          fontSize: 16,
-                          height: 1.7,
-                          fontStyle: FontStyle.italic,
+                  ),
+                ),
+
+                const SliverToBoxAdapter(child: SizedBox(height: 48)),
+
+                // 7. Museum News
+                SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(l10n.museumNews.toUpperCase(), style: AppTextStyles.sectionTitle(innerContext)),
+                      ),
+                      const SizedBox(height: 20),
+                      SizedBox(
+                        height: 180,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          itemCount: news.length,
+                          itemBuilder: (context, index) {
+                            final item = news[index];
+                            return Container(
+                              width: 300,
+                              margin: const EdgeInsets.only(right: 16),
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: AppColors.cinematicCard,
+                                borderRadius: BorderRadius.circular(24),
+                                border: Border.all(color: Colors.white.withOpacity(0.05)),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: AppColors.primaryGold.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      item.source.toUpperCase(),
+                                      style: const TextStyle(color: AppColors.primaryGold, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    item.title,
+                                    style: AppTextStyles.cardTitle(context),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const Spacer(),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        "Read More",
+                                        style: AppTextStyles.button(context).copyWith(color: AppColors.primaryGold, fontSize: 12),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Icon(Icons.arrow_forward, color: AppColors.primaryGold, size: 14),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+
+                const SliverToBoxAdapter(child: SizedBox(height: 48)),
+
+                // 8. Did You Know
+                SliverToBoxAdapter(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.all(28),
+                    decoration: BoxDecoration(
+                      color: AppColors.cinematicSection,
+                      borderRadius: BorderRadius.circular(28),
+                      border: Border.all(color: Colors.white.withOpacity(0.04)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryGold.withOpacity(0.12),
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.auto_awesome, color: AppColors.primaryGold, size: 22),
+                            ),
+                            const SizedBox(width: 14),
+                            Text(
+                              l10n.didYouKnow.toUpperCase(),
+                              style: AppTextStyles.sectionTitle(innerContext),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          l10n.didYouKnowFact,
+                          style: AppTextStyles.body(innerContext).copyWith(
+                            color: Colors.white,
+                            fontSize: 16,
+                            height: 1.7,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 120)),
+              ],
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 120)),
+            _buildTopBar(innerContext, l10n),
           ],
         ),
       ),
@@ -788,18 +738,16 @@ class _NextStopBadge extends StatelessWidget {
 }
 
 class _FeatureCard extends StatefulWidget {
-  final IconData? icon;
-  final String? title;
+  final IconData icon;
+  final String title;
   final VoidCallback onTap;
   final bool isHighlighted;
-  final Widget? child;
 
   const _FeatureCard({
-    this.icon,
-    this.title,
+    required this.icon,
+    required this.title,
     required this.onTap,
     this.isHighlighted = false,
-    this.child,
   });
 
   @override
@@ -823,52 +771,46 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
     return AnimatedBuilder(
       animation: _glowCtrl,
       builder: (context, child) {
-        return MouseRegion(
-          cursor: SystemMouseCursors.click,
-          child: InkWell(
-            onTap: widget.onTap,
-            borderRadius: BorderRadius.circular(24),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(24),
-                color: AppColors.cinematicCard,
-                border: Border.all(
-                  color: widget.isHighlighted
-                      ? AppColors.primaryGold.withOpacity(0.3 + (_glowCtrl.value * 0.4))
-                      : Colors.white.withOpacity(0.05),
-                  width: widget.isHighlighted ? 1.5 : 1.0,
-                ),
-                boxShadow: [
-                  if (widget.isHighlighted)
-                    BoxShadow(
-                      color: AppColors.primaryGold.withOpacity(0.1 + (_glowCtrl.value * 0.15)),
-                      blurRadius: 15,
-                      spreadRadius: 2,
-                    ),
-                ],
+        return InkWell(
+          onTap: widget.onTap,
+          borderRadius: BorderRadius.circular(24),
+          child: Container(
+            height: 120,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              color: AppColors.cinematicCard,
+              border: Border.all(
+                color: widget.isHighlighted
+                    ? AppColors.primaryGold.withOpacity(0.3 + (_glowCtrl.value * 0.4))
+                    : Colors.white.withOpacity(0.05),
+                width: widget.isHighlighted ? 1.5 : 1.0,
               ),
-              child: widget.child ?? Container(
-                height: 120,
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              boxShadow: [
+                if (widget.isHighlighted)
+                  BoxShadow(
+                    color: AppColors.primaryGold.withOpacity(0.1 + (_glowCtrl.value * 0.15)),
+                    blurRadius: 15,
+                    spreadRadius: 2,
+                  ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Icon(widget.icon, color: AppColors.primaryGold, size: 28),
+                Row(
                   children: [
-                    Icon(widget.icon, color: AppColors.primaryGold, size: 28),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            widget.title ?? "",
-                            style: AppTextStyles.cardTitle(context),
-                          ),
-                        ),
-                      ],
+                    Expanded(
+                      child: Text(
+                        widget.title,
+                        style: AppTextStyles.cardTitle(context),
+                      ),
                     ),
                   ],
                 ),
-              ),
+              ],
             ),
           ),
         );
@@ -881,56 +823,49 @@ class _HighlightCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String image;
-  final VoidCallback onTap;
-  const _HighlightCard({required this.title, required this.subtitle, required this.image, required this.onTap});
+  const _HighlightCard({required this.title, required this.subtitle, required this.image});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        child: GestureDetector(
-          onTap: onTap,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(28),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image.asset(image, fit: BoxFit.cover),
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        colors: [Colors.black.withOpacity(0.95), Colors.transparent],
-                      ),
-                    ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(image, fit: BoxFit.cover),
+            Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                    colors: [Colors.black.withOpacity(0.95), Colors.transparent],
                   ),
                 ),
-                Positioned(
-                  left: 28,
-                  right: 28,
-                  bottom: 28,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: AppTextStyles.cardTitle(context),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        subtitle,
-                        style: AppTextStyles.body(context).copyWith(color: Colors.white70),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+            Positioned(
+              left: 28,
+              right: 28,
+              bottom: 28,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: AppTextStyles.cardTitle(context),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    subtitle,
+                    style: AppTextStyles.body(context).copyWith(color: Colors.white70),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
