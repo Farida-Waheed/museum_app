@@ -1,0 +1,792 @@
+[
+  {
+    "id": "gem_ramses2_colossus",
+    "title": "Colossal Statue of Ramesses II",
+    "exhibit": "Colossal Statue of Ramesses II",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 19 (c. 1279–1213 BCE)",
+    "images": [
+      "assets/artifacts/colossal-statue-of-rameses-ii.jpg",
+      "assets/artifacts/grand-hall.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This colossal red granite statue of Ramesses II stands over 11 meters tall and depicts the king in a powerful striding pose. Carved at his legs are figures of his children, including Khaemwaset and Bintanath, emphasizing royal lineage and continuity. The statue’s scale and carefully proportioned form were designed to project authority, strength, and divine kingship."
+      ],
+      "details": [
+        "The statue is carved from red granite and features finely worked proportions and hieroglyphic inscriptions. The inclusion of royal children at the king’s legs reinforces Ramesses II’s role as both ruler and father of the dynasty. Hieroglyphs carved on the statue link the king to the gods, highlighting his divine legitimacy."
+      ],
+      "significance": [
+        "Originally placed outside the Temple of Ptah at Memphis, the statue functioned as a divine intermediary between the king and the gods. Ancient Egyptians venerated Ramesses II as a living god, offering prayers and offerings at monumental statues like this one. Such statues reinforced the belief that the pharaoh upheld cosmic order through divine favor."
+      ],
+      "historical_background": [
+        "Ramesses II, often called Ramesses the Great, ruled Egypt during a long and prosperous reign marked by extensive building projects and military campaigns. His monuments across Egypt promoted an ideal image of kingship centered on power, stability, and divine support. This colossal statue reflects how royal imagery shaped political and religious life during the New Kingdom.",
+        "After its excavation, the statue was displayed in Cairo’s central square before being carefully relocated to the Grand Egyptian Museum. This journey reflects modern efforts to preserve and present Egypt’s ancient heritage. Today, the statue stands as a bridge between ancient reverence for the king and contemporary museum conservation."
+      ],
+      "faq": [
+        "Q: Why is the statue so large? A: Its colossal size was meant to emphasize the pharaoh’s power and divine status. Q: Why are children carved at his legs? A: They represent royal lineage and the continuation of the dynasty. Q: Where did the statue originally stand? A: Outside the Temple of Ptah in Memphis."
+      ]
+    }
+  },
+  {
+    "id": "gem_ptolemaic_king_colossus",
+    "title": "Colossus of a Ptolemaic King",
+    "exhibit": "Colossus of a Ptolemaic King",
+    "museum": "GEM",
+    "period": "Ptolemaic (c. 305–30 BCE)",
+    "images": [
+      "assets/artifacts/king.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This granite colossus, over 5 meters high, depicts a Ptolemaic king dressed in traditional pharaonic regalia. He wears the double crown and a kilt, and his clenched right fist likely once held a royal insignia. Although the ruler was Greek by origin, the statue presents him as an Egyptian pharaoh to communicate legitimacy and authority."
+      ],
+      "details": [
+        "The statue blends Egyptian royal iconography—such as the double crown and formal stance—with stylistic choices associated with the Ptolemaic period. This fusion reflects how Ptolemaic rulers adopted Egyptian visual language to rule effectively, while still operating within a broader Hellenistic world."
+      ],
+      "significance": [
+        "The colossus originally stood outside the temple of Amun-Gereb, where monumental statues helped define and protect sacred space. Positioned at or near a temple entrance, it presented the king as guardian of the gods’ precincts and a legitimate participant in Egyptian religious life."
+      ],
+      "historical_background": [
+        "The statue was discovered submerged in the lost city of Thonis-Heracleion. Its survival underwater and modern recovery highlight the importance of underwater archaeology in revealing Egypt’s coastal and maritime history, including cities that once connected Egypt to Mediterranean trade and travel.",
+        "The Ptolemies ruled Egypt after the conquests of Alexander the Great, combining Hellenistic governance with Egyptian religious and political traditions. Statues like this one show how foreign-origin rulers used Egyptian forms to claim continuity with earlier pharaohs. The Thonis-Heracleion site also reflects a Mediterranean world where Egyptian, Greek, and other cultures interacted closely."
+      ],
+      "faq": [
+        "Q: Why does a Greek ruler appear as an Egyptian pharaoh? A: Ptolemaic kings adopted Egyptian royal imagery to strengthen legitimacy. Q: Where was it found? A: In the submerged city of Thonis-Heracleion. Q: What was it used for? A: It marked royal presence and protected the sacred temple area."
+      ]
+    }
+  },
+  {
+    "id": "gem_ptolemaic_queen_colossus",
+    "title": "Colossus of a Ptolemaic Queen",
+    "exhibit": "Colossus of a Ptolemaic Queen",
+    "museum": "GEM",
+    "period": "Ptolemaic (c. 305–30 BCE)",
+    "images": [
+      "assets/artifacts/queen.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This monumental statue represents a Ptolemaic queen, possibly Cleopatra II or Cleopatra III, and was recovered from the submerged city of Thonis-Heracleion. She is shown wearing a pleated dress and a distinctive crown associated with the goddess Isis. The statue presents the queen as both a royal figure and a divine embodiment."
+      ],
+      "details": [
+        "The queen’s features blend Greek naturalism with Egyptian idealization, reflecting the dual cultural identity of the Ptolemaic court. Her crown links her directly to Isis, reinforcing her divine status, while the formal stance and attire follow long-established Egyptian royal conventions."
+      ],
+      "significance": [
+        "The statue was intended to stand alongside the colossus of the Ptolemaic king at the entrance to a temple, likely that of Amun-Gereb. Together, the pair presented a unified image of royal and divine authority, protecting the sacred precinct and reinforcing dynastic legitimacy."
+      ],
+      "historical_background": [
+        "Recovered from the sea at Thonis-Heracleion, the statue highlights the achievements of modern underwater archaeology. Its preservation underwater and subsequent excavation have contributed significantly to understanding Egypt’s submerged heritage and coastal religious centers.",
+        "Ptolemaic queens were influential figures in political and religious life, often revered as living manifestations of Isis. By presenting themselves as both rulers and goddesses, they secured legitimacy among Egyptian and Greek subjects alike. This statue reflects how female power and divine identity were central to Ptolemaic kingship."
+      ],
+      "faq": [
+        "Q: Which queen does the statue represent? A: It may depict Cleopatra II or Cleopatra III, though the exact identity is uncertain. Q: Why is the queen associated with Isis? A: Ptolemaic queens were often identified with Isis to emphasize divine legitimacy. Q: Where was it found? A: In the submerged city of Thonis-Heracleion."
+      ]
+    }
+  },
+  {
+    "id": "gem_merenptah_column",
+    "title": "Column of King Merenptah",
+    "exhibit": "Column of King Merenptah",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 19 (c. 1213–1203 BCE)",
+    "images": [
+      "assets/artifacts/merenptah-column-main.jpg",
+      "assets/artifacts/merenptah-column-alt.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This monumental column of King Merenptah stands over 5 meters high and dates to the late New Kingdom. It celebrates the king’s military victories and divine support, presenting him as a powerful and legitimate ruler following the reign of Ramesses II."
+      ],
+      "details": [
+        "The column features a tripartite base made of limestone and sandstone, topped by a red granite shaft. Carved reliefs show King Merenptah receiving weapons from the gods and triumphing over defeated enemies. Scenes of bound prisoners and captured spoils are accompanied by celebratory hieroglyphic inscriptions."
+      ],
+      "significance": [
+        "The column was erected to commemorate Merenptah’s military victories, particularly against the Libyans and the Sea Peoples. By depicting the king receiving weapons from the gods, the monument emphasizes that his success in battle was divinely sanctioned and essential to maintaining cosmic order."
+      ],
+      "historical_background": [
+        "Originally erected at Heliopolis, a major religious center associated with the sun god Ra, the column stood in a sacred landscape that reinforced royal and divine authority. Its placement linked Merenptah’s victories with the favor of the gods worshipped at one of Egypt’s most important cult centers.",
+        "Merenptah was the son and successor of Ramesses II and ruled Egypt during a period of external threats. His reign is best known for military campaigns commemorated in monumental inscriptions, including the famous Israel Stele. The imagery on this column reflects a late Ramesside emphasis on conquest and divine kingship."
+      ],
+      "faq": [
+        "Q: What does the column show? A: Scenes of Merenptah receiving weapons from the gods and defeating enemies. Q: Where did it originally stand? A: At Heliopolis. Q: Why are prisoners shown? A: They symbolize victory and the king’s role as protector of Egypt."
+      ]
+    }
+  },
+  {
+    "id": "gem_senwosert1_seated",
+    "title": "Seated Statue of Senwosert I",
+    "exhibit": "Seated Statue of Senwosert I",
+    "museum": "GEM",
+    "period": "Middle Kingdom, Dynasty 12 (c. 1971–1926 BCE)",
+    "images": [
+      "assets/artifacts/seated-statue-of-senwosert-i-main.jpg",
+      "assets/artifacts/seated-statue-of-senwosert-i-alt.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This granite seated statue depicts King Senwosert I enthroned in a calm and authoritative pose. Created during the Middle Kingdom, it presents the king as an ideal ruler whose power is stable, restrained, and divinely sanctioned. The statue comes from the king’s funerary temple at El-Lisht."
+      ],
+      "details": [
+        "Senwosert I is shown wearing the traditional nemes headdress and seated on a throne decorated with the sema-tawy symbol, representing the unification of Upper and Lower Egypt. The statue’s balanced proportions, smooth surfaces, and controlled posture reflect the Middle Kingdom ideal of harmony, order, and disciplined kingship."
+      ],
+      "significance": [
+        "This statue was one of a group of ten similar figures placed in the king’s funerary temple. Together, they acted as conduits of royal power, ensuring the king’s eternal presence and protecting cosmic order. Temple visitors would have encountered these statues as visual expressions of stability and continuity."
+      ],
+      "historical_background": [
+        "The statue originated from Senwosert I’s funerary temple at El-Lisht, a major royal site of the 12th Dynasty. Its placement within a temple complex linked the king’s image with ongoing ritual activity, reinforcing his divine status long after his death.",
+        "Senwosert I ruled during a period of political stability, centralization, and extensive building activity. His reign strengthened religious festivals and state institutions following earlier fragmentation. Statues like this express the Middle Kingdom vision of kingship based on order, unity, and measured authority."
+      ],
+      "faq": [
+        "Q: Why is the king shown seated and calm? A: Middle Kingdom art emphasized stability and order rather than aggressive power. Q: What does the sema-tawy symbol mean? A: It represents the unification of Upper and Lower Egypt. Q: Where was the statue found? A: In the funerary temple of Senwosert I at El-Lisht."
+      ]
+    }
+  },
+  {
+    "id": "gem_anubis_chest",
+    "title": "Anubis on a Chest",
+    "exhibit": "Anubis on a Chest",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18",
+    "images": [
+      "assets/artifacts/anubis-on-a-chest.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This pylon-shaped chest was found at the entrance to Tutankhamun’s Treasury and is topped by a black and gold figure of Anubis in jackal form. Mounted on a gilded wooden sledge, the chest served as a protective shrine guarding ritual objects and jewelry belonging to the king."
+      ],
+      "details": [
+        "The chest is shaped like a pylon, echoing temple architecture, and rests on a gilded wooden sledge. The figure of Anubis is painted black, a color associated with rebirth and the fertile soil of the Nile, and highlighted with gold details. Inside the chest were compartments containing wrapped ritual items and jewelry."
+      ],
+      "significance": [
+        "Anubis was the god of mummification and protector of the dead, making his presence essential in royal burials. Positioned at the entrance to the Treasury, the chest functioned as a sentinel guarding sacred equipment used in the king’s rebirth. Its imagery reinforced the belief that divine protection was required at every stage of the afterlife journey."
+      ],
+      "historical_background": [
+        "The chest’s placement on a sledge suggests it was originally used in Tutankhamun’s funerary procession before being installed inside the tomb. Such sledges allowed sacred objects to be ritually transported, emphasizing continuity between public funerary ceremonies and the sealed burial space.",
+        "Following the religious upheaval of the Amarna period, traditional gods like Anubis regained central importance in funerary belief. The presence of Anubis on this chest reflects the restored emphasis on divine guardianship, ritual precision, and ensuring the king’s safe passage to resurrection."
+      ],
+      "faq": [
+        "Q: Why is Anubis shown as a jackal? A: Jackals were associated with cemeteries and protection of the dead. Q: Why is the chest on a sledge? A: It was likely used in the funerary procession before burial. Q: What was kept inside? A: Ritual objects and jewelry used in the king’s afterlife rites."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_canopic_chest",
+    "title": "Canopic Chest",
+    "exhibit": "Canopic Chest",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18",
+    "images": [
+      "assets/artifacts/canopic-chest.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This finely crafted canopic chest was placed inside Tutankhamun’s canopic shrine and served as the container for the king’s preserved internal organs. Designed as a miniature ritual sanctuary, it reflects the central role of organ preservation in royal burials of the New Kingdom."
+      ],
+      "details": [
+        "The chest features a sloping lid once secured with linen cords and rests on a wooden sledge covered in gold foil. Inside are four cylindrical compartments, each holding a solid gold miniature coffin. The cavities are sealed with stoppers carved as royal heads with painted facial details."
+      ],
+      "significance": [
+        "Canopic chests were essential to royal burials, housing the embalmed organs believed necessary for the king’s spiritual regeneration. Tutankhamun’s chest reflects the renewed emphasis on traditional funerary beliefs following the Amarna period, highlighting divine protection and ritual completeness."
+      ],
+      "historical_background": [
+        "The chest was protected by the Four Sons of Horus and four goddesses, each guarding a specific organ. This system formed a balanced network of divine protection, ensuring the preservation of the king’s physical essence and his successful resurrection in the afterlife."
+      ],
+      "faq": [
+        "Q: What was kept inside the canopic chest? A: The king’s embalmed internal organs. Q: Why was the chest designed like a shrine? A: To emphasize its sacred and protective function. Q: Why are there four compartments? A: Each held an organ protected by a Son of Horus and a goddess."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_canopic_coffinette_nephthys",
+    "title": "Canopic Coffinette",
+    "exhibit": "Canopic Coffinette",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/canopic-coffinette-16345.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "These miniature anthropoid coffins were created to hold Tutankhamun’s embalmed internal organs. Made of solid beaten gold, each coffinette reflects the high level of craftsmanship and religious importance placed on preserving the king’s body for eternity."
+      ],
+      "details": [
+        "Each coffinette is decorated with intricate feathered patterns inlaid with red carnelian and colored glass. The king is shown wearing the nemes headcloth with both the vulture and uraeus emblems, and holding the crook and flail, symbols of royal authority and divine kingship."
+      ],
+      "significance": [
+        "Canopic coffinettes served as sacred containers for the king’s preserved organs, which were believed essential for spiritual renewal. Each coffinette was associated with one of the Four Sons of Horus and a protective goddess; in this case, Nephthys, who provided divine protection."
+      ],
+      "historical_background": [
+        "The luxurious use of gold and inlaid materials reflects both the wealth of the royal workshops and the theological importance of safeguarding the king’s physical essence. These coffinettes formed part of a carefully structured funerary system designed to ensure resurrection and eternal life."
+      ],
+      "faq": [
+        "Q: What did a canopic coffinette contain? A: One embalmed internal organ. Q: Why was it made of gold? A: Gold symbolized eternity and divine flesh. Q: Who protected this coffinette? A: The goddess Nephthys, paired with a Son of Horus."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_canopic_coffinette_isis",
+    "title": "Canopic Coffinette (Isis)",
+    "exhibit": "Canopic Coffinette (Isis)",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/canopic-coffinette-16345.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This miniature gold coffin is one of four canopic coffinettes used to hold Tutankhamun’s embalmed internal organs inside the canopic chest. Made of solid beaten gold and decorated with red carnelian and colored glass inlays, it shows the king wearing the nemes headcloth and holding the crook and flail."
+      ],
+      "details": [
+        "A vertical column of hieroglyphic text runs down the front of the coffinette and contains a protective spell spoken by the goddess Isis. Isis was revered as a divine protector and healer, making her presence essential in rituals of rebirth and resurrection."
+      ],
+      "significance": [
+        "Canopic coffinettes preserved the king’s internal organs under the guardianship of the Four Sons of Horus and their associated goddesses. This coffinette’s connection to Isis emphasizes her role in safeguarding the king’s physical essence for eternal life."
+      ],
+      "historical_background": [
+        "Evidence of altered cartouches indicates that this coffinette was repurposed, reflecting how royal workshops reused existing objects to complete Tutankhamun’s burial quickly. Despite this adaptation, its goldwork and protective inscription retained full religious effectiveness."
+      ],
+      "faq": [
+        "Q: Why is Isis mentioned on this coffinette? A: Isis was a goddess of protection and healing. Q: Why was it reused? A: Objects were adapted to complete the burial quickly. Q: What did it contain? A: One embalmed internal organ."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_canopic_coffinette_selket",
+    "title": "Canopic Coffinette (Selket)",
+    "exhibit": "Canopic Coffinette (Selket)",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/canopic-coffinette-16345.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This coffinette is one of four miniature solid-gold coffins created to contain Tutankhamun’s mummified internal organs. It is decorated with delicate inlays of red carnelian and colored glass and presents the king enveloped by the wings of protective goddesses."
+      ],
+      "details": [
+        "The imagery emphasizes divine protection, with the king’s upper body sheltered by the wings of goddesses associated with Upper and Lower Egypt. The craftsmanship reflects the theological importance of shielding the king’s body from harm."
+      ],
+      "significance": [
+        "This coffinette is associated with the goddess Selket, a protector against danger and a healing deity in funerary magic. In Tutankhamun’s burial, Selket was paired with the Son of Horus responsible for guarding the intestines."
+      ],
+      "historical_background": [
+        "The pairing of Selket with the intestines formed part of a balanced protective system that ensured the king’s bodily integrity in the afterlife. Each organ required its own divine guardian to guarantee successful resurrection."
+      ],
+      "faq": [
+        "Q: Which organ did this coffinette protect? A: The intestines. Q: Who is Selket? A: A goddess of protection and healing. Q: Why are wings shown? A: They symbolize divine shelter."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_canopic_coffinette_neith",
+    "title": "Canopic Coffinette (Neith)",
+    "exhibit": "Canopic Coffinette (Neith)",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/canopic-coffinette-16345.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This miniature gold coffin is one of four placed inside Tutankhamun’s canopic chest and held one of the king’s embalmed internal organs. Richly inlaid with carnelian and colored glass, it reflects the finest craftsmanship of the royal workshops."
+      ],
+      "details": [
+        "A hieroglyphic inscription down the front contains a protective spell spoken by the goddess Neith. The meticulous inlay work and gold surface emphasize the sacred importance of the object."
+      ],
+      "significance": [
+        "Neith was paired with Duamutef, the Son of Horus who guarded the stomach. Together, they provided divine defense over one of the king’s vital organs, ensuring its preservation for resurrection."
+      ],
+      "historical_background": [
+        "The presence of Neith, a goddess associated with warfare, creation, and protection, underscores the importance of safeguarding every aspect of the king’s physical body. The opulent materials reflect the religious seriousness of this task."
+      ],
+      "faq": [
+        "Q: Which organ did this coffinette protect? A: The stomach. Q: Who is Neith? A: A goddess of protection and creation. Q: Why was gold used? A: Gold symbolized eternity and divine flesh."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_canopic_shrine",
+    "title": "Canopic Shrine on a Sledge",
+    "exhibit": "Canopic Shrine on a Sledge",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/canopic-shrine-on-a-sledge.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This wooden shrine, covered in layers of gold foil, served as the protective housing for Tutankhamun’s canopic chest and the miniature coffins containing his embalmed organs. It rested on a gilded sledge and formed a vital part of the king’s funerary equipment."
+      ],
+      "details": [
+        "The shrine is topped by an open canopy decorated with a frieze of multicolored cobras inlaid with red, blue, and green glass. Its gilded surfaces and architectural form echo temple design, emphasizing its sacred function as a ritual enclosure."
+      ],
+      "significance": [
+        "In New Kingdom royal burials, nested shrines created a multilayered barrier protecting the king’s body and vital organs. Tutankhamun’s canopic shrine mirrors the design of the four great shrines surrounding his sarcophagus, reinforcing the idea that every aspect of the king’s being required divine protection."
+      ],
+      "historical_background": [
+        "The shrine was protected by four goddesses, each associated with one of the Sons of Horus and a specific organ. Their outstretched arms symbolized an unbroken circle of divine guardianship ensuring the king’s resurrection."
+      ],
+      "faq": [
+        "Q: What did the shrine contain? A: The canopic chest and miniature coffins with organs. Q: Why was it on a sledge? A: For ritual transport during the funerary procession. Q: Why are cobras shown? A: Cobras symbolized royal and divine protection."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_cow_head",
+    "title": "Cow Head",
+    "exhibit": "Cow Head",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/cow-head.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This ceremonial cow’s head was carved from a single block of wood and found with its throat wrapped in linen. Parts of the head are covered in gold foil, while others are painted black, creating a striking ritual appearance."
+      ],
+      "details": [
+        "The upper neck, head, and ears are gilded, while the lower neck is painted black. The wooden horns are coated in copper and thick black resin. These materials enhanced both the visual impact and the symbolic power of the object."
+      ],
+      "significance": [
+        "The cow is associated with the goddess Hathor, who welcomed the dead into the afterlife and was often shown emerging from the western mountains. This object reflects longstanding funerary beliefs linking Hathor to rebirth and divine guidance."
+      ],
+      "historical_background": [
+        "The object aligns with earlier 18th-Dynasty practices and demonstrates continuity in Hathor’s cult at Thebes. Its careful gilding and resin treatment highlight the importance placed on invoking Hathor’s protection during the king’s journey to the afterlife."
+      ],
+      "faq": [
+        "Q: Why is the object shaped like a cow? A: It represents Hathor, goddess of the afterlife. Q: Why is part of it black? A: Black symbolized rebirth and regeneration. Q: What was its purpose? A: Ritual protection and guidance of the king."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_duck_earrings",
+    "title": "Duck Head Earrings",
+    "exhibit": "Duck Head Earrings",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/duck-head-earrings.jpg",
+      "assets/artifacts/duck-head.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "These elaborate earrings were worn by Tutankhamun and attached by small tubes that passed through pierced earlobes. Each tube is sealed with round disks of transparent quartz, highlighting the luxury of royal adornment."
+      ],
+      "details": [
+        "The front panels display tiny portraits of the king framed by two uraeus snakes. The design combines royal imagery with sacred symbols, including composite birds and protective signs associated with eternity and divine safeguarding."
+      ],
+      "significance": [
+        "Jewelry in the 18th Dynasty carried deep symbolic meaning. These earrings merged royal identity with motifs of protection and rebirth, reinforcing the king’s divine status in both life and the afterlife."
+      ],
+      "historical_background": [
+        "The earrings demonstrate the exceptional skill of royal goldsmiths, combining multicolored inlays, miniature portraiture, and complex symbolism into a single object. They exemplify the sophistication of New Kingdom funerary jewelry."
+      ],
+      "faq": [
+        "Q: Did Tutankhamun wear these in life? A: Yes, they were worn by the king. Q: Why are snakes shown? A: Uraei symbolized royal protection. Q: Why include birds? A: Birds were linked to rebirth and the soul."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_perfume_vase",
+    "title": "Fancy Perfume Vase",
+    "exhibit": "Fancy Perfume Vase",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/fancy-perfume-vase-main.jpg",
+      "assets/artifacts/fancy-perfume-vase-alt-1.jpg",
+      "assets/artifacts/fancy-perfume-vase-alt-2.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This ornate perfume vase was discovered in Tutankhamun’s burial chamber and features a long, slender neck topped by a flat rim bearing a vulture. The vessel reflects the high level of craftsmanship and symbolic meaning associated with royal burial goods."
+      ],
+      "details": [
+        "Two figures of the god Hapy, personification of the Nile, are shown tying lotus and papyrus plants around the neck of the vase. This imagery symbolizes the unification of Upper and Lower Egypt and the life-giving power of the Nile."
+      ],
+      "significance": [
+        "Perfume vases in royal burials were not merely luxury items but carried symbolic meanings linked to purification, regeneration, and divine kingship. The vessel connected the king’s body with ritual cleansing and renewal in the afterlife."
+      ],
+      "historical_background": [
+        "The vulture on the rim and protective falcons at the base emphasize divine guardianship over the king’s identity. Inscriptions on the vase affirm the royal couple’s place within the restored traditional religious order of Dynasty 18."
+      ],
+      "faq": [
+        "Q: Why were perfumes placed in tombs? A: They symbolized purification and renewal. Q: Who is Hapy? A: The god of the Nile. Q: What does lotus and papyrus mean? A: The unity of Egypt."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_festival_earrings",
+    "title": "Festival Earrings",
+    "exhibit": "Festival Earrings",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/festival-earrings-main.jpg",
+      "assets/artifacts/festival-earrings-alt.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "These intricate festival earrings feature small figures of Tutankhamun standing on a heb festival sign between protective uraeus snakes, all suspended beneath a falcon. Each earring consists of three separate components and required assistance to wear."
+      ],
+      "details": [
+        "The heb festival sign symbolizes renewal and the reaffirmation of kingship. The uraeus snakes represent royal protection, while the falcon above links the king to Horus, the divine embodiment of kingship."
+      ],
+      "significance": [
+        "Jewelry reflecting royal festivals played a central role in New Kingdom court imagery. These earrings visually linked Tutankhamun to rituals that renewed his divine authority and affirmed his role as a god-king."
+      ],
+      "historical_background": [
+        "The earrings demonstrate the sophistication of royal goldsmiths and the importance of ceremonial adornment in royal burials. Their complexity reflects both artistic excellence and symbolic depth."
+      ],
+      "faq": [
+        "Q: What is the heb festival? A: A ritual celebrating renewal of kingship. Q: Why are snakes shown? A: They symbolize royal protection. Q: Were these worn in life? A: Likely during ceremonies."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_floral_hair_box",
+    "title": "Floral Hair Box",
+    "exhibit": "Floral Hair Box",
+    "museum": "GEM",
+    "period": "New Kingdom (Tutankhamun)",
+    "images": [
+      "assets/artifacts/floral-hair-box.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This delicately decorated floral hair box was discovered in the Antechamber inside a yellow-painted wooden container. Inside, Howard Carter found two cloth-wrapped balls of human hair, highlighting the deeply personal nature of the object."
+      ],
+      "details": [
+        "The lid is painted with bouquets of papyrus, mandrake fruits, cornflowers, and lotus petals. These floral motifs were carefully chosen for their symbolic associations with life, fertility, and renewal."
+      ],
+      "significance": [
+        "Objects containing human hair held strong symbolic meaning in ancient Egypt. Preserved hair could act as a magical substitute for a loved one’s presence and was associated with rebirth and continuity beyond death."
+      ],
+      "historical_background": [
+        "The use of lotus and mandrake imagery reinforces themes of regeneration, sexuality, and renewal. These motifs underline the ritual purpose of the hair box within the broader funerary beliefs of the New Kingdom."
+      ],
+      "faq": [
+        "Q: Whose hair was inside? A: Possibly royal family members. Q: Why keep hair in a tomb? A: It symbolized rebirth and personal bonds. Q: Why floral designs? A: Flowers represented regeneration and life."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_golden_throne",
+    "title": "Golden Throne",
+    "exhibit": "Golden Throne",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/golden-throne-of-tutankhamun.jpg",
+      "assets/artifacts/gem4573-golden-throne.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "The Golden Throne of Tutankhamun is a richly decorated ceremonial armchair found wrapped in linen in the Antechamber of his tomb. Made of wood covered with sheets of gold and inlaid with colored materials, it is one of the most famous royal objects from the 18th Dynasty."
+      ],
+      "details": [
+        "The throne is constructed from wood covered with gold sheets that are chased and inlaid with glass, faience, and semi-precious stones. Its side panels are formed by winged uraeus snakes holding the king’s cartouche, combining luxury craftsmanship with strong protective symbolism."
+      ],
+      "significance": [
+        "A celebrated scene on the backrest shows the king and queen under a floral canopy, with rays of the Aten sun disk reaching down toward them. This imagery reflects the transitional ideology early in Tutankhamun’s reign, bridging Amarna-style symbolism with the return to traditional royal authority."
+      ],
+      "historical_background": [
+        "Tutankhamun’s reign followed the religious reforms of Akhenaten, and many objects from his early years show a complex mix of styles and beliefs. The throne offers insight into this cultural shift and the restoration of traditional religious and political order in late Dynasty 18."
+      ],
+      "faq": [
+        "Q: Why are Aten rays shown on the throne? A: It reflects early reign imagery influenced by the Amarna period. Q: What do the winged uraei mean? A: They symbolize royal protection. Q: Was it used as daily furniture? A: It was likely ceremonial and symbolic, not ordinary seating."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_guardian_khat",
+    "title": "Guardian Statue with Khat Headdress",
+    "exhibit": "Guardian Statue with Khat Headdress",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/guardian-statue-with-khat-headdress.jpg",
+      "assets/artifacts/gem5.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This life-size guardian statue of Tutankhamun stood at the sealed entrance to his Burial Chamber, one of a pair positioned face to face. The two statues may have represented the king and his ka, emphasizing protection and eternal presence at the threshold of the burial space."
+      ],
+      "details": [
+        "The statue has a wooden core coated with black resin and gilded accents. Tutankhamun wears a khat headdress and a pleated royal kilt, and holds a mace and a long staff. A cobra uraeus on the forehead symbolizes royal protection.",
+        "An inscription on the kilt includes royal titles and names, identifying the king as Nebkheperure and emphasizing justified status in the afterlife. Such inscriptions strengthened the statue’s ritual role as both image and protective presence."
+      ],
+      "significance": [
+        "The black coloration links the king to Osiris, god of the afterlife, reinforcing the theme of resurrection. As a guardian figure, the statue protected the tomb entrance and signaled that the king remained divinely empowered even in death."
+      ],
+      "faq": [
+        "Q: Why were two guardian statues placed at the doorway? A: To protect the burial chamber and represent the king’s continuing presence. Q: What is the ka? A: A spiritual aspect of the person, often translated as life-force. Q: Why is the statue black? A: Black is linked to Osiris and rebirth."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_guardian_nemes",
+    "title": "Guardian Statue with Nemes Headcloth",
+    "exhibit": "Guardian Statue with Nemes Headcloth",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [],
+    "sections": {
+      "overview": [
+        "This life-size guardian statue of Tutankhamun is part of a pair that stood before the sealed doorway to his Burial Chamber. Shown as a powerful royal figure holding a staff and a mace, it functioned as a protective presence at the threshold of the king’s burial space."
+      ],
+      "details": [
+        "Tutankhamun wears the nemes headcloth, the striped royal headdress associated with divine kingship. The statue is carved from wood and coated with black resin and gold leaf, and the king holds a long staff and a mace—symbols of authority and protection."
+      ],
+      "significance": [
+        "The nemes headcloth represents royal authority and is strongly linked with gods such as Horus and Ra. Combined with the black resin associated with Osiris and regeneration, the statue presents the king as divinely protected and ready for his journey into the afterlife."
+      ],
+      "faq": [
+        "Q: What does the nemes headcloth symbolize? A: Royal authority and divine kingship. Q: Why does the statue hold a mace and staff? A: They represent power and protection. Q: Why were guardian statues placed here? A: To protect the burial chamber entrance."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_ivory_jewellery_box",
+    "title": "Ivory Jewellery Box",
+    "exhibit": "Ivory Jewellery Box",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/ivory-jewellery-box.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This small ivory jewellery box was found in the Antechamber of Tutankhamun’s tomb. It is made from blocks and panels of solid ivory and represents the luxury craftsmanship associated with royal personal items."
+      ],
+      "details": [
+        "The box includes gold knobs, gold hinges, and gold feet. The back is decorated with a lotus-capital column motif, and the king’s names are carved on the front and in a band across the top, emphasizing ownership and royal identity."
+      ],
+      "significance": [
+        "Boxes like this were used to store valued personal or ceremonial items within the royal burial assemblage. Their materials and inscriptions show that even practical containers carried strong symbolic meaning and affirmed kingship."
+      ],
+      "historical_background": [
+        "The refined workmanship highlights the artistic standards of royal workshops in late Dynasty 18. Objects like this provide insight into the everyday luxury and ceremonial preparation that surrounded a king’s burial."
+      ],
+      "faq": [
+        "Q: Why is the king’s name carved on the box? A: To mark royal ownership and reinforce identity. Q: What might it have contained? A: Small valuables, jewelry, or ceremonial items. Q: Why use ivory and gold? A: They signaled luxury and status."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_lion_perfume_jar",
+    "title": "Lion-Shaped Perfume Jar",
+    "exhibit": "Lion-Shaped Perfume Jar",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [],
+    "sections": {
+      "overview": [
+        "This lion-shaped perfume jar was found in the Annex of Tutankhamun’s tomb. Carved from a single piece of Egyptian alabaster, it depicts a crowned lion standing on a tall stool and originally contained perfumed ointment."
+      ],
+      "details": [
+        "The lion’s teeth and tongue were made of ivory, while its missing earrings and claws were likely gold. Painted floral and geometric motifs in blue, white, and yellow decorate the vessel, reflecting the high artistic standards of royal workshops."
+      ],
+      "significance": [
+        "Lions symbolized strength, protection, and royal authority in ancient Egypt. The aggressive posture of the lion was intended to ward off evil and protect the king, while the perfume inside was associated with purification and renewal."
+      ],
+      "faq": [
+        "Q: Why is the jar shaped like a lion? A: Lions symbolized power and protection. Q: What was inside it? A: Perfumed ointment. Q: Why use alabaster? A: It was valued for purity and beauty."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_lions_headrest",
+    "title": "Tutankhamun Headrest",
+    "exhibit": "Tutankhamun Headrest",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/Tutankhamun-Headrest-scaled.jpg",
+      "assets/artifacts/tutankhamun-headrest-alt.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This ivory headrest from Tutankhamun’s burial features a slim base and a central pillar carved as the god Shu, who raises the curved head support. Two crouching lions flank Shu, symbolizing guardianship of the horizon."
+      ],
+      "details": [
+        "Shu, god of air, is shown kneeling and lifting the headrest with raised arms, while the lions represent the eastern and western horizons. Black-painted details on Shu’s hair and kilt enhance the visual contrast and symbolic depth."
+      ],
+      "significance": [
+        "Headrests were linked to rebirth and awakening, as lifting the head symbolized rising to new life. The lions and Shu together express cosmic balance and protection during the king’s transition to the afterlife."
+      ],
+      "faq": [
+        "Q: Was this used for sleeping? A: Symbolically, not practically. Q: Who is Shu? A: The god of air. Q: Why lions? A: They guarded the horizons and protected rebirth."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_lotus_cup",
+    "title": "Lotus Cup",
+    "exhibit": "Lotus Cup",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/lotus-cup.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "The Lotus Cup of Tutankhamun, often called the Wishing Cup, is a finely carved alabaster vessel shaped as an open white lotus flower. It was found in the tomb of the young pharaoh and is deeply connected to rebirth symbolism."
+      ],
+      "details": [
+        "The cup features handles shaped as blue lotus flowers supporting baskets with kneeling figures of Heh, god of eternity. Heh holds ankh signs and palm branches resting on tadpoles and shen symbols, representing infinite life and time."
+      ],
+      "significance": [
+        "The lotus symbolized regeneration, as it closed at night and opened at dawn. Inscriptions on the cup express wishes for eternal life, health, and happiness, reinforcing the belief in the king’s rebirth in the afterlife."
+      ],
+      "faq": [
+        "Q: Why is the lotus important? A: It symbolized rebirth. Q: Who is Heh? A: The god of eternity. Q: Was this cup used in life? A: It was primarily symbolic."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_funerary_bed_model",
+    "title": "Model of Tutankhamun on a Funerary Bed",
+    "exhibit": "Model of Tutankhamun on a Funerary Bed",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/model-of-tutankhamun-on-a-funerary-bed.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This wooden model shows Tutankhamun as a mummy lying on a lion-headed funerary bed. It was found wrapped in linen inside a sarcophagus-shaped box together with shabti tools."
+      ],
+      "details": [
+        "Two small figures—a human-headed bird and a falcon—sit at the king’s elbows and wrap their wings around his body. These figures symbolize the ba soul and divine protection."
+      ],
+      "significance": [
+        "Ritual beds were symbolic objects believed to assist the king’s rebirth. The lion form added protection and strength, helping guide the pharaoh through transformation in the afterlife."
+      ],
+      "faq": [
+        "Q: Was this an actual bed? A: No, it was symbolic. Q: Why a lion? A: Lions represented protection. Q: What do the birds mean? A: The soul and divine guardianship."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_ostrich_fan",
+    "title": "Ostrich Hunt Fan",
+    "exhibit": "Ostrich Hunt Fan",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [],
+    "sections": {
+      "overview": [
+        "The Ostrich Hunt Fan of Tutankhamun was found in the Burial Chamber of the king’s tomb. Originally decorated with alternating brown and white ostrich feathers, it was a ceremonial object associated with royal status and display."
+      ],
+      "details": [
+        "The fan was crafted from wood and covered in gold, and once held between thirty and forty-two ostrich feathers. Although the feathers decayed, their arrangement could still be identified during excavation."
+      ],
+      "significance": [
+        "In royal ideology, hunting symbolized control over chaos and nature. The fan’s inscriptions state that Tutankhamun himself hunted the ostriches, reinforcing his image as an active and powerful ruler."
+      ],
+      "faq": [
+        "Q: Why ostrich feathers? A: They symbolized prestige and royal hunting skill. Q: Was it practical? A: It was mainly ceremonial. Q: What does the hunt show? A: Royal strength and dominance."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_outer_coffin",
+    "title": "Outer Coffin",
+    "exhibit": "Outer Coffin",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/outer-coffin.jpg",
+      "assets/artifacts/outer-coffin-alt.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "The Outer Coffin is the largest of three coffins placed inside Tutankhamun’s sarcophagus. It depicts the king as a mummified figure with crossed arms, holding the crook and flail."
+      ],
+      "details": [
+        "The coffin is made of wood covered with plaster, linen, and thin gold foil, while the face, hands, and neck are covered with thicker hammered gold. Its anthropoid form presents the king as the god Osiris."
+      ],
+      "significance": [
+        "Images of gods and protective spells from the Book of the Dead cover the surface. These inscriptions ensured safe passage and resurrection in the afterlife."
+      ],
+      "faq": [
+        "Q: Why three coffins? A: For layered protection. Q: Why crossed arms? A: They symbolize kingship. Q: Why gold? A: Gold represented divine flesh."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_ritual_carrying_box",
+    "title": "Ritual Carrying Box",
+    "exhibit": "Ritual Carrying Box",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/ritual-carrying-box.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "This ritual carrying box was found in the Antechamber and designed to be carried using four sliding poles. It held objects used in important funerary ceremonies."
+      ],
+      "details": [
+        "The box is made of red wood panels set within ebony frames. Inscriptions describe Tutankhamun as the Osiris King, suggesting use after his death."
+      ],
+      "significance": [
+        "The box and its contents were likely used in the Opening of the Mouth ceremony, which restored the senses of the deceased and enabled rebirth."
+      ],
+      "faq": [
+        "Q: Why was it carried? A: For ritual processions. Q: What ceremony was it used in? A: Opening of the Mouth. Q: What was inside? A: Ritual tools and objects."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_royal_diadem",
+    "title": "Royal Diadem",
+    "exhibit": "Royal Diadem",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/royal-diadem.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "The Royal Diadem is a gold headband found encircling Tutankhamun’s head beneath the funerary mask. It secured the king’s wig and provided divine protection."
+      ],
+      "details": [
+        "The fillet is decorated with carnelian roundels and blue glass squares. At the front are removable figures of the vulture goddess Nekhbet and the cobra goddess Wadjet."
+      ],
+      "significance": [
+        "The vulture and cobra symbolize sovereignty over Upper and Lower Egypt. Worn in life and death, the diadem served as both regalia and magical protection."
+      ],
+      "faq": [
+        "Q: Why two animals? A: They represent united Egypt. Q: Was it worn in life? A: Yes. Q: Why gold? A: Gold symbolized eternity."
+      ]
+    }
+  },
+  {
+    "id": "gem_tut_golden_mask",
+    "title": "Golden Burial Mask of Tutankhamun",
+    "exhibit": "Golden Burial Mask of Tutankhamun",
+    "museum": "GEM",
+    "period": "New Kingdom, Dynasty 18 (Tutankhamun)",
+    "images": [
+      "assets/artifacts/golden-burial-mask-of-tutankhamun.jpg",
+      "assets/artifacts/golden-mask.jpg"
+    ],
+    "sections": {
+      "overview": [
+        "The Golden Burial Mask of Tutankhamun is one of the most famous objects from ancient Egypt. Made of solid gold, it was placed over the head and shoulders of the king’s mummy."
+      ],
+      "details": [
+        "The mask weighs over 10 kilograms and is inlaid with lapis lazuli, quartz, obsidian, and colored glass. It presents an idealized portrait of Tutankhamun with divine features."
+      ],
+      "significance": [
+        "The mask identifies the king with Osiris and the sun god Re. Spells from the Book of the Dead inscribed inside protected the soul and ensured resurrection."
+      ],
+      "faq": [
+        "Q: Why gold? A: Gold symbolized divine flesh. Q: Why the cobra and vulture? A: They represent united Egypt. Q: Is this the king’s real face? A: It is an idealized likeness."
+      ]
+    }
+  }
+]
