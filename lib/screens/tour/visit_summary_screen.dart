@@ -22,7 +22,7 @@ class VisitSummaryScreen extends StatelessWidget {
     final skippedQuizzesCount = tourProvider.skippedQuizzes.length;
 
     return AppMenuShell(
-      title: l10n.visitSummary,
+      title: l10n.visitSummary.toUpperCase(),
       backgroundColor: AppColors.darkBackground,
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
@@ -49,12 +49,12 @@ class VisitSummaryScreen extends StatelessWidget {
             const SizedBox(height: 32),
 
             // 2. Main Congrats
-            Text(l10n.congrats, style: AppTextStyles.screenTitle(context).copyWith(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -0.5, color: Colors.white)),
+            Text(l10n.congrats, style: AppTextStyles.displayScreenTitle(context).copyWith(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -0.5, color: Colors.white)),
             const SizedBox(height: 12),
             Text(
               l10n.visitComplete,
               textAlign: TextAlign.center,
-              style: AppTextStyles.body(context).copyWith(fontSize: 16, color: AppColors.helperText, height: 1.5),
+              style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 16, color: AppColors.helperText, height: 1.5),
             ),
             const SizedBox(height: 48),
 
@@ -123,7 +123,7 @@ class VisitSummaryScreen extends StatelessWidget {
                 ),
                 child: Text(
                   l10n.done,
-                  style: AppTextStyles.button(context).copyWith(color: AppColors.primaryGold),
+                  style: AppTextStyles.buttonLabel(context).copyWith(color: AppColors.primaryGold),
                 ),
               ),
             ),
@@ -139,9 +139,9 @@ class VisitSummaryScreen extends StatelessWidget {
       children: [
         Icon(icon, size: 22, color: AppColors.helperText),
         const SizedBox(width: 16),
-        Text(label, style: AppTextStyles.body(context).copyWith(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.white)),
+        Text(label, style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.white)),
         const Spacer(),
-        Text(value, style: AppTextStyles.statNumber(context).copyWith(fontSize: 18, fontWeight: FontWeight.w900, color: valueColor)),
+        Text(value, style: AppTextStyles.titleLarge(context).copyWith(fontSize: 18, color: valueColor)),
       ],
     );
   }

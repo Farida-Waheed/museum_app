@@ -99,7 +99,7 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
     final robotY = (currentExhibit.y / 600) * mapHeight;
 
     return AppMenuShell(
-      title: isArabic ? "خريطة المتحف" : "Museum Map",
+      title: (isArabic ? "خريطة المتحف" : "Museum Map").toUpperCase(),
       subHeader: const RobotStatusBanner(),
       bottomNavigationBar: const BottomNav(currentIndex: 1),
       body: Column(
@@ -114,9 +114,9 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(isArabic ? "المتحف المصري الكبير" : "Grand Egyptian Museum", style: AppTextStyles.cardTitle(context).copyWith(fontSize: 14)),
-                    const SizedBox(height: 2),
-                    Text(isArabic ? "الجناح الشرقي • مقتنيات ذهبية" : "East Wing • Golden Artifacts", style: AppTextStyles.helper(context)),
+                    Text(isArabic ? "المتحف المصري الكبير" : "Grand Egyptian Museum", style: AppTextStyles.titleMedium(context).copyWith(fontSize: 15)),
+                    const SizedBox(height: 4),
+                    Text(isArabic ? "الجناح الشرقي • مقتنيات ذهبية" : "East Wing • Golden Artifacts", style: AppTextStyles.metadata(context)),
                   ],
                 ),
                 _FilterChip(label: isArabic ? "مقتنيات" : "Exhibits"),
@@ -179,10 +179,9 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                                   padding: const EdgeInsets.only(top: 10),
                                   child: Text(
                                     isArabic ? "المدخل" : "Entrance",
-                                    style: AppTextStyles.helper(context).copyWith(
+                                    style: AppTextStyles.metadata(context).copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: AppColors.neutralMedium,
-                                      fontSize: 12,
                                     ),
                                   ),
                                 ),
@@ -376,7 +375,7 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 10),
-        Text(label, style: AppTextStyles.helper(context).copyWith(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold)),
+        Text(label, style: AppTextStyles.metadata(context).copyWith(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -414,7 +413,7 @@ class _FilterChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.primaryGold.withOpacity(0.3)),
       ),
-      child: Text(label, style: AppTextStyles.helper(context).copyWith(color: AppColors.primaryGold, fontSize: 11, fontWeight: FontWeight.bold)),
+      child: Text(label, style: AppTextStyles.metadata(context).copyWith(color: AppColors.primaryGold, fontSize: 11, fontWeight: FontWeight.bold)),
     );
   }
 }
@@ -451,12 +450,12 @@ class _ExhibitInfoPopup extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(child: Text(exhibit.getName(isArabic ? 'ar' : 'en'), style: AppTextStyles.cardTitle(context).copyWith(fontSize: 20))),
+                      Expanded(child: Text(exhibit.getName(isArabic ? 'ar' : 'en'), style: AppTextStyles.titleLarge(context))),
                       if (isVisited) const Icon(Icons.check_circle, color: Colors.green, size: 24),
                     ],
                   ),
                   const SizedBox(height: 8),
-                  Text(exhibit.getDescription(isArabic ? 'ar' : 'en'), style: AppTextStyles.body(context), maxLines: 3, overflow: TextOverflow.ellipsis),
+                  Text(exhibit.getDescription(isArabic ? 'ar' : 'en'), style: AppTextStyles.bodyPrimary(context), maxLines: 3, overflow: TextOverflow.ellipsis),
                   const SizedBox(height: 24),
                   Row(
                     children: [
@@ -487,7 +486,7 @@ class _PopupBtn extends StatelessWidget {
     return ElevatedButton.icon(
       onPressed: onTap,
       icon: Icon(icon, size: 16),
-      label: Text(label, style: AppTextStyles.button(context).copyWith(fontSize: 12)),
+      label: Text(label, style: AppTextStyles.buttonLabel(context).copyWith(fontSize: 12)),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primaryGold,
         foregroundColor: AppColors.darkInk,

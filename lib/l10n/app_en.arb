@@ -4,7 +4,7 @@
   "@appTitle": {
     "description": "The title of the application"
   },
-  "exploreEgypt": "Explore Egypt With Horus",
+  "exploreEgypt": "Explore Egypt With Horus-Bot",
   "nextStop": "Next stop: {location} in {time} min",
   "exhibits": "Exhibits",
   "visited": "Visited",

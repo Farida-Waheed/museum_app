@@ -33,9 +33,9 @@ class MyPhotosScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
-          "Horus Memories",
-          style: TextStyle(color: AppColors.primaryText, fontWeight: FontWeight.bold),
+        title: Text(
+          "Horus Memories".toUpperCase(),
+          style: AppTextStyles.displayScreenTitle(context).copyWith(fontSize: 18),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.primaryGold),
@@ -93,7 +93,7 @@ class _PhotoCard extends StatelessWidget {
                       ),
                       child: Text(
                         photo.location,
-                        style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                        style: AppTextStyles.metadata(context).copyWith(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),

@@ -40,7 +40,7 @@ class PrimaryButton extends StatelessWidget {
             Icon(icon, size: 20),
             const SizedBox(width: 8),
           ],
-          Text(label, style: AppTextStyles.button(context)),
+          Text(label, style: AppTextStyles.buttonLabel(context)),
         ],
       ],
     );

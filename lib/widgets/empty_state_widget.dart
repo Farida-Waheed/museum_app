@@ -24,10 +24,18 @@ class EmptyStateWidget extends StatelessWidget {
         children: [
           Icon(icon, size: 48, color: AppColors.primaryGold),
           const SizedBox(height: AppSizes.md),
-          Text(title, style: AppTextStyles.title(context), textAlign: TextAlign.center),
+          Text(
+            title,
+            style: AppTextStyles.titleLarge(context),
+            textAlign: TextAlign.center,
+          ),
           if (subtitle != null) ...[
             const SizedBox(height: AppSizes.sm),
-            Text(subtitle!, style: AppTextStyles.body(context), textAlign: TextAlign.center),
+            Text(
+              subtitle!,
+              style: AppTextStyles.bodyPrimary(context),
+              textAlign: TextAlign.center,
+            ),
           ],
         ],
       ),

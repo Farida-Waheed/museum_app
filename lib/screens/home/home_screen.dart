@@ -185,7 +185,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           style: brandStyle.copyWith(
                             color: AppColors.primaryGold,
                             fontSize: 18,
-                            letterSpacing: 1.2,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 4.0,
                           ),
                         ),
                       ],
@@ -213,13 +214,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                l10n.exploreTheMuseum,
-                style: AppTextStyles.heroTitle(context),
+                l10n.exploreEgypt,
+                style: AppTextStyles.displayHero(context),
               ),
               const SizedBox(height: 12),
               Text(
                 l10n.followAndDiscover,
-                style: AppTextStyles.heroSubtitle(context),
+                style: AppTextStyles.bodySecondary(context),
               ),
             ],
           ),
@@ -321,7 +322,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   children: [
                     Text(
                       l10n.exhibits.toUpperCase(),
-                      style: AppTextStyles.sectionTitle(innerContext),
+                      style: AppTextStyles.displaySectionTitle(innerContext),
                     ),
                     const SizedBox(height: 20),
                     Row(
@@ -364,7 +365,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
                       l10n.recommendedForYou.toUpperCase(),
-                      style: AppTextStyles.sectionTitle(innerContext),
+                      style: AppTextStyles.displaySectionTitle(innerContext),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -436,7 +437,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       children: [
                         Text(
                           l10n.mapPreview.toUpperCase(),
-                          style: AppTextStyles.sectionTitle(innerContext),
+                          style: AppTextStyles.displaySectionTitle(innerContext),
                         ),
                         _LiveBadge(label: l10n.live),
                       ],
@@ -524,7 +525,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         ),
                                     child: Text(
                                       l10n.fullView,
-                                      style: AppTextStyles.button(context)
+                                      style: AppTextStyles.buttonLabel(context)
                                           .copyWith(
                                             color: AppColors.primaryGold,
                                             fontSize: 13,
@@ -551,7 +552,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
                       l10n.museumNews.toUpperCase(),
-                      style: AppTextStyles.sectionTitle(innerContext),
+                      style: AppTextStyles.displaySectionTitle(innerContext),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -600,14 +601,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         const SizedBox(width: 14),
                         Text(
                           l10n.didYouKnow.toUpperCase(),
-                          style: AppTextStyles.sectionTitle(innerContext),
+                          style: AppTextStyles.displaySectionTitle(innerContext),
                         ),
                       ],
                     ),
                     const SizedBox(height: 20),
                     Text(
                       l10n.didYouKnowFact,
-                      style: AppTextStyles.body(innerContext).copyWith(
+                      style: AppTextStyles.bodyPrimary(innerContext).copyWith(
                         color: Colors.white,
                         fontSize: 16,
                         height: 1.7,
@@ -705,15 +706,15 @@ class _NextStopBadgeState extends State<_NextStopBadge> {
                     children: [
                       Text(
                         widget.label,
-                        style: AppTextStyles.sectionTitle(context),
+                        style: AppTextStyles.displaySectionTitle(context),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         widget.location,
-                        style: AppTextStyles.cardTitle(context),
+                        style: AppTextStyles.titleMedium(context),
                       ),
                       const SizedBox(height: 6),
-                      Text(widget.time, style: AppTextStyles.body(context)),
+                      Text(widget.time, style: AppTextStyles.bodyPrimary(context)),
                     ],
                   ),
                 ),
@@ -816,9 +817,9 @@ class _FeatureCardState extends State<_FeatureCard>
                         Expanded(
                           child: Text(
                             widget.title,
-                            style: AppTextStyles.cardTitle(
+                            style: AppTextStyles.titleMedium(
                               context,
-                            ).copyWith(fontSize: 17),
+                            ),
                           ),
                         ),
                       ],
@@ -896,14 +897,14 @@ class _HighlightCardState extends State<_HighlightCard> {
                       children: [
                         Text(
                           widget.title,
-                          style: AppTextStyles.cardTitle(context),
+                          style: AppTextStyles.titleMedium(context),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           widget.subtitle,
-                          style: AppTextStyles.body(
+                          style: AppTextStyles.bodySecondary(
                             context,
-                          ).copyWith(color: Colors.white70),
+                          ),
                         ),
                       ],
                     ),
@@ -963,7 +964,7 @@ class _NewsCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               item.title,
-              style: AppTextStyles.cardTitle(context),
+              style: AppTextStyles.titleMedium(context),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -972,7 +973,7 @@ class _NewsCard extends StatelessWidget {
               children: [
                 Text(
                   'Read More',
-                  style: AppTextStyles.button(
+                  style: AppTextStyles.buttonLabel(
                     context,
                   ).copyWith(color: AppColors.primaryGold, fontSize: 12),
                 ),
@@ -1019,12 +1020,12 @@ class _StatCard extends StatelessWidget {
           const Spacer(),
           Text(
             value,
-            style: AppTextStyles.heroSubtitle(
+            style: AppTextStyles.titleLarge(
               context,
-            ).copyWith(fontSize: 20, fontWeight: FontWeight.w800),
+            ),
           ),
           const SizedBox(height: 4),
-          Text(label, style: AppTextStyles.body(context)),
+          Text(label, style: AppTextStyles.bodyPrimary(context)),
         ],
       ),
     );
@@ -1088,7 +1089,7 @@ class _LiveBadge extends StatelessWidget {
           const SizedBox(width: 10),
           Text(
             label.toUpperCase(),
-            style: AppTextStyles.sectionTitle(context).copyWith(
+            style: AppTextStyles.displaySectionTitle(context).copyWith(
               fontSize: 11,
               color: AppColors.alertRed,
               letterSpacing: 1.5,
@@ -1112,7 +1113,7 @@ class _LegendDot extends StatelessWidget {
       children: [
         Icon(Icons.circle, size: 9, color: color),
         const SizedBox(width: 10),
-        Text(label, style: AppTextStyles.body(context).copyWith(fontSize: 13)),
+        Text(label, style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 13)),
       ],
     );
   }
@@ -1231,7 +1232,7 @@ class _HorusFabState extends State<_HorusFab>
                       children: [
                         Text(
                           widget.label,
-                          style: AppTextStyles.button(context).copyWith(
+                          style: AppTextStyles.buttonLabel(context).copyWith(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

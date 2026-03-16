@@ -27,7 +27,7 @@ class EventsScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.happeningNow.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
+            Text(l10n.happeningNow.toUpperCase(), style: AppTextStyles.displaySectionTitle(context)),
             const SizedBox(height: 16),
             if (liveEvents.isEmpty)
               Container(
@@ -37,7 +37,7 @@ class EventsScreen extends StatelessWidget {
                   children: [
                     const Icon(Icons.info_outline, color: AppColors.primaryGold),
                     const SizedBox(width: 16),
-                    Text(l10n.noEvents, style: AppTextStyles.body(context)),
+                    Text(l10n.noEvents, style: AppTextStyles.bodyPrimary(context)),
                   ],
                 ),
               )
@@ -50,7 +50,7 @@ class EventsScreen extends StatelessWidget {
                     isLive: true,
                   )),
             const SizedBox(height: 32),
-            Text(l10n.upcomingEvents.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
+            Text(l10n.upcomingEvents.toUpperCase(), style: AppTextStyles.displaySectionTitle(context)),
             const SizedBox(height: 16),
             ...upcomingEvents.map((e) => _buildEventCard(
                   context,
@@ -81,9 +81,9 @@ class EventsScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: AppTextStyles.cardTitle(context).copyWith(fontSize: 16)),
+                Text(title, style: AppTextStyles.titleMedium(context).copyWith(fontSize: 16)),
                 const SizedBox(height: 4),
-                Text(desc, style: AppTextStyles.helper(context)),
+                Text(desc, style: AppTextStyles.metadata(context)),
               ],
             ),
           ),

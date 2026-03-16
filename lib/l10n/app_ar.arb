@@ -1,7 +1,7 @@
 {
   "@@locale": "ar",
   "appTitle": "حوروس",
-  "exploreEgypt": "استكشف مصر مع حوروس",
+  "exploreEgypt": "استكشف مصر مع حورس-بوت",
   "nextStop": "المحطة التالية: {location} خلال {time} دقائق",
   "exhibits": "المعروضات",
   "visited": "تمت زيارتها",

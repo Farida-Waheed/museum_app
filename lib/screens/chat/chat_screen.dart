@@ -116,7 +116,7 @@ class _TypingIndicatorState extends State<_TypingIndicator>
       children: [
         Text(
           text,
-          style: AppTextStyles.helper(context).copyWith(
+          style: AppTextStyles.metadata(context).copyWith(
             color: AppColors.neutralMedium,
             fontSize: 11,
             fontStyle: FontStyle.italic,
@@ -200,7 +200,7 @@ class ChatBubble extends StatelessWidget {
         : Text(
             msg.text,
             textDirection: dir,
-            style: AppTextStyles.body(context).copyWith(
+            style: AppTextStyles.bodyPrimary(context).copyWith(
               color: textColor,
               fontSize: 15,
               height: 1.5,
@@ -263,7 +263,7 @@ class _InfoCardBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final titleStyle = AppTextStyles.cardTitle(context).copyWith(
+    final titleStyle = AppTextStyles.titleMedium(context).copyWith(
       fontWeight: FontWeight.w900,
       color: isUser
           ? AppColors.darkInk
@@ -272,7 +272,7 @@ class _InfoCardBubble extends StatelessWidget {
       letterSpacing: 0.2,
     );
 
-    final itemStyle = AppTextStyles.body(context).copyWith(
+    final itemStyle = AppTextStyles.bodyPrimary(context).copyWith(
       color: isUser
           ? AppColors.darkInk.withOpacity(0.8)
           : (isDark ? Colors.white.withOpacity(0.9) : Colors.black87),
@@ -550,14 +550,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       ? TextDirection.rtl
                       : TextDirection.ltr,
                   onSubmitted: _submit,
-                  style: AppTextStyles.body(context).copyWith(
+                  style: AppTextStyles.bodyPrimary(context).copyWith(
                     color: isDark ? Colors.white : AppColors.darkInk,
                   ),
                   decoration: InputDecoration(
                     hintText: isArabic
                         ? "اسأل الدليل عن أي شيء..."
                         : "Ask the Guide about anything...",
-                    hintStyle: AppTextStyles.body(context).copyWith(
+                    hintStyle: AppTextStyles.bodyPrimary(context).copyWith(
                       color: isDark ? Colors.white38 : Colors.black38,
                     ),
                     fillColor: isDark
@@ -617,8 +617,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
       appBar: AppBar(
         title: Text(
-          l10n.askTheGuide,
-          style: AppTextStyles.screenTitle(context).copyWith(fontWeight: FontWeight.w900, fontSize: 18),
+          l10n.askTheGuide.toUpperCase(),
+          style: AppTextStyles.displayScreenTitle(context).copyWith(fontWeight: FontWeight.w900, fontSize: 18),
         ),
         backgroundColor: isDark ? AppColors.darkHeader : Colors.white,
         elevation: 0,
@@ -655,7 +655,7 @@ class _QuickChip extends StatelessWidget {
         onPressed: onTap,
         label: Text(
           label,
-          style: AppTextStyles.helper(context).copyWith(
+          style: AppTextStyles.metadata(context).copyWith(
             fontSize: 12,
             fontWeight: FontWeight.bold,
             color: isDark ? Colors.white : AppColors.darkInk,
@@ -710,7 +710,7 @@ class RoboGuideEntry extends StatelessWidget {
       icon: const Icon(Icons.smart_toy_rounded),
       label: Text(
         l10n.talkToHorusBot,
-        style: AppTextStyles.button(context).copyWith(fontWeight: FontWeight.bold),
+        style: AppTextStyles.buttonLabel(context).copyWith(fontWeight: FontWeight.bold),
       ),
       backgroundColor: AppColors.primaryGold,
       foregroundColor: AppColors.darkInk,

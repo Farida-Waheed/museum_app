@@ -152,7 +152,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     final nextExhibit = currentIdx < allExhibits.length - 1 ? allExhibits[currentIdx + 1] : null;
 
     return AppMenuShell(
-      title: l10n.liveTour,
+      title: l10n.liveTour.toUpperCase(),
       subHeader: const RobotStatusBanner(),
       bottomNavigationBar: const BottomNav(currentIndex: 2),
       body: SingleChildScrollView(
@@ -189,7 +189,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
             const SizedBox(height: 24),
 
             // --- CURRENT STOP CARD ---
-            Text(l10n.currentStop.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
+            Text(l10n.currentStop.toUpperCase(), style: AppTextStyles.displaySectionTitle(context)),
             const SizedBox(height: 8),
             Card(
               elevation: 4,
@@ -226,7 +226,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                           ),
                           child: Text(
                             currentExhibit.getName(Localizations.localeOf(context).languageCode),
-                            style: AppTextStyles.cardTitle(context).copyWith(fontSize: 18),
+                            style: AppTextStyles.titleLarge(context).copyWith(fontSize: 18),
                           ),
                         ),
                       ),
@@ -240,7 +240,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                           children: [
                             const Icon(Icons.smart_toy, color: Colors.blue, size: 20),
                             const SizedBox(width: 8),
-                            Expanded(child: Text(l10n.robotDescribing, style: AppTextStyles.helper(context).copyWith(fontSize: 13))),
+                            Expanded(child: Text(l10n.robotDescribing, style: AppTextStyles.metadata(context).copyWith(fontSize: 13))),
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -272,7 +272,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
               children: [
                 const Icon(Icons.subject, color: Colors.grey),
                 const SizedBox(width: 8),
-                Text(l10n.liveTranscript.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
+                Text(l10n.liveTranscript.toUpperCase(), style: AppTextStyles.displaySectionTitle(context)),
               ],
             ),
             const SizedBox(height: 8),
@@ -293,7 +293,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Text(
                       _transcript[index],
-                      style: AppTextStyles.body(context).copyWith(
+                      style: AppTextStyles.bodyPrimary(context).copyWith(
                         fontSize: 14,
                         color: isLast ? Colors.white : AppColors.neutralMedium,
                         fontWeight: isLast ? FontWeight.w600 : FontWeight.normal,
@@ -307,7 +307,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
 
             // --- NEXT UP ---
             if (nextExhibit != null) ...[
-               Text(l10n.nextStopLabel.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
+               Text(l10n.nextStopLabel.toUpperCase(), style: AppTextStyles.displaySectionTitle(context)),
                const SizedBox(height: 8),
                Card(
                  elevation: 0,
@@ -326,8 +326,8 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                        fit: BoxFit.cover,
                      ),
                    ),
-                   title: Text(nextExhibit.getName(Localizations.localeOf(context).languageCode), style: AppTextStyles.cardTitle(context).copyWith(fontSize: 16)),
-                   subtitle: Text(l10n.robotWaiting, style: AppTextStyles.helper(context).copyWith(fontSize: 12)),
+                   title: Text(nextExhibit.getName(Localizations.localeOf(context).languageCode), style: AppTextStyles.titleMedium(context).copyWith(fontSize: 16)),
+                   subtitle: Text(l10n.robotWaiting, style: AppTextStyles.metadata(context).copyWith(fontSize: 12)),
                    trailing: const Icon(Icons.chevron_right, color: AppColors.neutralMedium),
                    onTap: _skipExhibit,
                  ),
@@ -378,7 +378,7 @@ class _StatusChip extends StatelessWidget {
           children: [
             isPulsing ? _PulsingDot(color: color) : Icon(icon, size: 16, color: color),
             const SizedBox(width: 8),
-            Text(label, style: AppTextStyles.helper(context).copyWith(color: color, fontWeight: FontWeight.bold, fontSize: 12)),
+            Text(label, style: AppTextStyles.metadata(context).copyWith(color: color, fontWeight: FontWeight.bold, fontSize: 12)),
           ],
         ),
       ),
@@ -441,7 +441,7 @@ class _ControlButton extends StatelessWidget {
           iconSize: 28,
         ),
         const SizedBox(height: 4),
-        Text(label, style: AppTextStyles.helper(context).copyWith(fontSize: 12, fontWeight: FontWeight.w500)),
+        Text(label, style: AppTextStyles.metadata(context).copyWith(fontSize: 12, fontWeight: FontWeight.w500)),
       ],
     );
   }
@@ -462,8 +462,8 @@ class _TourProgressTimeline extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
-            Text("${currentIndex + 1} / $total", style: AppTextStyles.helper(context).copyWith(color: Colors.white70)),
+            Text(label.toUpperCase(), style: AppTextStyles.displaySectionTitle(context)),
+            Text("${currentIndex + 1} / $total", style: AppTextStyles.metadata(context).copyWith(color: Colors.white70)),
           ],
         ),
         const SizedBox(height: 12),
