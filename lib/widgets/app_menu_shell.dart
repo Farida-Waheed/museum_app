@@ -59,8 +59,11 @@ class _SideMenu extends StatelessWidget {
                           const SizedBox(width: 16),
                           Text(
                             l10n.appTitle.toUpperCase(),
-                            style: AppTextStyles.brandTitle(context, isDark: isDark).copyWith(
-                              fontSize: 24,
+                            style: AppTextStyles.navLabel(context).copyWith(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                              color: isDark ? Colors.white : AppColors.darkInk,
+                              letterSpacing: 2.0,
                             ),
                           ),
                         ],
@@ -262,7 +265,7 @@ class _MenuItem extends StatelessWidget {
           label,
           style: AppTextStyles.bodyPrimary(context).copyWith(
             fontSize: 16,
-            fontWeight: selected ? FontWeight.bold : FontWeight.w500,
+            fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
             color: selected
                 ? AppColors.primaryGold
                 : (isDark ? Colors.white : AppColors.darkInk),

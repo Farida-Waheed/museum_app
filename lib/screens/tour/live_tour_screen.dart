@@ -226,7 +226,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                           ),
                           child: Text(
                             currentExhibit.getName(Localizations.localeOf(context).languageCode),
-                            style: AppTextStyles.titleLarge(context).copyWith(fontSize: 18),
+                            style: AppTextStyles.displayArtifactTitle(context).copyWith(fontSize: 18),
                           ),
                         ),
                       ),

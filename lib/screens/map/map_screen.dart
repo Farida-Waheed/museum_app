@@ -450,7 +450,12 @@ class _ExhibitInfoPopup extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Expanded(child: Text(exhibit.getName(isArabic ? 'ar' : 'en'), style: AppTextStyles.titleLarge(context))),
+                      Expanded(
+                        child: Text(
+                          exhibit.getName(isArabic ? 'ar' : 'en'),
+                          style: AppTextStyles.displayArtifactTitle(context).copyWith(fontSize: 18),
+                        ),
+                      ),
                       if (isVisited) const Icon(Icons.check_circle, color: Colors.green, size: 24),
                     ],
                   ),

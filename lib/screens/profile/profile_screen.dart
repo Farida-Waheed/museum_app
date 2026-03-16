@@ -139,7 +139,7 @@ class _VisitorHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Guest Visitor", style: AppTextStyles.titleLarge(context).copyWith(fontSize: 20)),
+                Text("Guest Visitor", style: AppTextStyles.titleLarge(context).copyWith(fontSize: 18)),
                 const SizedBox(height: 4),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

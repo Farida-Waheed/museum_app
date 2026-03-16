@@ -185,8 +185,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           style: brandStyle.copyWith(
                             color: AppColors.primaryGold,
                             fontSize: 18,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 4.0,
+                            letterSpacing: 1.2,
                           ),
                         ),
                       ],
@@ -214,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                l10n.exploreEgypt,
+                              "Explore Egypt\nwith Horus-Bot",
                 style: AppTextStyles.displayHero(context),
               ),
               const SizedBox(height: 12),
@@ -365,7 +364,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
                       l10n.recommendedForYou.toUpperCase(),
-                      style: AppTextStyles.displaySectionTitle(innerContext),
+                        style: AppTextStyles.displaySectionTitle(innerContext),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -525,7 +524,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         ),
                                     child: Text(
                                       l10n.fullView,
-                                      style: AppTextStyles.buttonLabel(context)
+                                        style: AppTextStyles.buttonLabel(context)
                                           .copyWith(
                                             color: AppColors.primaryGold,
                                             fontSize: 13,
@@ -552,7 +551,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
                       l10n.museumNews.toUpperCase(),
-                      style: AppTextStyles.displaySectionTitle(innerContext),
+                        style: AppTextStyles.displaySectionTitle(innerContext),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -897,7 +896,7 @@ class _HighlightCardState extends State<_HighlightCard> {
                       children: [
                         Text(
                           widget.title,
-                          style: AppTextStyles.titleMedium(context),
+                          style: AppTextStyles.displayArtifactTitle(context),
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -1089,7 +1088,7 @@ class _LiveBadge extends StatelessWidget {
           const SizedBox(width: 10),
           Text(
             label.toUpperCase(),
-            style: AppTextStyles.displaySectionTitle(context).copyWith(
+            style: AppTextStyles.sectionTitle(context).copyWith(
               fontSize: 11,
               color: AppColors.alertRed,
               letterSpacing: 1.5,

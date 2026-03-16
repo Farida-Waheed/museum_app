@@ -106,7 +106,7 @@ class _MemoryCard extends StatelessWidget {
                 children: [
                   Text(
                     exhibit,
-                    style: AppTextStyles.titleMedium(context).copyWith(
+                    style: AppTextStyles.displayArtifactTitle(context).copyWith(
                       fontSize: 14,
                     ),
                     maxLines: 1,

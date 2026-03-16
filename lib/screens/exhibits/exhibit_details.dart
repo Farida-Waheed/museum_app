@@ -420,7 +420,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
         titlePadding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
         title: Text(
           exhibit.getName(language),
-          style: AppTextStyles.titleLarge(context).copyWith(
+          style: AppTextStyles.displayArtifactTitle(context).copyWith(
             color: Colors.white,
             fontSize: 18,
           ),

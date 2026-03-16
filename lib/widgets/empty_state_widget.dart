@@ -26,7 +26,7 @@ class EmptyStateWidget extends StatelessWidget {
           const SizedBox(height: AppSizes.md),
           Text(
             title,
-            style: AppTextStyles.titleLarge(context),
+            style: AppTextStyles.titleLarge(context).copyWith(fontSize: 18),
             textAlign: TextAlign.center,
           ),
           if (subtitle != null) ...[

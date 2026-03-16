@@ -146,10 +146,10 @@ class _BrandedPermissionDialogState extends State<BrandedPermissionDialog> with 
                         Text(
                           widget.title.toUpperCase(),
                           textAlign: TextAlign.center,
-                          style: AppTextStyles.displayScreenTitle(context).copyWith(
+                          style: AppTextStyles.displaySectionTitle(context).copyWith(
                             color: textColor,
-                            fontSize: 21,
-                            letterSpacing: 1.0,
+                            fontSize: 18,
+                            letterSpacing: 1.2,
                           ),
                         ),
                         const SizedBox(height: 14),
