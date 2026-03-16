@@ -98,12 +98,13 @@ class AppTextStyles {
   }
 
   static TextStyle brandTitle(BuildContext context, {bool isDark = true}) {
-    return TextStyle(
-      fontFamily: _legacyFont,
-      fontWeight: FontWeight.w900,
-      fontSize: 20,
-      letterSpacing: 2.0,
-      color: isDark ? Colors.white : AppColors.darkInk,
+    return GoogleFonts.inter(
+      textStyle: TextStyle(
+        fontWeight: FontWeight.w900,
+        fontSize: 20,
+        letterSpacing: 2.0,
+        color: isDark ? Colors.white : AppColors.darkInk,
+      ),
     );
   }
 
@@ -129,13 +130,12 @@ class AppTextStyles {
       );
 
   /// Top Screen Titles (Museum Map, Live Tour, Profile, etc.)
-  static TextStyle displayScreenTitle(BuildContext context) => GoogleFonts.cinzel(
+  static TextStyle displayScreenTitle(BuildContext context) => GoogleFonts.inter(
         textStyle: const TextStyle(
           fontWeight: FontWeight.w700,
-          fontSize: 26,
+          fontSize: 24,
           color: Colors.white,
           letterSpacing: 0.5,
-          fontFamilyFallback: _serifFallback,
         ),
       );
 
@@ -150,23 +150,31 @@ class AppTextStyles {
         ),
       );
 
-  /// Large Titles within cards or sections
-  static TextStyle titleLarge(BuildContext context) => GoogleFonts.cinzel(
+  /// Artifact Names (Tutankhamun Mask, Rosetta Stone, etc.)
+  static TextStyle displayArtifactTitle(BuildContext context) => GoogleFonts.cinzel(
         textStyle: const TextStyle(
           fontWeight: FontWeight.bold,
-          fontSize: 20,
+          fontSize: 18,
           color: Colors.white,
           fontFamilyFallback: _serifFallback,
         ),
       );
 
-  /// Medium Titles within cards or list items
-  static TextStyle titleMedium(BuildContext context) => GoogleFonts.cinzel(
+  /// Large Titles within cards or sections (Inter)
+  static TextStyle titleLarge(BuildContext context) => GoogleFonts.inter(
+        textStyle: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+          color: Colors.white,
+        ),
+      );
+
+  /// Medium Titles within cards or list items (Inter)
+  static TextStyle titleMedium(BuildContext context) => GoogleFonts.inter(
         textStyle: const TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 17,
           color: Colors.white,
-          fontFamilyFallback: _serifFallback,
         ),
       );
 

@@ -32,7 +32,7 @@ class ProjectInfoScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     "Horus-Bot",
-                    style: AppTextStyles.displayScreenTitle(context).copyWith(fontSize: 28, fontWeight: FontWeight.w900, color: textColor, letterSpacing: 1),
+                    style: AppTextStyles.displayArtifactTitle(context).copyWith(fontSize: 28, fontWeight: FontWeight.w900, color: textColor, letterSpacing: 1),
                   ),
                   Text(
                     "Version 1.0",

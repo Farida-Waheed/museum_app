@@ -49,7 +49,7 @@ class VisitSummaryScreen extends StatelessWidget {
             const SizedBox(height: 32),
 
             // 2. Main Congrats
-            Text(l10n.congrats, style: AppTextStyles.displayScreenTitle(context).copyWith(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -0.5, color: Colors.white)),
+            Text(l10n.congrats, style: AppTextStyles.displayArtifactTitle(context).copyWith(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -0.5, color: Colors.white)),
             const SizedBox(height: 12),
             Text(
               l10n.visitComplete,

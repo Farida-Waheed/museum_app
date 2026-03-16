@@ -105,7 +105,9 @@ class _ExhibitListTile extends StatelessWidget {
                   children: [
                     Text(
                       exhibit.getName(prefs.language),
-                      style: AppTextStyles.titleMedium(context),
+                      style: AppTextStyles.displayArtifactTitle(context).copyWith(
+                        fontSize: 16,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),

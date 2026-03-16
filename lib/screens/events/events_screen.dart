@@ -19,7 +19,7 @@ class EventsScreen extends StatelessWidget {
     final upcomingEvents = allEvents.where((e) => !e.isLive).toList();
 
     return AppMenuShell(
-      title: l10n.events,
+      title: l10n.events.toUpperCase(),
       backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
       body: SingleChildScrollView(
