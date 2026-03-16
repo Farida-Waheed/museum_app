@@ -107,7 +107,7 @@ abstract class AppLocalizations {
   /// No description provided for @exploreEgypt.
   ///
   /// In en, this message translates to:
-  /// **'Explore Egypt With Horus'**
+  /// **'Explore Egypt With Horus-Bot'**
   String get exploreEgypt;
 
   /// No description provided for @nextStop.

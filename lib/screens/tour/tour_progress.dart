@@ -52,7 +52,7 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
         : _visitedExhibitIds.length / _allExhibits.length;
 
     return AppMenuShell(
-      title: isArabic ? "تقدم الجولة" : "Tour Progress",
+      title: (isArabic ? "تقدم الجولة" : "Tour Progress").toUpperCase(),
       backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 2),
       body: SingleChildScrollView(
@@ -76,7 +76,7 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
                   children: [
                     Text(
                       (isArabic ? "الجولة الحالية" : "Current tour").toUpperCase(),
-                      style: AppTextStyles.sectionTitle(context),
+                      style: AppTextStyles.displaySectionTitle(context),
                     ),
                     const SizedBox(height: 20),
                     Row(
@@ -84,12 +84,12 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
                       children: [
                         Text(
                           isArabic ? "التقدم" : "Progress",
-                          style: AppTextStyles.helper(context).copyWith(color: Colors.white70),
+                          style: AppTextStyles.metadata(context).copyWith(color: Colors.white70),
                         ),
                         Text(
                           "${visited.length} / ${_allExhibits.length} "
                           "${isArabic ? 'معروضات' : 'exhibits'}",
-                          style: AppTextStyles.helper(context).copyWith(color: AppColors.primaryGold, fontWeight: FontWeight.bold),
+                          style: AppTextStyles.metadata(context).copyWith(color: AppColors.primaryGold, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -202,11 +202,11 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
           children: [
             Text(
               label,
-              style: AppTextStyles.helper(context).copyWith(fontSize: 11),
+              style: AppTextStyles.metadata(context).copyWith(fontSize: 11),
             ),
             Text(
               value,
-              style: AppTextStyles.body(context).copyWith(
+              style: AppTextStyles.bodyPrimary(context).copyWith(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
@@ -228,7 +228,7 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
         const SizedBox(width: 10),
         Text(
           title.toUpperCase(),
-          style: AppTextStyles.sectionTitle(context).copyWith(color: color, fontSize: 12),
+          style: AppTextStyles.displaySectionTitle(context).copyWith(color: color, fontSize: 12),
         ),
       ],
     );
@@ -283,7 +283,7 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
                   children: [
                     Text(
                       exhibit.getName(prefs.language),
-                      style: AppTextStyles.body(context).copyWith(
+                      style: AppTextStyles.bodyPrimary(context).copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                       ),
@@ -293,7 +293,7 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
                       visited
                           ? (isArabic ? "تمت الزيارة" : "Visited")
                           : (isArabic ? "لم تُزر بعد" : "Not visited yet"),
-                      style: AppTextStyles.helper(context),
+                      style: AppTextStyles.metadata(context),
                     ),
                   ],
                 ),

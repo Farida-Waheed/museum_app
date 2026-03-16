@@ -16,7 +16,7 @@ class ProjectInfoScreen extends StatelessWidget {
     final secondaryTextColor = isDark ? Colors.white70 : AppColors.mutedText;
 
     return AppMenuShell(
-      title: "About Horus-Bot",
+      title: "About Horus-Bot".toUpperCase(),
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.warmSurface,
       bottomNavigationBar: BottomNav(currentIndex: 4),
       body: SingleChildScrollView(
@@ -32,16 +32,16 @@ class ProjectInfoScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     "Horus-Bot",
-                    style: AppTextStyles.screenTitle(context).copyWith(fontSize: 28, fontWeight: FontWeight.w900, color: textColor, letterSpacing: 1),
+                    style: AppTextStyles.displayScreenTitle(context).copyWith(fontSize: 28, fontWeight: FontWeight.w900, color: textColor, letterSpacing: 1),
                   ),
                   Text(
                     "Version 1.0",
-                    style: AppTextStyles.helper(context).copyWith(fontSize: 14, color: AppColors.primaryGold, fontWeight: FontWeight.bold),
+                    style: AppTextStyles.metadata(context).copyWith(fontSize: 14, color: AppColors.primaryGold, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     "Smart Autonomous Museum Guide",
-                    style: AppTextStyles.body(context).copyWith(fontSize: 16, color: secondaryTextColor, fontWeight: FontWeight.w500),
+                    style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 16, color: secondaryTextColor, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -52,7 +52,7 @@ class ProjectInfoScreen extends StatelessWidget {
             _InfoCard(
               child: Text(
                 "Horus-Bot is a smart autonomous museum guide robot designed to enhance museum visitor experience through autonomous navigation, multilingual interaction, and a companion mobile application.",
-                style: AppTextStyles.body(context).copyWith(fontSize: 15, color: textColor, height: 1.6),
+                style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 15, color: textColor, height: 1.6),
               ),
             ),
 
@@ -79,11 +79,11 @@ class ProjectInfoScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Benha University", style: AppTextStyles.cardTitle(context).copyWith(fontSize: 17, fontWeight: FontWeight.bold, color: textColor)),
+                  Text("Benha University", style: AppTextStyles.titleMedium(context).copyWith(fontSize: 17, color: textColor)),
                   const SizedBox(height: 4),
-                  Text("Faculty of Engineering at Shoubra", style: AppTextStyles.body(context).copyWith(fontSize: 15, color: secondaryTextColor)),
+                  Text("Faculty of Engineering at Shoubra", style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 15, color: secondaryTextColor)),
                   const SizedBox(height: 4),
-                  Text("Computer & Communication Engineering Program", style: AppTextStyles.helper(context).copyWith(fontSize: 14, color: AppColors.primaryGold, fontWeight: FontWeight.bold)),
+                  Text("Computer & Communication Engineering Program", style: AppTextStyles.metadata(context).copyWith(fontSize: 14, color: AppColors.primaryGold, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
@@ -108,7 +108,7 @@ class ProjectInfoScreen extends StatelessWidget {
             const SizedBox(height: 32),
             _SectionTitle(title: "Supervisor"),
             _InfoCard(
-              child: Text("Dr. Mohamed Hussein", style: AppTextStyles.cardTitle(context).copyWith(fontSize: 17, fontWeight: FontWeight.bold, color: textColor)),
+              child: Text("Dr. Mohamed Hussein", style: AppTextStyles.titleMedium(context).copyWith(fontSize: 17, color: textColor)),
             ),
 
             const SizedBox(height: 48),
@@ -117,7 +117,7 @@ class ProjectInfoScreen extends StatelessWidget {
                 children: [
                   Text(
                     "Copyright © 2026 Horus-Bot Project",
-                    style: AppTextStyles.helper(context).copyWith(fontSize: 12, color: secondaryTextColor),
+                    style: AppTextStyles.metadata(context).copyWith(fontSize: 12, color: secondaryTextColor),
                   ),
                   const SizedBox(height: 32),
                 ],
@@ -167,7 +167,7 @@ class _SectionTitle extends StatelessWidget {
       padding: const EdgeInsets.only(left: 4, bottom: 12),
       child: Text(
         title.toUpperCase(),
-        style: AppTextStyles.sectionTitle(context).copyWith(
+        style: AppTextStyles.displaySectionTitle(context).copyWith(
           fontSize: 13,
           letterSpacing: 1.2,
         ),
@@ -191,7 +191,7 @@ class _TechChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: AppTextStyles.helper(context).copyWith(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 13),
+        style: AppTextStyles.metadata(context).copyWith(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 13),
       ),
     );
   }
@@ -212,7 +212,7 @@ class _TeamMember extends StatelessWidget {
           Expanded(
             child: Text(
               name,
-              style: AppTextStyles.body(context).copyWith(
+              style: AppTextStyles.bodyPrimary(context).copyWith(
                 fontSize: 15,
                 color: Theme.of(context).brightness == Brightness.dark ? Colors.white : AppColors.darkInk,
                 fontWeight: FontWeight.w500,

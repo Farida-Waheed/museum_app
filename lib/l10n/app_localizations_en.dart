@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Horus';
 
   @override
-  String get exploreEgypt => 'Explore Egypt With Horus';
+  String get exploreEgypt => 'Explore Egypt With Horus-Bot';
 
   @override
   String nextStop(Object location, Object time) {

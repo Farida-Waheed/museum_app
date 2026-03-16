@@ -33,6 +33,9 @@ dependencies:
   mobile_scanner: ^5.2.3
   permission_handler: ^11.3.1
 
+  # 6. Typography (Cinzel and Inter fonts)
+  google_fonts: ^6.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

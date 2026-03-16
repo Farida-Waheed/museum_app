@@ -37,7 +37,7 @@ class MemoriesScreen extends StatelessWidget {
     ];
 
     return AppMenuShell(
-      title: isArabic ? 'ذكرياتي' : 'My Memories',
+      title: (isArabic ? 'ذكرياتي' : 'My Memories').toUpperCase(),
       backgroundColor: AppColors.cinematicBackground,
       body: GridView.builder(
         padding: const EdgeInsets.all(20),
@@ -106,9 +106,8 @@ class _MemoryCard extends StatelessWidget {
                 children: [
                   Text(
                     exhibit,
-                    style: AppTextStyles.cardTitle(context).copyWith(
+                    style: AppTextStyles.titleMedium(context).copyWith(
                       fontSize: 14,
-                      fontWeight: FontWeight.bold,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -116,7 +115,7 @@ class _MemoryCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     date,
-                    style: AppTextStyles.helper(context).copyWith(
+                    style: AppTextStyles.metadata(context).copyWith(
                       fontSize: 11,
                     ),
                   ),

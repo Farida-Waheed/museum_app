@@ -35,7 +35,7 @@ class LanguageScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return AppMenuShell(
-      title: l10n.language,
+      title: l10n.language.toUpperCase(),
       backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: ListView(
@@ -70,14 +70,14 @@ class LanguageScreen extends StatelessWidget {
                     children: [
                       Text(
                         isArabic ? "اختر لغتك" : "Choose your language",
-                        style: AppTextStyles.cardTitle(context).copyWith(fontSize: 17),
+                        style: AppTextStyles.titleMedium(context).copyWith(fontSize: 17),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         isArabic
                             ? "سيتم تطبيق اللغة على جميع شاشات التطبيق."
                             : "Your choice applies across the whole app.",
-                        style: AppTextStyles.helper(context).copyWith(fontSize: 13),
+                        style: AppTextStyles.metadata(context).copyWith(fontSize: 13),
                       ),
                     ],
                   ),
@@ -126,7 +126,7 @@ class LanguageScreen extends StatelessWidget {
                       Expanded(
                         child: Text(
                           lang.name,
-                          style: AppTextStyles.body(context).copyWith(
+                          style: AppTextStyles.bodyPrimary(context).copyWith(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: isSelected
@@ -160,14 +160,14 @@ class LanguageScreen extends StatelessWidget {
               children: [
                 Text(
                   isArabic ? "ماذا يتغير؟" : "What changes?",
-                  style: AppTextStyles.sectionTitle(context).copyWith(fontSize: 12),
+                  style: AppTextStyles.displaySectionTitle(context).copyWith(fontSize: 12),
                 ),
                 const SizedBox(height: 12),
                 Text(
                   isArabic
                       ? "واجهات التطبيق، نصوص المعروضات، والروبوت سيستخدمون اللغة التي تختارها."
                       : "App screens, exhibit text, and the robot guide will follow your language choice.",
-                  style: AppTextStyles.body(context).copyWith(
+                  style: AppTextStyles.bodyPrimary(context).copyWith(
                     fontSize: 13,
                     color: Colors.white70,
                   ),

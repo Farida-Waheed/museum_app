@@ -96,7 +96,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     : null,
                 hintText:
                     isArabic ? "ابحث باسم القطعة..." : "Search by exhibit name...",
-                hintStyle: AppTextStyles.helper(context),
+                hintStyle: AppTextStyles.bodyPrimary(context).copyWith(color: AppColors.helperText),
                 filled: true,
                 fillColor: AppColors.darkSurface,
                 contentPadding: const EdgeInsets.symmetric(
@@ -158,7 +158,7 @@ class _SearchScreenState extends State<SearchScreen> {
           const SizedBox(height: 16),
           Text(
             isArabic ? "لا توجد نتائج" : "No results found",
-            style: AppTextStyles.cardTitle(context),
+            style: AppTextStyles.titleLarge(context),
           ),
           const SizedBox(height: 8),
           Text(
@@ -166,7 +166,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 ? "جرّب كلمة مختلفة أو تحقق من الهجاء."
                 : "Try a different word or check the spelling.",
             textAlign: TextAlign.center,
-            style: AppTextStyles.helper(context),
+            style: AppTextStyles.bodyPrimary(context).copyWith(color: AppColors.helperText),
           ),
         ],
       ),
@@ -226,10 +226,7 @@ class _SearchResultTile extends StatelessWidget {
                   children: [
                     Text(
                       exhibit.getName(prefs.language),
-                      style: AppTextStyles.cardTitle(context).copyWith(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 15,
-                      ),
+                      style: AppTextStyles.titleMedium(context).copyWith(fontSize: 15),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -238,9 +235,7 @@ class _SearchResultTile extends StatelessWidget {
                       isArabic
                           ? "اضغط لعرض تفاصيل المعروض"
                           : "Tap to view details and audio guide",
-                      style: AppTextStyles.helper(context).copyWith(
-                        fontSize: 12,
-                      ),
+                      style: AppTextStyles.metadata(context),
                     ),
                   ],
                 ),

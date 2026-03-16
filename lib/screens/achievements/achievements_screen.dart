@@ -18,7 +18,7 @@ class AchievementsScreen extends StatelessWidget {
     final visitedCount = tourProvider.visitedExhibitIds.length;
 
     return AppMenuShell(
-      title: l10n.myJourney,
+      title: l10n.myJourney.toUpperCase(),
       backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: SingleChildScrollView(
@@ -41,9 +41,9 @@ class AchievementsScreen extends StatelessWidget {
                      child: Column(
                        crossAxisAlignment: CrossAxisAlignment.start,
                        children: [
-                         Text(l10n.exhibitsFound.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
+                         Text(l10n.exhibitsFound.toUpperCase(), style: AppTextStyles.displaySectionTitle(context)),
                          const SizedBox(height: 8),
-                         Text("$visitedCount", style: AppTextStyles.statNumber(context).copyWith(fontSize: 32, color: AppColors.primaryGold)),
+                         Text("$visitedCount", style: AppTextStyles.titleLarge(context).copyWith(fontSize: 32, color: AppColors.primaryGold)),
                        ],
                      ),
                    ),
@@ -51,7 +51,7 @@ class AchievementsScreen extends StatelessWidget {
                ),
              ),
              const SizedBox(height: 32),
-             Text(l10n.achievements.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
+             Text(l10n.achievements.toUpperCase(), style: AppTextStyles.displaySectionTitle(context)),
              const SizedBox(height: 16),
              _buildAchievementTile(context, Icons.explore, l10n.pioneer, l10n.pioneerDesc, visitedCount >= 1),
              _buildAchievementTile(context, Icons.history_edu, l10n.scholar, l10n.scholarDesc, false),
@@ -73,8 +73,8 @@ class AchievementsScreen extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         leading: Icon(icon, color: isUnlocked ? AppColors.primaryGold : AppColors.neutralDark),
-        title: Text(title, style: AppTextStyles.cardTitle(context).copyWith(fontSize: 16, color: isUnlocked ? Colors.white : AppColors.neutralMedium)),
-        subtitle: Text(subtitle, style: AppTextStyles.helper(context)),
+        title: Text(title, style: AppTextStyles.titleMedium(context).copyWith(fontSize: 16, color: isUnlocked ? Colors.white : AppColors.neutralMedium)),
+        subtitle: Text(subtitle, style: AppTextStyles.metadata(context)),
         trailing: isUnlocked ? const Icon(Icons.check_circle, color: Colors.green) : const Icon(Icons.lock_outline, size: 18, color: AppColors.neutralDark),
       ),
     );

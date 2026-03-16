@@ -16,7 +16,10 @@ class SectionTitle extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: Text(title, style: AppTextStyles.title(context)),
+          child: Text(
+            title.toUpperCase(),
+            style: AppTextStyles.displaySectionTitle(context),
+          ),
         ),
         if (trailing != null) trailing!,
       ],

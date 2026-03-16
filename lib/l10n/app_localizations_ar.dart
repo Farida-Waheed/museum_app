@@ -12,7 +12,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get appTitle => 'حوروس';
 
   @override
-  String get exploreEgypt => 'استكشف مصر مع حوروس';
+  String get exploreEgypt => 'استكشف مصر مع حورس-بوت';
 
   @override
   String nextStop(Object location, Object time) {

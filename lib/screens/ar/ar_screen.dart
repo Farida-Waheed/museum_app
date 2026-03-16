@@ -143,7 +143,7 @@ class _ArScreenState extends State<ArScreen> with SingleTickerProviderStateMixin
                           const SizedBox(width: 6),
                           Text(
                             l10n.live.toUpperCase(),
-                            style: AppTextStyles.sectionTitle(context).copyWith(color: Colors.redAccent, fontSize: 10, letterSpacing: 1),
+                            style: AppTextStyles.displaySectionTitle(context).copyWith(color: Colors.redAccent, fontSize: 10, letterSpacing: 1),
                           ),
                         ],
                       ),
@@ -176,12 +176,12 @@ class _ArScreenState extends State<ArScreen> with SingleTickerProviderStateMixin
                       children: [
                         Text(
                           l10n.scanExhibitsAR,
-                          style: AppTextStyles.cardTitle(context).copyWith(color: Colors.white, fontSize: 15),
+                          style: AppTextStyles.titleMedium(context).copyWith(color: Colors.white, fontSize: 15),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           l10n.followAndDiscover,
-                          style: AppTextStyles.helper(context).copyWith(color: Colors.white.withOpacity(0.6), fontSize: 12),
+                          style: AppTextStyles.metadata(context).copyWith(color: Colors.white.withOpacity(0.6), fontSize: 12),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -218,13 +218,13 @@ class _ArScreenState extends State<ArScreen> with SingleTickerProviderStateMixin
             const SizedBox(height: 24),
             Text(
               l10n.privacyPermissions,
-              style: AppTextStyles.screenTitle(context).copyWith(color: Colors.white, fontSize: 20),
+              style: AppTextStyles.displayScreenTitle(context).copyWith(color: Colors.white, fontSize: 20),
             ),
             const SizedBox(height: 12),
             Text(
               l10n.privacyText,
               textAlign: TextAlign.center,
-              style: AppTextStyles.body(context).copyWith(color: Colors.grey.shade500),
+              style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.grey.shade500),
             ),
             const SizedBox(height: 32),
             SizedBox(
@@ -237,7 +237,7 @@ class _ArScreenState extends State<ArScreen> with SingleTickerProviderStateMixin
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: Text(l10n.allow, style: AppTextStyles.button(context)),
+                child: Text(l10n.allow, style: AppTextStyles.buttonLabel(context)),
               ),
             )
           ],
@@ -291,11 +291,11 @@ class _ArScreenState extends State<ArScreen> with SingleTickerProviderStateMixin
                         children: [
                           Text(
                             title,
-                            style: AppTextStyles.body(context).copyWith(fontWeight: FontWeight.w900, fontSize: 13, color: Colors.black),
+                            style: AppTextStyles.bodyPrimary(context).copyWith(fontWeight: FontWeight.w900, fontSize: 13, color: Colors.black),
                           ),
                           Text(
                             subtitle,
-                            style: AppTextStyles.helper(context).copyWith(fontSize: 10, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
+                            style: AppTextStyles.metadata(context).copyWith(fontSize: 10, color: Colors.grey.shade700, fontWeight: FontWeight.w500),
                           ),
                         ],
                       ),
