@@ -30,6 +30,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   double robotX = 140;
   double robotY = 80;
 
+  late final ScrollController _scrollController;
+
   int pageIndex = 0;
   final PageController _pageCtrl = PageController(viewportFraction: 0.85);
 
@@ -56,6 +58,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
     exhibits = MockDataService.getAllExhibits();
     news = MockDataService.getAllNews();
 
@@ -70,6 +73,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _pageCtrl.dispose();
     _robotPulseCtrl.dispose();
     _fabPulseCtrl.dispose();
@@ -133,10 +137,58 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-  Widget _buildHeroSection(BuildContext context, AppLocalizations l10n) {
+  Widget _buildPinnedTopRow(BuildContext context, AppLocalizations l10n) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final brandStyle = AppTextStyles.brandTitle(context, isDark: isDark);
 
+    return SafeArea(
+      bottom: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+        child: Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+              onPressed: () => AppMenuShell.of(context)?.toggleMenu(),
+            ),
+            Expanded(
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(
+                      'assets/icons/ankh.png',
+                      width: 20,
+                      height: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'HORUS-BOT',
+                      style: brandStyle.copyWith(
+                        color: AppColors.primaryGold,
+                        fontSize: 18,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(
+                Icons.qr_code_scanner,
+                color: Colors.white,
+                size: 26,
+              ),
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.qrScan),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeroSection(BuildContext context, AppLocalizations l10n) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -160,69 +212,33 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             fit: BoxFit.cover,
           ),
         ),
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.menu, color: Colors.white, size: 28),
-                  onPressed: () => AppMenuShell.of(context)?.toggleMenu(),
-                ),
-                Expanded(
-                  child: Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.smart_toy,
-                          color: AppColors.primaryGold,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'HORUS-BOT',
-                          style: brandStyle.copyWith(
-                            color: AppColors.primaryGold,
-                            fontSize: 18,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                      ],
+        AnimatedBuilder(
+          animation: _scrollController,
+          builder: (context, child) {
+            final double opacity = (1.0 - (_scrollController.offset / 200)).clamp(0.0, 1.0);
+            return Positioned(
+              left: 24,
+              right: 24,
+              bottom: 150,
+              child: Opacity(
+                opacity: opacity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Explore Egypt\nwith Horus-Bot",
+                      style: AppTextStyles.displayHero(context),
                     ),
-                  ),
+                    const SizedBox(height: 12),
+                    Text(
+                      l10n.followAndDiscover,
+                      style: AppTextStyles.bodySecondary(context),
+                    ),
+                  ],
                 ),
-                IconButton(
-                  icon: const Icon(
-                    Icons.qr_code_scanner,
-                    color: Colors.white,
-                    size: 26,
-                  ),
-                  onPressed: () =>
-                      Navigator.pushNamed(context, AppRoutes.qrScan),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Positioned(
-          left: 24,
-          right: 24,
-          bottom: 150,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                              "Explore Egypt\nwith Horus-Bot",
-                style: AppTextStyles.displayHero(context),
               ),
-              const SizedBox(height: 12),
-              Text(
-                l10n.followAndDiscover,
-                style: AppTextStyles.bodySecondary(context),
-              ),
-            ],
-          ),
+            );
+          },
         ),
         Positioned(
           left: 20,
@@ -307,10 +323,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
       ),
       body: Builder(
-        builder: (innerContext) => CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverToBoxAdapter(child: _buildHeroSection(innerContext, l10n)),
+        builder: (innerContext) => Stack(
+          children: [
+            CustomScrollView(
+              controller: _scrollController,
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(child: _buildHeroSection(innerContext, l10n)),
             const SliverToBoxAdapter(child: SizedBox(height: 72)),
             SliverToBoxAdapter(child: _buildSummaryStats(innerContext, l10n)),
             SliverToBoxAdapter(
@@ -618,7 +637,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 120)),
+                const SliverToBoxAdapter(child: SizedBox(height: 120)),
+              ],
+            ),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: _buildPinnedTopRow(innerContext, l10n),
+            ),
           ],
         ),
       ),
