@@ -27,13 +27,23 @@ class MuseumApp extends StatelessWidget {
           default:
             themeMode = ThemeMode.system;
         }
+
+        // Language-aware theme selection
+        final ThemeData activeTheme = prefs.isHighContrast
+            ? getHighContrastTheme(prefs.language)
+            : getLightTheme(prefs.language);
+
+        final ThemeData activeDarkTheme = prefs.isHighContrast
+            ? getHighContrastTheme(prefs.language)
+            : getDarkTheme(prefs.language);
+
         return MaterialApp(
           title: 'Museum Guide',
           debugShowCheckedModeBanner: false,
 
-          // 1. Theme Logic (High Contrast vs Light)
-          theme: prefs.isHighContrast ? highContrastTheme : lightTheme,
-          darkTheme: darkTheme,
+          // 1. Theme Logic
+          theme: activeTheme,
+          darkTheme: activeDarkTheme,
 
           // 2. Localization
           locale: Locale(prefs.language),

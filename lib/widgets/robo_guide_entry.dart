@@ -80,7 +80,7 @@ class _RoboGuideEntryState extends State<RoboGuideEntry> with SingleTickerProvid
                           const SizedBox(width: 8),
                           Text(
                             l10n.alwaysAvailable,
-                            style: const TextStyle(color: Colors.green, fontSize: 11, fontWeight: FontWeight.bold),
+                            style: AppTextStyles.metadata(context).copyWith(color: Colors.green, fontSize: 11, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
