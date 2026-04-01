@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
-import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
 
 class ChatPopup extends StatefulWidget {
   const ChatPopup({super.key});
@@ -42,11 +42,7 @@ class _ChatPopupState extends State<ChatPopup> {
                 const SizedBox(width: 8),
                 Text(
                   l10n.askTheGuide,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: cs.onSurface,
-                  ),
+                  style: AppTextStyles.titleMedium(context),
                 ),
                 const Spacer(),
                 IconButton(
@@ -60,7 +56,12 @@ class _ChatPopupState extends State<ChatPopup> {
             Expanded(
               child: ListView(
                 children: _messages
-                    .map((msg) => ListTile(title: Text(msg)))
+                    .map((msg) => ListTile(
+                          title: Text(
+                            msg,
+                            style: AppTextStyles.bodyPrimary(context),
+                          ),
+                        ))
                     .toList(),
               ),
             ),
@@ -70,8 +71,10 @@ class _ChatPopupState extends State<ChatPopup> {
                 Expanded(
                   child: TextField(
                     controller: _controller,
+                    style: AppTextStyles.bodyPrimary(context),
                     decoration: InputDecoration(
                       hintText: l10n.askTheGuide,
+                      hintStyle: AppTextStyles.bodySecondary(context),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
