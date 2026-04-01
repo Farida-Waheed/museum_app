@@ -41,11 +41,15 @@ class _IntroScreenState extends State<IntroScreen>
     );
 
     _animController.forward();
-    _startTimer();
+    
+    // Start timer after the first frame is built to ensure context is available
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _startTimer();
+    });
   }
 
   void _startTimer() {
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 3), () {
       if (!mounted) return;
 
       final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
