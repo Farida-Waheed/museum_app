@@ -36,7 +36,9 @@ class MyPhotosScreen extends StatelessWidget {
         elevation: 0,
         title: Text(
           "Horus Memories".toUpperCase(),
-          style: AppTextStyles.displayScreenTitle(context).copyWith(fontSize: 18),
+          style: AppTextStyles.displayScreenTitle(
+            context,
+          ).copyWith(fontSize: 18),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.primaryGold),
@@ -89,25 +91,32 @@ class _PhotoCard extends StatelessWidget {
                         gradient: LinearGradient(
                           begin: Alignment.bottomCenter,
                           end: Alignment.topCenter,
-                          colors: [Colors.black.withOpacity(0.8), Colors.transparent],
+                          colors: [
+                            Colors.black.withOpacity(0.8),
+                            Colors.transparent,
+                          ],
                         ),
                       ),
                       child: Text(
                         photo.location,
-                        style: AppTextStyles.metadata(context).copyWith(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                        style: AppTextStyles.metadata(context).copyWith(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Icon(Icons.share, color: AppColors.primaryGold, size: 18),
-                  const Icon(Icons.download, color: AppColors.primaryGold, size: 18),
+                  Icon(Icons.share, color: AppColors.primaryGold, size: 18),
+                  Icon(Icons.download, color: AppColors.primaryGold, size: 18),
                 ],
               ),
             ),

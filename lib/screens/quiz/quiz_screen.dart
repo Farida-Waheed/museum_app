@@ -38,15 +38,24 @@ class _QuizScreenState extends State<QuizScreen> {
     setState(() {
       _selectedOptionIndex = selectedIndex;
       _isAnswered = true;
-      if (selectedIndex == _questions[_currentIndex].correctAnswerIndex) _score++;
+      if (selectedIndex == _questions[_currentIndex].correctAnswerIndex)
+        _score++;
     });
   }
 
   void _nextQuestion() {
     if (_currentIndex < _questions.length - 1) {
-      setState(() { _currentIndex++; _selectedOptionIndex = null; _isAnswered = false; });
+      setState(() {
+        _currentIndex++;
+        _selectedOptionIndex = null;
+        _isAnswered = false;
+      });
     } else {
-      if (widget.exhibitId != null) Provider.of<TourProvider>(context, listen: false).recordQuizResult(widget.exhibitId!, _score);
+      if (widget.exhibitId != null)
+        Provider.of<TourProvider>(
+          context,
+          listen: false,
+        ).recordQuizResult(widget.exhibitId!, _score);
       _showResultDialog();
     }
   }
@@ -60,7 +69,9 @@ class _QuizScreenState extends State<QuizScreen> {
       context: context,
       barrierDismissible: false,
       builder: (context) => PremiumDialog(
-        title: isPass ? l10n.congrats : (isArabic ? "استمر في التعلم!" : "Keep Learning!"),
+        title: isPass
+            ? l10n.congrats
+            : (isArabic ? "استمر في التعلم!" : "Keep Learning!"),
         showCloseButton: false,
         icon: Icon(
           isPass ? Icons.emoji_events_rounded : Icons.menu_book_rounded,
@@ -74,7 +85,9 @@ class _QuizScreenState extends State<QuizScreen> {
               isArabic
                   ? "لقد حصلت على $_score من ${_questions.length}"
                   : "You scored $_score out of ${_questions.length}",
-              style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white70, fontSize: 18),
+              style: AppTextStyles.bodyPrimary(
+                context,
+              ).copyWith(color: Colors.white70, fontSize: 18),
               textAlign: TextAlign.center,
             ),
           ],
@@ -90,7 +103,12 @@ class _QuizScreenState extends State<QuizScreen> {
                 _isAnswered = false;
               });
             },
-            child: Text(isArabic ? "إعادة" : "Retry", style: AppTextStyles.buttonLabel(context).copyWith(color: Colors.white60)),
+            child: Text(
+              isArabic ? "إعادة" : "Retry",
+              style: AppTextStyles.buttonLabel(
+                context,
+              ).copyWith(color: Colors.white60),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -100,7 +118,9 @@ class _QuizScreenState extends State<QuizScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryGold,
               foregroundColor: AppColors.darkInk,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             child: Text(l10n.done, style: AppTextStyles.buttonLabel(context)),
           ),
@@ -113,22 +133,75 @@ class _QuizScreenState extends State<QuizScreen> {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
-    if (_questions.isEmpty) return Scaffold(backgroundColor: AppColors.darkBackground, body: Center(child: Text(isArabic ? "لا توجد أسئلة" : "No questions", style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white))));
+    if (_questions.isEmpty)
+      return Scaffold(
+        backgroundColor: AppColors.darkBackground,
+        body: Center(
+          child: Text(
+            isArabic ? "لا توجد أسئلة" : "No questions",
+            style: AppTextStyles.bodyPrimary(
+              context,
+            ).copyWith(color: Colors.white),
+          ),
+        ),
+      );
 
     final question = _questions[_currentIndex];
     final options = question.getOptions(prefs.language);
 
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
-      appBar: AppBar(title: Text((isArabic ? "اختبار المعلومات" : "Museum Quiz").toUpperCase(), style: AppTextStyles.displayScreenTitle(context).copyWith(fontSize: 18)), backgroundColor: AppColors.darkBackground, elevation: 0, foregroundColor: Colors.white),
+      appBar: AppBar(
+        title: Text(
+          (isArabic ? "اختبار المعلومات" : "Museum Quiz").toUpperCase(),
+          style: AppTextStyles.displayScreenTitle(
+            context,
+          ).copyWith(fontSize: 18),
+        ),
+        backgroundColor: AppColors.darkBackground,
+        elevation: 0,
+        foregroundColor: Colors.white,
+      ),
       body: Column(
         children: [
           _buildProgressHeader(isArabic),
-          Expanded(child: SingleChildScrollView(padding: const EdgeInsets.symmetric(horizontal: 24), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Container(padding: const EdgeInsets.all(24), decoration: BoxDecoration(color: AppColors.darkSurface, borderRadius: BorderRadius.circular(24), border: Border.all(color: AppColors.primaryGold.withOpacity(0.2))), child: Text(question.getQuestion(prefs.language), style: AppTextStyles.titleLarge(context).copyWith(fontSize: 20, color: Colors.white, height: 1.4))),
-            const SizedBox(height: 32),
-            ...List.generate(options.length, (i) => _buildOptionTile(i, options[i], question.correctAnswerIndex)),
-          ]))),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: AppColors.darkSurface,
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: AppColors.primaryGold.withOpacity(0.2),
+                      ),
+                    ),
+                    child: Text(
+                      question.getQuestion(prefs.language),
+                      style: AppTextStyles.titleLarge(context).copyWith(
+                        fontSize: 20,
+                        color: Colors.white,
+                        height: 1.4,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 32),
+                  ...List.generate(
+                    options.length,
+                    (i) => _buildOptionTile(
+                      i,
+                      options[i],
+                      question.correctAnswerIndex,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
           _buildFooter(isArabic),
         ],
       ),
@@ -138,14 +211,41 @@ class _QuizScreenState extends State<QuizScreen> {
   Widget _buildProgressHeader(bool isArabic) {
     return Padding(
       padding: const EdgeInsets.all(24),
-      child: Column(children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(isArabic ? "السؤال ${_currentIndex + 1} من ${_questions.length}" : "Question ${_currentIndex + 1} of ${_questions.length}", style: AppTextStyles.displaySectionTitle(context).copyWith(color: AppColors.neutralMedium, fontSize: 13)),
-          Text("${((_currentIndex + 1) / _questions.length * 100).round()}%", style: AppTextStyles.displaySectionTitle(context).copyWith(fontSize: 13)),
-        ]),
-        const SizedBox(height: 10),
-        ClipRRect(borderRadius: BorderRadius.circular(10), child: LinearProgressIndicator(value: (_currentIndex + 1) / _questions.length, minHeight: 6, backgroundColor: AppColors.darkSurface, valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primaryGold))),
-      ]),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                isArabic
+                    ? "السؤال ${_currentIndex + 1} من ${_questions.length}"
+                    : "Question ${_currentIndex + 1} of ${_questions.length}",
+                style: AppTextStyles.displaySectionTitle(
+                  context,
+                ).copyWith(color: AppColors.neutralMedium, fontSize: 13),
+              ),
+              Text(
+                "${((_currentIndex + 1) / _questions.length * 100).round()}%",
+                style: AppTextStyles.displaySectionTitle(
+                  context,
+                ).copyWith(fontSize: 13),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: LinearProgressIndicator(
+              value: (_currentIndex + 1) / _questions.length,
+              minHeight: 6,
+              backgroundColor: AppColors.darkSurface,
+              valueColor: const AlwaysStoppedAnimation<Color>(
+                AppColors.primaryGold,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -157,19 +257,112 @@ class _QuizScreenState extends State<QuizScreen> {
     Widget? icon;
 
     if (_isAnswered) {
-      if (isCorrect) { color = Colors.green.withOpacity(0.1); border = Colors.green; icon = const Icon(Icons.check_circle, color: Colors.green, size: 20); }
-      else if (isSelected) { color = AppColors.alertRed.withOpacity(0.1); border = AppColors.alertRed; icon = const Icon(Icons.cancel, color: AppColors.alertRed, size: 20); }
-    } else if (isSelected) { border = AppColors.primaryGold; color = AppColors.primaryGold.withOpacity(0.05); }
+      if (isCorrect) {
+        color = Colors.green.withOpacity(0.1);
+        border = Colors.green;
+        icon = const Icon(Icons.check_circle, color: Colors.green, size: 20);
+      } else if (isSelected) {
+        color = AppColors.alertRed.withOpacity(0.1);
+        border = AppColors.alertRed;
+        icon = const Icon(Icons.cancel, color: AppColors.alertRed, size: 20);
+      }
+    } else if (isSelected) {
+      border = AppColors.primaryGold;
+      color = AppColors.primaryGold.withOpacity(0.05);
+    }
 
-    return Padding(padding: const EdgeInsets.only(bottom: 12), child: InkWell(onTap: () => _checkAnswer(index), borderRadius: BorderRadius.circular(16), child: Container(padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18), decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(16), border: Border.all(color: border, width: 2)), child: Row(children: [
-      Container(width: 32, height: 32, decoration: BoxDecoration(color: isSelected ? AppColors.primaryGold : AppColors.darkBackground, shape: BoxShape.circle, border: Border.all(color: AppColors.primaryGold.withOpacity(0.2))), child: Center(child: Text(String.fromCharCode(65 + index), style: AppTextStyles.bodyPrimary(context).copyWith(color: isSelected ? AppColors.darkInk : Colors.white70, fontWeight: FontWeight.bold)))),
-      const SizedBox(width: 16),
-      Expanded(child: Text(text, style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 16, fontWeight: isSelected ? FontWeight.bold : FontWeight.w500, color: Colors.white))),
-      if (icon != null) icon,
-    ]))));
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: () => _checkAnswer(index),
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: border, width: 2),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? AppColors.primaryGold
+                      : AppColors.darkBackground,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppColors.primaryGold.withOpacity(0.2),
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    String.fromCharCode(65 + index),
+                    style: AppTextStyles.bodyPrimary(context).copyWith(
+                      color: isSelected ? AppColors.darkInk : Colors.white70,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  text,
+                  style: AppTextStyles.bodyPrimary(context).copyWith(
+                    fontSize: 16,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+              if (icon != null) icon,
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildFooter(bool isArabic) {
-    return Container(padding: const EdgeInsets.all(24), decoration: BoxDecoration(color: AppColors.darkSurface, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, -5))]), child: SafeArea(top: false, child: SizedBox(width: double.infinity, height: 56, child: ElevatedButton(onPressed: _isAnswered ? _nextQuestion : null, style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryGold, foregroundColor: AppColors.darkInk, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), elevation: 0), child: Text(_currentIndex == _questions.length - 1 ? "FINISH" : (isArabic ? "السؤال التالي" : "NEXT QUESTION"), style: AppTextStyles.buttonLabel(context))))));
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: AppColors.darkSurface,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: ElevatedButton(
+            onPressed: _isAnswered ? _nextQuestion : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryGold,
+              foregroundColor: AppColors.darkInk,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              elevation: 0,
+            ),
+            child: Text(
+              _currentIndex == _questions.length - 1
+                  ? "FINISH"
+                  : (isArabic ? "السؤال التالي" : "NEXT QUESTION"),
+              style: AppTextStyles.buttonLabel(context),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

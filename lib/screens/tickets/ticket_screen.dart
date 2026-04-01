@@ -25,11 +25,7 @@ class _TicketScreenState extends State<TicketScreen> {
     'Child': 10.0,
   };
 
-  final Map<String, int> _quantities = {
-    'Adult': 1,
-    'Student': 0,
-    'Child': 0,
-  };
+  final Map<String, int> _quantities = {'Adult': 1, 'Student': 0, 'Child': 0};
 
   DateTime _selectedDate = DateTime.now();
 
@@ -107,7 +103,10 @@ class _TicketScreenState extends State<TicketScreen> {
         );
       },
       transitionBuilder: (ctx, animation, secondary, child) {
-        final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutBack);
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutBack,
+        );
         return FadeTransition(
           opacity: animation,
           child: ScaleTransition(
@@ -124,8 +123,12 @@ class _TicketScreenState extends State<TicketScreen> {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
 
-    final String formattedDateEn = DateFormat('EEEE, MMM d, yyyy').format(_selectedDate);
-    final String formattedDateAr = DateFormat.yMMMMEEEEd('ar').format(_selectedDate);
+    final String formattedDateEn = DateFormat(
+      'EEEE, MMM d, yyyy',
+    ).format(_selectedDate);
+    final String formattedDateAr = DateFormat.yMMMMEEEEd(
+      'ar',
+    ).format(_selectedDate);
     final String formattedDate = isArabic ? formattedDateAr : formattedDateEn;
 
     return AppMenuShell(
@@ -134,7 +137,10 @@ class _TicketScreenState extends State<TicketScreen> {
       backgroundColor: AppColors.darkBackground,
       actions: [
         IconButton(
-          icon: const Icon(Icons.confirmation_number_outlined, color: Colors.white),
+          icon: const Icon(
+            Icons.confirmation_number_outlined,
+            color: Colors.white,
+          ),
           onPressed: () => Navigator.pushNamed(context, AppRoutes.myTickets),
         ),
       ],
@@ -157,8 +163,13 @@ class _TicketScreenState extends State<TicketScreen> {
                     child: Row(
                       children: [
                         CircleAvatar(
-                          backgroundColor: AppColors.primaryGold.withOpacity(0.1),
-                          child: const Icon(Icons.museum_outlined, color: AppColors.primaryGold),
+                          backgroundColor: AppColors.primaryGold.withOpacity(
+                            0.1,
+                          ),
+                          child: const Icon(
+                            Icons.museum_outlined,
+                            color: AppColors.primaryGold,
+                          ),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
@@ -167,12 +178,18 @@ class _TicketScreenState extends State<TicketScreen> {
                             children: [
                               Text(
                                 isArabic ? "تذاكر المتحف" : "Museum Tickets",
-                                style: AppTextStyles.titleMedium(context).copyWith(fontSize: 16),
+                                style: AppTextStyles.titleMedium(
+                                  context,
+                                ).copyWith(fontSize: 16),
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                isArabic ? "احجز تذاكرك قبل الوصول لتوفير الوقت." : "Book your tickets early to save time.",
-                                style: AppTextStyles.metadata(context).copyWith(fontSize: 13),
+                                isArabic
+                                    ? "احجز تذاكرك قبل الوصول لتوفير الوقت."
+                                    : "Book your tickets early to save time.",
+                                style: AppTextStyles.metadata(
+                                  context,
+                                ).copyWith(fontSize: 13),
                               ),
                             ],
                           ),
@@ -201,17 +218,28 @@ class _TicketScreenState extends State<TicketScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.calendar_today_rounded, color: AppColors.primaryGold, size: 20),
+                          const Icon(
+                            Icons.calendar_today_rounded,
+                            color: AppColors.primaryGold,
+                            size: 20,
+                          ),
                           const SizedBox(width: 16),
                           Expanded(
                             child: Text(
                               formattedDate,
-                              style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                              style: AppTextStyles.bodyPrimary(context)
+                                  .copyWith(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
                             ),
                           ),
                           Text(
                             isArabic ? "تغيير" : "Change",
-                            style: AppTextStyles.displaySectionTitle(context).copyWith(fontSize: 13),
+                            style: AppTextStyles.displaySectionTitle(
+                              context,
+                            ).copyWith(fontSize: 13),
                           ),
                         ],
                       ),
@@ -226,11 +254,29 @@ class _TicketScreenState extends State<TicketScreen> {
                     style: AppTextStyles.displaySectionTitle(context),
                   ),
                   const SizedBox(height: 16),
-                  _ticketRow("Adult", isArabic ? "بالغ" : "Adult", isArabic ? "١٢+ سنة" : "Ages 12+", _prices["Adult"]!, isArabic),
+                  _ticketRow(
+                    "Adult",
+                    isArabic ? "بالغ" : "Adult",
+                    isArabic ? "١٢+ سنة" : "Ages 12+",
+                    _prices["Adult"]!,
+                    isArabic,
+                  ),
                   const SizedBox(height: 12),
-                  _ticketRow("Student", isArabic ? "طالب" : "Student", isArabic ? "مع بطاقة سارية" : "With valid ID", _prices["Student"]!, isArabic),
+                  _ticketRow(
+                    "Student",
+                    isArabic ? "طالب" : "Student",
+                    isArabic ? "مع بطاقة سارية" : "With valid ID",
+                    _prices["Student"]!,
+                    isArabic,
+                  ),
                   const SizedBox(height: 12),
-                  _ticketRow("Child", isArabic ? "طفل" : "Child", isArabic ? "٥-١١ سنة" : "Ages 5-11", _prices["Child"]!, isArabic),
+                  _ticketRow(
+                    "Child",
+                    isArabic ? "طفل" : "Child",
+                    isArabic ? "٥-١١ سنة" : "Ages 5-11",
+                    _prices["Child"]!,
+                    isArabic,
+                  ),
 
                   const SizedBox(height: 100), // Space for bottom bar
                 ],
@@ -243,7 +289,13 @@ class _TicketScreenState extends State<TicketScreen> {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: AppColors.darkHeader,
-              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, -5))],
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, -5),
+                ),
+              ],
             ),
             child: SafeArea(
               top: false,
@@ -253,8 +305,18 @@ class _TicketScreenState extends State<TicketScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(isArabic ? "المجموع" : "Total", style: AppTextStyles.metadata(context).copyWith(fontSize: 13)),
-                      Text("\$${_totalPrice.toStringAsFixed(2)}", style: AppTextStyles.titleLarge(context).copyWith(fontSize: 24, color: AppColors.primaryGold)),
+                      Text(
+                        isArabic ? "المجموع" : "Total",
+                        style: AppTextStyles.metadata(
+                          context,
+                        ).copyWith(fontSize: 13),
+                      ),
+                      Text(
+                        "\$${_totalPrice.toStringAsFixed(2)}",
+                        style: AppTextStyles.titleLarge(
+                          context,
+                        ).copyWith(fontSize: 24, color: AppColors.primaryGold),
+                      ),
                     ],
                   ),
                   const SizedBox(width: 24),
@@ -262,14 +324,23 @@ class _TicketScreenState extends State<TicketScreen> {
                     child: SizedBox(
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: _totalPrice > 0 ? () => _handleCheckout(isArabic) : null,
+                        onPressed: _totalPrice > 0
+                            ? () => _handleCheckout(isArabic)
+                            : null,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primaryGold,
                           foregroundColor: AppColors.darkInk,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                           elevation: 0,
                         ),
-                        child: Text(isArabic ? "متابعة" : "Continue", style: AppTextStyles.buttonLabel(context).copyWith(fontSize: 16)),
+                        child: Text(
+                          isArabic ? "متابعة" : "Continue",
+                          style: AppTextStyles.buttonLabel(
+                            context,
+                          ).copyWith(fontSize: 16),
+                        ),
                       ),
                     ),
                   ),
@@ -282,7 +353,13 @@ class _TicketScreenState extends State<TicketScreen> {
     );
   }
 
-  Widget _ticketRow(String typeKey, String label, String subtitle, double price, bool isArabic) {
+  Widget _ticketRow(
+    String typeKey,
+    String label,
+    String subtitle,
+    double price,
+    bool isArabic,
+  ) {
     final qty = _quantities[typeKey]!;
 
     return Container(
@@ -296,7 +373,12 @@ class _TicketScreenState extends State<TicketScreen> {
               : Colors.white.withOpacity(0.05),
         ),
         boxShadow: [
-          if (qty > 0) BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 4)),
+          if (qty > 0)
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
         ],
       ),
       child: Row(
@@ -305,23 +387,54 @@ class _TicketScreenState extends State<TicketScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: AppTextStyles.titleMedium(context).copyWith(fontSize: 16)),
-                Text(subtitle, style: AppTextStyles.metadata(context).copyWith(fontSize: 12)),
+                Text(
+                  label,
+                  style: AppTextStyles.titleMedium(
+                    context,
+                  ).copyWith(fontSize: 16),
+                ),
+                Text(
+                  subtitle,
+                  style: AppTextStyles.metadata(context).copyWith(fontSize: 12),
+                ),
                 const SizedBox(height: 4),
-                Text("\$${price.toStringAsFixed(2)}", style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primaryGold)),
+                Text(
+                  "\$${price.toStringAsFixed(2)}",
+                  style: AppTextStyles.bodyPrimary(context).copyWith(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryGold,
+                  ),
+                ),
               ],
             ),
           ),
           Container(
-            decoration: BoxDecoration(color: AppColors.darkBackground, borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(
+              color: AppColors.darkBackground,
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Row(
               children: [
                 IconButton(
                   icon: const Icon(Icons.remove_rounded, size: 20),
-                  onPressed: qty > 0 ? () => _updateQuantity(typeKey, -1) : null,
+                  onPressed: qty > 0
+                      ? () => _updateQuantity(typeKey, -1)
+                      : null,
                   color: qty > 0 ? Colors.white70 : Colors.white24,
                 ),
-                SizedBox(width: 24, child: Text("$qty", textAlign: TextAlign.center, style: AppTextStyles.bodyPrimary(context).copyWith(fontWeight: FontWeight.w900, fontSize: 16, color: Colors.white))),
+                SizedBox(
+                  width: 24,
+                  child: Text(
+                    "$qty",
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.bodyPrimary(context).copyWith(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
                 IconButton(
                   icon: const Icon(Icons.add_rounded, size: 20),
                   onPressed: () => _updateQuantity(typeKey, 1),
@@ -366,19 +479,34 @@ class _TicketConfirmationDialog extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(color: Colors.green.withOpacity(0.1), shape: BoxShape.circle),
-              child: const Icon(Icons.check_circle_rounded, color: Colors.green, size: 64),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.check_circle_rounded,
+                color: Colors.green,
+                size: 64,
+              ),
             ),
             const SizedBox(height: 24),
             Text(
               isArabic ? "تم تأكيد التذاكر" : "Tickets Confirmed",
-              style: AppTextStyles.displayScreenTitle(context).copyWith(fontSize: 22, fontWeight: FontWeight.w900),
+              style: AppTextStyles.displayScreenTitle(
+                context,
+              ).copyWith(fontSize: 22, fontWeight: FontWeight.w900),
             ),
             const SizedBox(height: 12),
             Text(
-              isArabic ? "حجزنا لك $totalTickets تذكرة ليوم $shortDate." : "Reserved $totalTickets ticket(s) for $shortDate.",
+              isArabic
+                  ? "حجزنا لك $totalTickets تذكرة ليوم $shortDate."
+                  : "Reserved $totalTickets ticket(s) for $shortDate.",
               textAlign: TextAlign.center,
-              style: AppTextStyles.bodyPrimary(context).copyWith(color: AppColors.helperText, fontSize: 15, height: 1.4),
+              style: AppTextStyles.bodyPrimary(context).copyWith(
+                color: AppColors.helperText,
+                fontSize: 15,
+                height: 1.4,
+              ),
             ),
             const SizedBox(height: 32),
             SizedBox(
@@ -389,15 +517,23 @@ class _TicketConfirmationDialog extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryGold,
                   foregroundColor: AppColors.darkInk,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
-                child: Text(isArabic ? "عرض تذاكري" : "View My Tickets", style: AppTextStyles.buttonLabel(context)),
+                child: Text(
+                  isArabic ? "عرض تذاكري" : "View My Tickets",
+                  style: AppTextStyles.buttonLabel(context),
+                ),
               ),
             ),
             const SizedBox(height: 12),
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text(isArabic ? "إغلاق" : "Close", style: AppTextStyles.metadata(context)),
+              child: Text(
+                isArabic ? "إغلاق" : "Close",
+                style: AppTextStyles.metadata(context),
+              ),
             ),
           ],
         ),

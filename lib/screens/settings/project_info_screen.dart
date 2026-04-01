@@ -18,9 +18,11 @@ class ProjectInfoScreen extends StatelessWidget {
     final secondaryTextColor = isDark ? Colors.white70 : AppColors.mutedText;
 
     return AppMenuShell(
-      title: "${l10n.aboutHorusBot}".toUpperCase(),
-      backgroundColor: isDark ? AppColors.darkBackground : AppColors.warmSurface,
-      bottomNavigationBar: BottomNav(currentIndex: 4),
+      title: l10n.aboutHorusBot.toUpperCase(),
+      backgroundColor: isDark
+          ? AppColors.darkBackground
+          : AppColors.warmSurface,
+      bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -34,16 +36,29 @@ class ProjectInfoScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     l10n.horusBotTitle,
-                    style: AppTextStyles.displayArtifactTitle(context).copyWith(fontSize: 28, fontWeight: FontWeight.w900, color: textColor, letterSpacing: 1),
+                    style: AppTextStyles.displayArtifactTitle(context).copyWith(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                      color: textColor,
+                      letterSpacing: 1,
+                    ),
                   ),
                   Text(
                     l10n.version1,
-                    style: AppTextStyles.metadata(context).copyWith(fontSize: 14, color: AppColors.primaryGold, fontWeight: FontWeight.bold),
+                    style: AppTextStyles.metadata(context).copyWith(
+                      fontSize: 14,
+                      color: AppColors.primaryGold,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     l10n.smartAutonomousGuide,
-                    style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 16, color: secondaryTextColor, fontWeight: FontWeight.w500),
+                    style: AppTextStyles.bodyPrimary(context).copyWith(
+                      fontSize: 16,
+                      color: secondaryTextColor,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
               ),
@@ -54,13 +69,15 @@ class ProjectInfoScreen extends StatelessWidget {
             _InfoCard(
               child: Text(
                 l10n.projectDescription,
-                style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 15, color: textColor, height: 1.6),
+                style: AppTextStyles.bodyPrimary(
+                  context,
+                ).copyWith(fontSize: 15, color: textColor, height: 1.6),
               ),
             ),
 
             const SizedBox(height: 32),
             _SectionTitle(title: l10n.technologiesUsedLabel),
-            _InfoCard(
+            const _InfoCard(
               child: Wrap(
                 spacing: 12,
                 runSpacing: 12,
@@ -81,21 +98,38 @@ class ProjectInfoScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(l10n.benhaUniversity, style: AppTextStyles.titleMedium(context).copyWith(fontSize: 17, color: textColor)),
+                  Text(
+                    l10n.benhaUniversity,
+                    style: AppTextStyles.titleMedium(
+                      context,
+                    ).copyWith(fontSize: 17, color: textColor),
+                  ),
                   const SizedBox(height: 4),
-                  Text(l10n.facultyEngineeringShoubra, style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 15, color: secondaryTextColor)),
+                  Text(
+                    l10n.facultyEngineeringShoubra,
+                    style: AppTextStyles.bodyPrimary(
+                      context,
+                    ).copyWith(fontSize: 15, color: secondaryTextColor),
+                  ),
                   const SizedBox(height: 4),
-                  Text(l10n.computerCommunicationProgram, style: AppTextStyles.metadata(context).copyWith(fontSize: 14, color: AppColors.primaryGold, fontWeight: FontWeight.bold)),
+                  Text(
+                    l10n.computerCommunicationProgram,
+                    style: AppTextStyles.metadata(context).copyWith(
+                      fontSize: 14,
+                      color: AppColors.primaryGold,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ],
               ),
             ),
 
             const SizedBox(height: 32),
             _SectionTitle(title: l10n.teamLabel),
-            _InfoCard(
+            const _InfoCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   _TeamMember(name: "Mohammed Ahmed Mohamed Hassan"),
                   _TeamMember(name: "Farida Waheed Abdelbary"),
                   _TeamMember(name: "Abdelrahman Salaheldein Abdelaziz"),
@@ -110,7 +144,12 @@ class ProjectInfoScreen extends StatelessWidget {
             const SizedBox(height: 32),
             _SectionTitle(title: l10n.supervisorLabel),
             _InfoCard(
-              child: Text("Dr. Mohamed Hussein", style: AppTextStyles.titleMedium(context).copyWith(fontSize: 17, color: textColor)),
+              child: Text(
+                "Dr. Mohamed Hussein",
+                style: AppTextStyles.titleMedium(
+                  context,
+                ).copyWith(fontSize: 17, color: textColor),
+              ),
             ),
 
             const SizedBox(height: 48),
@@ -119,7 +158,9 @@ class ProjectInfoScreen extends StatelessWidget {
                 children: [
                   Text(
                     l10n.copyrightYear,
-                    style: AppTextStyles.metadata(context).copyWith(fontSize: 12, color: secondaryTextColor),
+                    style: AppTextStyles.metadata(
+                      context,
+                    ).copyWith(fontSize: 12, color: secondaryTextColor),
                   ),
                   const SizedBox(height: 32),
                 ],
@@ -169,10 +210,9 @@ class _SectionTitle extends StatelessWidget {
       padding: const EdgeInsets.only(left: 4, bottom: 12),
       child: Text(
         title.toUpperCase(),
-        style: AppTextStyles.displaySectionTitle(context).copyWith(
-          fontSize: 13,
-          letterSpacing: 1.2,
-        ),
+        style: AppTextStyles.displaySectionTitle(
+          context,
+        ).copyWith(fontSize: 13, letterSpacing: 1.2),
       ),
     );
   }
@@ -193,7 +233,11 @@ class _TechChip extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: AppTextStyles.metadata(context).copyWith(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 13),
+        style: AppTextStyles.metadata(context).copyWith(
+          color: AppColors.primaryGold,
+          fontWeight: FontWeight.bold,
+          fontSize: 13,
+        ),
       ),
     );
   }
@@ -209,14 +253,20 @@ class _TeamMember extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          const Icon(Icons.person_pin_rounded, size: 18, color: AppColors.primaryGold),
+          const Icon(
+            Icons.person_pin_rounded,
+            size: 18,
+            color: AppColors.primaryGold,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               name,
               style: AppTextStyles.bodyPrimary(context).copyWith(
                 fontSize: 15,
-                color: Theme.of(context).brightness == Brightness.dark ? Colors.white : AppColors.darkInk,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : AppColors.darkInk,
                 fontWeight: FontWeight.w500,
               ),
             ),

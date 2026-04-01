@@ -96,13 +96,13 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       barrierColor: Colors.black54,
       transitionDuration: const Duration(milliseconds: 280),
       pageBuilder: (ctx, anim, secondaryAnim) {
-        return Center(
-          child: _FeedbackThankYouDialog(isArabic: isArabic),
-        );
+        return Center(child: _FeedbackThankYouDialog(isArabic: isArabic));
       },
       transitionBuilder: (ctx, animation, secondary, child) {
-        final curved =
-            CurvedAnimation(parent: animation, curve: Curves.easeOutBack);
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutBack,
+        );
         return FadeTransition(
           opacity: animation,
           child: ScaleTransition(
@@ -161,19 +161,23 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                               Text(
-                                  isArabic
-                                      ? "كيف كانت زيارتك اليوم؟"
-                                      : "How was your visit today?",
-                                  style: AppTextStyles.titleMedium(context).copyWith(fontSize: 16),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  isArabic
-                                      ? "قيّم تجربتك مع المتحف وحوروس."
-                                      : "Rate your experience with the museum and Horus-Bot.",
-                                  style: AppTextStyles.metadata(context).copyWith(fontSize: 13),
-                                ),
+                              Text(
+                                isArabic
+                                    ? "كيف كانت زيارتك اليوم؟"
+                                    : "How was your visit today?",
+                                style: AppTextStyles.titleMedium(
+                                  context,
+                                ).copyWith(fontSize: 16),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                isArabic
+                                    ? "قيّم تجربتك مع المتحف وحوروس."
+                                    : "Rate your experience with the museum and Horus-Bot.",
+                                style: AppTextStyles.metadata(
+                                  context,
+                                ).copyWith(fontSize: 13),
+                              ),
                             ],
                           ),
                         ),
@@ -195,7 +199,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          (isArabic ? "التقييم العام" : "Overall rating").toUpperCase(),
+                          (isArabic ? "التقييم العام" : "Overall rating")
+                              .toUpperCase(),
                           style: AppTextStyles.displaySectionTitle(context),
                         ),
                         const SizedBox(height: 16),
@@ -205,14 +210,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                             final star = index + 1;
                             final isFilled = star <= _rating;
                             return IconButton(
-                              onPressed: () =>
-                                  setState(() => _rating = star),
+                              onPressed: () => setState(() => _rating = star),
                               icon: Icon(
                                 isFilled
                                     ? Icons.star_rounded
                                     : Icons.star_border_rounded,
-                                color:
-                                    isFilled ? AppColors.primaryGold : AppColors.neutralDark,
+                                color: isFilled
+                                    ? AppColors.primaryGold
+                                    : AppColors.neutralDark,
                                 size: 40,
                               ),
                             );
@@ -236,15 +241,16 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                           isArabic
                               ? "اختر ما تريد التعليق عليه (اختياري):"
                               : "What is this feedback about? (optional)",
-                          style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white70, fontSize: 13),
+                          style: AppTextStyles.bodyPrimary(
+                            context,
+                          ).copyWith(color: Colors.white70, fontSize: 13),
                         ),
                         const SizedBox(height: 16),
                         Wrap(
                           spacing: 10,
                           runSpacing: 10,
                           children: List.generate(tags.length, (i) {
-                            final selected =
-                                _selectedTagIndexes.contains(i);
+                            final selected = _selectedTagIndexes.contains(i);
                             return GestureDetector(
                               onTap: () => _toggleTag(i),
                               child: Container(
@@ -265,13 +271,16 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                 ),
                                 child: Text(
                                   tags[i],
-                                  style: AppTextStyles.metadata(context).copyWith(
-                                    fontSize: 12,
-                                    fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-                                    color: selected
-                                        ? AppColors.primaryGold
-                                        : AppColors.neutralMedium,
-                                  ),
+                                  style: AppTextStyles.metadata(context)
+                                      .copyWith(
+                                        fontSize: 12,
+                                        fontWeight: selected
+                                            ? FontWeight.bold
+                                            : FontWeight.normal,
+                                        color: selected
+                                            ? AppColors.primaryGold
+                                            : AppColors.neutralMedium,
+                                      ),
                                 ),
                               ),
                             );
@@ -295,7 +304,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          (isArabic ? "أخبرنا المزيد (اختياري)" : "Tell us more (optional)").toUpperCase(),
+                          (isArabic
+                                  ? "أخبرنا المزيد (اختياري)"
+                                  : "Tell us more (optional)")
+                              .toUpperCase(),
                           style: AppTextStyles.displaySectionTitle(context),
                         ),
                         const SizedBox(height: 8),
@@ -309,12 +321,16 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         TextField(
                           controller: _commentController,
                           maxLines: 4,
-                          style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white),
+                          style: AppTextStyles.bodyPrimary(
+                            context,
+                          ).copyWith(color: Colors.white),
                           decoration: InputDecoration(
                             hintText: isArabic
                                 ? "اكتب ملاحظاتك هنا..."
                                 : "Write your feedback here...",
-                            hintStyle: AppTextStyles.metadata(context).copyWith(color: Colors.white24),
+                            hintStyle: AppTextStyles.metadata(
+                              context,
+                            ).copyWith(color: Colors.white24),
                             filled: true,
                             fillColor: Colors.white.withOpacity(0.02),
                             contentPadding: const EdgeInsets.all(16),
@@ -342,7 +358,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                     isArabic
                         ? "تُستخدم الملاحظات للأبحاث وتحسين تجربة الزوار فقط."
                         : "Feedback is used only for research and improving the visitor experience.",
-                    style: AppTextStyles.metadata(context).copyWith(fontSize: 11, color: Colors.white24),
+                    style: AppTextStyles.metadata(
+                      context,
+                    ).copyWith(fontSize: 11, color: Colors.white24),
                   ),
 
                   const SizedBox(height: 100),
@@ -461,7 +479,9 @@ class _FeedbackThankYouDialog extends StatelessWidget {
             const SizedBox(height: 24),
             Text(
               isArabic ? "تم إرسال الملاحظات" : "Feedback submitted",
-              style: AppTextStyles.displayScreenTitle(context).copyWith(fontSize: 22, fontWeight: FontWeight.w900),
+              style: AppTextStyles.displayScreenTitle(
+                context,
+              ).copyWith(fontSize: 22, fontWeight: FontWeight.w900),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
