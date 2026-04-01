@@ -63,17 +63,19 @@ class AppTextStyles {
       return GoogleFonts.amiri(
         textStyle: const TextStyle(
           fontWeight: FontWeight.w600,
-          fontSize: 24,
+          fontSize: 25,
           color: Colors.white,
+          height: 1.25,
         ),
       );
     }
     return GoogleFonts.cinzel(
       textStyle: const TextStyle(
         fontWeight: FontWeight.w600,
-        fontSize: 24,
+        fontSize: 25,
         color: Colors.white,
-        letterSpacing: 0.3,
+        letterSpacing: 0.5,
+        height: 1.25,
       ),
     );
   }
@@ -82,18 +84,19 @@ class AppTextStyles {
     if (_isArabic(context)) {
       return GoogleFonts.amiri(
         textStyle: const TextStyle(
-          fontWeight: FontWeight.w900,
+          fontWeight: FontWeight.w600,
           fontSize: 13,
           color: AppColors.primaryGold,
+          letterSpacing: 0.8,
         ),
       );
     }
     return GoogleFonts.cinzel(
       textStyle: const TextStyle(
-        fontWeight: FontWeight.w900,
+        fontWeight: FontWeight.w600,
         fontSize: 13,
         color: AppColors.primaryGold,
-        letterSpacing: 2.0,
+        letterSpacing: 0.8,
       ),
     );
   }
@@ -102,16 +105,16 @@ class AppTextStyles {
     if (_isArabic(context)) {
       return GoogleFonts.amiri(
         textStyle: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 19,
+          fontWeight: FontWeight.w600,
+          fontSize: 18,
           color: Colors.white,
         ),
       );
     }
     return GoogleFonts.cinzel(
       textStyle: const TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 19,
+        fontWeight: FontWeight.w600,
+        fontSize: 18,
         color: Colors.white,
       ),
     );
@@ -121,16 +124,16 @@ class AppTextStyles {
     if (_isArabic(context)) {
       return GoogleFonts.notoSansArabic(
         textStyle: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 22,
+          fontWeight: FontWeight.w700,
+          fontSize: 20,
           color: Colors.white,
         ),
       );
     }
     return GoogleFonts.inter(
       textStyle: const TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 22,
+        fontWeight: FontWeight.w700,
+        fontSize: 20,
         color: Colors.white,
       ),
     );
@@ -141,7 +144,7 @@ class AppTextStyles {
       return GoogleFonts.notoSansArabic(
         textStyle: const TextStyle(
           fontWeight: FontWeight.w400,
-          fontSize: 12.5,
+          fontSize: 12,
           color: AppColors.helperText,
         ),
       );
@@ -149,7 +152,7 @@ class AppTextStyles {
     return GoogleFonts.inter(
       textStyle: const TextStyle(
         fontWeight: FontWeight.w400,
-        fontSize: 12.5,
+        fontSize: 12,
         color: AppColors.helperText,
       ),
     );
@@ -159,18 +162,18 @@ class AppTextStyles {
     if (_isArabic(context)) {
       return GoogleFonts.notoSansArabic(
         textStyle: const TextStyle(
-          fontWeight: FontWeight.w900,
-          fontSize: 14.5,
+          fontWeight: FontWeight.w600,
+          fontSize: 16,
           color: AppColors.darkInk,
         ),
       );
     }
     return GoogleFonts.inter(
       textStyle: const TextStyle(
-        fontWeight: FontWeight.w900,
-        fontSize: 14.5,
+        fontWeight: FontWeight.w600,
+        fontSize: 16,
         color: AppColors.darkInk,
-        letterSpacing: 1.0,
+        letterSpacing: 0.3,
       ),
     );
   }
@@ -179,7 +182,7 @@ class AppTextStyles {
     if (_isArabic(context)) {
       return GoogleFonts.amiri(
         textStyle: TextStyle(
-          fontWeight: FontWeight.w900,
+          fontWeight: FontWeight.w600,
           fontSize: 20,
           color: isDark ? Colors.white : AppColors.darkInk,
         ),
@@ -187,9 +190,9 @@ class AppTextStyles {
     }
     return GoogleFonts.cinzel(
       textStyle: TextStyle(
-        fontWeight: FontWeight.w900,
+        fontWeight: FontWeight.w600,
         fontSize: 20,
-        letterSpacing: 2.0,
+        letterSpacing: 0.5,
         color: isDark ? Colors.white : AppColors.darkInk,
       ),
     );
@@ -204,8 +207,8 @@ class AppTextStyles {
     if (_isArabic(context)) {
       return GoogleFonts.amiri(
         textStyle: const TextStyle(
-          fontWeight: FontWeight.w800,
-          fontSize: 40,
+          fontWeight: FontWeight.w700,
+          fontSize: 30,
           color: Colors.white,
           height: 1.1,
         ),
@@ -213,10 +216,10 @@ class AppTextStyles {
     }
     return GoogleFonts.cinzel(
       textStyle: const TextStyle(
-        fontWeight: FontWeight.w800,
-        fontSize: 42,
+        fontWeight: FontWeight.w700,
+        fontSize: 30,
         color: Colors.white,
-        height: 1.05,
+        height: 1.1,
         letterSpacing: -0.5,
       ),
     );
@@ -227,17 +230,19 @@ class AppTextStyles {
     if (_isArabic(context)) {
       return GoogleFonts.amiri(
         textStyle: const TextStyle(
-          fontWeight: FontWeight.w700,
-          fontSize: 24,
+          fontWeight: FontWeight.w600,
+          fontSize: 20,
           color: Colors.white,
+          height: 1.1,
         ),
       );
     }
-    return GoogleFonts.inter(
+    return GoogleFonts.cinzel(
       textStyle: const TextStyle(
-        fontWeight: FontWeight.w700,
-        fontSize: 24,
+        fontWeight: FontWeight.w600,
+        fontSize: 20,
         color: Colors.white,
+        height: 1.1,
         letterSpacing: 0.5,
       ),
     );
@@ -248,18 +253,20 @@ class AppTextStyles {
     if (_isArabic(context)) {
       return GoogleFonts.amiri(
         textStyle: const TextStyle(
-          fontWeight: FontWeight.w900,
-          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          fontSize: 13,
           color: AppColors.primaryGold,
+          height: 1.1,
         ),
       );
     }
     return GoogleFonts.cinzel(
       textStyle: const TextStyle(
-        fontWeight: FontWeight.w900,
+        fontWeight: FontWeight.w600,
         fontSize: 13,
         color: AppColors.primaryGold,
-        letterSpacing: 1.5,
+        height: 1.1,
+        letterSpacing: 0.8,
       ),
     );
   }
@@ -269,17 +276,19 @@ class AppTextStyles {
     if (_isArabic(context)) {
       return GoogleFonts.amiri(
         textStyle: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          fontSize: 18,
           color: Colors.white,
+          height: 1.1,
         ),
       );
     }
     return GoogleFonts.cinzel(
       textStyle: const TextStyle(
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w600,
         fontSize: 18,
         color: Colors.white,
+        height: 1.1,
       ),
     );
   }
@@ -289,17 +298,19 @@ class AppTextStyles {
     if (_isArabic(context)) {
       return GoogleFonts.amiri(
         textStyle: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 22,
+          fontWeight: FontWeight.w600,
+          fontSize: 20,
           color: Colors.white,
+          height: 1.1,
         ),
       );
     }
     return GoogleFonts.cinzel(
       textStyle: const TextStyle(
-        fontWeight: FontWeight.bold,
+        fontWeight: FontWeight.w600,
         fontSize: 20,
         color: Colors.white,
+        height: 1.1,
       ),
     );
   }
@@ -309,17 +320,19 @@ class AppTextStyles {
     if (_isArabic(context)) {
       return GoogleFonts.amiri(
         textStyle: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 19,
+          fontWeight: FontWeight.w600,
+          fontSize: 18,
           color: Colors.white,
+          height: 1.1,
         ),
       );
     }
     return GoogleFonts.cinzel(
       textStyle: const TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 17,
+        fontWeight: FontWeight.w600,
+        fontSize: 18,
         color: Colors.white,
+        height: 1.1,
       ),
     );
   }
@@ -332,18 +345,18 @@ class AppTextStyles {
       return GoogleFonts.notoSansArabic(
         textStyle: const TextStyle(
           fontWeight: FontWeight.w400,
-          fontSize: 15,
+          fontSize: 14,
           color: AppColors.neutralMedium,
-          height: 1.6,
+          height: 1.4,
         ),
       );
     }
     return GoogleFonts.inter(
       textStyle: const TextStyle(
         fontWeight: FontWeight.w400,
-        fontSize: 15,
+        fontSize: 14,
         color: AppColors.neutralMedium,
-        height: 1.6,
+        height: 1.4,
       ),
     );
   }
@@ -356,7 +369,7 @@ class AppTextStyles {
           fontWeight: FontWeight.w400,
           fontSize: 14,
           color: Colors.white70,
-          height: 1.5,
+          height: 1.4,
         ),
       );
     }
@@ -386,7 +399,6 @@ class AppTextStyles {
         fontWeight: FontWeight.w500,
         fontSize: 12,
         color: AppColors.helperText,
-        letterSpacing: 0.5,
       ),
     );
   }
@@ -396,16 +408,16 @@ class AppTextStyles {
     if (_isArabic(context)) {
       return GoogleFonts.notoSansArabic(
         textStyle: const TextStyle(
-          fontWeight: FontWeight.w700,
-          fontSize: 14.5,
+          fontWeight: FontWeight.w600,
+          fontSize: 16,
         ),
       );
     }
     return GoogleFonts.inter(
       textStyle: const TextStyle(
-        fontWeight: FontWeight.w700,
-        fontSize: 14.5,
-        letterSpacing: 1.0,
+        fontWeight: FontWeight.w600,
+        fontSize: 16,
+        letterSpacing: 0.3,
       ),
     );
   }
@@ -415,16 +427,15 @@ class AppTextStyles {
     if (_isArabic(context)) {
       return GoogleFonts.notoSansArabic(
         textStyle: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 11,
+          fontWeight: FontWeight.w500,
+          fontSize: 12,
         ),
       );
     }
     return GoogleFonts.inter(
       textStyle: const TextStyle(
-        fontWeight: FontWeight.w600,
-        fontSize: 11,
-        letterSpacing: 0.5,
+        fontWeight: FontWeight.w500,
+        fontSize: 12,
       ),
     );
   }

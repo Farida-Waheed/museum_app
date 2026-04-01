@@ -200,11 +200,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.black.withOpacity(0.18),
                 Colors.transparent,
-                Colors.black.withOpacity(0.70),
+                Colors.black.withOpacity(0.45),
+                Colors.black.withOpacity(0.80),
               ],
-              stops: const [0.0, 0.32, 1.0],
+              stops: const [0.0, 0.5, 1.0],
             ),
           ),
           child: Image.asset(
@@ -226,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Explore Egypt\nwith Horus-Bot",
+                      l10n.exploreEgypt,
                       style: AppTextStyles.displayHero(context),
                     ),
                     const SizedBox(height: 12),
@@ -325,6 +325,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       body: Builder(
         builder: (innerContext) => Stack(
           children: [
+            Positioned.fill(
+              child: Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: const Alignment(-0.2, -0.75),
+                        radius: 1.05,
+                        colors: [
+                          AppColors.primaryGold.withOpacity(0.08),
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 1.0],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.08),
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.10),
+                        ],
+                        stops: const [0.0, 0.45, 1.0],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             CustomScrollView(
               controller: _scrollController,
               physics: const BouncingScrollPhysics(),
@@ -692,21 +725,20 @@ class _NextStopBadgeState extends State<_NextStopBadge> {
               color: AppColors.cinematicElevated,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: AppColors.primaryGold.withOpacity(
-                  _isHovered ? 0.25 : 0.15,
-                ),
+                color: AppColors.primaryGold.withOpacity(0.4),
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primaryGold.withOpacity(0.15),
-                  blurRadius: 40,
-                  offset: const Offset(0, 15),
+                  color: AppColors.primaryGold.withOpacity(0.18),
+                  blurRadius: 28,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 10),
                 ),
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
-                  blurRadius: 40,
-                  offset: const Offset(0, 20),
+                  color: Colors.black.withOpacity(0.6),
+                  blurRadius: 50,
+                  offset: const Offset(0, 25),
                 ),
               ],
             ),
@@ -1232,10 +1264,10 @@ class _HorusFabState extends State<_HorusFab>
                     ),
                     BoxShadow(
                       color: AppColors.primaryGold.withOpacity(
-                        0.15 + (_glowCtrl.value * 0.25),
+                        0.2 + (_glowCtrl.value * 0.3),
                       ),
-                      blurRadius: _isHovered ? 25 : 18,
-                      spreadRadius: _isHovered ? 5 : 3,
+                      blurRadius: _isHovered ? 30 : 22,
+                      spreadRadius: _isHovered ? 8 : 5,
                     ),
                   ],
                 ),
