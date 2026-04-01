@@ -288,7 +288,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                 Text(
                                   pages[index]["desc"]!,
                                   textAlign: TextAlign.center,
-                                  style: AppTextStyles.body(context).copyWith(
+                                  style: AppTextStyles.bodyPrimary(context).copyWith(
                                     color: Colors.white.withOpacity(0.85),
                                     fontSize: 16,
                                     height: 1.7,

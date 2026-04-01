@@ -398,32 +398,32 @@ class AppLocalizationsAr extends AppLocalizations {
   String get introSubtitleFull => 'استكشف مصر مع حورس-بوت وتطبيقه.';
 
   @override
-  String get onboarding1Title => 'مرحبًا بك في حورس-بوت';
+  String get onboarding1Title => 'مرحبًا بك في حورس';
 
   @override
   String get onboarding1Desc =>
-      'دليلك الذكي داخل المتحف. تنقّل بين المعروضات، واتبع الروبوت، واكتشف القصص المخفية.';
+      'ادخل عالم العجائب القديمة، حيث يحمل كل قطعة أثرية قصة تروى.';
 
   @override
-  String get onboarding2Title => 'تعرّف على الدليل';
+  String get onboarding2Title => 'دليلك الشخصي';
 
   @override
   String get onboarding2Desc =>
-      'مرشدك الذكي داخل المتحف. اطرح الأسئلة، واستمع إلى الشروحات، واستكشف أثناء زيارتك.';
+      'اطرح الأسئلة، استمع إلى القصص، واستكشف المتحف بطريقة أذكى وأكثر غمرًا.';
 
   @override
-  String get onboarding3Title => 'وضع الجولة الإرشادية';
+  String get onboarding3Title => 'استكشف بسلاسة';
 
   @override
   String get onboarding3Desc =>
-      'إرشاد تلقائي عبر المعروضات. ابقَ متصلًا بحورس-بوت طوال رحلتك.';
+      'تنقّل بين المعروضات بسهولة وابقَ متصلًا بدليلك طوال رحلتك.';
 
   @override
-  String get onboarding4Title => 'استكشف وتعلّم';
+  String get onboarding4Title => 'اكتشف المزيد';
 
   @override
   String get onboarding4Desc =>
-      'اكتشف القطع الأثرية، واطرح الأسئلة، واستمتع بالاختبارات التفاعلية داخل المتحف.';
+      'اكشف القصص المخفية، تفاعل مع المعروضات، واجعل كل زيارة لا تُنسى.';
 
   @override
   String get next => 'التالي';

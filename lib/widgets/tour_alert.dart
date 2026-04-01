@@ -115,7 +115,7 @@ void showTourAlertOnce(
                         child: Text(
                           bodyText,
                           textAlign: isArabic ? TextAlign.right : TextAlign.left,
-                          style: AppTextStyles.body(ctx).copyWith(
+                          style: AppTextStyles.bodyPrimary(ctx).copyWith(
                             color: Colors.white.withOpacity(0.92),
                           ),
                         ),

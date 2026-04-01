@@ -261,7 +261,7 @@ class _NotificationContent extends StatelessWidget {
             children: [
               Text(
                 notification.title,
-                style: AppTextStyles.body(context).copyWith(fontWeight: FontWeight.w900, color: Colors.white, fontSize: 15, letterSpacing: 0.5),
+                style: AppTextStyles.bodyPrimary(context).copyWith(fontWeight: FontWeight.w900, color: Colors.white, fontSize: 15, letterSpacing: 0.5),
               ),
               const SizedBox(height: 2),
               Text(
@@ -332,7 +332,7 @@ class _QuizModal extends StatelessWidget {
                         const SizedBox(height: 2),
                         Text(
                           "Exhibit: ${notification.data?['location'] ?? 'Artifact'}",
-                          style: AppTextStyles.body(context).copyWith(
+                          style: AppTextStyles.bodyPrimary(context).copyWith(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                             color: Colors.white.withOpacity(0.9),
@@ -362,7 +362,7 @@ class _QuizModal extends StatelessWidget {
                     ),
                     child: Text(
                       notification.message,
-                      style: AppTextStyles.body(context).copyWith(
+                      style: AppTextStyles.bodyPrimary(context).copyWith(
                         fontSize: 15,
                         color: Colors.white.withOpacity(0.85),
                         height: 1.5,

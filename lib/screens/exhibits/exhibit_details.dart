@@ -79,7 +79,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
         backgroundColor: AppColors.cinematicCard,
         content: Text(
           isBookmarked ? l10n.addedToBookmarks : l10n.removedFromBookmarks,
-          style: AppTextStyles.body(context).copyWith(color: Colors.white),
+          style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white),
         ),
         duration: const Duration(milliseconds: 900),
         behavior: SnackBarBehavior.floating,

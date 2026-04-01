@@ -103,7 +103,7 @@ class _IntroScreenState extends State<IntroScreen>
       fontWeight: isArabic ? FontWeight.w600 : FontWeight.w400,
     );
 
-    final TextStyle taglineStyle = AppTextStyles.body(
+    final TextStyle taglineStyle = AppTextStyles.heroSubtitle(
       context,
     ).copyWith(color: Colors.white70);
 

@@ -869,43 +869,43 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding1Desc.
   ///
   /// In en, this message translates to:
-  /// **'Your smart guide to the museum. Navigate exhibits, follow the robot, and discover hidden stories.'**
+  /// **'Step into a world of ancient wonders, where every artifact has a story to tell.'**
   String get onboarding1Desc;
 
   /// No description provided for @onboarding2Title.
   ///
   /// In en, this message translates to:
-  /// **'Meet the Guide'**
+  /// **'Your Personal Guide'**
   String get onboarding2Title;
 
   /// No description provided for @onboarding2Desc.
   ///
   /// In en, this message translates to:
-  /// **'Your intelligent museum guide. Ask questions, listen to explanations, and explore during your visit.'**
+  /// **'Ask questions, hear stories, and explore the museum in a smarter, more immersive way.'**
   String get onboarding2Desc;
 
   /// No description provided for @onboarding3Title.
   ///
   /// In en, this message translates to:
-  /// **'Guided Tour Mode'**
+  /// **'Explore Seamlessly'**
   String get onboarding3Title;
 
   /// No description provided for @onboarding3Desc.
   ///
   /// In en, this message translates to:
-  /// **'Automatic guidance through exhibits. Stay connected with Horus-Bot throughout your journey.'**
+  /// **'Navigate through exhibits with ease and stay connected to your guide throughout your journey.'**
   String get onboarding3Desc;
 
   /// No description provided for @onboarding4Title.
   ///
   /// In en, this message translates to:
-  /// **'Explore & Learn'**
+  /// **'Discover More'**
   String get onboarding4Title;
 
   /// No description provided for @onboarding4Desc.
   ///
   /// In en, this message translates to:
-  /// **'Discover artifacts, ask questions, and enjoy interactive museum quizzes.'**
+  /// **'Uncover hidden stories, interact with exhibits, and make every visit unforgettable.'**
   String get onboarding4Desc;
 
   /// No description provided for @next.

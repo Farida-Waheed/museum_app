@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 ThemeData getHighContrastTheme(String languageCode) {
   final bool isArabic = languageCode == 'ar';
   final String? bodyFont = isArabic ? GoogleFonts.notoSansArabic().fontFamily : GoogleFonts.inter().fontFamily;
-  final String? headingFont = isArabic ? GoogleFonts.amiri().fontFamily : 'Playfair Display';
+  final String? headingFont = isArabic ? GoogleFonts.amiri().fontFamily : GoogleFonts.cinzel().fontFamily;
 
   return ThemeData(
     useMaterial3: true,
