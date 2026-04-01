@@ -83,9 +83,21 @@ class _IntroScreenState extends State<IntroScreen>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final heroStyle = AppTextStyles.heroTitle(context);
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
-    final TextStyle mainTitleStyle = heroStyle;
+    // Base styles for title composition
+    final TextStyle baseHeroStyle = AppTextStyles.heroTitle(context);
+    final TextStyle smallTitleStyle = baseHeroStyle.copyWith(
+      fontSize: isArabic ? 28 : 32,
+      fontWeight: isArabic ? FontWeight.normal : FontWeight.w200,
+    );
+    final TextStyle mainTitleStyle = baseHeroStyle.copyWith(
+      fontSize: isArabic ? 40 : 44,
+    );
+    final TextStyle secondaryTitleStyle = baseHeroStyle.copyWith(
+      fontSize: isArabic ? 36 : 40,
+      fontWeight: isArabic ? FontWeight.w600 : FontWeight.w400,
+    );
 
     final TextStyle taglineStyle = AppTextStyles.body(
       context,
@@ -95,21 +107,13 @@ class _IntroScreenState extends State<IntroScreen>
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(
-            'assets/images/GEM.jpg',
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) {
-              return Container(
-                color: Colors.grey,
-                child: const Center(
-                  child: Icon(
-                    Icons.broken_image,
-                    size: 80,
-                    color: Colors.white,
-                  ),
-                ),
-              );
-            },
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/GEM.jpg'),
+                fit: BoxFit.cover,
+              ),
+            ),
           ),
 
           Container(
@@ -138,7 +142,43 @@ class _IntroScreenState extends State<IntroScreen>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.introTitle, style: mainTitleStyle),
+                    if (isArabic)
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'المتاحف\n',
+                              style: smallTitleStyle,
+                            ),
+                            TextSpan(
+                              text: 'المصرية',
+                              style: mainTitleStyle,
+                            ),
+                          ],
+                        ),
+                        textAlign: TextAlign.start,
+                        textDirection: TextDirection.rtl,
+                      )
+                    else
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: 'The ',
+                              style: smallTitleStyle,
+                            ),
+                            TextSpan(
+                              text: 'Egyptian\n',
+                              style: mainTitleStyle,
+                            ),
+                            TextSpan(
+                              text: 'Museums',
+                              style: secondaryTitleStyle,
+                            ),
+                          ],
+                        ),
+                        textAlign: TextAlign.start,
+                      ),
                     const SizedBox(height: 12),
                     Text(l10n.introSubtitle, style: taglineStyle),
                   ],

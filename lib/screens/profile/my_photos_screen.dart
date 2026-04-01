@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
 import '../../core/constants/app_styles.dart';
 import '../../models/photo_memory.dart';
 

@@ -385,10 +385,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your data is anonymous and used only for navigation.';
 
   @override
-  String get introTitle => 'The Egyptian Museums';
-
-  @override
-  String get introSubtitle => 'Explore Egyptian museums with Horus-Bot.';
+  String get introSubtitle => 'Discover ancient wonders with Horus-Bot';
 
   @override
   String get introThe => 'The ';
@@ -722,4 +719,81 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get continueBtn => 'CONTINUE TO HOME';
+
+  @override
+  String get benhaUniversity => 'Benha University';
+
+  @override
+  String get facultyEngineeringShoubra => 'Faculty of Engineering at Shoubra';
+
+  @override
+  String get computerCommunicationProgram =>
+      'Computer & Communication Engineering Program';
+
+  @override
+  String get drMohamedHussein => 'Dr. Mohamed Hussein';
+
+  @override
+  String youScored(int score, int total) {
+    return 'You scored $score out of $total';
+  }
+
+  @override
+  String get retry => 'RETRY';
+
+  @override
+  String get doneButton => 'DONE';
+
+  @override
+  String get guestVisitor => 'Guest Visitor';
+
+  @override
+  String get englishLanguage => 'English';
+
+  @override
+  String get arabicLanguage => 'العربية';
+
+  @override
+  String get webPermissionsNote =>
+      'Permissions are managed by your browser settings on web.';
+
+  @override
+  String get ticketConfirmation => 'Ticket confirmation';
+
+  @override
+  String get scanResult => 'Scan result';
+
+  @override
+  String get feedbackSubmitted => 'Feedback submitted';
+
+  @override
+  String get horusBotTitle => 'Horus-Bot';
+
+  @override
+  String get version1 => 'Version 1.0';
+
+  @override
+  String get smartAutonomousGuide => 'Smart Autonomous Museum Guide';
+
+  @override
+  String get projectDescription =>
+      'Horus-Bot is a smart autonomous museum guide robot designed to enhance museum visitor experience through autonomous navigation, multilingual interaction, and a companion mobile application.';
+
+  @override
+  String get projectDescriptionLabel => 'Project Description';
+
+  @override
+  String get technologiesUsedLabel => 'Technologies Used';
+
+  @override
+  String get developedByLabel => 'Developed By';
+
+  @override
+  String get teamLabel => 'Team';
+
+  @override
+  String get supervisorLabel => 'Supervisor';
+
+  @override
+  String get copyrightYear => 'Copyright © 2026 Horus-Bot Project';
 }

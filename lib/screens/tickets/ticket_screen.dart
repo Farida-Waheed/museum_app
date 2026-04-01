@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 
 import '../../models/user_preferences.dart';
+import '../../l10n/app_localizations.dart';
 import '../../app/router.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
@@ -66,6 +67,7 @@ class _TicketScreenState extends State<TicketScreen> {
   }
 
   Future<void> _handleCheckout(bool isArabic) async {
+    final l10n = AppLocalizations.of(context)!;
     if (_totalPrice <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -87,7 +89,7 @@ class _TicketScreenState extends State<TicketScreen> {
     await showGeneralDialog(
       context: context,
       barrierDismissible: true,
-      barrierLabel: 'Ticket confirmation',
+      barrierLabel: l10n.ticketConfirmation,
       barrierColor: Colors.black54,
       transitionDuration: const Duration(milliseconds: 280),
       pageBuilder: (ctx, anim, secondaryAnim) {
@@ -121,7 +123,6 @@ class _TicketScreenState extends State<TicketScreen> {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
-    final theme = Theme.of(context);
 
     final String formattedDateEn = DateFormat('EEEE, MMM d, yyyy').format(_selectedDate);
     final String formattedDateAr = DateFormat.yMMMMEEEEd('ar').format(_selectedDate);

@@ -125,8 +125,7 @@
   "allowLocationAccess": "Enable Location",
   "locationPermissionBody": "Horus-Bot uses your location to guide you through museum exhibits and help you follow the robot during your visit.",
   "dataReassurance": "Your data is anonymous and used only for navigation.",
-  "introTitle": "The Egyptian Museums",
-  "introSubtitle": "Explore Egyptian museums with Horus-Bot.",
+  "introSubtitle": "Discover ancient wonders with Horus-Bot",
   "introThe": "The ",
   "introEgyptian": "Egyptian",
   "introMuseums": "Museums",
@@ -229,5 +228,40 @@
   "cameraPermissionDesc": "Needed for scanning QR tickets and future AR features.",
   "micPermissionTitle": "Microphone",
   "micPermissionDesc": "Used for voice interaction and questions to Horus.",
-  "continueBtn": "CONTINUE TO HOME"
+  "continueBtn": "CONTINUE TO HOME",
+  "benhaUniversity": "Benha University",
+  "facultyEngineeringShoubra": "Faculty of Engineering at Shoubra",
+  "computerCommunicationProgram": "Computer & Communication Engineering Program",
+  "drMohamedHussein": "Dr. Mohamed Hussein",
+  "youScored": "You scored {score} out of {total}",
+  "@youScored": {
+    "description": "Quiz result message",
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "retry": "RETRY",
+  "doneButton": "DONE",
+  "guestVisitor": "Guest Visitor",
+  "englishLanguage": "English",
+  "arabicLanguage": "العربية",
+  "webPermissionsNote": "Permissions are managed by your browser settings on web.",
+  "ticketConfirmation": "Ticket confirmation",
+  "scanResult": "Scan result",
+  "feedbackSubmitted": "Feedback submitted",
+  "horusBotTitle": "Horus-Bot",
+  "version1": "Version 1.0",
+  "smartAutonomousGuide": "Smart Autonomous Museum Guide",
+  "projectDescription": "Horus-Bot is a smart autonomous museum guide robot designed to enhance museum visitor experience through autonomous navigation, multilingual interaction, and a companion mobile application.",
+  "projectDescriptionLabel": "Project Description",
+  "technologiesUsedLabel": "Technologies Used",
+  "developedByLabel": "Developed By",
+  "teamLabel": "Team",
+  "supervisorLabel": "Supervisor",
+  "copyrightYear": "Copyright © 2026 Horus-Bot Project"
 }

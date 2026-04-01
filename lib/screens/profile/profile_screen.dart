@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/bottom_nav.dart';
-import '../../app/router.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
-import '../../models/user_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -19,7 +16,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return AppMenuShell(
@@ -31,7 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           children: [
             // A. Visitor Identity Header
-            _VisitorHeader(isArabic: isArabic),
+            _VisitorHeader(isArabic: isArabic, l10n: l10n),
             const SizedBox(height: 32),
 
             // B. Visitor Statistics
@@ -103,7 +99,8 @@ class _SectionTitle extends StatelessWidget {
 
 class _VisitorHeader extends StatelessWidget {
   final bool isArabic;
-  const _VisitorHeader({required this.isArabic});
+  final AppLocalizations l10n;
+  const _VisitorHeader({required this.isArabic, required this.l10n});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -139,7 +136,7 @@ class _VisitorHeader extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Guest Visitor", style: AppTextStyles.titleLarge(context).copyWith(fontSize: 18)),
+                Text(l10n.guestVisitor, style: AppTextStyles.titleLarge(context).copyWith(fontSize: 18)),
                 const SizedBox(height: 4),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),

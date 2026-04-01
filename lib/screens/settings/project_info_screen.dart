@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 import '../../widgets/app_menu_shell.dart';
@@ -9,6 +10,7 @@ class ProjectInfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -16,7 +18,7 @@ class ProjectInfoScreen extends StatelessWidget {
     final secondaryTextColor = isDark ? Colors.white70 : AppColors.mutedText;
 
     return AppMenuShell(
-      title: "About Horus-Bot".toUpperCase(),
+      title: "${l10n.aboutHorusBot}".toUpperCase(),
       backgroundColor: isDark ? AppColors.darkBackground : AppColors.warmSurface,
       bottomNavigationBar: BottomNav(currentIndex: 4),
       body: SingleChildScrollView(
@@ -31,16 +33,16 @@ class ProjectInfoScreen extends StatelessWidget {
                   Image.asset("assets/icons/ankh.png", width: 64, height: 64),
                   const SizedBox(height: 16),
                   Text(
-                    "Horus-Bot",
+                    l10n.horusBotTitle,
                     style: AppTextStyles.displayArtifactTitle(context).copyWith(fontSize: 28, fontWeight: FontWeight.w900, color: textColor, letterSpacing: 1),
                   ),
                   Text(
-                    "Version 1.0",
+                    l10n.version1,
                     style: AppTextStyles.metadata(context).copyWith(fontSize: 14, color: AppColors.primaryGold, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    "Smart Autonomous Museum Guide",
+                    l10n.smartAutonomousGuide,
                     style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 16, color: secondaryTextColor, fontWeight: FontWeight.w500),
                   ),
                 ],
@@ -48,16 +50,16 @@ class ProjectInfoScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 32),
-            _SectionTitle(title: "Project Description"),
+            _SectionTitle(title: l10n.projectDescriptionLabel),
             _InfoCard(
               child: Text(
-                "Horus-Bot is a smart autonomous museum guide robot designed to enhance museum visitor experience through autonomous navigation, multilingual interaction, and a companion mobile application.",
+                l10n.projectDescription,
                 style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 15, color: textColor, height: 1.6),
               ),
             ),
 
             const SizedBox(height: 32),
-            _SectionTitle(title: "Technologies Used"),
+            _SectionTitle(title: l10n.technologiesUsedLabel),
             _InfoCard(
               child: Wrap(
                 spacing: 12,
@@ -74,22 +76,22 @@ class ProjectInfoScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 32),
-            _SectionTitle(title: "Developed By"),
+            _SectionTitle(title: l10n.developedByLabel),
             _InfoCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Benha University", style: AppTextStyles.titleMedium(context).copyWith(fontSize: 17, color: textColor)),
+                  Text(l10n.benhaUniversity, style: AppTextStyles.titleMedium(context).copyWith(fontSize: 17, color: textColor)),
                   const SizedBox(height: 4),
-                  Text("Faculty of Engineering at Shoubra", style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 15, color: secondaryTextColor)),
+                  Text(l10n.facultyEngineeringShoubra, style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 15, color: secondaryTextColor)),
                   const SizedBox(height: 4),
-                  Text("Computer & Communication Engineering Program", style: AppTextStyles.metadata(context).copyWith(fontSize: 14, color: AppColors.primaryGold, fontWeight: FontWeight.bold)),
+                  Text(l10n.computerCommunicationProgram, style: AppTextStyles.metadata(context).copyWith(fontSize: 14, color: AppColors.primaryGold, fontWeight: FontWeight.bold)),
                 ],
               ),
             ),
 
             const SizedBox(height: 32),
-            _SectionTitle(title: "Team"),
+            _SectionTitle(title: l10n.teamLabel),
             _InfoCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,7 +108,7 @@ class ProjectInfoScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 32),
-            _SectionTitle(title: "Supervisor"),
+            _SectionTitle(title: l10n.supervisorLabel),
             _InfoCard(
               child: Text("Dr. Mohamed Hussein", style: AppTextStyles.titleMedium(context).copyWith(fontSize: 17, color: textColor)),
             ),
@@ -116,7 +118,7 @@ class ProjectInfoScreen extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    "Copyright © 2026 Horus-Bot Project",
+                    l10n.copyrightYear,
                     style: AppTextStyles.metadata(context).copyWith(fontSize: 12, color: secondaryTextColor),
                   ),
                   const SizedBox(height: 32),

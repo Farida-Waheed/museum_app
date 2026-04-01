@@ -173,38 +173,3 @@ class _QuizScreenState extends State<QuizScreen> {
     return Container(padding: const EdgeInsets.all(24), decoration: BoxDecoration(color: AppColors.darkSurface, boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 10, offset: const Offset(0, -5))]), child: SafeArea(top: false, child: SizedBox(width: double.infinity, height: 56, child: ElevatedButton(onPressed: _isAnswered ? _nextQuestion : null, style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryGold, foregroundColor: AppColors.darkInk, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), elevation: 0), child: Text(_currentIndex == _questions.length - 1 ? "FINISH" : (isArabic ? "السؤال التالي" : "NEXT QUESTION"), style: AppTextStyles.buttonLabel(context))))));
   }
 }
-
-class _QuizResultPopup extends StatelessWidget {
-  final int score;
-  final int total;
-  final bool isPass;
-  final AppLocalizations l10n;
-  final VoidCallback onFinish;
-  final VoidCallback onRetry;
-  const _QuizResultPopup({required this.score, required this.total, required this.isPass, required this.l10n, required this.onFinish, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      backgroundColor: AppColors.darkSurface,
-      child: Container(
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(24), border: Border.all(color: AppColors.primaryGold)),
-        padding: const EdgeInsets.all(32),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Container(padding: const EdgeInsets.all(20), decoration: BoxDecoration(color: AppColors.primaryGold.withOpacity(0.1), shape: BoxShape.circle), child: Icon(isPass ? Icons.emoji_events_rounded : Icons.menu_book_rounded, color: AppColors.primaryGold, size: 64)),
-          const SizedBox(height: 24),
-          Text(isPass ? l10n.congrats : "KEEP LEARNING!", style: AppTextStyles.titleLarge(context).copyWith(fontSize: 22, color: Colors.white), textAlign: TextAlign.center),
-          const SizedBox(height: 12),
-          Text("You scored $score out of $total", style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white.withOpacity(0.6), fontSize: 16), textAlign: TextAlign.center),
-          const SizedBox(height: 32),
-          Row(children: [
-            Expanded(child: OutlinedButton(onPressed: onRetry, style: OutlinedButton.styleFrom(foregroundColor: AppColors.primaryGold, side: const BorderSide(color: AppColors.primaryGold), padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))), child: Text("RETRY", style: AppTextStyles.buttonLabel(context).copyWith(color: AppColors.primaryGold)))),
-            const SizedBox(width: 12),
-            Expanded(child: ElevatedButton(onPressed: onFinish, style: ElevatedButton.styleFrom(backgroundColor: AppColors.primaryGold, foregroundColor: AppColors.darkInk, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), elevation: 0), child: Text("DONE", style: AppTextStyles.buttonLabel(context)))),
-          ]),
-        ]),
-      ),
-    );
-  }
-}

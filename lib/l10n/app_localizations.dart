@@ -830,16 +830,10 @@ abstract class AppLocalizations {
   /// **'Your data is anonymous and used only for navigation.'**
   String get dataReassurance;
 
-  /// No description provided for @introTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'The Egyptian Museums'**
-  String get introTitle;
-
   /// No description provided for @introSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Explore Egyptian museums with Horus-Bot.'**
+  /// **'Discover ancient wonders with Horus-Bot'**
   String get introSubtitle;
 
   /// No description provided for @introThe.
@@ -1459,6 +1453,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'CONTINUE TO HOME'**
   String get continueBtn;
+
+  /// No description provided for @benhaUniversity.
+  ///
+  /// In en, this message translates to:
+  /// **'Benha University'**
+  String get benhaUniversity;
+
+  /// No description provided for @facultyEngineeringShoubra.
+  ///
+  /// In en, this message translates to:
+  /// **'Faculty of Engineering at Shoubra'**
+  String get facultyEngineeringShoubra;
+
+  /// No description provided for @computerCommunicationProgram.
+  ///
+  /// In en, this message translates to:
+  /// **'Computer & Communication Engineering Program'**
+  String get computerCommunicationProgram;
+
+  /// No description provided for @drMohamedHussein.
+  ///
+  /// In en, this message translates to:
+  /// **'Dr. Mohamed Hussein'**
+  String get drMohamedHussein;
+
+  /// Quiz result message
+  ///
+  /// In en, this message translates to:
+  /// **'You scored {score} out of {total}'**
+  String youScored(int score, int total);
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'RETRY'**
+  String get retry;
+
+  /// No description provided for @doneButton.
+  ///
+  /// In en, this message translates to:
+  /// **'DONE'**
+  String get doneButton;
+
+  /// No description provided for @guestVisitor.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest Visitor'**
+  String get guestVisitor;
+
+  /// No description provided for @englishLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get englishLanguage;
+
+  /// No description provided for @arabicLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'العربية'**
+  String get arabicLanguage;
+
+  /// No description provided for @webPermissionsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Permissions are managed by your browser settings on web.'**
+  String get webPermissionsNote;
+
+  /// No description provided for @ticketConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket confirmation'**
+  String get ticketConfirmation;
+
+  /// No description provided for @scanResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan result'**
+  String get scanResult;
+
+  /// No description provided for @feedbackSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback submitted'**
+  String get feedbackSubmitted;
+
+  /// No description provided for @horusBotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot'**
+  String get horusBotTitle;
+
+  /// No description provided for @version1.
+  ///
+  /// In en, this message translates to:
+  /// **'Version 1.0'**
+  String get version1;
+
+  /// No description provided for @smartAutonomousGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Autonomous Museum Guide'**
+  String get smartAutonomousGuide;
+
+  /// No description provided for @projectDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot is a smart autonomous museum guide robot designed to enhance museum visitor experience through autonomous navigation, multilingual interaction, and a companion mobile application.'**
+  String get projectDescription;
+
+  /// No description provided for @projectDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Project Description'**
+  String get projectDescriptionLabel;
+
+  /// No description provided for @technologiesUsedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Technologies Used'**
+  String get technologiesUsedLabel;
+
+  /// No description provided for @developedByLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Developed By'**
+  String get developedByLabel;
+
+  /// No description provided for @teamLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Team'**
+  String get teamLabel;
+
+  /// No description provided for @supervisorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Supervisor'**
+  String get supervisorLabel;
+
+  /// No description provided for @copyrightYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Copyright © 2026 Horus-Bot Project'**
+  String get copyrightYear;
 }
 
 class _AppLocalizationsDelegate

@@ -88,10 +88,11 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   // ==== POPPING CARD DIALOG (like ticket checkout) ====
   void _showThankYouDialog(bool isArabic) {
+    final l10n = AppLocalizations.of(context)!;
     showGeneralDialog(
       context: context,
       barrierDismissible: true,
-      barrierLabel: 'Feedback submitted',
+      barrierLabel: l10n.feedbackSubmitted,
       barrierColor: Colors.black54,
       transitionDuration: const Duration(milliseconds: 280),
       pageBuilder: (ctx, anim, secondaryAnim) {
@@ -117,7 +118,6 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == "ar";
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
     final tags = isArabic ? _tagsAr : _tagsEn;

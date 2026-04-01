@@ -81,7 +81,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> with TickerProviderSt
     showGeneralDialog(
       context: context,
       barrierDismissible: false,
-      barrierLabel: 'Scan result',
+      barrierLabel: l10n.scanResult,
       barrierColor: Colors.black87,
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (ctx, anim, secondaryAnim) {

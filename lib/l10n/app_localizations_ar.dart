@@ -383,10 +383,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dataReassurance => 'بياناتك مجهولة الهوية وتستخدم فقط للملاحة.';
 
   @override
-  String get introTitle => 'المتاحف المصرية';
-
-  @override
-  String get introSubtitle => 'استكشف المتاحف المصرية مع حورس-بوت.';
+  String get introSubtitle => 'استكشف العجائب القديمة برفقة حورس-بوت';
 
   @override
   String get introThe => '';
@@ -715,4 +712,80 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get continueBtn => 'الاستمرار إلى الرئيسية';
+
+  @override
+  String get benhaUniversity => 'جامعة بنها';
+
+  @override
+  String get facultyEngineeringShoubra => 'كلية الهندسة بشبرا';
+
+  @override
+  String get computerCommunicationProgram => 'برنامج هندسة الحاسبات والاتصالات';
+
+  @override
+  String get drMohamedHussein => 'د. محمد حسين';
+
+  @override
+  String youScored(int score, int total) {
+    return 'حصلت على $score من أصل $total';
+  }
+
+  @override
+  String get retry => 'إعادة محاولة';
+
+  @override
+  String get doneButton => 'تم';
+
+  @override
+  String get guestVisitor => 'زائر';
+
+  @override
+  String get englishLanguage => 'English';
+
+  @override
+  String get arabicLanguage => 'العربية';
+
+  @override
+  String get webPermissionsNote =>
+      'يتم إدارة الأذونات من خلال إعدادات المتصفح لديك على الويب.';
+
+  @override
+  String get ticketConfirmation => 'تأكيد التذكرة';
+
+  @override
+  String get scanResult => 'نتيجة المسح';
+
+  @override
+  String get feedbackSubmitted => 'تم إرسال الملاحظات';
+
+  @override
+  String get horusBotTitle => 'حوروس-بوت';
+
+  @override
+  String get version1 => 'الإصدار ١.٠';
+
+  @override
+  String get smartAutonomousGuide => 'مرشد متحف ذكي ذاتي القيادة';
+
+  @override
+  String get projectDescription =>
+      'حوروس-بوت هو روبوت دليل متحف ذكي ذاتي القيادة مصمم لتحسين تجربة زائري المتحف من خلال الملاحة الذاتية والتفاعل متعدد اللغات وتطبيق مرافق.';
+
+  @override
+  String get projectDescriptionLabel => 'وصف المشروع';
+
+  @override
+  String get technologiesUsedLabel => 'التقنيات المستخدمة';
+
+  @override
+  String get developedByLabel => 'تم التطوير بواسطة';
+
+  @override
+  String get teamLabel => 'الفريق';
+
+  @override
+  String get supervisorLabel => 'المشرف';
+
+  @override
+  String get copyrightYear => 'جميع الحقوق محفوظة © ٢٠٢٦ مشروع حوروس-بوت';
 }

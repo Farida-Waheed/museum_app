@@ -43,8 +43,9 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
 
   Future<void> _requestPermission(Permission p) async {
     if (kIsWeb) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Permissions are managed by your browser settings on web.")),
+        SnackBar(content: Text(l10n.webPermissionsNote)),
       );
       return;
     }
@@ -414,9 +415,9 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                         dropdownColor: AppColors.cinematicElevated,
                         style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                         onChanged: (v) => prefs.setLanguage(v!),
-                        items: const [
-                          DropdownMenuItem(value: 'en', child: Text("English")),
-                          DropdownMenuItem(value: 'ar', child: Text("العربية")),
+                        items: [
+                          DropdownMenuItem(value: 'en', child: Text(l10n.englishLanguage)),
+                          DropdownMenuItem(value: 'ar', child: Text(l10n.arabicLanguage)),
                         ],
                       ),
                     ),
