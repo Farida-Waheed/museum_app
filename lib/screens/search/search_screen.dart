@@ -6,8 +6,6 @@ import '../../models/user_preferences.dart';
 import '../../core/services/mock_data.dart';
 import '../../models/exhibit.dart';
 import '../../app/router.dart';
-import '../../widgets/bottom_nav.dart';
-import '../chat/chat_screen.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../core/constants/text_styles.dart';
 
@@ -71,7 +69,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return AppMenuShell(
       title: isArabic ? "البحث في المعروضات" : "Search Exhibits",
       backgroundColor: AppColors.darkBackground,
-      floatingActionButton: const RoboGuideEntry(),
+      floatingActionButton: null,
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [

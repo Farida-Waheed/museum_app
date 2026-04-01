@@ -8,8 +8,9 @@ import '../../core/services/mock_data.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
-import '../../widgets/primary_button.dart';
 import '../../widgets/dialogs/branded_permission_dialog.dart';
+import '../../widgets/primary_button.dart';
+import '../../widgets/ask_the_guide_button.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 import '../../core/constants/colors.dart';
@@ -155,6 +156,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       title: l10n.liveTour.toUpperCase(),
       subHeader: const RobotStatusBanner(),
       bottomNavigationBar: const BottomNav(currentIndex: 2),
+      floatingActionButton: const AskTheGuideButton(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(

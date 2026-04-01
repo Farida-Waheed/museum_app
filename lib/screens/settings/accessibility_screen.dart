@@ -456,6 +456,10 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                       title: l10n.team,
                       onTap: () => Navigator.pushNamed(context, AppRoutes.projectInfo),
                     ),
+                    _AboutNavItem(
+                      title: 'Notification Test',
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.notificationTest),
+                    ),
                     _AboutNavItem(title: l10n.privacyPolicy),
                   ],
                 ),

@@ -5,7 +5,6 @@ import '../../l10n/app_localizations.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
-import '../chat/chat_screen.dart'; // RoboGuideEntry
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 
@@ -126,7 +125,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       title: l10n.feedback.toUpperCase(),
       backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
-      floatingActionButton: const RoboGuideEntry(),
+      floatingActionButton: null,
       body: Column(
         children: [
           Expanded(

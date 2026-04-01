@@ -53,6 +53,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get alwaysAvailable => 'متاح دائماً';
 
   @override
+  String get discoverStoryBehind => 'اكتشف القصة وراء كل شيء';
+
+  @override
   String get aboutHorusBot => 'عن حوروس-بوت';
 
   @override
@@ -788,4 +791,115 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get copyrightYear => 'جميع الحقوق محفوظة © ٢٠٢٦ مشروع حوروس-بوت';
+
+  @override
+  String get notificationExplanationTitle => 'ابقَ متصلاً مع التنبيهات';
+
+  @override
+  String get notificationExplanationBody =>
+      'استقبل تحديثات في الوقت المناسب حول رحلتك بالمتحف للاستفادة القصوى من زيارتك.';
+
+  @override
+  String get notificationExampleTourStarting => 'ستبدأ جولتك خلال 10 دقائق';
+
+  @override
+  String get notificationExampleNextExhibit =>
+      'المعروض التالي قادم: قاعة توت عنخ آمون';
+
+  @override
+  String get notificationExampleQuizAvailable =>
+      'اختبار سريع متاح عن مصر القديمة';
+
+  @override
+  String get notificationExampleTicketReminder => 'زيارتك للمتحف اليوم';
+
+  @override
+  String get notificationExplanationAllow => 'السماح بالتنبيهات';
+
+  @override
+  String get notificationExplanationDecline => 'ليس الآن';
+
+  @override
+  String get notificationPermissionDeniedTitle => 'التنبيهات معطلة';
+
+  @override
+  String get notificationPermissionDeniedBody =>
+      'لاستقبال تحديثات الجولة والتذكيرات، فعّل التنبيهات في إعدادات جهازك.';
+
+  @override
+  String get openSettings => 'فتح الإعدادات';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get notificationSettings => 'إعدادات التنبيهات';
+
+  @override
+  String get notificationSettingsSubtitle =>
+      'اختر التنبيهات التي تريد استقبالها';
+
+  @override
+  String get enableAllNotifications => 'تفعيل جميع التنبيهات';
+
+  @override
+  String get disableAllNotifications => 'تعطيل جميع التنبيهات';
+
+  @override
+  String get tourUpdatesCategory => 'تحديثات الجولة';
+
+  @override
+  String get tourUpdatesCategoryDesc => 'بدء الجولة والتقدم والانتهاء';
+
+  @override
+  String get exhibitRemindersCategory => 'تذكيرات المعروضات';
+
+  @override
+  String get exhibitRemindersCategoryDesc =>
+      'المعروضات القريبة والاكتشافات الجديدة';
+
+  @override
+  String get quizRemindersCategory => 'تذكيرات الاختبار';
+
+  @override
+  String get quizRemindersCategoryDesc => 'إخطارات توفر الاختبارات';
+
+  @override
+  String get guideRemindersCategory => 'تذكيرات الدليل';
+
+  @override
+  String get guideRemindersCategoryDesc => 'اقتراحات اسأل الدليل';
+
+  @override
+  String get museumNewsCategory => 'أخبار المتحف';
+
+  @override
+  String get museumNewsCategoryDesc => 'هل كنت تعلم الحقائق والفعاليات';
+
+  @override
+  String get ticketRemindersCategory => 'تذكيرات التذاكر';
+
+  @override
+  String get ticketRemindersCategoryDesc => 'تذكيرات الزيارة والفعاليات';
+
+  @override
+  String get systemAlertsCategory => 'التنبيهات النظامية';
+
+  @override
+  String get systemAlertsCategoryDesc => 'تحديثات الاتصال والحالة';
+
+  @override
+  String get notificationPermissionStatus => 'إذن التنبيهات';
+
+  @override
+  String get notificationPermissionGranted => 'مفعّل';
+
+  @override
+  String get notificationPermissionDenied => 'معطّل';
+
+  @override
+  String get enableNotifications => 'تفعيل التنبيهات';
+
+  @override
+  String get disableNotifications => 'تعطيل التنبيهات';
 }

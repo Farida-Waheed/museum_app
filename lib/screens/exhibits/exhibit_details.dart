@@ -7,10 +7,9 @@ import '../../models/user_preferences.dart';
 import '../../models/exhibit_provider.dart';
 import '../../models/tour_provider.dart';
 import '../../core/utils/audio_player.dart';
-import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
-import '../chat/chat_screen.dart';
+import '../../widgets/ask_the_guide_button.dart';
 import '../quiz/quiz_screen.dart'; // To navigate to quiz
 import '../../widgets/dialogs/premium_dialog.dart';
 import '../../core/constants/colors.dart';
@@ -154,7 +153,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
 
     return AppMenuShell(
       subHeader: const RobotStatusBanner(),
-      floatingActionButton: const RoboGuideEntry(),
+      floatingActionButton: const AskTheGuideButton(),
       body: CustomScrollView(
         slivers: [
           _buildSliverAppBar(

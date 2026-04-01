@@ -182,6 +182,12 @@ abstract class AppLocalizations {
   /// **'Always available'**
   String get alwaysAvailable;
 
+  /// No description provided for @discoverStoryBehind.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover the story behind everything'**
+  String get discoverStoryBehind;
+
   /// No description provided for @aboutHorusBot.
   ///
   /// In en, this message translates to:
@@ -1597,6 +1603,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Copyright © 2026 Horus-Bot Project'**
   String get copyrightYear;
+
+  /// No description provided for @notificationExplanationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay Connected with Notifications'**
+  String get notificationExplanationTitle;
+
+  /// No description provided for @notificationExplanationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive timely updates about your museum journey to make the most of your visit.'**
+  String get notificationExplanationBody;
+
+  /// No description provided for @notificationExampleTourStarting.
+  ///
+  /// In en, this message translates to:
+  /// **'Your tour will start in 10 minutes'**
+  String get notificationExampleTourStarting;
+
+  /// No description provided for @notificationExampleNextExhibit.
+  ///
+  /// In en, this message translates to:
+  /// **'Next exhibit is ahead: Tutankhamun Hall'**
+  String get notificationExampleNextExhibit;
+
+  /// No description provided for @notificationExampleQuizAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick quiz available for Ancient Egypt'**
+  String get notificationExampleQuizAvailable;
+
+  /// No description provided for @notificationExampleTicketReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Your museum visit is today'**
+  String get notificationExampleTicketReminder;
+
+  /// No description provided for @notificationExplanationAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Notifications'**
+  String get notificationExplanationAllow;
+
+  /// No description provided for @notificationExplanationDecline.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Now'**
+  String get notificationExplanationDecline;
+
+  /// No description provided for @notificationPermissionDeniedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications Disabled'**
+  String get notificationPermissionDeniedTitle;
+
+  /// No description provided for @notificationPermissionDeniedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'To receive tour updates and reminders, enable notifications in your device settings.'**
+  String get notificationPermissionDeniedBody;
+
+  /// No description provided for @openSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get openSettings;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @notificationSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Settings'**
+  String get notificationSettings;
+
+  /// No description provided for @notificationSettingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which notifications you want to receive'**
+  String get notificationSettingsSubtitle;
+
+  /// No description provided for @enableAllNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable All Notifications'**
+  String get enableAllNotifications;
+
+  /// No description provided for @disableAllNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable All Notifications'**
+  String get disableAllNotifications;
+
+  /// No description provided for @tourUpdatesCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour Updates'**
+  String get tourUpdatesCategory;
+
+  /// No description provided for @tourUpdatesCategoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour starts, progress, and completion'**
+  String get tourUpdatesCategoryDesc;
+
+  /// No description provided for @exhibitRemindersCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Exhibit Reminders'**
+  String get exhibitRemindersCategory;
+
+  /// No description provided for @exhibitRemindersCategoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearby exhibits and new discoveries'**
+  String get exhibitRemindersCategoryDesc;
+
+  /// No description provided for @quizRemindersCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiz Reminders'**
+  String get quizRemindersCategory;
+
+  /// No description provided for @quizRemindersCategoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiz availability notifications'**
+  String get quizRemindersCategoryDesc;
+
+  /// No description provided for @guideRemindersCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Guide Reminders'**
+  String get guideRemindersCategory;
+
+  /// No description provided for @guideRemindersCategoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the guide suggestions'**
+  String get guideRemindersCategoryDesc;
+
+  /// No description provided for @museumNewsCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Museum News'**
+  String get museumNewsCategory;
+
+  /// No description provided for @museumNewsCategoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Did you know facts and events'**
+  String get museumNewsCategoryDesc;
+
+  /// No description provided for @ticketRemindersCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket Reminders'**
+  String get ticketRemindersCategory;
+
+  /// No description provided for @ticketRemindersCategoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit and event reminders'**
+  String get ticketRemindersCategoryDesc;
+
+  /// No description provided for @systemAlertsCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'System Alerts'**
+  String get systemAlertsCategory;
+
+  /// No description provided for @systemAlertsCategoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection and status updates'**
+  String get systemAlertsCategoryDesc;
+
+  /// No description provided for @notificationPermissionStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Permission'**
+  String get notificationPermissionStatus;
+
+  /// No description provided for @notificationPermissionGranted.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get notificationPermissionGranted;
+
+  /// No description provided for @notificationPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get notificationPermissionDenied;
+
+  /// No description provided for @enableNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Notifications'**
+  String get enableNotifications;
+
+  /// No description provided for @disableNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable Notifications'**
+  String get disableNotifications;
 }
 
 class _AppLocalizationsDelegate

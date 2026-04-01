@@ -53,6 +53,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get alwaysAvailable => 'Always available';
 
   @override
+  String get discoverStoryBehind => 'Discover the story behind everything';
+
+  @override
   String get aboutHorusBot => 'About the Guide';
 
   @override
@@ -796,4 +799,117 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get copyrightYear => 'Copyright © 2026 Horus-Bot Project';
+
+  @override
+  String get notificationExplanationTitle =>
+      'Stay Connected with Notifications';
+
+  @override
+  String get notificationExplanationBody =>
+      'Receive timely updates about your museum journey to make the most of your visit.';
+
+  @override
+  String get notificationExampleTourStarting =>
+      'Your tour will start in 10 minutes';
+
+  @override
+  String get notificationExampleNextExhibit =>
+      'Next exhibit is ahead: Tutankhamun Hall';
+
+  @override
+  String get notificationExampleQuizAvailable =>
+      'Quick quiz available for Ancient Egypt';
+
+  @override
+  String get notificationExampleTicketReminder => 'Your museum visit is today';
+
+  @override
+  String get notificationExplanationAllow => 'Allow Notifications';
+
+  @override
+  String get notificationExplanationDecline => 'Not Now';
+
+  @override
+  String get notificationPermissionDeniedTitle => 'Notifications Disabled';
+
+  @override
+  String get notificationPermissionDeniedBody =>
+      'To receive tour updates and reminders, enable notifications in your device settings.';
+
+  @override
+  String get openSettings => 'Open Settings';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get notificationSettings => 'Notification Settings';
+
+  @override
+  String get notificationSettingsSubtitle =>
+      'Choose which notifications you want to receive';
+
+  @override
+  String get enableAllNotifications => 'Enable All Notifications';
+
+  @override
+  String get disableAllNotifications => 'Disable All Notifications';
+
+  @override
+  String get tourUpdatesCategory => 'Tour Updates';
+
+  @override
+  String get tourUpdatesCategoryDesc => 'Tour starts, progress, and completion';
+
+  @override
+  String get exhibitRemindersCategory => 'Exhibit Reminders';
+
+  @override
+  String get exhibitRemindersCategoryDesc =>
+      'Nearby exhibits and new discoveries';
+
+  @override
+  String get quizRemindersCategory => 'Quiz Reminders';
+
+  @override
+  String get quizRemindersCategoryDesc => 'Quiz availability notifications';
+
+  @override
+  String get guideRemindersCategory => 'Guide Reminders';
+
+  @override
+  String get guideRemindersCategoryDesc => 'Ask the guide suggestions';
+
+  @override
+  String get museumNewsCategory => 'Museum News';
+
+  @override
+  String get museumNewsCategoryDesc => 'Did you know facts and events';
+
+  @override
+  String get ticketRemindersCategory => 'Ticket Reminders';
+
+  @override
+  String get ticketRemindersCategoryDesc => 'Visit and event reminders';
+
+  @override
+  String get systemAlertsCategory => 'System Alerts';
+
+  @override
+  String get systemAlertsCategoryDesc => 'Connection and status updates';
+
+  @override
+  String get notificationPermissionStatus => 'Notification Permission';
+
+  @override
+  String get notificationPermissionGranted => 'Enabled';
+
+  @override
+  String get notificationPermissionDenied => 'Disabled';
+
+  @override
+  String get enableNotifications => 'Enable Notifications';
+
+  @override
+  String get disableNotifications => 'Disable Notifications';
 }

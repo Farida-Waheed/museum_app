@@ -36,6 +36,10 @@ dependencies:
   # 6. Typography (Cinzel and Inter fonts)
   google_fonts: ^6.1.0
 
+  # 7. Local Notifications (Push notifications, scheduling, channels)
+  flutter_local_notifications: ^17.0.0
+  timezone: ^0.9.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

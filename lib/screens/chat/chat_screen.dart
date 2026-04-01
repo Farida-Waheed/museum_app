@@ -673,48 +673,4 @@ class _QuickChip extends StatelessWidget {
   }
 }
 
-class RoboGuideEntry extends StatelessWidget {
-  const RoboGuideEntry({super.key});
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return FloatingActionButton.extended(
-      onPressed: () async {
-        await showDialog(
-          context: context,
-          barrierColor: Colors.black54,
-          builder: (_) => const ChatScreen(isPopup: true),
-        );
-        final last = Provider.of<ChatProvider>(
-          context,
-          listen: false,
-        ).lastMessage;
-        if (last == null) return;
-        final snippet = last.text.length > 80
-            ? '${last.text.substring(0, 80)}…'
-            : last.text;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(snippet),
-            action: SnackBarAction(
-              label: l10n.talkToHorusBot,
-              onPressed: () => showDialog(
-                context: context,
-                barrierColor: Colors.black54,
-                builder: (_) => const ChatScreen(isPopup: true),
-              ),
-            ),
-          ),
-        );
-      },
-      icon: const Icon(Icons.smart_toy_rounded),
-      label: Text(
-        l10n.talkToHorusBot,
-        style: AppTextStyles.buttonLabel(context).copyWith(fontWeight: FontWeight.bold),
-      ),
-      backgroundColor: AppColors.primaryGold,
-      foregroundColor: AppColors.darkInk,
-      elevation: 8,
-    );
-  }
-}
+

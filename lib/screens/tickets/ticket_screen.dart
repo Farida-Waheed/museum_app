@@ -10,6 +10,7 @@ import '../../app/router.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../core/constants/text_styles.dart';
+import '../../core/notifications/notification_trigger_service.dart';
 
 class TicketScreen extends StatefulWidget {
   const TicketScreen({super.key});
@@ -98,6 +99,18 @@ class _TicketScreenState extends State<TicketScreen> {
             onGoToTickets: () {
               Navigator.of(ctx, rootNavigator: true).pop();
               Navigator.pushReplacementNamed(context, AppRoutes.myTickets);
+
+              // Schedule ticket reminder notification for visit day
+              NotificationTriggerService().triggerTicketReminder(
+                title: "Your Museum Visit Today",
+                body: "Don't forget your tickets for today!",
+                reminderTime: DateTime(
+                  _selectedDate.year,
+                  _selectedDate.month,
+                  _selectedDate.day,
+                  9, 0, // 9 AM on visit day
+                ),
+              );
             },
           ),
         );

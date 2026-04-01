@@ -14,7 +14,7 @@ import '../../models/user_preferences.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/dialogs/branded_permission_dialog.dart';
-import '../chat/chat_screen.dart';
+import '../../widgets/ask_the_guide_button.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -296,14 +296,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  void _openChat(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierColor: Colors.black54,
-      builder: (_) => const ChatScreen(isPopup: true),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -317,10 +309,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       bottomNavigationBar: const BottomNav(currentIndex: 0),
       floatingActionButton: ScaleTransition(
         scale: _fabScale,
-        child: _HorusFab(
-          onPressed: () => _openChat(context),
-          label: l10n.askTheGuide,
-        ),
+        child: const AskTheGuideButton(),
       ),
       body: Builder(
         builder: (innerContext) => Stack(
@@ -1198,122 +1187,4 @@ class _GridPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-class _HorusFab extends StatefulWidget {
-  final String label;
-  final VoidCallback onPressed;
-
-  const _HorusFab({required this.label, required this.onPressed});
-
-  @override
-  State<_HorusFab> createState() => _HorusFabState();
-}
-
-class _HorusFabState extends State<_HorusFab>
-    with SingleTickerProviderStateMixin {
-  bool _pressed = false;
-  bool _isHovered = false;
-
-  late final AnimationController _glowCtrl = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 2),
-  )..repeat(reverse: true);
-
-  @override
-  void dispose() {
-    _glowCtrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return AnimatedBuilder(
-      animation: _glowCtrl,
-      builder: (context, child) {
-        return MouseRegion(
-          onEnter: (_) => setState(() => _isHovered = true),
-          onExit: (_) => setState(() => _isHovered = false),
-          cursor: SystemMouseCursors.click,
-          child: AnimatedScale(
-            scale: _pressed ? 0.96 : (_isHovered ? 1.02 : 1.0),
-            duration: const Duration(milliseconds: 200),
-            child: GestureDetector(
-              onTapDown: (_) => setState(() => _pressed = true),
-              onTapUp: (_) => setState(() => _pressed = false),
-              onTapCancel: () => setState(() => _pressed = false),
-              onTap: widget.onPressed,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                decoration: BoxDecoration(
-                  color: AppColors.cinematicElevated,
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(
-                    color: AppColors.primaryGold.withOpacity(
-                      0.6 + (_glowCtrl.value * 0.4),
-                    ),
-                    width: _isHovered ? 1.8 : 1.2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.6),
-                      blurRadius: 24,
-                      offset: const Offset(0, 12),
-                    ),
-                    BoxShadow(
-                      color: AppColors.primaryGold.withOpacity(
-                        0.2 + (_glowCtrl.value * 0.3),
-                      ),
-                      blurRadius: _isHovered ? 30 : 22,
-                      spreadRadius: _isHovered ? 8 : 5,
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 28,
-                  vertical: 20,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.auto_awesome,
-                      color: AppColors.primaryGold,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          widget.label,
-                          style: AppTextStyles.buttonLabel(context).copyWith(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          l10n.alwaysAvailable,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
-                            fontSize: 12,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
 }

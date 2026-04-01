@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/notifications/notification_trigger_service.dart';
 import '../core/services/notification_service.dart';
 import 'app_notification.dart';
 import '../widgets/dialogs/branded_permission_dialog.dart';
@@ -78,6 +79,7 @@ class TourProvider with ChangeNotifier {
   }
 
   void _triggerTourStartNotification(BuildContext context) {
+    // In-app notification (banner)
     NotificationService.show(
       context,
       AppNotification(
@@ -88,6 +90,12 @@ class TourProvider with ChangeNotifier {
         priority: AppNotificationPriority.high,
         icon: Icons.play_circle_filled_rounded,
       ),
+    );
+
+    // System notification (tray)
+    NotificationTriggerService().triggerTourStarted(
+      title: "Tour Starting",
+      body: "Your guided tour is starting. Follow Horus-Bot.",
     );
   }
 
@@ -103,6 +111,12 @@ class TourProvider with ChangeNotifier {
         icon: Icons.location_on_rounded,
       ),
     );
+
+    // System notification
+    NotificationTriggerService().triggerNextExhibit(
+      title: "Next Exhibit Ahead",
+      body: "You are approaching the next exhibit.",
+    );
   }
 
   void triggerRobotNearby(BuildContext context) {
@@ -116,6 +130,12 @@ class TourProvider with ChangeNotifier {
         priority: AppNotificationPriority.high,
         icon: Icons.smart_toy_rounded,
       ),
+    );
+
+    // System notification
+    NotificationTriggerService().triggerHorusNearby(
+      title: "Horus-Bot is nearby",
+      body: "Follow the robot to continue your tour.",
     );
   }
 
@@ -146,6 +166,13 @@ class TourProvider with ChangeNotifier {
         },
       ),
     );
+
+    // System notification
+    NotificationTriggerService().triggerQuizAvailable(
+      title: "Test What You Learned",
+      body: "Horus-Bot prepared a short quiz for this exhibit.",
+      exhibitId: exhibitId,
+    );
   }
 
   void deferQuiz(String exhibitId) {
@@ -165,6 +192,12 @@ class TourProvider with ChangeNotifier {
         priority: AppNotificationPriority.low,
         icon: Icons.lightbulb_outline_rounded,
       ),
+    );
+
+    // System notification
+    NotificationTriggerService().triggerDidYouKnow(
+      title: title,
+      body: message,
     );
   }
 
