@@ -156,7 +156,10 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       title: l10n.liveTour.toUpperCase(),
       subHeader: const RobotStatusBanner(),
       bottomNavigationBar: const BottomNav(currentIndex: 2),
-      floatingActionButton: const AskTheGuideButton(),
+      floatingActionButton: AskTheGuideButton(
+        screen: 'live_tour',
+        currentExhibitId: tourProvider.currentExhibitId,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(

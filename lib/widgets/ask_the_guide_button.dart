@@ -14,7 +14,10 @@ import '../screens/chat/chat_screen.dart';
 /// - Opens AI chat popup immediately
 /// - Responsive and accessible
 class AskTheGuideButton extends StatefulWidget {
-  const AskTheGuideButton({super.key});
+  final String screen;
+  final String? currentExhibitId;
+
+  const AskTheGuideButton({super.key, this.screen = 'home', this.currentExhibitId});
 
   @override
   State<AskTheGuideButton> createState() => _AskTheGuideButtonState();
@@ -40,13 +43,16 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
     showDialog(
       context: context,
       barrierColor: Colors.black54,
-      builder: (_) => const ChatScreen(isPopup: true),
+      builder: (_) => ChatScreen(
+        isPopup: true,
+        screen: widget.screen,
+        currentExhibitId: widget.currentExhibitId,
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
 
     final isArabic = AppLocalizations.of(context)?.localeName == 'ar';
     final buttonText = isArabic ? 'اسأل' : 'Ask';

@@ -42,11 +42,24 @@ class ChatProvider extends ChangeNotifier {
         ? "مرحباً! أنا دليلك في المتحف، كيف يمكنني مساعدتك؟"
         : "Welcome! I am your museum guide. How can I help you today?";
 
+    final suggestionTitle = isArabic ? 'اقتراحات سريعة' : 'Quick suggestions';
+    final suggestionItems = isArabic
+        ? ['أسأل عن التذاكر', 'ساعات العمل', 'الفعاليات', 'أخبرني عن هذا المعروض']
+        : ['Ask about tickets', 'Opening hours', 'Current events', 'Tell me about this exhibit'];
+
     addMessage(ChatMessageModel.text(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       isUser: false,
       timestamp: DateTime.now(),
       text: greeting,
+    ));
+
+    addMessage(ChatMessageModel.card(
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      isUser: false,
+      timestamp: DateTime.now(),
+      cardTitle: suggestionTitle,
+      cardItems: suggestionItems,
     ));
   }
 }

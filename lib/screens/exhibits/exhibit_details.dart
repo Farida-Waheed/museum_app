@@ -153,7 +153,10 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
 
     return AppMenuShell(
       subHeader: const RobotStatusBanner(),
-      floatingActionButton: const AskTheGuideButton(),
+      floatingActionButton: AskTheGuideButton(
+        screen: 'exhibit_details',
+        currentExhibitId: exhibit.id,
+      ),
       body: CustomScrollView(
         slivers: [
           _buildSliverAppBar(
