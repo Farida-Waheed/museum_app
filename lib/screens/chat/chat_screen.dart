@@ -331,6 +331,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _chatProvider = Provider.of<ChatProvider>(context, listen: false);
+    _chatProvider.clear(); // reset on each popup open, per new AskTheGuide UX.
     _popupAnim = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
@@ -391,11 +392,23 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         text: trimmed,
       ),
     );
-    setState(() => _isTyping = true);
-    Future.delayed(const Duration(milliseconds: 800), () {
+    setState(() {
+      _canSend = false;
+      _isTyping = true;
+    });
+
+    final isArabic =
+        Provider.of<UserPreferencesModel>(context, listen: false).language ==
+            'ar';
+    final answerPrefix = isArabic ? 'تمام! ' : 'Sure! ';
+    final answerBody = isArabic
+        ? 'إليك معلومات ذكية حول "$trimmed".'
+        : 'Here is a helpful quick answer for "$trimmed".';
+
+    Future.delayed(const Duration(milliseconds: 650), () {
       if (!mounted) return;
       setState(() => _isTyping = false);
-      _typeBotMessage("I am processing your request about: $trimmed");
+      _typeBotMessage(answerPrefix + answerBody);
     });
   }
 
@@ -412,6 +425,23 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     _typeTimer = Timer.periodic(const Duration(milliseconds: 20), (t) {
       if (!mounted || index >= fullText.length) {
         t.cancel();
+        // After the response text is complete, offer quick follow up.
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (!mounted) return;
+          final isArabic =
+              Provider.of<UserPreferencesModel>(context, listen: false)
+                      .language ==
+                  'ar';
+          _addMessage(ChatMessageModel.card(
+            id: _id(),
+            isUser: false,
+            timestamp: DateTime.now(),
+            cardTitle: isArabic ? 'هل تريد المزيد؟' : 'Would you like to know more?',
+            cardItems: isArabic
+                ? ['من فضلك اسألني عن القطع، التذاكر، أو الجولات.']
+                : ['Ask about tickets, events, or exhibit highlights.'],
+          ));
+        });
         return;
       }
       final last = _chatProvider.lastMessage;
@@ -444,11 +474,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         Provider.of<UserPreferencesModel>(context).language == "ar";
     final l10n = AppLocalizations.of(context)!;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     final quickChips = Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border(bottom: BorderSide(color: Colors.grey.shade100)),
+        color: isDark ? AppColors.darkSurfaceSecondary : AppColors.warmSurface,
+        border: Border(bottom: BorderSide(color: isDark ? AppColors.darkDivider : Colors.grey.shade200)),
       ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -478,7 +510,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       ),
     );
 
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final content = Column(
       children: [
         quickChips,
@@ -534,6 +565,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           await Permission.microphone.request();
                         },
                         onDeny: () => Navigator.pop(context),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: const Duration(seconds: 2),
+                        content: Text(isArabic
+                            ? 'الميكروفون جاهز. التحدث غير مدعوم حالياً.'
+                            : 'Microphone ready. Voice input is not available yet.'),
                       ),
                     );
                   }
@@ -597,6 +637,40 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 ),
               ),
             ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 8, bottom: 4),
+          child: Align(
+            alignment: isArabic ? Alignment.centerLeft : Alignment.centerRight,
+            child: TextButton.icon(
+              icon: const Icon(Icons.support_agent_outlined, size: 18),
+              label: Text(
+                isArabic ? 'أحتاج مساعدة بشرية' : 'Request live human support',
+                style: AppTextStyles.metadata(context).copyWith(
+                  color: AppColors.primaryGold,
+                ),
+              ),
+              onPressed: () {
+                _addMessage(ChatMessageModel.card(
+                  id: _id(),
+                  isUser: false,
+                  timestamp: DateTime.now(),
+                  cardTitle: isArabic ? 'طلب الدعم البشري' : 'Human support requested',
+                  cardItems: isArabic
+                      ? ['سيرد عليك ممثل الخدمة قريباً.']
+                      : ['A human rep will respond shortly.'],
+                ));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    duration: const Duration(seconds: 2),
+                    content: Text(isArabic
+                        ? 'تم إرسال طلب المساعدة إلى الفريق.'
+                        : 'Your human support request is sent.'),
+                  ),
+                );
+              },
+            ),
           ),
         ),
       ],

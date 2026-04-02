@@ -48,6 +48,8 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
+    final isArabic = AppLocalizations.of(context)?.localeName == 'ar';
+    final buttonText = isArabic ? 'اسأل' : 'Ask';
     return AnimatedBuilder(
       animation: _glowCtrl,
       builder: (context, child) {
@@ -90,40 +92,25 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
                   ],
                 ),
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 28,
-                  vertical: 20,
+                  horizontal: 18,
+                  vertical: 12,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(
-                      Icons.auto_awesome,
+                      Icons.chat_bubble_outline,
                       color: AppColors.primaryGold,
                       size: 24,
                     ),
-                    const SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          l10n.askTheGuide,
-                          style: AppTextStyles.buttonLabel(context).copyWith(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          l10n.discoverStoryBehind,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
-                            fontSize: 12,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ],
+                    const SizedBox(width: 10),
+                    Text(
+                      buttonText,
+                      style: AppTextStyles.buttonLabel(context).copyWith(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w900,
+                      ),
                     ),
                   ],
                 ),
