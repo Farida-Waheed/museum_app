@@ -25,6 +25,13 @@ class MuseumKnowledgeService {
     return 'General admission: 200 EGP. Child and senior tickets are available with local eligibility.';
   }
 
+  String getVisitDuration({required String language}) {
+    if (language == 'ar') {
+      return 'الزيارة عادةً تستغرق 2-3 ساعات لاستكشاف المعروضات الرئيسية، أو يمكن أن تمتد إلى يوم كامل للزوار المهتمين بالتفاصيل.';
+    }
+    return 'A typical visit lasts 2-3 hours to explore the main exhibits, or can extend to a full day for visitors interested in details.';
+  }
+
   List<Exhibit> searchExhibits(String query) {
     final keyword = query.toLowerCase().trim();
     final results = _exhibits.where((exhibit) {

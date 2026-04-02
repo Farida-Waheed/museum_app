@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import '../../widgets/dialogs/branded_permission_dialog.dart';
 import '../../models/user_preferences.dart';
 import '../../models/chat_message.dart';
@@ -127,7 +128,46 @@ class _SuggestionChipsCard extends StatelessWidget {
                   ),
                 ),
                 backgroundColor: AppColors.primaryGold.withOpacity(0.9),
-                onPressed: () => onSuggestion(s),
+                onPressed: () {
+                  // Map chip labels to proper queries
+                  String query;
+                  if (isArabic) {
+                    switch (s) {
+                      case 'تذاكر':
+                        query = 'ما أسعار التذاكر وأنواعها؟';
+                        break;
+                      case 'مواعيد':
+                        query = 'ما مواعيد العمل اليوم؟';
+                        break;
+                      case 'فعاليات':
+                        query = 'ما الفعاليات المتاحة اليوم؟';
+                        break;
+                      case 'المدة':
+                        query = 'كم تستغرق الزيارة عادة؟';
+                        break;
+                      default:
+                        query = s;
+                    }
+                  } else {
+                    switch (s) {
+                      case 'Tickets':
+                        query = 'Tell me about ticket prices and ticket types.';
+                        break;
+                      case 'Hours':
+                        query = 'What are today\'s opening hours?';
+                        break;
+                      case 'Events':
+                        query = 'What events are happening today?';
+                        break;
+                      case 'Duration':
+                        query = 'How long does the visit usually take?';
+                        break;
+                      default:
+                        query = s;
+                    }
+                  }
+                  onSuggestion(query);
+                },
               );
             }).toList(),
           ),
@@ -388,12 +428,17 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   bool _isTyping = false;
   bool _showScrollBtn = false;
   bool _canSend = false;
-  bool _showHelperPanel = false;  // NEW: Helper toggle state
+  bool _showInfoPopup = false;  // NEW: Info popup toggle state
   late final AnimationController _popupAnim;
   Timer? _typeTimer;
   late final ChatProvider _chatProvider;
   late final ConversationMemoryService _conversationMemory;
   late final ChatAssistantService _assistantService;
+  
+  // Speech recognition
+  final SpeechToText _speechToText = SpeechToText();
+  bool _isListening = false;
+  String _lastWords = '';
 
   @override
   void initState() {
@@ -414,6 +459,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       final ok = _controller.text.trim().isNotEmpty;
       if (ok != _canSend) setState(() => _canSend = ok);
     });
+    
+    // Initialize speech to text
+    _initSpeech();
+    
     Future.delayed(const Duration(milliseconds: 500), () {
       if (!mounted) return;
       final isArabic =
@@ -426,6 +475,31 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         _scrollToBottom();
       });
     });
+  }
+
+  void _initSpeech() async {
+    await _speechToText.initialize();
+  }
+
+  void _startListening(bool isArabic) async {
+    if (!_speechToText.isAvailable) return;
+    
+    setState(() => _isListening = true);
+    await _speechToText.listen(
+      onResult: (result) {
+        setState(() {
+          _lastWords = result.recognizedWords;
+          _controller.text = _lastWords;
+          _canSend = _lastWords.trim().isNotEmpty;
+        });
+      },
+      localeId: isArabic ? 'ar' : 'en_US',
+    );
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() => _isListening = false);
   }
 
   String _id() => DateTime.now().microsecondsSinceEpoch.toString();
@@ -479,16 +553,16 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     );
 
     // Determine delay based on intent complexity
-    // Simple intents (greeting, tickets, hours, events) = fast (200ms)
-    // Complex intents (exhibit explanations) = moderate (400ms)
+    // Simple intents (greeting, tickets, hours, events) = fast (100ms)
+    // Complex intents (exhibit explanations) = moderate (200ms)
     final normalized = trimmed.toLowerCase().replaceAll(RegExp(r'[\W_]'), ' ');
     final isSimpleIntent = 
-        RegExp(r'\b(hi|hello|hey|ticket|hour|event|مرحبا|تذاكر|ساعات|فعاليات)\b').hasMatch(normalized) ||
-        RegExp(r'\b(السلام|اهلا|سعر|الدخول|مواعيد|فعاليات)\b').hasMatch(normalized);
+        RegExp(r'\b(hi|hello|hey|ticket|hour|event|duration|مرحبا|تذاكر|ساعات|فعاليات|المدة)\b').hasMatch(normalized) ||
+        RegExp(r'\b(السلام|اهلا|سعر|الدخول|مواعيد|فعاليات|الزيارة)\b').hasMatch(normalized);
     
     final delay = isSimpleIntent 
-        ? const Duration(milliseconds: 200)
-        : const Duration(milliseconds: 400);
+        ? const Duration(milliseconds: 100)
+        : const Duration(milliseconds: 200);
 
     Future.delayed(delay, () {
       if (!mounted) return;
@@ -552,6 +626,39 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
     final content = Column(
       children: [
+        // Top suggestion chips
+        Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: _SuggestionChipsCard(
+            title: l10n.quickSuggestions,
+            suggestions: isArabic
+                ? ['تذاكر', 'مواعيد', 'فعاليات', 'المدة']
+                : ['Tickets', 'Hours', 'Events', 'Duration'],
+            isArabic: isArabic,
+            onSuggestion: (value) => _submit(value),
+          ),
+        ),
+        // Info popup above chat
+        if (_showInfoPopup)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppColors.cinematicCard,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.primaryGold.withOpacity(0.25)),
+              ),
+              padding: const EdgeInsets.all(12),
+              child: Text(
+                l10n.chatInfoPopup,
+                style: AppTextStyles.bodyPrimary(context).copyWith(
+                  color: Colors.white,
+                  fontSize: 13,
+                ),
+                textAlign: isArabic ? TextAlign.right : TextAlign.left,
+              ),
+            ),
+          ),
         Expanded(
           child: Consumer<ChatProvider>(
             builder: (context, chat, _) {
@@ -562,18 +669,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 itemCount: messages.length,
                 itemBuilder: (context, i) {
                   final m = messages[i];
-                  if (!m.isUser && m.kind == MessageKind.infoCard &&
-                      (m.cardTitle?.toLowerCase().contains('quick') == true || m.cardTitle?.toLowerCase().contains('سريعة') == true)) {
-                    return MessageEntryAnimator(
-                      isUser: m.isUser,
-                      child: _SuggestionChipsCard(
-                        title: m.cardTitle ?? '',
-                        suggestions: m.cardItems ?? [],
-                        isArabic: isArabic,
-                        onSuggestion: (value) => _submit(value),
-                      ),
-                    );
-                  }
                   return MessageEntryAnimator(
                     isUser: m.isUser,
                     child: ChatBubble(msg: m, isArabicUI: isArabic),
@@ -601,6 +696,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             children: [
               IconButton(
                 onPressed: () async {
+                  final isArabic = Provider.of<UserPreferencesModel>(context, listen: false).language == 'ar';
+                  
                   if (kIsWeb) {
                     // Web: Show honest future feature message
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -617,7 +714,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     return;
                   }
                   
-                  // Mobile: Request permission or show status
+                  // Mobile: Handle speech recognition
                   final status = await Permission.microphone.status;
                   
                   if (status.isDenied && mounted) {
@@ -633,31 +730,19 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           Navigator.pop(context);
                           final result = await Permission.microphone.request();
                           if (mounted && result.isGranted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                duration: const Duration(seconds: 2),
-                                content: Text(isArabic
-                                    ? 'الإدخال الصوتي قريباً'
-                                    : 'Voice input coming soon'),
-                              ),
-                            );
+                            _startListening(isArabic);
                           }
                         },
                         onDeny: () => Navigator.pop(context),
                       ),
                     );
                   } else if (status.isGranted && mounted) {
-                    // Permission granted - show future feature message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 2),
-                        content: Text(
-                          isArabic
-                              ? 'الإدخال الصوتي قريباً'
-                              : 'Voice input coming soon',
-                        ),
-                      ),
-                    );
+                    // Permission granted - start/stop listening
+                    if (_isListening) {
+                      _stopListening();
+                    } else {
+                      _startListening(isArabic);
+                    }
                   } else if (status.isPermanentlyDenied && mounted) {
                     // Permission permanently denied
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -672,9 +757,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     );
                   }
                 },
-                icon: const Icon(
-                  Icons.mic_none_rounded,
-                  color: AppColors.primaryGold,
+                icon: Icon(
+                  _isListening ? Icons.mic : Icons.mic_none_rounded,
+                  color: _isListening ? Colors.red : AppColors.primaryGold,
                 ),
               ),
               Expanded(
@@ -740,21 +825,16 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Helper toggle button
-                TextButton.icon(
-                  icon: Icon(
-                    _showHelperPanel ? Icons.info_outlined : Icons.info_outlined, 
-                    size: 18,
-                  ),
-                  label: Text(
-                    isArabic ? 'معلومات إضافية' : 'More help',
-                    style: AppTextStyles.metadata(context).copyWith(
-                      color: AppColors.primaryGold,
-                    ),
-                  ),
+                // Info icon toggle
+                IconButton(
                   onPressed: () {
-                    setState(() => _showHelperPanel = !_showHelperPanel);
+                    setState(() => _showInfoPopup = !_showInfoPopup);
                   },
+                  icon: Icon(
+                    Icons.info_outline,
+                    size: 20,
+                    color: AppColors.primaryGold,
+                  ),
                 ),
                 const SizedBox(width: 8),
                 // Support button
@@ -790,60 +870,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             ),
           ),
         ),
-        // Helper panel (shown when toggled)
-        if (_showHelperPanel)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.cinematicCard,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.primaryGold.withOpacity(0.25)),
-              ),
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment:
-                    isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isArabic ? 'كيف يمكنني مساعدتك؟' : 'How can I help?',
-                    style: AppTextStyles.bodyPrimary(context).copyWith(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
-                    textAlign: isArabic ? TextAlign.right : TextAlign.left,
-                  ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 4,
-                    alignment:
-                        isArabic ? WrapAlignment.end : WrapAlignment.start,
-                    children: (isArabic
-                        ? ['تذاكر', 'مواعيد', 'فعاليات', 'معلومات']
-                        : ['Tickets', 'Hours', 'Events', 'Exhibits']).map((item) {
-                      return Chip(
-                        label: Text(
-                          item,
-                          style: AppTextStyles.metadata(context).copyWith(
-                            color: Colors.white,
-                            fontSize: 11,
-                          ),
-                        ),
-                        backgroundColor:
-                            AppColors.primaryGold.withOpacity(0.7),
-                        side: BorderSide(
-                          color: AppColors.primaryGold.withOpacity(0.3),
-                        ),
-                        onDeleted: null,
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-            ),
-          ),
       ],
     );
 

@@ -128,6 +128,18 @@ class ChatAssistantService {
       return answer;
     }
 
+    // FAST PATH: Visit duration
+    if (normalized.contains('duration') ||
+        normalized.contains('المدة') ||
+        normalized.contains('long') ||
+        normalized.contains('time') ||
+        normalized.contains('تستغرق') ||
+        normalized.contains('ساعات')) {
+      final answer = _knowledge.getVisitDuration(language: language);
+      _memory.addAssistantMessage(answer);
+      return answer;
+    }
+
     // SLOWER PATH: Exhibit-specific questions
     Exhibit? matchedExhibit = exhibit;
     if (matchedExhibit == null) {
