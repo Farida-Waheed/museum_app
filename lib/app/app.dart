@@ -13,7 +13,8 @@ class MuseumApp extends StatelessWidget {
   const MuseumApp({super.key});
 
   // Global navigator key for notification navigation
-  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> navigatorKey =
+      GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {

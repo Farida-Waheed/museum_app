@@ -22,7 +22,8 @@ class NotificationSettingsScreen extends StatefulWidget {
       _NotificationSettingsScreenState();
 }
 
-class _NotificationSettingsScreenState extends State<NotificationSettingsScreen> {
+class _NotificationSettingsScreenState
+    extends State<NotificationSettingsScreen> {
   final _prefManager = NotificationPreferenceManager();
   late Map<NotificationCategory, bool> _categoryStates;
   bool _masterEnabled = true;
@@ -66,18 +67,13 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
 
     if (!_initialized) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.notificationSettings),
-        ),
+        appBar: AppBar(title: Text(l10n.notificationSettings)),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.notificationSettings),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: Text(l10n.notificationSettings), elevation: 0),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -113,7 +109,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                   Switch(
                     value: _masterEnabled,
                     onChanged: _setMasterEnabled,
-                    activeColor: AppColors.primaryGold,
+                    activeThumbColor: AppColors.primaryGold,
                   ),
                 ],
               ),
@@ -235,7 +231,7 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 onChanged: isDisabledByMaster
                     ? null
                     : (value) => _setCategoryEnabled(category, value),
-                activeColor: AppColors.primaryGold,
+                activeThumbColor: AppColors.primaryGold,
               ),
             ],
           ),

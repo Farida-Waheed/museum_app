@@ -81,7 +81,10 @@ class _SearchScreenState extends State<SearchScreen> {
               onChanged: _filter,
               textAlign: isArabic ? TextAlign.right : TextAlign.left,
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search, color: AppColors.primaryGold),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: AppColors.primaryGold,
+                ),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear),
@@ -92,9 +95,12 @@ class _SearchScreenState extends State<SearchScreen> {
                         },
                       )
                     : null,
-                hintText:
-                    isArabic ? "ابحث باسم القطعة..." : "Search by exhibit name...",
-                hintStyle: AppTextStyles.bodyPrimary(context).copyWith(color: AppColors.helperText),
+                hintText: isArabic
+                    ? "ابحث باسم القطعة..."
+                    : "Search by exhibit name...",
+                hintStyle: AppTextStyles.bodyPrimary(
+                  context,
+                ).copyWith(color: AppColors.helperText),
                 filled: true,
                 fillColor: AppColors.darkSurface,
                 contentPadding: const EdgeInsets.symmetric(
@@ -164,7 +170,9 @@ class _SearchScreenState extends State<SearchScreen> {
                 ? "جرّب كلمة مختلفة أو تحقق من الهجاء."
                 : "Try a different word or check the spelling.",
             textAlign: TextAlign.center,
-            style: AppTextStyles.bodyPrimary(context).copyWith(color: AppColors.helperText),
+            style: AppTextStyles.bodyPrimary(
+              context,
+            ).copyWith(color: AppColors.helperText),
           ),
         ],
       ),
@@ -209,7 +217,7 @@ class _SearchResultTile extends StatelessWidget {
                   width: 56,
                   height: 56,
                   color: AppColors.primaryGold.withOpacity(0.1),
-                  child: Icon(
+                  child: const Icon(
                     Icons.museum_outlined,
                     size: 28,
                     color: AppColors.primaryGold,
@@ -219,12 +227,15 @@ class _SearchResultTile extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                  crossAxisAlignment: isArabic
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
                   children: [
                     Text(
                       exhibit.getName(prefs.language),
-                      style: AppTextStyles.titleMedium(context).copyWith(fontSize: 15),
+                      style: AppTextStyles.titleMedium(
+                        context,
+                      ).copyWith(fontSize: 15),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -239,7 +250,11 @@ class _SearchResultTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              const Icon(Icons.chevron_right_rounded, size: 20, color: Colors.white24),
+              const Icon(
+                Icons.chevron_right_rounded,
+                size: 20,
+                color: Colors.white24,
+              ),
             ],
           ),
         ),

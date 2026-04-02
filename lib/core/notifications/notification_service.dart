@@ -21,8 +21,7 @@ typedef OnNotificationTapped = void Function(NotificationPayload payload);
 /// - Prevent duplicate/spam notifications
 /// - Respect user preferences
 class NotificationService {
-  static final NotificationService _instance =
-      NotificationService._internal();
+  static final NotificationService _instance = NotificationService._internal();
 
   factory NotificationService() => _instance;
 
@@ -40,9 +39,7 @@ class NotificationService {
 
   /// Initialize notification service
   /// Must be called before using any other methods
-  Future<void> initialize({
-    OnNotificationTapped? onNotificationTapped,
-  }) async {
+  Future<void> initialize({OnNotificationTapped? onNotificationTapped}) async {
     if (_initialized) return;
 
     _onNotificationTapped = onNotificationTapped;
@@ -58,17 +55,17 @@ class NotificationService {
     // iOS setup
     final DarwinInitializationSettings initializationSettingsDarwin =
         DarwinInitializationSettings(
-      onDidReceiveLocalNotification: _handleIOSNotificationReceived,
-      requestSoundPermission: true,
-      requestBadgePermission: true,
-      requestAlertPermission: true,
-    );
+          onDidReceiveLocalNotification: _handleIOSNotificationReceived,
+          requestSoundPermission: true,
+          requestBadgePermission: true,
+          requestAlertPermission: true,
+        );
 
     final InitializationSettings initializationSettings =
         InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsDarwin,
-    );
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsDarwin,
+        );
 
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
@@ -89,7 +86,8 @@ class NotificationService {
     // Setup basic channels grouped by importance
     final androidPlugin = _flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
+          AndroidFlutterLocalNotificationsPlugin
+        >();
 
     if (androidPlugin == null) return;
 
@@ -124,7 +122,7 @@ class NotificationService {
           : null,
     );
 
-    final iosDetails = const DarwinNotificationDetails(
+    const iosDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
@@ -176,7 +174,7 @@ class NotificationService {
       playSound: config.playSound,
     );
 
-    final iosDetails = const DarwinNotificationDetails(
+    const iosDetails = DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
@@ -246,9 +244,7 @@ class NotificationService {
   }
 
   /// Handle notification tapped (foreground and background)
-  void _handleNotificationTapped(
-    NotificationResponse notificationResponse,
-  ) {
+  void _handleNotificationTapped(NotificationResponse notificationResponse) {
     final payload = notificationResponse.payload;
     if (payload != null) {
       try {
@@ -264,9 +260,7 @@ class NotificationService {
   void _handleNotificationPayload(NotificationPayload payload) {
     // Use navigator key to navigate
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      NotificationPayloadRouter.handleNotificationTapWithNavigator(
-        payload,
-      );
+      NotificationPayloadRouter.handleNotificationTapWithNavigator(payload);
     });
   }
 
@@ -315,9 +309,7 @@ class NotificationService {
   /// Encode payload for platform layer
   String _encodePayload(NotificationPayload payload) {
     final json = payload.toJson();
-    return json.entries
-        .map((e) => '${e.key}=${e.value}')
-        .join('&');
+    return json.entries.map((e) => '${e.key}=${e.value}').join('&');
   }
 
   /// Decode payload from platform layer

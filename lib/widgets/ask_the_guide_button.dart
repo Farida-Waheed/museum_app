@@ -17,7 +17,11 @@ class AskTheGuideButton extends StatefulWidget {
   final String screen;
   final String? currentExhibitId;
 
-  const AskTheGuideButton({super.key, this.screen = 'home', this.currentExhibitId});
+  const AskTheGuideButton({
+    super.key,
+    this.screen = 'home',
+    this.currentExhibitId,
+  });
 
   @override
   State<AskTheGuideButton> createState() => _AskTheGuideButtonState();
@@ -53,7 +57,6 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
 
   @override
   Widget build(BuildContext context) {
-
     final isArabic = AppLocalizations.of(context)?.localeName == 'ar';
     final buttonText = isArabic ? 'اسأل' : 'Ask';
     return AnimatedBuilder(

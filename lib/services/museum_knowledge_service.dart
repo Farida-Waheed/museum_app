@@ -82,7 +82,9 @@ class MuseumKnowledgeService {
       if (tour.nextExhibitId != null) {
         final next = findExhibitById(tour.nextExhibitId!);
         if (next != null) {
-          buffer.writeln('Onward to: ${next.getName(language)} in ${tour.estimatedTimeToNext.round()} seconds.');
+          buffer.writeln(
+            'Onward to: ${next.getName(language)} in ${tour.estimatedTimeToNext.round()} seconds.',
+          );
         }
       }
     }

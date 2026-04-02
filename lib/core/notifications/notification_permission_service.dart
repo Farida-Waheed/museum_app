@@ -46,8 +46,7 @@ class NotificationPermissionService {
 
     // Show branded explanation first
     if (!_prefManager.notificationPermissionPromptShown) {
-      final shouldContinue =
-          await _showBrandedExplanationDialog(context, l10n);
+      final shouldContinue = await _showBrandedExplanationDialog(context, l10n);
 
       if (!shouldContinue) {
         // User dismissed explanation
@@ -202,12 +201,7 @@ class NotificationPermissionService {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text('• ', style: TextStyle(fontSize: 16)),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(fontSize: 14),
-            ),
-          ),
+          Expanded(child: Text(text, style: const TextStyle(fontSize: 14))),
         ],
       ),
     );

@@ -105,7 +105,9 @@ class NotificationTriggerService {
     String? exhibitId,
     String? tourId,
   }) async {
-    if (!_prefManager.isCategoryEnabled(NotificationCategory.exhibitReminders)) {
+    if (!_prefManager.isCategoryEnabled(
+      NotificationCategory.exhibitReminders,
+    )) {
       return;
     }
 
@@ -174,7 +176,9 @@ class NotificationTriggerService {
     required String body,
     String? exhibitId,
   }) async {
-    if (!_prefManager.isCategoryEnabled(NotificationCategory.exhibitReminders)) {
+    if (!_prefManager.isCategoryEnabled(
+      NotificationCategory.exhibitReminders,
+    )) {
       return;
     }
 
@@ -213,7 +217,7 @@ class NotificationTriggerService {
       return;
     }
 
-    final spamKey = 'horus_nearby';
+    const spamKey = 'horus_nearby';
     if (_isSpammed(spamKey)) {
       return;
     }
@@ -246,7 +250,7 @@ class NotificationTriggerService {
       return;
     }
 
-    final spamKey = 'user_inactive';
+    const spamKey = 'user_inactive';
     if (_isSpammed(spamKey)) {
       return;
     }
@@ -312,7 +316,7 @@ class NotificationTriggerService {
       return;
     }
 
-    final spamKey = 'ask_guide_reminder';
+    const spamKey = 'ask_guide_reminder';
     if (_isSpammed(spamKey)) {
       return;
     }
@@ -398,7 +402,8 @@ class NotificationTriggerService {
         category: NotificationCategory.ticketReminders,
         scheduledTime: reminderTime,
         payload: payload,
-        deduplicationKey: 'ticket_reminder_${reminderTime.millisecondsSinceEpoch}',
+        deduplicationKey:
+            'ticket_reminder_${reminderTime.millisecondsSinceEpoch}',
       );
 
       await _notificationService.scheduleNotification(notification);
@@ -426,7 +431,7 @@ class NotificationTriggerService {
       return;
     }
 
-    final spamKey = 'museum_closing_soon';
+    const spamKey = 'museum_closing_soon';
     if (_isSpammed(spamKey)) {
       return;
     }
@@ -565,7 +570,7 @@ class NotificationTriggerService {
       return;
     }
 
-    final spamKey = 'robot_disconnected';
+    const spamKey = 'robot_disconnected';
     if (_isSpammed(spamKey)) {
       return;
     }

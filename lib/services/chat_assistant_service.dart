@@ -8,9 +8,11 @@ class ChatAssistantService {
   final MuseumKnowledgeService _knowledge;
   final ConversationMemoryService _memory;
 
-  ChatAssistantService({MuseumKnowledgeService? knowledge, ConversationMemoryService? memory})
-      : _knowledge = knowledge ?? MuseumKnowledgeService(),
-        _memory = memory ?? ConversationMemoryService();
+  ChatAssistantService({
+    MuseumKnowledgeService? knowledge,
+    ConversationMemoryService? memory,
+  }) : _knowledge = knowledge ?? MuseumKnowledgeService(),
+       _memory = memory ?? ConversationMemoryService();
 
   String _buildSystemPrompt(ChatContext context) {
     if (context.language == 'ar') {
@@ -19,20 +21,27 @@ class ChatAssistantService {
     return 'You are a smart museum guide assistant. Answer elegantly, helpfully and with storytelling style. Avoid generic phrases and don’t repeat the user question.';
   }
 
-  String _pickExhibitResponse(Exhibit exhibit, String question, String language) {
+  String _pickExhibitResponse(
+    Exhibit exhibit,
+    String question,
+    String language,
+  ) {
     final title = exhibit.getName(language);
     final description = exhibit.getDescription(language);
 
-    if (question.toLowerCase().contains('more') || question.toLowerCase().contains('tell me')) {
+    if (question.toLowerCase().contains('more') ||
+        question.toLowerCase().contains('tell me')) {
       return language == 'ar'
-          ? 'هذا $title. $description' : 'The $title is an outstanding piece. $description';
+          ? 'هذا $title. $description'
+          : 'The $title is an outstanding piece. $description';
     }
     return language == 'ar'
         ? '$title هو أحد المعروضات المهمة. $description'
         : '$title is one of the highlights. $description';
   }
 
-  String _normalize(String input) => input.toLowerCase().replaceAll(RegExp(r'[\W_]'), ' ');
+  String _normalize(String input) =>
+      input.toLowerCase().replaceAll(RegExp(r'[\W_]'), ' ');
 
   String _mapToArabic(String key) {
     final mapping = {
@@ -48,9 +57,13 @@ class ChatAssistantService {
 
   bool _isGreeting(String normalized, String language) {
     if (language == 'ar') {
-      return RegExp(r'\b(مرحبا|السلام|اهلا|كيف|صباح|مساء|هاي|ها)\b').hasMatch(normalized);
+      return RegExp(
+        r'\b(مرحبا|السلام|اهلا|كيف|صباح|مساء|هاي|ها)\b',
+      ).hasMatch(normalized);
     }
-    return RegExp(r'\b(hi|hello|hey|howdy|greetings|good morning|good afternoon|good evening)\b').hasMatch(normalized);
+    return RegExp(
+      r'\b(hi|hello|hey|howdy|greetings|good morning|good afternoon|good evening)\b',
+    ).hasMatch(normalized);
   }
 
   String _greetingResponse(String language) {
@@ -79,26 +92,34 @@ class ChatAssistantService {
     }
 
     // FAST PATH: Tickets
-    if (normalized.contains('ticket') || normalized.contains('تذاكر') || 
-        normalized.contains('price') || normalized.contains('سعر') || 
-        normalized.contains('admission') || normalized.contains('الدخول')) {
+    if (normalized.contains('ticket') ||
+        normalized.contains('تذاكر') ||
+        normalized.contains('price') ||
+        normalized.contains('سعر') ||
+        normalized.contains('admission') ||
+        normalized.contains('الدخول')) {
       final answer = _knowledge.getTicketInfo(language: language);
       _memory.addAssistantMessage(answer);
       return answer;
     }
 
     // FAST PATH: Opening hours
-    if (normalized.contains('hour') || normalized.contains('ساعات') || 
-        normalized.contains('open') || normalized.contains('مفتوح') || 
-        normalized.contains('timing') || normalized.contains('مواعيد')) {
+    if (normalized.contains('hour') ||
+        normalized.contains('ساعات') ||
+        normalized.contains('open') ||
+        normalized.contains('مفتوح') ||
+        normalized.contains('timing') ||
+        normalized.contains('مواعيد')) {
       final answer = _knowledge.getMuseumHours(language: language);
       _memory.addAssistantMessage(answer);
       return answer;
     }
 
     // FAST PATH: Events
-    if (normalized.contains('event') || normalized.contains('فعاليات') || 
-        normalized.contains('what is on') || normalized.contains('current')) {
+    if (normalized.contains('event') ||
+        normalized.contains('فعاليات') ||
+        normalized.contains('what is on') ||
+        normalized.contains('current')) {
       final event = MockDataService.getAllEvents().first;
       final answer = language == 'ar'
           ? 'الحدث القادم: ${event.titleAr}. ${event.descriptionAr} الساعة ${event.dateTime.hour}:${event.dateTime.minute.toString().padLeft(2, '0')} في ${event.locationAr}.'
@@ -117,15 +138,19 @@ class ChatAssistantService {
     }
 
     // Explicit "tell me about" or "explain" with exhibit context
-    if (matchedExhibit != null && (normalized.contains('tell') || normalized.contains('explain') || 
-        normalized.contains('حدثني') || normalized.contains('اشرح'))) {
+    if (matchedExhibit != null &&
+        (normalized.contains('tell') ||
+            normalized.contains('explain') ||
+            normalized.contains('حدثني') ||
+            normalized.contains('اشرح'))) {
       final answer = _pickExhibitResponse(matchedExhibit, question, language);
       _memory.addAssistantMessage(answer);
       return answer;
     }
 
     // Tour-aware: next stop
-    if ((normalized.contains('next') || normalized.contains('التالي')) && tour?.nextExhibitId != null) {
+    if ((normalized.contains('next') || normalized.contains('التالي')) &&
+        tour?.nextExhibitId != null) {
       final nextExhibit = _knowledge.findExhibitById(tour!.nextExhibitId!);
       if (nextExhibit != null) {
         final answer = language == 'ar'
@@ -169,4 +194,3 @@ ${context.question}
 ''';
   }
 }
-

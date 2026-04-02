@@ -44,8 +44,7 @@ class NotificationPreferenceManager {
     // Ensure all categories have default values on first run
     for (final category in NotificationCategory.values) {
       if (!_prefs.containsKey(_getCategoryKey(category))) {
-        final defaultValue =
-            _defaultCategoryEnabled[category] ?? true;
+        final defaultValue = _defaultCategoryEnabled[category] ?? true;
         await setCategoryEnabled(category, defaultValue);
       }
     }
@@ -121,8 +120,7 @@ class NotificationPreferenceManager {
     await setNotificationPermissionPromptShown(false);
     await setNotificationPermissionDeclined(false);
     for (final category in NotificationCategory.values) {
-      final defaultValue =
-          _defaultCategoryEnabled[category] ?? true;
+      final defaultValue = _defaultCategoryEnabled[category] ?? true;
       await setCategoryEnabled(category, defaultValue);
     }
   }

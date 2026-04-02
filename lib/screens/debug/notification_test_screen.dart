@@ -9,9 +9,7 @@ class NotificationTestScreen extends StatelessWidget {
     final triggerService = NotificationTriggerService();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notification Test'),
-      ),
+      appBar: AppBar(title: const Text('Notification Test')),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -22,7 +20,10 @@ class NotificationTestScreen extends StatelessWidget {
           const SizedBox(height: 20),
 
           // Tour Events
-          const Text('Tour Events:', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text(
+            'Tour Events:',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           ElevatedButton(
             onPressed: () => triggerService.triggerTourStarted(
               title: 'Tour Started',
@@ -62,7 +63,10 @@ class NotificationTestScreen extends StatelessWidget {
           const SizedBox(height: 20),
 
           // Ticket Events
-          const Text('Ticket Events:', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text(
+            'Ticket Events:',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           ElevatedButton(
             onPressed: () => triggerService.triggerTicketReminder(
               title: 'Museum Visit Today',
@@ -74,7 +78,10 @@ class NotificationTestScreen extends StatelessWidget {
           const SizedBox(height: 20),
 
           // System Events
-          const Text('System Events:', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text(
+            'System Events:',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           ElevatedButton(
             onPressed: () => triggerService.triggerConnectionRestored(
               title: 'Connection Restored',
@@ -86,12 +93,19 @@ class NotificationTestScreen extends StatelessWidget {
           const SizedBox(height: 20),
 
           // Tour Provider Integration Test
-          const Text('Tour Provider Integration:', style: TextStyle(fontWeight: FontWeight.bold)),
+          const Text(
+            'Tour Provider Integration:',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
           ElevatedButton(
             onPressed: () {
               // This will demonstrate that notifications are integrated with tour provider
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Tour provider notifications are triggered automatically during tour events')),
+                const SnackBar(
+                  content: Text(
+                    'Tour provider notifications are triggered automatically during tour events',
+                  ),
+                ),
               );
             },
             child: const Text('Test Tour Provider Integration'),
