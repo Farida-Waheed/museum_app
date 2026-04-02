@@ -1,6 +1,5 @@
 ﻿import '../services/chat_context_builder.dart';
 import '../models/exhibit.dart';
-import '../core/services/mock_data.dart';
 import 'conversation_memory_service.dart';
 import 'museum_knowledge_service.dart';
 
@@ -66,6 +65,32 @@ class ChatAssistantService {
     ).hasMatch(normalized);
   }
 
+  bool _isHumanSupportRequest(String normalized) {
+    return normalized.contains('support') ||
+        normalized.contains('human') ||
+        normalized.contains('دعم') ||
+        normalized.contains('بشري');
+  }
+
+  bool _isWhereIntent(String normalized) {
+    return normalized.contains('where') ||
+        normalized.contains('أين') ||
+        normalized.contains('location') ||
+        normalized.contains('موقع');
+  }
+
+  bool _isTourNextIntent(String normalized) {
+    return normalized.contains('next') ||
+        normalized.contains('التالي') ||
+        normalized.contains('بعد');
+  }
+
+  String _fallbackResponse(String language) {
+    return language == 'ar'
+        ? 'يمكنني مساعدتك في التذاكر، المواعيد، المعروضات، الفعاليات، والاتجاهات داخل تجربة المتحف. جرّب أن تسأل عن أحد هذه الأمور.'
+        : 'I can help with tickets, hours, exhibits, events, and directions inside the museum experience. Try asking about one of these.';
+  }
+
   String _greetingResponse(String language) {
     if (language == 'ar') {
       return 'مرحباً! أنا دليلك في المتحف. يمكنني مساعدتك في معرفة التذاكر والمواعيد والفعاليات والمعروضات. ماذا تود أن تستكشف؟';
@@ -87,6 +112,15 @@ class ChatAssistantService {
     // FAST PATH: Greeting detection (highest priority)
     if (_isGreeting(normalized, language)) {
       final answer = _greetingResponse(language);
+      _memory.addAssistantMessage(answer);
+      return answer;
+    }
+
+    // Human support request (higher than general fallback)
+    if (_isHumanSupportRequest(normalized)) {
+      final answer = language == 'ar'
+          ? 'تم تسجيل طلب الدعم البشري ضمن هذا المسار التجريبي. في النسخة الإنتاجية، سيتم إشعار فريق دعم المتحف.'
+          : 'A live support request has been recorded in this demo flow. In production, this would notify the museum support team.';
       _memory.addAssistantMessage(answer);
       return answer;
     }
@@ -120,10 +154,7 @@ class ChatAssistantService {
         normalized.contains('فعاليات') ||
         normalized.contains('what is on') ||
         normalized.contains('current')) {
-      final event = MockDataService.getAllEvents().first;
-      final answer = language == 'ar'
-          ? 'الحدث القادم: ${event.titleAr}. ${event.descriptionAr} الساعة ${event.dateTime.hour}:${event.dateTime.minute.toString().padLeft(2, '0')} في ${event.locationAr}.'
-          : 'Next event: ${event.titleEn}. ${event.descriptionEn} at ${event.dateTime.hour}:${event.dateTime.minute.toString().padLeft(2, '0')} in ${event.locationEn}.';
+      final answer = _knowledge.getEventHighlights(language: language);
       _memory.addAssistantMessage(answer);
       return answer;
     }
@@ -160,6 +191,15 @@ class ChatAssistantService {
       return answer;
     }
 
+    // Context-aware where questions
+    if (_isWhereIntent(normalized) && matchedExhibit != null) {
+      final answer = language == 'ar'
+          ? 'المعرض موجود في المسار الرئيسي. توجه نحو ${matchedExhibit.getName(language)} وستجده قريبًا.'
+          : '${matchedExhibit.getName(language)} is located in the main hall route; follow the signs to reach it.';
+      _memory.addAssistantMessage(answer);
+      return answer;
+    }
+
     // Tour-aware: next stop
     if ((normalized.contains('next') || normalized.contains('التالي')) &&
         tour?.nextExhibitId != null) {
@@ -173,6 +213,15 @@ class ChatAssistantService {
       }
     }
 
+    // If generic next stop intent but no tour in progress
+    if (_isTourNextIntent(normalized) && tour?.nextExhibitId == null) {
+      final answer = language == 'ar'
+          ? 'سأوصيك بأن تبدأ من قاعة توت عنخ آمون ثم تتجه إلى معروضات الأسرار الملكية.'
+          : 'A great next step is Tutankhamun Hall, then move towards the Royal Secrets exhibits.';
+      _memory.addAssistantMessage(answer);
+      return answer;
+    }
+
     // If user is currently viewing an exhibit
     if (matchedExhibit != null) {
       final answer = _pickExhibitResponse(matchedExhibit, question, language);
@@ -181,9 +230,7 @@ class ChatAssistantService {
     }
 
     // General fallback
-    final fallback = language == 'ar'
-        ? 'يمكنني مساعدتك في استكشاف المعروضات والفعاليات وساعات العمل والتذاكر. ماذا تود أن تعرف؟'
-        : 'I can help you explore exhibits, events, hours, and tickets. What else can I help you with?';
+    final fallback = _fallbackResponse(language);
 
     _memory.addAssistantMessage(fallback);
     return fallback;

@@ -1,5 +1,4 @@
 ﻿import 'dart:async';
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -79,11 +78,13 @@ class _MessageEntryAnimatorState extends State<MessageEntryAnimator>
 }
 
 class _SuggestionChipsCard extends StatelessWidget {
+  final String title;
   final List<String> suggestions;
   final bool isArabic;
   final ValueChanged<String> onSuggestion;
 
   const _SuggestionChipsCard({
+    required this.title,
     required this.suggestions,
     required this.isArabic,
     required this.onSuggestion,
@@ -91,82 +92,47 @@ class _SuggestionChipsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 8,
-      alignment: isArabic ? WrapAlignment.end : WrapAlignment.start,
-      children: suggestions.map((s) {
-        return ConstrainedBox(
-          constraints: const BoxConstraints(minWidth: 80, maxWidth: 150),
-          child: OutlinedButton(
-            style: TextButton.styleFrom(
-              backgroundColor: AppColors.primaryGold.withOpacity(0.16),
-              foregroundColor: Colors.white,
-              side: BorderSide(
-                color: AppColors.primaryGold.withOpacity(0.85),
-                width: 1,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(22),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            ).copyWith(
-              overlayColor: MaterialStateProperty.all(
-                AppColors.primaryGold.withOpacity(0.24),
-              ),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.cinematicCard,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppColors.primaryGold.withOpacity(0.25)),
+      ),
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment:
+            isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: AppTextStyles.bodyPrimary(context).copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
             ),
-            onPressed: () {
-              String query;
-              if (isArabic) {
-                switch (s) {
-                  case 'تذاكر':
-                    query = 'ما أسعار التذاكر وأنواعها؟';
-                    break;
-                  case 'مواعيد':
-                    query = 'ما مواعيد العمل اليوم؟';
-                    break;
-                  case 'فعاليات':
-                    query = 'ما الفعاليات المتاحة اليوم؟';
-                    break;
-                  case 'المدة':
-                    query = 'كم تستغرق الزيارة عادة؟';
-                    break;
-                  default:
-                    query = s;
-                }
-              } else {
-                switch (s) {
-                  case 'Tickets':
-                    query = 'Tell me about ticket prices and ticket types.';
-                    break;
-                  case 'Hours':
-                    query = 'What are today\'s opening hours?';
-                    break;
-                  case 'Events':
-                    query = 'What events are happening today?';
-                    break;
-                  case 'Duration':
-                    query = 'How long does the visit usually take?';
-                    break;
-                  default:
-                    query = s;
-                }
-              }
-              onSuggestion(query);
-            },
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                s,
-                style: AppTextStyles.bodyPrimary(context).copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
+            textAlign: isArabic ? TextAlign.right : TextAlign.left,
           ),
-        );
-      }).toList(),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 6,
+            alignment:
+                isArabic ? WrapAlignment.end : WrapAlignment.start,
+            children: suggestions.map((s) {
+              return ActionChip(
+                label: Text(
+                  s,
+                  style: AppTextStyles.metadata(context).copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                backgroundColor: AppColors.primaryGold.withOpacity(0.9),
+                onPressed: () => onSuggestion(s),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -210,7 +176,7 @@ class _TypingIndicatorState extends State<_TypingIndicator>
 
   @override
   Widget build(BuildContext context) {
-    final text = widget.isArabic ? "الدليل يكتب..." : "The Guide is typing...";
+    final text = widget.isArabic ? "╪º┘ä╪»┘ä┘è┘ä ┘è┘â╪¬╪¿..." : "The Guide is typing...";
     return Row(
       children: [
         Text(
@@ -403,7 +369,7 @@ class _InfoCardBubble extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "• ",
+                  "ΓÇó ",
                   style: itemStyle.copyWith(fontWeight: FontWeight.bold),
                 ),
                 Expanded(child: Text(it, style: itemStyle)),
@@ -423,7 +389,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   bool _showScrollBtn = false;
   bool _canSend = false;
   bool _showHelperPanel = false;  // NEW: Helper toggle state
-  final GlobalKey _infoToggleKey = GlobalKey();
   late final AnimationController _popupAnim;
   Timer? _typeTimer;
   late final ChatProvider _chatProvider;
@@ -504,7 +469,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     setState(() {
       _canSend = false;
       _isTyping = true;
-      _showHelperPanel = false;
     });
 
     final contextData = ChatContextBuilder.build(
@@ -599,10 +563,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 itemBuilder: (context, i) {
                   final m = messages[i];
                   if (!m.isUser && m.kind == MessageKind.infoCard &&
-                      m.cardTitle?.toLowerCase().contains('quick') == true) {
+                      (m.cardTitle?.toLowerCase().contains('quick') == true || m.cardTitle?.toLowerCase().contains('╪│╪▒┘è╪╣╪⌐') == true)) {
                     return MessageEntryAnimator(
                       isUser: m.isUser,
                       child: _SuggestionChipsCard(
+                        title: m.cardTitle ?? '',
                         suggestions: m.cardItems ?? [],
                         isArabic: isArabic,
                         onSuggestion: (value) => _submit(value),
@@ -641,10 +606,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         duration: const Duration(seconds: 3),
-                      content: Text(
-                        isArabic
-                            ? 'إدخال صوتي قريباً'
-                            : 'Voice input coming soon',
+                        content: Text(
+                          isArabic
+                              ? '╪º┘ä╪Ñ╪»╪«╪º┘ä ╪º┘ä╪╡┘ê╪¬┘è ┘é╪▒┘è╪¿╪º┘ï'
+                              : 'Voice input coming soon',
                           style: const TextStyle(fontSize: 14),
                         ),
                       ),
@@ -700,8 +665,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         duration: const Duration(seconds: 3),
                         content: Text(
                           isArabic
-                              ? 'الميكروفون معطّل. يرجى تفعيله في الإعدادات.'
-                              : 'Microphone disabled. Please enable it in settings',
+                              ? '╪º┘ä┘à┘è┘â╪▒┘ê┘ü┘ê┘å ┘à╪╣╪╖┘ä. ┘è╪▒╪¼┘ë ╪º┘ä╪│┘à╪º╪¡ ╪¿┘ç ┘ü┘è ╪º┘ä╪Ñ╪╣╪»╪º╪»╪º╪¬.'
+                              : 'Microphone disabled. Please enable it in settings.',
                         ),
                       ),
                     );
@@ -724,7 +689,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   ),
                   decoration: InputDecoration(
                     hintText: isArabic
-                        ? "اسأل الدليل عن أي شيء..."
+                        ? "╪º╪│╪ú┘ä ╪º┘ä╪»┘ä┘è┘ä ╪╣┘å ╪ú┘è ╪┤┘è╪í..."
                         : "Ask the Guide about anything...",
                     hintStyle: AppTextStyles.bodyPrimary(context).copyWith(
                       color: isDark ? Colors.white38 : Colors.black38,
@@ -770,107 +735,112 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         ),
         Padding(
           padding: const EdgeInsets.only(top: 8, bottom: 4),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                key: _infoToggleKey,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.info_outline,
-                      size: 20,
-                      color: AppColors.primaryGold,
-                    ),
-                    onPressed: () => setState(() => _showHelperPanel = !_showHelperPanel),
+          child: Align(
+            alignment: isArabic ? Alignment.centerLeft : Alignment.centerRight,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Helper toggle button
+                TextButton.icon(
+                  icon: Icon(
+                    _showHelperPanel ? Icons.info_outlined : Icons.info_outlined, 
+                    size: 18,
                   ),
-                  const SizedBox(width: 4),
-                  Text(
-                    isArabic ? 'المزيد من المعلومات' : 'More info',
+                  label: Text(
+                    isArabic ? '┘à╪╣┘ä┘ê┘à╪º╪¬ ╪Ñ╪╢╪º┘ü┘è╪⌐' : 'More help',
                     style: AppTextStyles.metadata(context).copyWith(
                       color: AppColors.primaryGold,
-                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                ],
-              ),
-              TextButton.icon(
-                icon: const Icon(Icons.support_agent_outlined, size: 18),
-                label: Text(
-                  isArabic ? 'أحتاج مساعدة بشرية' : 'Request live human support',
-                  style: AppTextStyles.metadata(context).copyWith(
-                    color: AppColors.primaryGold,
-                  ),
+                  onPressed: () {
+                    setState(() => _showHelperPanel = !_showHelperPanel);
+                  },
                 ),
-                onPressed: () {
-                  _addMessage(ChatMessageModel.card(
-                    id: _id(),
-                    isUser: false,
-                    timestamp: DateTime.now(),
-                    cardTitle: isArabic ? 'طلب الدعم البشري' : 'Human support requested',
-                    cardItems: isArabic
-                        ? ['سيرد عليك ممثل الخدمة البشرية قريباً جداً']
-                        : ['A human representative will respond shortly.'],
-                  ));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 2),
-                      content: Text(isArabic
-                          ? 'تم إرسال طلب المساعدة إلى الفريق.'
-                          : 'Your human support request is sent.'),
+                const SizedBox(width: 8),
+                // Support button
+                TextButton.icon(
+                  icon: const Icon(Icons.support_agent_outlined, size: 18),
+                  label: Text(
+                    isArabic ? '╪ú╪¡╪¬╪º╪¼ ┘à╪│╪º╪╣╪»╪⌐ ╪¿╪┤╪▒┘è╪⌐' : 'Request live human support',
+                    style: AppTextStyles.metadata(context).copyWith(
+                      color: AppColors.primaryGold,
                     ),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-
-    final helperText = isArabic
-        ? 'يمكنك السؤال عن التذاكر والمواعيد\nوالفعاليات أو المعروضات.'
-        : 'You can ask about tickets, hours,\nevents, or exhibits.';
-
-    final contentWithFloatingHelper = Stack(
-      clipBehavior: Clip.none,
-      children: [
-        content,
-        if (_showHelperPanel)
-          Positioned.fill(
-            child: GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () => setState(() => _showHelperPanel = false),
-              child: const SizedBox.shrink(),
+                  ),
+                  onPressed: () {
+                    _addMessage(ChatMessageModel.card(
+                      id: _id(),
+                      isUser: false,
+                      timestamp: DateTime.now(),
+                      cardTitle: isArabic ? '╪╖┘ä╪¿ ╪º┘ä╪»╪╣┘à ╪º┘ä╪¿╪┤╪▒┘è' : 'Human support requested',
+                      cardItems: isArabic
+                          ? ['╪│┘è╪▒╪» ╪╣┘ä┘è┘â ┘à┘à╪½┘ä ╪º┘ä╪«╪»┘à╪⌐ ┘é╪▒┘è╪¿╪º┘ï.']
+                          : ['A human rep will respond shortly.'],
+                    ));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: const Duration(seconds: 2),
+                        content: Text(isArabic
+                            ? '╪¬┘à ╪Ñ╪▒╪│╪º┘ä ╪╖┘ä╪¿ ╪º┘ä┘à╪│╪º╪╣╪»╪⌐ ╪Ñ┘ä┘ë ╪º┘ä┘ü╪▒┘è┘é.'
+                            : 'Your human support request is sent.'),
+                      ),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
+        ),
+        // Helper panel (shown when toggled)
         if (_showHelperPanel)
-          Positioned(
-            left: 16,
-            bottom: 92,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
             child: Container(
-              width: math.min(MediaQuery.of(context).size.width * 0.6, 260),
               decoration: BoxDecoration(
                 color: AppColors.cinematicCard,
                 borderRadius: BorderRadius.circular(14),
                 border: Border.all(color: AppColors.primaryGold.withOpacity(0.25)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
+              ),
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment:
+                    isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isArabic ? '┘â┘è┘ü ┘è┘à┘â┘å┘å┘è ┘à╪│╪º╪╣╪»╪¬┘â╪ƒ' : 'How can I help?',
+                    style: AppTextStyles.bodyPrimary(context).copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                    textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    alignment:
+                        isArabic ? WrapAlignment.end : WrapAlignment.start,
+                    children: (isArabic
+                        ? ['╪¬╪░╪º┘â╪▒', '┘à┘ê╪º╪╣┘è╪»', '┘ü╪╣╪º┘ä┘è╪º╪¬', '┘à╪╣┘ä┘ê┘à╪º╪¬']
+                        : ['Tickets', 'Hours', 'Events', 'Exhibits']).map((item) {
+                      return Chip(
+                        label: Text(
+                          item,
+                          style: AppTextStyles.metadata(context).copyWith(
+                            color: Colors.white,
+                            fontSize: 11,
+                          ),
+                        ),
+                        backgroundColor:
+                            AppColors.primaryGold.withOpacity(0.7),
+                        side: BorderSide(
+                          color: AppColors.primaryGold.withOpacity(0.3),
+                        ),
+                        onDeleted: null,
+                      );
+                    }).toList(),
                   ),
                 ],
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              child: Text(
-                helperText,
-                style: AppTextStyles.bodyPrimary(context).copyWith(
-                  color: Colors.white,
-                  fontSize: 13,
-                ),
-                textAlign: isArabic ? TextAlign.right : TextAlign.left,
               ),
             ),
           ),
@@ -883,7 +853,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         icon: Image.asset("assets/icons/ankh.png", width: 24, height: 24),
         content: SizedBox(
           height: MediaQuery.of(context).size.height * 0.65,
-          child: contentWithFloatingHelper,
+          child: content,
         ),
       );
     }
@@ -903,7 +873,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Padding(padding: const EdgeInsets.all(16.0), child: contentWithFloatingHelper),
+      body: Padding(padding: const EdgeInsets.all(16.0), child: content),
       floatingActionButton: _showScrollBtn
           ? FloatingActionButton.small(
               onPressed: _scrollToBottom,

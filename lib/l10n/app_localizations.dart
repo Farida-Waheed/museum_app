@@ -212,6 +212,90 @@ abstract class AppLocalizations {
   /// **'Guest User'**
   String get guestUser;
 
+  /// No description provided for @chatHeaderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus Guide'**
+  String get chatHeaderTitle;
+
+  /// No description provided for @chatHeaderSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask your museum questions in a premium way.'**
+  String get chatHeaderSubtitle;
+
+  /// No description provided for @voiceInputNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice input is not available on this platform yet.'**
+  String get voiceInputNotAvailable;
+
+  /// No description provided for @micPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone'**
+  String get micPermissionTitle;
+
+  /// No description provided for @micPermissionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Used for voice interaction and questions to Horus.'**
+  String get micPermissionDesc;
+
+  /// No description provided for @micPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone permission was denied.'**
+  String get micPermissionDenied;
+
+  /// No description provided for @micPermissionSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enable microphone access from Settings.'**
+  String get micPermissionSettings;
+
+  /// No description provided for @micListening.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening... Speak now.'**
+  String get micListening;
+
+  /// No description provided for @moreInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'More info'**
+  String get moreInfo;
+
+  /// No description provided for @moreInfoText.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask about tickets, opening hours, events, exhibits, or directions.'**
+  String get moreInfoText;
+
+  /// No description provided for @humanSupportLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Request live human support'**
+  String get humanSupportLabel;
+
+  /// No description provided for @humanSupportAck.
+  ///
+  /// In en, this message translates to:
+  /// **'Live human support request received.'**
+  String get humanSupportAck;
+
+  /// No description provided for @chatLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus is thinking...'**
+  String get chatLoading;
+
+  /// No description provided for @chatInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the Guide about anything...'**
+  String get chatInputHint;
+
   /// No description provided for @exploreMuseum.
   ///
   /// In en, this message translates to:
@@ -1442,18 +1526,6 @@ abstract class AppLocalizations {
   /// **'Needed for scanning QR tickets and future AR features.'**
   String get cameraPermissionDesc;
 
-  /// No description provided for @micPermissionTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Microphone'**
-  String get micPermissionTitle;
-
-  /// No description provided for @micPermissionDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Used for voice interaction and questions to Horus.'**
-  String get micPermissionDesc;
-
   /// No description provided for @continueBtn.
   ///
   /// In en, this message translates to:
@@ -1813,6 +1885,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Disable Notifications'**
   String get disableNotifications;
+
+  /// No description provided for @quickSuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick suggestions'**
+  String get quickSuggestions;
+
+  /// No description provided for @chatInfoPopup.
+  ///
+  /// In en, this message translates to:
+  /// **'You can ask about tickets, events, hours, or exhibits.'**
+  String get chatInfoPopup;
 }
 
 class _AppLocalizationsDelegate

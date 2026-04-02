@@ -68,6 +68,52 @@ class AppLocalizationsAr extends AppLocalizations {
   String get guestUser => 'زائر';
 
   @override
+  String get chatHeaderTitle => 'دليل حورس';
+
+  @override
+  String get chatHeaderSubtitle => 'اطرح أسئلة المتحف بطريقة متميزة.';
+
+  @override
+  String get voiceInputNotAvailable =>
+      'الإدخال الصوتي غير متاح على هذه المنصة بعد.';
+
+  @override
+  String get micPermissionTitle => 'الميكروفون';
+
+  @override
+  String get micPermissionDesc =>
+      'يستخدم للتفاعل الصوتي وطرح الأسئلة على حوروس.';
+
+  @override
+  String get micPermissionDenied => 'تم رفض إذن الميكروفون.';
+
+  @override
+  String get micPermissionSettings =>
+      'يرجى تمكين الوصول إلى الميكروفون من الإعدادات.';
+
+  @override
+  String get micListening => 'يستمع... تحدث الآن.';
+
+  @override
+  String get moreInfo => 'مزيد من المعلومات';
+
+  @override
+  String get moreInfoText =>
+      'اسأل عن التذاكر، ساعات العمل، الفعاليات، المعروضات أو الاتجاهات.';
+
+  @override
+  String get humanSupportLabel => 'طلب دعم بشري مباشر';
+
+  @override
+  String get humanSupportAck => 'تم استلام طلب الدعم البشري.';
+
+  @override
+  String get chatLoading => 'حورس يفكر...';
+
+  @override
+  String get chatInputHint => 'اسأل الدليل عن أي شيء...';
+
+  @override
   String get exploreMuseum => 'استكشف المتحف';
 
   @override
@@ -707,13 +753,6 @@ class AppLocalizationsAr extends AppLocalizations {
       'مطلوب لمسح تذاكر QR وميزات الواقع المعزز المستقبلية.';
 
   @override
-  String get micPermissionTitle => 'الميكروفون';
-
-  @override
-  String get micPermissionDesc =>
-      'يستخدم للتفاعل الصوتي وطرح الأسئلة على حوروس.';
-
-  @override
   String get continueBtn => 'الاستمرار إلى الرئيسية';
 
   @override
@@ -902,4 +941,11 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get disableNotifications => 'تعطيل التنبيهات';
+
+  @override
+  String get quickSuggestions => 'اقتراحات سريعة';
+
+  @override
+  String get chatInfoPopup =>
+      'يمكنك السؤال عن التذاكر أو الفعاليات أو المواعيد أو المعروضات.';
 }

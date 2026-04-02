@@ -68,6 +68,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String get guestUser => 'Guest User';
 
   @override
+  String get chatHeaderTitle => 'Horus Guide';
+
+  @override
+  String get chatHeaderSubtitle =>
+      'Ask your museum questions in a premium way.';
+
+  @override
+  String get voiceInputNotAvailable =>
+      'Voice input is not available on this platform yet.';
+
+  @override
+  String get micPermissionTitle => 'Microphone';
+
+  @override
+  String get micPermissionDesc =>
+      'Used for voice interaction and questions to Horus.';
+
+  @override
+  String get micPermissionDenied => 'Microphone permission was denied.';
+
+  @override
+  String get micPermissionSettings =>
+      'Please enable microphone access from Settings.';
+
+  @override
+  String get micListening => 'Listening... Speak now.';
+
+  @override
+  String get moreInfo => 'More info';
+
+  @override
+  String get moreInfoText =>
+      'Ask about tickets, opening hours, events, exhibits, or directions.';
+
+  @override
+  String get humanSupportLabel => 'Request live human support';
+
+  @override
+  String get humanSupportAck => 'Live human support request received.';
+
+  @override
+  String get chatLoading => 'Horus is thinking...';
+
+  @override
+  String get chatInputHint => 'Ask the Guide about anything...';
+
+  @override
   String get exploreMuseum => 'Explore the museum';
 
   @override
@@ -714,13 +761,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Needed for scanning QR tickets and future AR features.';
 
   @override
-  String get micPermissionTitle => 'Microphone';
-
-  @override
-  String get micPermissionDesc =>
-      'Used for voice interaction and questions to Horus.';
-
-  @override
   String get continueBtn => 'CONTINUE TO HOME';
 
   @override
@@ -912,4 +952,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get disableNotifications => 'Disable Notifications';
+
+  @override
+  String get quickSuggestions => 'Quick suggestions';
+
+  @override
+  String get chatInfoPopup =>
+      'You can ask about tickets, events, hours, or exhibits.';
 }
