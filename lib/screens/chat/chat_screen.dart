@@ -16,6 +16,9 @@ import '../../core/constants/text_styles.dart';
 import '../../services/conversation_memory_service.dart';
 import '../../services/chat_assistant_service.dart';
 import '../../services/museum_knowledge_service.dart';
+import '../../services/voice_assistant_service.dart';
+import '../../services/support_request_service.dart';
+import '../../models/support_message.dart';
 import '../../services/chat_context_builder.dart';
 
 // ======================= Chat Screen ==========================
@@ -419,16 +422,19 @@ class _InfoCardBubble extends StatelessWidget {
 class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scroll = ScrollController();
+  final LayerLink _infoLink = LayerLink();
   bool _isTyping = false;
   bool _showScrollBtn = false;
   bool _canSend = false;
-  bool _showHelperPanel = false;  // NEW: Helper toggle state
-  final GlobalKey _infoToggleKey = GlobalKey();
-  late final AnimationController _popupAnim;
+  bool _showHelperPanel = false;
+  bool _isListening = false;
+  bool _voicePlaybackEnabled = false;
   Timer? _typeTimer;
   late final ChatProvider _chatProvider;
   late final ConversationMemoryService _conversationMemory;
-  late final ChatAssistantService _assistantService;
+  late final ChatAiService _assistantService;
+  late final VoiceAssistantService _voiceService;
+  late final SupportRequestService _supportService;
 
   @override
   void initState() {
@@ -436,14 +442,16 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     _chatProvider = Provider.of<ChatProvider>(context, listen: false);
     _chatProvider.clear(); // reset on each popup open, per new AskTheGuide UX.
     _conversationMemory = ConversationMemoryService();
-    _assistantService = ChatAssistantService(
+    _assistantService = LocalMuseumChatService(
       knowledge: MuseumKnowledgeService(),
       memory: _conversationMemory,
     );
-    _popupAnim = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 300),
-    )..forward();
+    _voiceService = VoiceAssistantService();
+    _supportService = SupportRequestService();
+    _voiceService.init().then((_) {
+      if (!mounted) return;
+      setState(() {});
+    });
     _scroll.addListener(_scrollChecker);
     _controller.addListener(() {
       final ok = _controller.text.trim().isNotEmpty;
@@ -487,6 +495,185 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     });
   }
 
+  Future<void> _handleMicTap() async {
+    if (kIsWeb) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 3),
+          content: Text(
+            AppLocalizations.of(context)?.webPermissionsNote ??
+                'Voice input coming soon',
+          ),
+        ),
+      );
+      return;
+    }
+
+    final status = await Permission.microphone.status;
+    if (status.isPermanentlyDenied) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) {
+          final l10n = AppLocalizations.of(context)!;
+          return BrandedPermissionDialog(
+            icon: Icons.mic_none_rounded,
+            title: l10n.micPermissionTitle,
+            description: l10n.micPermissionSettings,
+            onAllow: () async {
+              Navigator.pop(context);
+              await openAppSettings();
+            },
+            onDeny: () => Navigator.pop(context),
+          );
+        },
+      );
+      return;
+    }
+
+    if (status.isDenied) {
+      final l10n = AppLocalizations.of(context)!;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => BrandedPermissionDialog(
+          icon: Icons.mic_none_rounded,
+          title: l10n.micPermissionTitle,
+          description: l10n.micPermissionDesc,
+          onAllow: () async {
+            Navigator.pop(context);
+            final result = await Permission.microphone.request();
+            if (result.isGranted) {
+              await _startListening();
+            }
+          },
+          onDeny: () => Navigator.pop(context),
+        ),
+      );
+      return;
+    }
+
+    await _startListening();
+  }
+
+  Future<void> _startListening() async {
+    if (_isListening) {
+      await _stopListening();
+      return;
+    }
+
+    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+    final localeId = _voiceService.speechLocaleForLanguage(prefs.language);
+
+    final available = await _voiceService.startListening(
+      localeId: localeId,
+      onResult: (recognized) {
+        if (!mounted) return;
+        setState(() {
+          _controller.text = recognized;
+          _canSend = recognized.trim().isNotEmpty;
+        });
+      },
+      onFinalResult: (isFinal) async {
+        if (!mounted) return;
+        await _stopListening();
+        if (isFinal && _controller.text.trim().isNotEmpty) {
+          _submit(_controller.text);
+        }
+      },
+    );
+
+    if (!available) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 3),
+          content: Text(
+            AppLocalizations.of(context)?.micPermissionDesc ??
+                'Unable to start voice recognition.',
+          ),
+        ),
+      );
+    } else {
+      setState(() {
+        _isListening = true;
+      });
+    }
+  }
+
+  Future<void> _stopListening() async {
+    await _voiceService.stopListening();
+    if (!mounted) return;
+    setState(() {
+      _isListening = false;
+    });
+  }
+
+  void _toggleVoicePlayback() {
+    setState(() => _voicePlaybackEnabled = !_voicePlaybackEnabled);
+  }
+
+  void _requestHumanSupport() {
+    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+    final isArabic = prefs.language == 'ar';
+    final requestName = isArabic ? 'زائر' : 'Visitor';
+    final contextData = ChatContextBuilder.build(
+      context,
+      screen: widget.screen,
+      exhibitId: widget.currentExhibitId,
+      userQuestion: '',
+    );
+    final initialMessages = _chatProvider.messages.map((message) {
+      final sender = message.isUser ? SupportSender.user : SupportSender.assistant;
+      final text = message.kind == MessageKind.text ? message.text : message.cardTitle ?? '';
+      return SupportMessage(
+        id: DateTime.now().microsecondsSinceEpoch.toString(),
+        sender: sender,
+        text: text,
+        timestamp: message.timestamp,
+      );
+    }).toList();
+
+    _supportService.createRequest(
+      requesterId: 'visitor_${DateTime.now().millisecondsSinceEpoch}',
+      requesterName: requestName,
+      screen: widget.screen,
+      contextSummary: contextData.toString(),
+      initialMessages: initialMessages,
+    );
+
+    _addMessage(ChatMessageModel.card(
+      id: _id(),
+      isUser: false,
+      timestamp: DateTime.now(),
+      cardTitle: isArabic ? 'تم طلب الدعم البشري' : 'Human support requested',
+      cardItems: isArabic
+          ? ['سيرد عليك ممثل الخدمة البشرية قريبًا جدًا.']
+          : ['A human representative will respond shortly.'],
+    ));
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 2),
+        content: Text(
+          AppLocalizations.of(context)?.humanSupportAck ??
+              'Your human support request is sent.',
+        ),
+      ),
+    );
+  }
+
+  void _submitQuickQuestion(String query) {
+    _showHelperPanel = false;
+    _submit(query);
+  }
+
+  void _speakAssistantReply(String text) {
+    if (!_voicePlaybackEnabled) return;
+    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+    _voiceService.speak(text, prefs.language);
+  }
+
   void _submit(String text) {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return;
@@ -501,11 +688,19 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       ),
     );
     _conversationMemory.addUserMessage(trimmed);
+
+    final isSupportRequest = _assistantService.isHumanSupportRequest(trimmed);
     setState(() {
       _canSend = false;
-      _isTyping = true;
+      _isTyping = isSupportRequest;
       _showHelperPanel = false;
     });
+
+    if (isSupportRequest) {
+      _requestHumanSupport(userQuestion: trimmed);
+      setState(() => _isTyping = false);
+      return;
+    }
 
     final contextData = ChatContextBuilder.build(
       context,
@@ -514,21 +709,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       userQuestion: trimmed,
     );
 
-    // Determine delay based on intent complexity
-    // Simple intents (greeting, tickets, hours, events) = fast (200ms)
-    // Complex intents (exhibit explanations) = moderate (400ms)
-    final normalized = trimmed.toLowerCase().replaceAll(RegExp(r'[\W_]'), ' ');
-    final isSimpleIntent = 
-        RegExp(r'\b(hi|hello|hey|ticket|hour|event|┘à╪▒╪¡╪¿╪º|╪¬╪░╪º┘â╪▒|╪│╪º╪╣╪º╪¬|┘ü╪╣╪º┘ä┘è╪º╪¬)\b').hasMatch(normalized) ||
-        RegExp(r'\b(╪º┘ä╪│┘ä╪º┘à|╪º┘ç┘ä╪º|╪│╪╣╪▒|╪º┘ä╪»╪«┘ê┘ä|┘à┘ê╪º╪╣┘è╪»|┘ü╪╣╪º┘ä┘è╪º╪¬)\b').hasMatch(normalized);
-    
-    final delay = isSimpleIntent 
-        ? const Duration(milliseconds: 200)
-        : const Duration(milliseconds: 400);
-
-    Future.delayed(delay, () {
+    final delay = const Duration(milliseconds: 80);
+    Future.delayed(delay, () async {
       if (!mounted) return;
-      final response = _assistantService.generateAnswer(
+      final response = await _assistantService.generateAnswer(
         question: trimmed,
         context: contextData,
       );
@@ -536,7 +720,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       setState(() => _isTyping = false);
       _typeBotMessage(response);
     });
-
   }
 
   void _typeBotMessage(String fullText) {
@@ -549,9 +732,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     );
     _addMessage(botMsg);
     int index = 0;
-    _typeTimer = Timer.periodic(const Duration(milliseconds: 20), (t) {
+    _typeTimer = Timer.periodic(const Duration(milliseconds: 8), (t) {
       if (!mounted || index >= fullText.length) {
         t.cancel();
+        _speakAssistantReply(fullText);
         return;
       }
       final last = _chatProvider.lastMessage;
@@ -572,9 +756,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   @override
   void dispose() {
     _typeTimer?.cancel();
+    _voiceService.stopListening();
+    _voiceService.stopSpeaking();
     _controller.dispose();
     _scroll.dispose();
-    _popupAnim.dispose();
     super.dispose();
   }
 
@@ -635,81 +820,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           child: Row(
             children: [
               IconButton(
-                onPressed: () async {
-                  if (kIsWeb) {
-                    // Web: Show honest future feature message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 3),
-                      content: Text(
-                        isArabic
-                            ? 'إدخال صوتي قريباً'
-                            : 'Voice input coming soon',
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      ),
-                    );
-                    return;
-                  }
-                  
-                  // Mobile: Request permission or show status
-                  final status = await Permission.microphone.status;
-                  
-                  if (status.isDenied && mounted) {
-                    // Permission not yet requested
-                    showDialog(
-                      context: context,
-                      barrierDismissible: false,
-                      builder: (context) => BrandedPermissionDialog(
-                        icon: Icons.mic_none_rounded,
-                        title: l10n.micPermissionTitle,
-                        description: l10n.micPermissionDesc,
-                        onAllow: () async {
-                          Navigator.pop(context);
-                          final result = await Permission.microphone.request();
-                          if (mounted && result.isGranted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                duration: const Duration(seconds: 2),
-                                content: Text(isArabic
-                                    ? '╪º┘ä╪Ñ╪»╪«╪º┘ä ╪º┘ä╪╡┘ê╪¬┘è ┘é╪▒┘è╪¿╪º┘ï'
-                                    : 'Voice input coming soon'),
-                              ),
-                            );
-                          }
-                        },
-                        onDeny: () => Navigator.pop(context),
-                      ),
-                    );
-                  } else if (status.isGranted && mounted) {
-                    // Permission granted - show future feature message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 2),
-                        content: Text(
-                          isArabic
-                              ? '╪º┘ä╪Ñ╪»╪«╪º┘ä ╪º┘ä╪╡┘ê╪¬┘è ┘é╪▒┘è╪¿╪º┘ï'
-                              : 'Voice input coming soon',
-                        ),
-                      ),
-                    );
-                  } else if (status.isPermanentlyDenied && mounted) {
-                    // Permission permanently denied
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 3),
-                        content: Text(
-                          isArabic
-                              ? 'الميكروفون معطّل. يرجى تفعيله في الإعدادات.'
-                              : 'Microphone disabled. Please enable it in settings',
-                        ),
-                      ),
-                    );
-                  }
-                },
-                icon: const Icon(
-                  Icons.mic_none_rounded,
-                  color: AppColors.primaryGold,
+                onPressed: _handleMicTap,
+                icon: Icon(
+                  _isListening ? Icons.mic : Icons.mic_none_rounded,
+                  color: _isListening ? AppColors.primaryGold : AppColors.primaryGold,
                 ),
               ),
               Expanded(
@@ -765,63 +879,87 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   ),
                 ),
               ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: _toggleVoicePlayback,
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: _voicePlaybackEnabled
+                        ? AppColors.primaryGold.withOpacity(0.22)
+                        : AppColors.darkSurface.withOpacity(0.4),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    _voicePlaybackEnabled ? Icons.volume_up : Icons.volume_off,
+                    color: _voicePlaybackEnabled
+                        ? AppColors.primaryGold
+                        : Colors.white70,
+                    size: 20,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
+        if (_isListening)
+          Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 4),
+            child: Row(
+              children: [
+                const Icon(Icons.hearing, size: 16, color: AppColors.primaryGold),
+                const SizedBox(width: 8),
+                Text(
+                  isArabic ? 'يستمع الدليل للصوت...' : 'Listening for your question...',
+                  style: AppTextStyles.metadata(context).copyWith(
+                    color: AppColors.primaryGold,
+                  ),
+                ),
+              ],
+            ),
+          ),
         Padding(
           padding: const EdgeInsets.only(top: 8, bottom: 4),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                key: _infoToggleKey,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.info_outline,
-                      size: 20,
-                      color: AppColors.primaryGold,
-                    ),
-                    onPressed: () => setState(() => _showHelperPanel = !_showHelperPanel),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    isArabic ? 'المزيد من المعلومات' : 'More info',
-                    style: AppTextStyles.metadata(context).copyWith(
-                      color: AppColors.primaryGold,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-              TextButton.icon(
-                icon: const Icon(Icons.support_agent_outlined, size: 18),
-                label: Text(
-                  isArabic ? 'أحتاج مساعدة بشرية' : 'Request live human support',
-                  style: AppTextStyles.metadata(context).copyWith(
-                    color: AppColors.primaryGold,
+              Expanded(
+                child: CompositedTransformTarget(
+                  link: _infoLink,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          Icons.info_outline,
+                          size: 20,
+                          color: AppColors.primaryGold,
+                        ),
+                        onPressed: () => setState(() => _showHelperPanel = !_showHelperPanel),
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        isArabic ? 'المزيد من المعلومات' : 'More info',
+                        style: AppTextStyles.metadata(context).copyWith(
+                          color: AppColors.primaryGold,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                onPressed: () {
-                  _addMessage(ChatMessageModel.card(
-                    id: _id(),
-                    isUser: false,
-                    timestamp: DateTime.now(),
-                    cardTitle: isArabic ? 'طلب الدعم البشري' : 'Human support requested',
-                    cardItems: isArabic
-                        ? ['سيرد عليك ممثل الخدمة البشرية قريباً جداً']
-                        : ['A human representative will respond shortly.'],
-                  ));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      duration: const Duration(seconds: 2),
-                      content: Text(isArabic
-                          ? 'تم إرسال طلب المساعدة إلى الفريق.'
-                          : 'Your human support request is sent.'),
+              ),
+              Flexible(
+                child: TextButton.icon(
+                  icon: const Icon(Icons.support_agent_outlined, size: 18),
+                  label: Text(
+                    isArabic ? 'أحتاج مساعدة بشرية' : 'Request live human support',
+                    style: AppTextStyles.metadata(context).copyWith(
+                      color: AppColors.primaryGold,
                     ),
-                  );
-                },
+                  ),
+                  onPressed: _requestHumanSupport,
+                ),
               ),
             ],
           ),
@@ -829,9 +967,23 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       ],
     );
 
-    final helperText = isArabic
-        ? 'يمكنك السؤال عن التذاكر والمواعيد\nوالفعاليات أو المعروضات.'
-        : 'You can ask about tickets, hours,\nevents, or exhibits.';
+    final helperItems = isArabic
+        ? {
+            'التذاكر': 'ما أسعار التذاكر وأنواعها؟',
+            'المواعيد': 'ما هي أوقات عمل المتحف اليوم؟',
+            'الفعاليات': 'ما الفعاليات المتاحة اليوم؟',
+            'المدة': 'كم تستغرق الزيارة عادة؟',
+            'الاتجاهات': 'كيف أصل إلى المعرض التالي؟',
+            'إمكانية الوصول': 'هل هناك وسائل وصول لذوي الاحتياجات الخاصة؟',
+          }
+        : {
+            'Tickets': 'Tell me about ticket prices and types.',
+            'Hours': 'What are today\'s opening hours?',
+            'Events': 'What events are happening today?',
+            'Duration': 'How long does a visit usually take?',
+            'Directions': 'How do I get to the next exhibit?',
+            'Accessibility': 'What accessibility support is available?',
+          };
 
     final contentWithFloatingHelper = Stack(
       clipBehavior: Clip.none,
@@ -846,31 +998,68 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             ),
           ),
         if (_showHelperPanel)
-          Positioned(
-            left: 16,
-            bottom: 92,
-            child: Container(
-              width: math.min(MediaQuery.of(context).size.width * 0.6, 260),
-              decoration: BoxDecoration(
-                color: AppColors.cinematicCard,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: AppColors.primaryGold.withOpacity(0.25)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 8,
-                    offset: const Offset(0, 3),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              child: Text(
-                helperText,
-                style: AppTextStyles.bodyPrimary(context).copyWith(
-                  color: Colors.white,
-                  fontSize: 13,
+          CompositedTransformFollower(
+            link: _infoLink,
+            showWhenUnlinked: false,
+            targetAnchor: isArabic ? Alignment.bottomRight : Alignment.bottomLeft,
+            followerAnchor: isArabic ? Alignment.topRight : Alignment.topLeft,
+            offset: const Offset(0, -12),
+            child: Material(
+              color: Colors.transparent,
+              child: Container(
+                width: math.min(MediaQuery.of(context).size.width * 0.72, 280),
+                decoration: BoxDecoration(
+                  color: AppColors.cinematicCard,
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(color: AppColors.primaryGold.withOpacity(0.25)),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.25),
+                      blurRadius: 16,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-                textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                child: Column(
+                  crossAxisAlignment: isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      isArabic ? 'مواضيع سريعة' : 'Quick help topics',
+                      style: AppTextStyles.titleMedium(context).copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      alignment: isArabic ? WrapAlignment.end : WrapAlignment.start,
+                      children: helperItems.entries.map((entry) {
+                        return InkWell(
+                          onTap: () => _submitQuickQuestion(entry.value),
+                          borderRadius: BorderRadius.circular(18),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryGold.withOpacity(0.18),
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                            child: Text(
+                              entry.key,
+                              style: AppTextStyles.bodyPrimary(context).copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

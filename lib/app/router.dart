@@ -14,6 +14,8 @@ import '../screens/search/search_screen.dart';
 import '../screens/tour/tour_progress.dart';
 import '../screens/tour/live_tour_screen.dart';
 import '../screens/tour/visit_summary_screen.dart';
+import '../screens/support/support_conversation_screen.dart';
+import '../screens/support/support_inbox_screen.dart';
 
 import '../screens/tickets/ticket_screen.dart';
 import '../screens/tickets/my_tickets_screen.dart';
@@ -41,6 +43,8 @@ class AppRoutes {
   static const String chat = '/chat';
   static const String quiz = '/quiz';
   static const String search = '/search';
+  static const String supportInbox = '/support_inbox';
+  static const String supportConversation = '/support_conversation';
 
   static const String progress = '/progress';
   static const String liveTour = '/live_tour';
@@ -77,6 +81,19 @@ class AppRoutes {
       chat: (context) => const ChatScreen(),
       quiz: (context) => const QuizScreen(),
       search: (context) => const SearchScreen(),
+      supportInbox: (context) => const SupportInboxScreen(),
+      supportConversation: (context) {
+        final args = ModalRoute.of(context)?.settings.arguments;
+        String? requestId;
+        if (args is String) {
+          requestId = args;
+        } else if (args is Map<String, dynamic>) {
+          requestId = args['requestId'] as String?;
+        }
+        return SupportConversationScreen(
+          requestId: requestId,
+        );
+      },
 
       progress: (context) => const TourProgressScreen(),
       liveTour: (context) => const LiveTourScreen(),

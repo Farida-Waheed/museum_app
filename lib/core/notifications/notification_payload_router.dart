@@ -79,8 +79,13 @@ class NotificationPayloadRouter {
     }
   }
 
-  /// Get route string for notification type
+  /// Get route string for notification type.
+  /// If a payload explicitly contains a targetRoute, it takes precedence.
   static String _getRouteForNotificationType(NotificationPayload payload) {
+    if (payload.targetRoute != null && payload.targetRoute!.isNotEmpty) {
+      return payload.targetRoute!;
+    }
+
     switch (payload.type) {
       // Tour Flow
       case NotificationType.tourStartingSoon:

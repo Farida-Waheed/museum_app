@@ -102,6 +102,7 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
       title: (isArabic ? "خريطة المتحف" : "Museum Map").toUpperCase(),
       subHeader: const RobotStatusBanner(),
       bottomNavigationBar: const BottomNav(currentIndex: 1),
+      floatingActionButton: const AskTheGuideButton(screen: 'map'),
       body: Column(
         children: [
           // Header Info

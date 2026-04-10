@@ -69,7 +69,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return AppMenuShell(
       title: isArabic ? "البحث في المعروضات" : "Search Exhibits",
       backgroundColor: AppColors.darkBackground,
-      floatingActionButton: null,
+      floatingActionButton: const AskTheGuideButton(screen: 'search'),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
