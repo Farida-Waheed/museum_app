@@ -21,7 +21,7 @@ class ExhibitListScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return AppMenuShell(
-      title: l10n.exhibits,
+      title: l10n.exhibits.toUpperCase(),
       backgroundColor: AppColors.darkBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
       body: ListView.builder(
@@ -105,9 +105,8 @@ class _ExhibitListTile extends StatelessWidget {
                   children: [
                     Text(
                       exhibit.getName(prefs.language),
-                      style: AppTextStyles.cardTitle(context).copyWith(
+                      style: AppTextStyles.displayArtifactTitle(context).copyWith(
                         fontSize: 16,
-                        fontWeight: FontWeight.w900,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -119,10 +118,7 @@ class _ExhibitListTile extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           l10n.mainGallery,
-                          style: AppTextStyles.helper(context).copyWith(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: AppTextStyles.metadata(context),
                         ),
                       ],
                     ),

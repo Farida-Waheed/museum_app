@@ -34,7 +34,9 @@ class NotificationService {
 
     // High priority can interrupt Low/Medium
     if (notification.priority == AppNotificationPriority.high) {
-      if (_isShowing && _currentShowing != null && _currentShowing!.priority != AppNotificationPriority.high) {
+      if (_isShowing &&
+          _currentShowing != null &&
+          _currentShowing!.priority != AppNotificationPriority.high) {
         // Interrupt current
         if (_currentEntry != null) {
           _dismissCurrent(context, immediate: true);
@@ -85,24 +87,30 @@ class NotificationService {
 
   void _showSnackBar(BuildContext context, AppNotification notification) {
     _isShowing = true;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        backgroundColor: AppColors.cinematicCard,
-        duration: const Duration(seconds: 4),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: AppColors.primaryGold.withOpacity(0.3)),
-        ),
-        content: _NotificationContent(notification: notification, isDark: true),
-      ),
-    ).closed.then((_) {
-      if (_currentShowing == notification) {
-        _isShowing = false;
-        _currentShowing = null;
-        _processQueue(context);
-      }
-    });
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
+          SnackBar(
+            backgroundColor: AppColors.cinematicCard,
+            duration: const Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(color: AppColors.primaryGold.withOpacity(0.3)),
+            ),
+            content: _NotificationContent(
+              notification: notification,
+              isDark: true,
+            ),
+          ),
+        )
+        .closed
+        .then((_) {
+          if (_currentShowing == notification) {
+            _isShowing = false;
+            _currentShowing = null;
+            _processQueue(context);
+          }
+        });
   }
 
   void _showQuizModal(BuildContext context, AppNotification notification) {
@@ -117,7 +125,10 @@ class NotificationService {
           if (!taken) {
             final exhibitId = notification.data?['exhibitId'] as String?;
             if (exhibitId != null) {
-              Provider.of<TourProvider>(context, listen: false).deferQuiz(exhibitId);
+              Provider.of<TourProvider>(
+                context,
+                listen: false,
+              ).deferQuiz(exhibitId);
             }
           }
           Navigator.pop(innerContext);
@@ -167,7 +178,8 @@ class _TopBannerWidget extends StatefulWidget {
   State<_TopBannerWidget> createState() => _TopBannerWidgetState();
 }
 
-class _TopBannerWidgetState extends State<_TopBannerWidget> with SingleTickerProviderStateMixin {
+class _TopBannerWidgetState extends State<_TopBannerWidget>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _offsetAnimation;
   late Animation<double> _fadeAnimation;
@@ -215,7 +227,10 @@ class _TopBannerWidgetState extends State<_TopBannerWidget> with SingleTickerPro
                 decoration: BoxDecoration(
                   color: AppColors.cinematicElevated,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.primaryGold.withOpacity(0.5), width: 1.5),
+                  border: Border.all(
+                    color: AppColors.primaryGold.withOpacity(0.5),
+                    width: 1.5,
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.4),
@@ -224,7 +239,10 @@ class _TopBannerWidgetState extends State<_TopBannerWidget> with SingleTickerPro
                     ),
                   ],
                 ),
-                child: _NotificationContent(notification: widget.notification, isDark: true),
+                child: _NotificationContent(
+                  notification: widget.notification,
+                  isDark: true,
+                ),
               ),
             ),
           ),
@@ -238,11 +256,14 @@ class _NotificationContent extends StatelessWidget {
   final AppNotification notification;
   final bool isDark;
 
-  const _NotificationContent({required this.notification, required this.isDark});
+  const _NotificationContent({
+    required this.notification,
+    required this.isDark,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final gold = AppColors.primaryGold;
+    const gold = AppColors.primaryGold;
     return Row(
       children: [
         Container(
@@ -251,7 +272,11 @@ class _NotificationContent extends StatelessWidget {
             color: gold.withOpacity(0.12),
             shape: BoxShape.circle,
           ),
-          child: Icon(notification.icon ?? Icons.notifications_active_rounded, color: gold, size: 24),
+          child: Icon(
+            notification.icon ?? Icons.notifications_active_rounded,
+            color: gold,
+            size: 24,
+          ),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -261,12 +286,19 @@ class _NotificationContent extends StatelessWidget {
             children: [
               Text(
                 notification.title,
-                style: AppTextStyles.body(context).copyWith(fontWeight: FontWeight.w900, color: Colors.white, fontSize: 15, letterSpacing: 0.5),
+                style: AppTextStyles.bodyPrimary(context).copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  fontSize: 15,
+                  letterSpacing: 0.5,
+                ),
               ),
               const SizedBox(height: 2),
               Text(
                 notification.message,
-                style: AppTextStyles.helper(context).copyWith(color: Colors.white.withOpacity(0.7), fontSize: 13),
+                style: AppTextStyles.helper(
+                  context,
+                ).copyWith(color: Colors.white.withOpacity(0.7), fontSize: 13),
               ),
             ],
           ),
@@ -294,7 +326,11 @@ class _QuizModal extends StatelessWidget {
           borderRadius: BorderRadius.circular(28),
           border: Border.all(color: AppColors.primaryGold.withOpacity(0.3)),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.7), blurRadius: 50, spreadRadius: 5),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.7),
+              blurRadius: 50,
+              spreadRadius: 5,
+            ),
           ],
         ),
         child: Column(
@@ -303,9 +339,9 @@ class _QuizModal extends StatelessWidget {
             // Header Area
             Container(
               padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.cinematicElevated,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
               ),
               child: Row(
                 children: [
@@ -315,7 +351,11 @@ class _QuizModal extends StatelessWidget {
                       color: AppColors.primaryGold.withOpacity(0.12),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.quiz_rounded, color: AppColors.primaryGold, size: 28),
+                    child: const Icon(
+                      Icons.quiz_rounded,
+                      color: AppColors.primaryGold,
+                      size: 28,
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -324,15 +364,14 @@ class _QuizModal extends StatelessWidget {
                       children: [
                         Text(
                           notification.title.toUpperCase(),
-                          style: AppTextStyles.sectionTitle(context).copyWith(
-                            fontSize: 13,
-                            letterSpacing: 1.5,
-                          ),
+                          style: AppTextStyles.sectionTitle(
+                            context,
+                          ).copyWith(fontSize: 13, letterSpacing: 1.5),
                         ),
                         const SizedBox(height: 2),
                         Text(
                           "Exhibit: ${notification.data?['location'] ?? 'Artifact'}",
-                          style: AppTextStyles.body(context).copyWith(
+                          style: AppTextStyles.bodyPrimary(context).copyWith(
                             fontSize: 15,
                             fontWeight: FontWeight.bold,
                             color: Colors.white.withOpacity(0.9),
@@ -352,9 +391,9 @@ class _QuizModal extends StatelessWidget {
                 children: [
                   Container(
                     padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: AppColors.cinematicElevated,
-                      borderRadius: const BorderRadius.only(
+                      borderRadius: BorderRadius.only(
                         topRight: Radius.circular(20),
                         bottomLeft: Radius.circular(20),
                         bottomRight: Radius.circular(20),
@@ -362,7 +401,7 @@ class _QuizModal extends StatelessWidget {
                     ),
                     child: Text(
                       notification.message,
-                      style: AppTextStyles.body(context).copyWith(
+                      style: AppTextStyles.bodyPrimary(context).copyWith(
                         fontSize: 15,
                         color: Colors.white.withOpacity(0.85),
                         height: 1.5,
@@ -376,18 +415,31 @@ class _QuizModal extends StatelessWidget {
                     Wrap(
                       spacing: 8,
                       runSpacing: 8,
-                      children: topics.map((t) => Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryGold.withOpacity(0.08),
-                          border: Border.all(color: AppColors.primaryGold.withOpacity(0.2)),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          t,
-                          style: AppTextStyles.helper(context).copyWith(color: AppColors.primaryGold, fontSize: 12, fontWeight: FontWeight.w600),
-                        ),
-                      )).toList(),
+                      children: topics
+                          .map(
+                            (t) => Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryGold.withOpacity(0.08),
+                                border: Border.all(
+                                  color: AppColors.primaryGold.withOpacity(0.2),
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                t,
+                                style: AppTextStyles.helper(context).copyWith(
+                                  color: AppColors.primaryGold,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
                     ),
                 ],
               ),
@@ -406,11 +458,18 @@ class _QuizModal extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryGold,
                         foregroundColor: AppColors.darkInk,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                         elevation: 4,
                         shadowColor: AppColors.primaryGold.withOpacity(0.4),
                       ),
-                      child: Text("TAKE QUIZ NOW", style: AppTextStyles.button(context).copyWith(letterSpacing: 1.2)),
+                      child: Text(
+                        "TAKE QUIZ NOW",
+                        style: AppTextStyles.button(
+                          context,
+                        ).copyWith(letterSpacing: 1.2),
+                      ),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -422,14 +481,16 @@ class _QuizModal extends StatelessWidget {
                       style: TextButton.styleFrom(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
-                          side: BorderSide(color: Colors.white.withOpacity(0.1)),
+                          side: BorderSide(
+                            color: Colors.white.withOpacity(0.1),
+                          ),
                         ),
                       ),
                       child: Text(
                         "LATER / AFTER TOUR",
-                        style: AppTextStyles.button(context).copyWith(
-                          color: Colors.white.withOpacity(0.7),
-                        ),
+                        style: AppTextStyles.button(
+                          context,
+                        ).copyWith(color: Colors.white.withOpacity(0.7)),
                       ),
                     ),
                   ),

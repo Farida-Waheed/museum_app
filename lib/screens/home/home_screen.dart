@@ -14,7 +14,7 @@ import '../../models/user_preferences.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/dialogs/branded_permission_dialog.dart';
-import '../chat/chat_screen.dart';
+import '../../widgets/ask_the_guide_button.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,6 +29,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   double robotX = 140;
   double robotY = 80;
+
+  late final ScrollController _scrollController;
 
   int pageIndex = 0;
   final PageController _pageCtrl = PageController(viewportFraction: 0.85);
@@ -56,6 +58,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    _scrollController = ScrollController();
     exhibits = MockDataService.getAllExhibits();
     news = MockDataService.getAllNews();
 
@@ -70,6 +73,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _pageCtrl.dispose();
     _robotPulseCtrl.dispose();
     _fabPulseCtrl.dispose();
@@ -133,10 +137,58 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     }
   }
 
-  Widget _buildHeroSection(BuildContext context, AppLocalizations l10n) {
+  Widget _buildPinnedTopRow(BuildContext context, AppLocalizations l10n) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final brandStyle = AppTextStyles.brandTitle(context, isDark: isDark);
 
+    return SafeArea(
+      bottom: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+        child: Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+              onPressed: () => AppMenuShell.of(context)?.toggleMenu(),
+            ),
+            Expanded(
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Image.asset(
+                      'assets/icons/ankh.png',
+                      width: 20,
+                      height: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'HORUS-BOT',
+                      style: brandStyle.copyWith(
+                        color: AppColors.primaryGold,
+                        fontSize: 18,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(
+                Icons.qr_code_scanner,
+                color: Colors.white,
+                size: 26,
+              ),
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.qrScan),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeroSection(BuildContext context, AppLocalizations l10n) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -148,11 +200,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Colors.black.withOpacity(0.18),
                 Colors.transparent,
-                Colors.black.withOpacity(0.70),
+                Colors.black.withOpacity(0.45),
+                Colors.black.withOpacity(0.80),
               ],
-              stops: const [0.0, 0.32, 1.0],
+              stops: const [0.0, 0.5, 1.0],
             ),
           ),
           child: Image.asset(
@@ -160,69 +212,33 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             fit: BoxFit.cover,
           ),
         ),
-        SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.menu, color: Colors.white, size: 28),
-                  onPressed: () => AppMenuShell.of(context)?.toggleMenu(),
-                ),
-                Expanded(
-                  child: Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.smart_toy,
-                          color: AppColors.primaryGold,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'HORUS-BOT',
-                          style: brandStyle.copyWith(
-                            color: AppColors.primaryGold,
-                            fontSize: 18,
-                            letterSpacing: 1.2,
-                          ),
-                        ),
-                      ],
+        AnimatedBuilder(
+          animation: _scrollController,
+          builder: (context, child) {
+            final double opacity = (1.0 - (_scrollController.offset / 200)).clamp(0.0, 1.0);
+            return Positioned(
+              left: 24,
+              right: 24,
+              bottom: 150,
+              child: Opacity(
+                opacity: opacity,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.exploreEgypt,
+                      style: AppTextStyles.displayHero(context),
                     ),
-                  ),
+                    const SizedBox(height: 12),
+                    Text(
+                      l10n.followAndDiscover,
+                      style: AppTextStyles.bodySecondary(context),
+                    ),
+                  ],
                 ),
-                IconButton(
-                  icon: const Icon(
-                    Icons.qr_code_scanner,
-                    color: Colors.white,
-                    size: 26,
-                  ),
-                  onPressed: () =>
-                      Navigator.pushNamed(context, AppRoutes.qrScan),
-                ),
-              ],
-            ),
-          ),
-        ),
-        Positioned(
-          left: 24,
-          right: 24,
-          bottom: 150,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.exploreTheMuseum,
-                style: AppTextStyles.heroTitle(context),
               ),
-              const SizedBox(height: 12),
-              Text(
-                l10n.followAndDiscover,
-                style: AppTextStyles.heroSubtitle(context),
-              ),
-            ],
-          ),
+            );
+          },
         ),
         Positioned(
           left: 20,
@@ -280,14 +296,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     );
   }
 
-  void _openChat(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierColor: Colors.black54,
-      builder: (_) => const ChatScreen(isPopup: true),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -301,16 +309,49 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       bottomNavigationBar: const BottomNav(currentIndex: 0),
       floatingActionButton: ScaleTransition(
         scale: _fabScale,
-        child: _HorusFab(
-          onPressed: () => _openChat(context),
-          label: l10n.askTheGuide,
-        ),
+        child: const AskTheGuideButton(),
       ),
       body: Builder(
-        builder: (innerContext) => CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverToBoxAdapter(child: _buildHeroSection(innerContext, l10n)),
+        builder: (innerContext) => Stack(
+          children: [
+            Positioned.fill(
+              child: Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: const Alignment(-0.2, -0.75),
+                        radius: 1.05,
+                        colors: [
+                          AppColors.primaryGold.withOpacity(0.08),
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 1.0],
+                      ),
+                    ),
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.08),
+                          Colors.transparent,
+                          Colors.black.withOpacity(0.10),
+                        ],
+                        stops: const [0.0, 0.45, 1.0],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            CustomScrollView(
+              controller: _scrollController,
+              physics: const BouncingScrollPhysics(),
+              slivers: [
+                SliverToBoxAdapter(child: _buildHeroSection(innerContext, l10n)),
             const SliverToBoxAdapter(child: SizedBox(height: 72)),
             SliverToBoxAdapter(child: _buildSummaryStats(innerContext, l10n)),
             SliverToBoxAdapter(
@@ -321,7 +362,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   children: [
                     Text(
                       l10n.exhibits.toUpperCase(),
-                      style: AppTextStyles.sectionTitle(innerContext),
+                      style: AppTextStyles.displaySectionTitle(innerContext),
                     ),
                     const SizedBox(height: 20),
                     Row(
@@ -364,7 +405,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
                       l10n.recommendedForYou.toUpperCase(),
-                      style: AppTextStyles.sectionTitle(innerContext),
+                        style: AppTextStyles.displaySectionTitle(innerContext),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -436,7 +477,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       children: [
                         Text(
                           l10n.mapPreview.toUpperCase(),
-                          style: AppTextStyles.sectionTitle(innerContext),
+                          style: AppTextStyles.displaySectionTitle(innerContext),
                         ),
                         _LiveBadge(label: l10n.live),
                       ],
@@ -524,7 +565,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                                         ),
                                     child: Text(
                                       l10n.fullView,
-                                      style: AppTextStyles.button(context)
+                                        style: AppTextStyles.buttonLabel(context)
                                           .copyWith(
                                             color: AppColors.primaryGold,
                                             fontSize: 13,
@@ -551,7 +592,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
                       l10n.museumNews.toUpperCase(),
-                      style: AppTextStyles.sectionTitle(innerContext),
+                        style: AppTextStyles.displaySectionTitle(innerContext),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -600,14 +641,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         const SizedBox(width: 14),
                         Text(
                           l10n.didYouKnow.toUpperCase(),
-                          style: AppTextStyles.sectionTitle(innerContext),
+                          style: AppTextStyles.displaySectionTitle(innerContext),
                         ),
                       ],
                     ),
                     const SizedBox(height: 20),
                     Text(
                       l10n.didYouKnowFact,
-                      style: AppTextStyles.body(innerContext).copyWith(
+                      style: AppTextStyles.bodyPrimary(innerContext).copyWith(
                         color: Colors.white,
                         fontSize: 16,
                         height: 1.7,
@@ -618,7 +659,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
-            const SliverToBoxAdapter(child: SizedBox(height: 120)),
+                const SliverToBoxAdapter(child: SizedBox(height: 120)),
+              ],
+            ),
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: _buildPinnedTopRow(innerContext, l10n),
+            ),
           ],
         ),
       ),
@@ -665,21 +714,20 @@ class _NextStopBadgeState extends State<_NextStopBadge> {
               color: AppColors.cinematicElevated,
               borderRadius: BorderRadius.circular(24),
               border: Border.all(
-                color: AppColors.primaryGold.withOpacity(
-                  _isHovered ? 0.25 : 0.15,
-                ),
+                color: AppColors.primaryGold.withOpacity(0.4),
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primaryGold.withOpacity(0.15),
-                  blurRadius: 40,
-                  offset: const Offset(0, 15),
+                  color: AppColors.primaryGold.withOpacity(0.18),
+                  blurRadius: 28,
+                  spreadRadius: 2,
+                  offset: const Offset(0, 10),
                 ),
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
-                  blurRadius: 40,
-                  offset: const Offset(0, 20),
+                  color: Colors.black.withOpacity(0.6),
+                  blurRadius: 50,
+                  offset: const Offset(0, 25),
                 ),
               ],
             ),
@@ -705,15 +753,15 @@ class _NextStopBadgeState extends State<_NextStopBadge> {
                     children: [
                       Text(
                         widget.label,
-                        style: AppTextStyles.sectionTitle(context),
+                        style: AppTextStyles.displaySectionTitle(context),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         widget.location,
-                        style: AppTextStyles.cardTitle(context),
+                        style: AppTextStyles.titleMedium(context),
                       ),
                       const SizedBox(height: 6),
-                      Text(widget.time, style: AppTextStyles.body(context)),
+                      Text(widget.time, style: AppTextStyles.bodyPrimary(context)),
                     ],
                   ),
                 ),
@@ -816,9 +864,9 @@ class _FeatureCardState extends State<_FeatureCard>
                         Expanded(
                           child: Text(
                             widget.title,
-                            style: AppTextStyles.cardTitle(
+                            style: AppTextStyles.titleMedium(
                               context,
-                            ).copyWith(fontSize: 17),
+                            ),
                           ),
                         ),
                       ],
@@ -896,14 +944,14 @@ class _HighlightCardState extends State<_HighlightCard> {
                       children: [
                         Text(
                           widget.title,
-                          style: AppTextStyles.cardTitle(context),
+                          style: AppTextStyles.displayArtifactTitle(context),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           widget.subtitle,
-                          style: AppTextStyles.body(
+                          style: AppTextStyles.bodySecondary(
                             context,
-                          ).copyWith(color: Colors.white70),
+                          ),
                         ),
                       ],
                     ),
@@ -963,7 +1011,7 @@ class _NewsCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               item.title,
-              style: AppTextStyles.cardTitle(context),
+              style: AppTextStyles.titleMedium(context),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -972,7 +1020,7 @@ class _NewsCard extends StatelessWidget {
               children: [
                 Text(
                   'Read More',
-                  style: AppTextStyles.button(
+                  style: AppTextStyles.buttonLabel(
                     context,
                   ).copyWith(color: AppColors.primaryGold, fontSize: 12),
                 ),
@@ -1019,12 +1067,12 @@ class _StatCard extends StatelessWidget {
           const Spacer(),
           Text(
             value,
-            style: AppTextStyles.heroSubtitle(
+            style: AppTextStyles.titleLarge(
               context,
-            ).copyWith(fontSize: 20, fontWeight: FontWeight.w800),
+            ),
           ),
           const SizedBox(height: 4),
-          Text(label, style: AppTextStyles.body(context)),
+          Text(label, style: AppTextStyles.bodyPrimary(context)),
         ],
       ),
     );
@@ -1112,7 +1160,7 @@ class _LegendDot extends StatelessWidget {
       children: [
         Icon(Icons.circle, size: 9, color: color),
         const SizedBox(width: 10),
-        Text(label, style: AppTextStyles.body(context).copyWith(fontSize: 13)),
+        Text(label, style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 13)),
       ],
     );
   }
@@ -1139,122 +1187,4 @@ class _GridPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
-
-class _HorusFab extends StatefulWidget {
-  final String label;
-  final VoidCallback onPressed;
-
-  const _HorusFab({required this.label, required this.onPressed});
-
-  @override
-  State<_HorusFab> createState() => _HorusFabState();
-}
-
-class _HorusFabState extends State<_HorusFab>
-    with SingleTickerProviderStateMixin {
-  bool _pressed = false;
-  bool _isHovered = false;
-
-  late final AnimationController _glowCtrl = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 2),
-  )..repeat(reverse: true);
-
-  @override
-  void dispose() {
-    _glowCtrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return AnimatedBuilder(
-      animation: _glowCtrl,
-      builder: (context, child) {
-        return MouseRegion(
-          onEnter: (_) => setState(() => _isHovered = true),
-          onExit: (_) => setState(() => _isHovered = false),
-          cursor: SystemMouseCursors.click,
-          child: AnimatedScale(
-            scale: _pressed ? 0.96 : (_isHovered ? 1.02 : 1.0),
-            duration: const Duration(milliseconds: 200),
-            child: GestureDetector(
-              onTapDown: (_) => setState(() => _pressed = true),
-              onTapUp: (_) => setState(() => _pressed = false),
-              onTapCancel: () => setState(() => _pressed = false),
-              onTap: widget.onPressed,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                decoration: BoxDecoration(
-                  color: AppColors.cinematicElevated,
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(
-                    color: AppColors.primaryGold.withOpacity(
-                      0.6 + (_glowCtrl.value * 0.4),
-                    ),
-                    width: _isHovered ? 1.8 : 1.2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.6),
-                      blurRadius: 24,
-                      offset: const Offset(0, 12),
-                    ),
-                    BoxShadow(
-                      color: AppColors.primaryGold.withOpacity(
-                        0.15 + (_glowCtrl.value * 0.25),
-                      ),
-                      blurRadius: _isHovered ? 25 : 18,
-                      spreadRadius: _isHovered ? 5 : 3,
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 28,
-                  vertical: 20,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.auto_awesome,
-                      color: AppColors.primaryGold,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 16),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          widget.label,
-                          style: AppTextStyles.button(context).copyWith(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          l10n.alwaysAvailable,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.6),
-                            fontSize: 12,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
 }

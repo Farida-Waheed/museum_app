@@ -7,6 +7,9 @@ import 'models/user_preferences.dart';
 import 'models/exhibit_provider.dart';
 import 'models/tour_provider.dart';
 import 'models/chat_provider.dart';
+import 'core/notifications/notification_service.dart';
+import 'core/notifications/notification_permission_service.dart';
+import 'core/notifications/notification_trigger_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +18,22 @@ Future<void> main() async {
   await initializeDateFormatting('ar', null);
 
   final initialPrefs = await UserPreferencesModel.getInitialPrefs();
+
+  // Initialize notification services
+  final notificationService = NotificationService();
+  final notificationTriggerService = NotificationTriggerService();
+  final notificationPermissionService = NotificationPermissionService();
+
+  await notificationService.initialize(
+    onNotificationTapped: (payload) {
+      // Get the navigator key from the app context
+      // This will be handled by the NotificationPayloadRouter when context is available
+      // For now, we'll defer this to the app's navigation system
+    },
+  );
+
+  await notificationTriggerService.initialize();
+  await notificationPermissionService.initialize();
 
   runApp(
     MultiProvider(
@@ -29,6 +48,9 @@ Future<void> main() async {
             initialHasSeenPermissionsPrompt:
                 initialPrefs['hasSeenPermissionsPrompt'],
             initialHasSeenLocationPrompt: initialPrefs['hasSeenLocationPrompt'],
+            initialHasSeenNotificationPermissionPrompt:
+                initialPrefs['hasSeenNotificationPermissionPrompt'],
+            initialNotificationsEnabled: initialPrefs['notificationsEnabled'],
             skipLoad: true,
           ),
         ),

@@ -59,8 +59,11 @@ class _SideMenu extends StatelessWidget {
                           const SizedBox(width: 16),
                           Text(
                             l10n.appTitle.toUpperCase(),
-                            style: AppTextStyles.brandTitle(context, isDark: isDark).copyWith(
-                              fontSize: 24,
+                            style: AppTextStyles.navLabel(context).copyWith(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w900,
+                              color: isDark ? Colors.white : AppColors.darkInk,
+                              letterSpacing: 2.0,
                             ),
                           ),
                         ],
@@ -86,14 +89,14 @@ class _SideMenu extends StatelessWidget {
                               children: [
                                 Text(
                                   l10n.guestUser,
-                                  style: AppTextStyles.cardTitle(context).copyWith(
+                                  style: AppTextStyles.titleMedium(context).copyWith(
                                     fontSize: 18,
                                     color: isDark ? Colors.white : AppColors.darkInk,
                                   ),
                                 ),
                                 Text(
                                   l10n.exploreTheMuseum,
-                                  style: AppTextStyles.body(context),
+                                  style: AppTextStyles.bodyPrimary(context),
                                 ),
                               ],
                             ),
@@ -218,7 +221,7 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(28, 24, 24, 12),
       child: Text(
         label.toUpperCase(),
-        style: AppTextStyles.sectionTitle(context).copyWith(
+        style: AppTextStyles.displaySectionTitle(context).copyWith(
           fontSize: 11,
           letterSpacing: 1.5,
           color: AppColors.primaryGold.withOpacity(0.7),
@@ -260,9 +263,9 @@ class _MenuItem extends StatelessWidget {
         ),
         title: Text(
           label,
-          style: AppTextStyles.body(context).copyWith(
+          style: AppTextStyles.bodyPrimary(context).copyWith(
             fontSize: 16,
-            fontWeight: selected ? FontWeight.bold : FontWeight.w500,
+            fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
             color: selected
                 ? AppColors.primaryGold
                 : (isDark ? Colors.white : AppColors.darkInk),
@@ -483,13 +486,13 @@ class AppMenuShellState extends State<AppMenuShell>
                                             ),
                                             const SizedBox(width: 16),
                                             Text(
-                                              widget.title ?? l10n.appTitle,
-                                              style: AppTextStyles.brandTitle(
+                                              (widget.title ?? l10n.appTitle).toUpperCase(),
+                                              style: AppTextStyles.displayScreenTitle(
                                                 innerContext,
-                                                isDark: isDark,
                                               ).copyWith(
                                                 fontSize: 18,
                                                 color: AppColors.primaryGold,
+                                                letterSpacing: 1.2,
                                               ),
                                             ),
                                           ],

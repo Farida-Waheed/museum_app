@@ -56,7 +56,7 @@ class PremiumDialog extends StatelessWidget {
                       Expanded(
                         child: Text(
                           title,
-                          style: AppTextStyles.cardTitle(context).copyWith(
+                          style: AppTextStyles.titleLarge(context).copyWith(
                             color: Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.w900,

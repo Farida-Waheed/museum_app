@@ -107,7 +107,7 @@ abstract class AppLocalizations {
   /// No description provided for @exploreEgypt.
   ///
   /// In en, this message translates to:
-  /// **'Explore Egypt With Horus'**
+  /// **'Explore Egypt With Horus-Bot'**
   String get exploreEgypt;
 
   /// No description provided for @nextStop.
@@ -182,6 +182,12 @@ abstract class AppLocalizations {
   /// **'Always available'**
   String get alwaysAvailable;
 
+  /// No description provided for @discoverStoryBehind.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover the story behind everything'**
+  String get discoverStoryBehind;
+
   /// No description provided for @aboutHorusBot.
   ///
   /// In en, this message translates to:
@@ -205,6 +211,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Guest User'**
   String get guestUser;
+
+  /// No description provided for @chatHeaderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus Guide'**
+  String get chatHeaderTitle;
+
+  /// No description provided for @chatHeaderSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask your museum questions in a premium way.'**
+  String get chatHeaderSubtitle;
+
+  /// No description provided for @voiceInputNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice input is not available on this platform yet.'**
+  String get voiceInputNotAvailable;
+
+  /// No description provided for @micPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone'**
+  String get micPermissionTitle;
+
+  /// No description provided for @micPermissionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Used for voice interaction and questions to Horus.'**
+  String get micPermissionDesc;
+
+  /// No description provided for @micPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone permission was denied.'**
+  String get micPermissionDenied;
+
+  /// No description provided for @micPermissionSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enable microphone access from Settings.'**
+  String get micPermissionSettings;
+
+  /// No description provided for @micListening.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening... Speak now.'**
+  String get micListening;
+
+  /// No description provided for @moreInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'More info'**
+  String get moreInfo;
+
+  /// No description provided for @moreInfoText.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask about tickets, opening hours, events, exhibits, or directions.'**
+  String get moreInfoText;
+
+  /// No description provided for @humanSupportLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Request live human support'**
+  String get humanSupportLabel;
+
+  /// No description provided for @humanSupportAck.
+  ///
+  /// In en, this message translates to:
+  /// **'Live human support request received.'**
+  String get humanSupportAck;
+
+  /// No description provided for @chatLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus is thinking...'**
+  String get chatLoading;
+
+  /// No description provided for @chatInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the Guide about anything...'**
+  String get chatInputHint;
 
   /// No description provided for @exploreMuseum.
   ///
@@ -830,16 +920,10 @@ abstract class AppLocalizations {
   /// **'Your data is anonymous and used only for navigation.'**
   String get dataReassurance;
 
-  /// No description provided for @introTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'The Egyptian Museums'**
-  String get introTitle;
-
   /// No description provided for @introSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Explore Egyptian museums with Horus-Bot.'**
+  /// **'Discover ancient wonders with Horus-Bot'**
   String get introSubtitle;
 
   /// No description provided for @introThe.
@@ -875,43 +959,43 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding1Desc.
   ///
   /// In en, this message translates to:
-  /// **'Your smart guide to the museum. Navigate exhibits, follow the robot, and discover hidden stories.'**
+  /// **'Step into a world of ancient wonders, where every artifact has a story to tell.'**
   String get onboarding1Desc;
 
   /// No description provided for @onboarding2Title.
   ///
   /// In en, this message translates to:
-  /// **'Meet the Guide'**
+  /// **'Your Personal Guide'**
   String get onboarding2Title;
 
   /// No description provided for @onboarding2Desc.
   ///
   /// In en, this message translates to:
-  /// **'Your intelligent museum guide. Ask questions, listen to explanations, and explore during your visit.'**
+  /// **'Ask questions, hear stories, and explore the museum in a smarter, more immersive way.'**
   String get onboarding2Desc;
 
   /// No description provided for @onboarding3Title.
   ///
   /// In en, this message translates to:
-  /// **'Guided Tour Mode'**
+  /// **'Explore Seamlessly'**
   String get onboarding3Title;
 
   /// No description provided for @onboarding3Desc.
   ///
   /// In en, this message translates to:
-  /// **'Automatic guidance through exhibits. Stay connected with Horus-Bot throughout your journey.'**
+  /// **'Navigate through exhibits with ease and stay connected to your guide throughout your journey.'**
   String get onboarding3Desc;
 
   /// No description provided for @onboarding4Title.
   ///
   /// In en, this message translates to:
-  /// **'Explore & Learn'**
+  /// **'Discover More'**
   String get onboarding4Title;
 
   /// No description provided for @onboarding4Desc.
   ///
   /// In en, this message translates to:
-  /// **'Discover artifacts, ask questions, and enjoy interactive museum quizzes.'**
+  /// **'Uncover hidden stories, interact with exhibits, and make every visit unforgettable.'**
   String get onboarding4Desc;
 
   /// No description provided for @next.
@@ -1442,23 +1526,377 @@ abstract class AppLocalizations {
   /// **'Needed for scanning QR tickets and future AR features.'**
   String get cameraPermissionDesc;
 
-  /// No description provided for @micPermissionTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Microphone'**
-  String get micPermissionTitle;
-
-  /// No description provided for @micPermissionDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Used for voice interaction and questions to Horus.'**
-  String get micPermissionDesc;
-
   /// No description provided for @continueBtn.
   ///
   /// In en, this message translates to:
   /// **'CONTINUE TO HOME'**
   String get continueBtn;
+
+  /// No description provided for @benhaUniversity.
+  ///
+  /// In en, this message translates to:
+  /// **'Benha University'**
+  String get benhaUniversity;
+
+  /// No description provided for @facultyEngineeringShoubra.
+  ///
+  /// In en, this message translates to:
+  /// **'Faculty of Engineering at Shoubra'**
+  String get facultyEngineeringShoubra;
+
+  /// No description provided for @computerCommunicationProgram.
+  ///
+  /// In en, this message translates to:
+  /// **'Computer & Communication Engineering Program'**
+  String get computerCommunicationProgram;
+
+  /// No description provided for @drMohamedHussein.
+  ///
+  /// In en, this message translates to:
+  /// **'Dr. Mohamed Hussein'**
+  String get drMohamedHussein;
+
+  /// Quiz result message
+  ///
+  /// In en, this message translates to:
+  /// **'You scored {score} out of {total}'**
+  String youScored(int score, int total);
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'RETRY'**
+  String get retry;
+
+  /// No description provided for @doneButton.
+  ///
+  /// In en, this message translates to:
+  /// **'DONE'**
+  String get doneButton;
+
+  /// No description provided for @guestVisitor.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest Visitor'**
+  String get guestVisitor;
+
+  /// No description provided for @englishLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get englishLanguage;
+
+  /// No description provided for @arabicLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'العربية'**
+  String get arabicLanguage;
+
+  /// No description provided for @webPermissionsNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Permissions are managed by your browser settings on web.'**
+  String get webPermissionsNote;
+
+  /// No description provided for @ticketConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket confirmation'**
+  String get ticketConfirmation;
+
+  /// No description provided for @scanResult.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan result'**
+  String get scanResult;
+
+  /// No description provided for @feedbackSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback submitted'**
+  String get feedbackSubmitted;
+
+  /// No description provided for @horusBotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot'**
+  String get horusBotTitle;
+
+  /// No description provided for @version1.
+  ///
+  /// In en, this message translates to:
+  /// **'Version 1.0'**
+  String get version1;
+
+  /// No description provided for @smartAutonomousGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Autonomous Museum Guide'**
+  String get smartAutonomousGuide;
+
+  /// No description provided for @projectDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot is a smart autonomous museum guide robot designed to enhance museum visitor experience through autonomous navigation, multilingual interaction, and a companion mobile application.'**
+  String get projectDescription;
+
+  /// No description provided for @projectDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Project Description'**
+  String get projectDescriptionLabel;
+
+  /// No description provided for @technologiesUsedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Technologies Used'**
+  String get technologiesUsedLabel;
+
+  /// No description provided for @developedByLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Developed By'**
+  String get developedByLabel;
+
+  /// No description provided for @teamLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Team'**
+  String get teamLabel;
+
+  /// No description provided for @supervisorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Supervisor'**
+  String get supervisorLabel;
+
+  /// No description provided for @copyrightYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Copyright © 2026 Horus-Bot Project'**
+  String get copyrightYear;
+
+  /// No description provided for @notificationExplanationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay Connected with Notifications'**
+  String get notificationExplanationTitle;
+
+  /// No description provided for @notificationExplanationBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive timely updates about your museum journey to make the most of your visit.'**
+  String get notificationExplanationBody;
+
+  /// No description provided for @notificationExampleTourStarting.
+  ///
+  /// In en, this message translates to:
+  /// **'Your tour will start in 10 minutes'**
+  String get notificationExampleTourStarting;
+
+  /// No description provided for @notificationExampleNextExhibit.
+  ///
+  /// In en, this message translates to:
+  /// **'Next exhibit is ahead: Tutankhamun Hall'**
+  String get notificationExampleNextExhibit;
+
+  /// No description provided for @notificationExampleQuizAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick quiz available for Ancient Egypt'**
+  String get notificationExampleQuizAvailable;
+
+  /// No description provided for @notificationExampleTicketReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Your museum visit is today'**
+  String get notificationExampleTicketReminder;
+
+  /// No description provided for @notificationExplanationAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Notifications'**
+  String get notificationExplanationAllow;
+
+  /// No description provided for @notificationExplanationDecline.
+  ///
+  /// In en, this message translates to:
+  /// **'Not Now'**
+  String get notificationExplanationDecline;
+
+  /// No description provided for @notificationPermissionDeniedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications Disabled'**
+  String get notificationPermissionDeniedTitle;
+
+  /// No description provided for @notificationPermissionDeniedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'To receive tour updates and reminders, enable notifications in your device settings.'**
+  String get notificationPermissionDeniedBody;
+
+  /// No description provided for @openSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get openSettings;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @notificationSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Settings'**
+  String get notificationSettings;
+
+  /// No description provided for @notificationSettingsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which notifications you want to receive'**
+  String get notificationSettingsSubtitle;
+
+  /// No description provided for @enableAllNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable All Notifications'**
+  String get enableAllNotifications;
+
+  /// No description provided for @disableAllNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable All Notifications'**
+  String get disableAllNotifications;
+
+  /// No description provided for @tourUpdatesCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour Updates'**
+  String get tourUpdatesCategory;
+
+  /// No description provided for @tourUpdatesCategoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour starts, progress, and completion'**
+  String get tourUpdatesCategoryDesc;
+
+  /// No description provided for @exhibitRemindersCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Exhibit Reminders'**
+  String get exhibitRemindersCategory;
+
+  /// No description provided for @exhibitRemindersCategoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearby exhibits and new discoveries'**
+  String get exhibitRemindersCategoryDesc;
+
+  /// No description provided for @quizRemindersCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiz Reminders'**
+  String get quizRemindersCategory;
+
+  /// No description provided for @quizRemindersCategoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiz availability notifications'**
+  String get quizRemindersCategoryDesc;
+
+  /// No description provided for @guideRemindersCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Guide Reminders'**
+  String get guideRemindersCategory;
+
+  /// No description provided for @guideRemindersCategoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the guide suggestions'**
+  String get guideRemindersCategoryDesc;
+
+  /// No description provided for @museumNewsCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Museum News'**
+  String get museumNewsCategory;
+
+  /// No description provided for @museumNewsCategoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Did you know facts and events'**
+  String get museumNewsCategoryDesc;
+
+  /// No description provided for @ticketRemindersCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket Reminders'**
+  String get ticketRemindersCategory;
+
+  /// No description provided for @ticketRemindersCategoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit and event reminders'**
+  String get ticketRemindersCategoryDesc;
+
+  /// No description provided for @systemAlertsCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'System Alerts'**
+  String get systemAlertsCategory;
+
+  /// No description provided for @systemAlertsCategoryDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection and status updates'**
+  String get systemAlertsCategoryDesc;
+
+  /// No description provided for @notificationPermissionStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Permission'**
+  String get notificationPermissionStatus;
+
+  /// No description provided for @notificationPermissionGranted.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get notificationPermissionGranted;
+
+  /// No description provided for @notificationPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get notificationPermissionDenied;
+
+  /// No description provided for @enableNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Notifications'**
+  String get enableNotifications;
+
+  /// No description provided for @disableNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Disable Notifications'**
+  String get disableNotifications;
+
+  /// No description provided for @quickSuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick suggestions'**
+  String get quickSuggestions;
+
+  /// No description provided for @chatInfoPopup.
+  ///
+  /// In en, this message translates to:
+  /// **'You can ask about tickets, events, hours, or exhibits.'**
+  String get chatInfoPopup;
 }
 
 class _AppLocalizationsDelegate

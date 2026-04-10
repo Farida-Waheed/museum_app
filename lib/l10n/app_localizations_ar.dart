@@ -12,7 +12,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get appTitle => 'حوروس';
 
   @override
-  String get exploreEgypt => 'استكشف مصر مع حوروس';
+  String get exploreEgypt => 'استكشف مصر مع حورس-بوت';
 
   @override
   String nextStop(Object location, Object time) {
@@ -53,6 +53,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get alwaysAvailable => 'متاح دائماً';
 
   @override
+  String get discoverStoryBehind => 'اكتشف القصة وراء كل شيء';
+
+  @override
   String get aboutHorusBot => 'عن حوروس-بوت';
 
   @override
@@ -63,6 +66,52 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get guestUser => 'زائر';
+
+  @override
+  String get chatHeaderTitle => 'دليل حورس';
+
+  @override
+  String get chatHeaderSubtitle => 'اطرح أسئلة المتحف بطريقة متميزة.';
+
+  @override
+  String get voiceInputNotAvailable =>
+      'الإدخال الصوتي غير متاح على هذه المنصة بعد.';
+
+  @override
+  String get micPermissionTitle => 'الميكروفون';
+
+  @override
+  String get micPermissionDesc =>
+      'يستخدم للتفاعل الصوتي وطرح الأسئلة على حوروس.';
+
+  @override
+  String get micPermissionDenied => 'تم رفض إذن الميكروفون.';
+
+  @override
+  String get micPermissionSettings =>
+      'يرجى تمكين الوصول إلى الميكروفون من الإعدادات.';
+
+  @override
+  String get micListening => 'يستمع... تحدث الآن.';
+
+  @override
+  String get moreInfo => 'مزيد من المعلومات';
+
+  @override
+  String get moreInfoText =>
+      'اسأل عن التذاكر، ساعات العمل، الفعاليات، المعروضات أو الاتجاهات.';
+
+  @override
+  String get humanSupportLabel => 'طلب دعم بشري مباشر';
+
+  @override
+  String get humanSupportAck => 'تم استلام طلب الدعم البشري.';
+
+  @override
+  String get chatLoading => 'حورس يفكر...';
+
+  @override
+  String get chatInputHint => 'اسأل الدليل عن أي شيء...';
 
   @override
   String get exploreMuseum => 'استكشف المتحف';
@@ -383,10 +432,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dataReassurance => 'بياناتك مجهولة الهوية وتستخدم فقط للملاحة.';
 
   @override
-  String get introTitle => 'المتاحف المصرية';
-
-  @override
-  String get introSubtitle => 'استكشف المتاحف المصرية مع حورس-بوت.';
+  String get introSubtitle => 'استكشف العجائب القديمة برفقة حورس-بوت';
 
   @override
   String get introThe => '';
@@ -401,32 +447,32 @@ class AppLocalizationsAr extends AppLocalizations {
   String get introSubtitleFull => 'استكشف مصر مع حورس-بوت وتطبيقه.';
 
   @override
-  String get onboarding1Title => 'مرحبًا بك في حورس-بوت';
+  String get onboarding1Title => 'مرحبًا بك في حورس';
 
   @override
   String get onboarding1Desc =>
-      'دليلك الذكي داخل المتحف. تنقّل بين المعروضات، واتبع الروبوت، واكتشف القصص المخفية.';
+      'ادخل عالم العجائب القديمة، حيث يحمل كل قطعة أثرية قصة تروى.';
 
   @override
-  String get onboarding2Title => 'تعرّف على الدليل';
+  String get onboarding2Title => 'دليلك الشخصي';
 
   @override
   String get onboarding2Desc =>
-      'مرشدك الذكي داخل المتحف. اطرح الأسئلة، واستمع إلى الشروحات، واستكشف أثناء زيارتك.';
+      'اطرح الأسئلة، استمع إلى القصص، واستكشف المتحف بطريقة أذكى وأكثر غمرًا.';
 
   @override
-  String get onboarding3Title => 'وضع الجولة الإرشادية';
+  String get onboarding3Title => 'استكشف بسلاسة';
 
   @override
   String get onboarding3Desc =>
-      'إرشاد تلقائي عبر المعروضات. ابقَ متصلًا بحورس-بوت طوال رحلتك.';
+      'تنقّل بين المعروضات بسهولة وابقَ متصلًا بدليلك طوال رحلتك.';
 
   @override
-  String get onboarding4Title => 'استكشف وتعلّم';
+  String get onboarding4Title => 'اكتشف المزيد';
 
   @override
   String get onboarding4Desc =>
-      'اكتشف القطع الأثرية، واطرح الأسئلة، واستمتع بالاختبارات التفاعلية داخل المتحف.';
+      'اكشف القصص المخفية، تفاعل مع المعروضات، واجعل كل زيارة لا تُنسى.';
 
   @override
   String get next => 'التالي';
@@ -707,12 +753,199 @@ class AppLocalizationsAr extends AppLocalizations {
       'مطلوب لمسح تذاكر QR وميزات الواقع المعزز المستقبلية.';
 
   @override
-  String get micPermissionTitle => 'الميكروفون';
-
-  @override
-  String get micPermissionDesc =>
-      'يستخدم للتفاعل الصوتي وطرح الأسئلة على حوروس.';
-
-  @override
   String get continueBtn => 'الاستمرار إلى الرئيسية';
+
+  @override
+  String get benhaUniversity => 'جامعة بنها';
+
+  @override
+  String get facultyEngineeringShoubra => 'كلية الهندسة بشبرا';
+
+  @override
+  String get computerCommunicationProgram => 'برنامج هندسة الحاسبات والاتصالات';
+
+  @override
+  String get drMohamedHussein => 'د. محمد حسين';
+
+  @override
+  String youScored(int score, int total) {
+    return 'حصلت على $score من أصل $total';
+  }
+
+  @override
+  String get retry => 'إعادة محاولة';
+
+  @override
+  String get doneButton => 'تم';
+
+  @override
+  String get guestVisitor => 'زائر';
+
+  @override
+  String get englishLanguage => 'English';
+
+  @override
+  String get arabicLanguage => 'العربية';
+
+  @override
+  String get webPermissionsNote =>
+      'يتم إدارة الأذونات من خلال إعدادات المتصفح لديك على الويب.';
+
+  @override
+  String get ticketConfirmation => 'تأكيد التذكرة';
+
+  @override
+  String get scanResult => 'نتيجة المسح';
+
+  @override
+  String get feedbackSubmitted => 'تم إرسال الملاحظات';
+
+  @override
+  String get horusBotTitle => 'حوروس-بوت';
+
+  @override
+  String get version1 => 'الإصدار ١.٠';
+
+  @override
+  String get smartAutonomousGuide => 'مرشد متحف ذكي ذاتي القيادة';
+
+  @override
+  String get projectDescription =>
+      'حوروس-بوت هو روبوت دليل متحف ذكي ذاتي القيادة مصمم لتحسين تجربة زائري المتحف من خلال الملاحة الذاتية والتفاعل متعدد اللغات وتطبيق مرافق.';
+
+  @override
+  String get projectDescriptionLabel => 'وصف المشروع';
+
+  @override
+  String get technologiesUsedLabel => 'التقنيات المستخدمة';
+
+  @override
+  String get developedByLabel => 'تم التطوير بواسطة';
+
+  @override
+  String get teamLabel => 'الفريق';
+
+  @override
+  String get supervisorLabel => 'المشرف';
+
+  @override
+  String get copyrightYear => 'جميع الحقوق محفوظة © ٢٠٢٦ مشروع حوروس-بوت';
+
+  @override
+  String get notificationExplanationTitle => 'ابقَ متصلاً مع التنبيهات';
+
+  @override
+  String get notificationExplanationBody =>
+      'استقبل تحديثات في الوقت المناسب حول رحلتك بالمتحف للاستفادة القصوى من زيارتك.';
+
+  @override
+  String get notificationExampleTourStarting => 'ستبدأ جولتك خلال 10 دقائق';
+
+  @override
+  String get notificationExampleNextExhibit =>
+      'المعروض التالي قادم: قاعة توت عنخ آمون';
+
+  @override
+  String get notificationExampleQuizAvailable =>
+      'اختبار سريع متاح عن مصر القديمة';
+
+  @override
+  String get notificationExampleTicketReminder => 'زيارتك للمتحف اليوم';
+
+  @override
+  String get notificationExplanationAllow => 'السماح بالتنبيهات';
+
+  @override
+  String get notificationExplanationDecline => 'ليس الآن';
+
+  @override
+  String get notificationPermissionDeniedTitle => 'التنبيهات معطلة';
+
+  @override
+  String get notificationPermissionDeniedBody =>
+      'لاستقبال تحديثات الجولة والتذكيرات، فعّل التنبيهات في إعدادات جهازك.';
+
+  @override
+  String get openSettings => 'فتح الإعدادات';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get notificationSettings => 'إعدادات التنبيهات';
+
+  @override
+  String get notificationSettingsSubtitle =>
+      'اختر التنبيهات التي تريد استقبالها';
+
+  @override
+  String get enableAllNotifications => 'تفعيل جميع التنبيهات';
+
+  @override
+  String get disableAllNotifications => 'تعطيل جميع التنبيهات';
+
+  @override
+  String get tourUpdatesCategory => 'تحديثات الجولة';
+
+  @override
+  String get tourUpdatesCategoryDesc => 'بدء الجولة والتقدم والانتهاء';
+
+  @override
+  String get exhibitRemindersCategory => 'تذكيرات المعروضات';
+
+  @override
+  String get exhibitRemindersCategoryDesc =>
+      'المعروضات القريبة والاكتشافات الجديدة';
+
+  @override
+  String get quizRemindersCategory => 'تذكيرات الاختبار';
+
+  @override
+  String get quizRemindersCategoryDesc => 'إخطارات توفر الاختبارات';
+
+  @override
+  String get guideRemindersCategory => 'تذكيرات الدليل';
+
+  @override
+  String get guideRemindersCategoryDesc => 'اقتراحات اسأل الدليل';
+
+  @override
+  String get museumNewsCategory => 'أخبار المتحف';
+
+  @override
+  String get museumNewsCategoryDesc => 'هل كنت تعلم الحقائق والفعاليات';
+
+  @override
+  String get ticketRemindersCategory => 'تذكيرات التذاكر';
+
+  @override
+  String get ticketRemindersCategoryDesc => 'تذكيرات الزيارة والفعاليات';
+
+  @override
+  String get systemAlertsCategory => 'التنبيهات النظامية';
+
+  @override
+  String get systemAlertsCategoryDesc => 'تحديثات الاتصال والحالة';
+
+  @override
+  String get notificationPermissionStatus => 'إذن التنبيهات';
+
+  @override
+  String get notificationPermissionGranted => 'مفعّل';
+
+  @override
+  String get notificationPermissionDenied => 'معطّل';
+
+  @override
+  String get enableNotifications => 'تفعيل التنبيهات';
+
+  @override
+  String get disableNotifications => 'تعطيل التنبيهات';
+
+  @override
+  String get quickSuggestions => 'اقتراحات سريعة';
+
+  @override
+  String get chatInfoPopup =>
+      'يمكنك السؤال عن التذاكر أو الفعاليات أو المواعيد أو المعروضات.';
 }

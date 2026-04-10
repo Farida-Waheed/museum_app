@@ -6,8 +6,6 @@ import '../../models/user_preferences.dart';
 import '../../core/services/mock_data.dart';
 import '../../models/exhibit.dart';
 import '../../app/router.dart';
-import '../../widgets/bottom_nav.dart';
-import '../chat/chat_screen.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../core/constants/text_styles.dart';
 
@@ -71,7 +69,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return AppMenuShell(
       title: isArabic ? "البحث في المعروضات" : "Search Exhibits",
       backgroundColor: AppColors.darkBackground,
-      floatingActionButton: const RoboGuideEntry(),
+      floatingActionButton: null,
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
@@ -83,7 +81,10 @@ class _SearchScreenState extends State<SearchScreen> {
               onChanged: _filter,
               textAlign: isArabic ? TextAlign.right : TextAlign.left,
               decoration: InputDecoration(
-                prefixIcon: Icon(Icons.search, color: AppColors.primaryGold),
+                prefixIcon: const Icon(
+                  Icons.search,
+                  color: AppColors.primaryGold,
+                ),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
                         icon: const Icon(Icons.clear),
@@ -94,9 +95,12 @@ class _SearchScreenState extends State<SearchScreen> {
                         },
                       )
                     : null,
-                hintText:
-                    isArabic ? "ابحث باسم القطعة..." : "Search by exhibit name...",
-                hintStyle: AppTextStyles.helper(context),
+                hintText: isArabic
+                    ? "ابحث باسم القطعة..."
+                    : "Search by exhibit name...",
+                hintStyle: AppTextStyles.bodyPrimary(
+                  context,
+                ).copyWith(color: AppColors.helperText),
                 filled: true,
                 fillColor: AppColors.darkSurface,
                 contentPadding: const EdgeInsets.symmetric(
@@ -158,7 +162,7 @@ class _SearchScreenState extends State<SearchScreen> {
           const SizedBox(height: 16),
           Text(
             isArabic ? "لا توجد نتائج" : "No results found",
-            style: AppTextStyles.cardTitle(context),
+            style: AppTextStyles.titleLarge(context),
           ),
           const SizedBox(height: 8),
           Text(
@@ -166,7 +170,9 @@ class _SearchScreenState extends State<SearchScreen> {
                 ? "جرّب كلمة مختلفة أو تحقق من الهجاء."
                 : "Try a different word or check the spelling.",
             textAlign: TextAlign.center,
-            style: AppTextStyles.helper(context),
+            style: AppTextStyles.bodyPrimary(
+              context,
+            ).copyWith(color: AppColors.helperText),
           ),
         ],
       ),
@@ -211,7 +217,7 @@ class _SearchResultTile extends StatelessWidget {
                   width: 56,
                   height: 56,
                   color: AppColors.primaryGold.withOpacity(0.1),
-                  child: Icon(
+                  child: const Icon(
                     Icons.museum_outlined,
                     size: 28,
                     color: AppColors.primaryGold,
@@ -221,15 +227,15 @@ class _SearchResultTile extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                  crossAxisAlignment: isArabic
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
                   children: [
                     Text(
                       exhibit.getName(prefs.language),
-                      style: AppTextStyles.cardTitle(context).copyWith(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 15,
-                      ),
+                      style: AppTextStyles.titleMedium(
+                        context,
+                      ).copyWith(fontSize: 15),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -238,15 +244,17 @@ class _SearchResultTile extends StatelessWidget {
                       isArabic
                           ? "اضغط لعرض تفاصيل المعروض"
                           : "Tap to view details and audio guide",
-                      style: AppTextStyles.helper(context).copyWith(
-                        fontSize: 12,
-                      ),
+                      style: AppTextStyles.metadata(context),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 4),
-              const Icon(Icons.chevron_right_rounded, size: 20, color: Colors.white24),
+              const Icon(
+                Icons.chevron_right_rounded,
+                size: 20,
+                color: Colors.white24,
+              ),
             ],
           ),
         ),

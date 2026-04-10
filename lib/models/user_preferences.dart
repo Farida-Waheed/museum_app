@@ -9,6 +9,9 @@ class UserPreferencesModel extends ChangeNotifier {
   static const String _kHasSeenPermissionsPrompt = 'hasSeenPermissionsPrompt';
   static const String _kHasSeenLocationPrompt = 'hasSeenLocationPrompt';
   static const String _kThemeMode = 'themeMode';
+  static const String _kHasSeenNotificationPermissionPrompt =
+      'hasSeenNotificationPermissionPrompt';
+  static const String _kNotificationsEnabled = 'notificationsEnabled';
 
   String _language = 'en';
   bool _isHighContrast = false;
@@ -17,6 +20,8 @@ class UserPreferencesModel extends ChangeNotifier {
   bool _hasSeenPermissionsPrompt = false;
   bool _hasSeenLocationPrompt = false;
   String _themeMode = 'dark';
+  bool _hasSeenNotificationPermissionPrompt = false;
+  bool _notificationsEnabled = true;
 
   String get language => _language;
   bool get isHighContrast => _isHighContrast;
@@ -25,6 +30,9 @@ class UserPreferencesModel extends ChangeNotifier {
   bool get hasSeenPermissionsPrompt => _hasSeenPermissionsPrompt;
   bool get hasSeenLocationPrompt => _hasSeenLocationPrompt;
   String get themeMode => _themeMode;
+  bool get hasSeenNotificationPermissionPrompt =>
+      _hasSeenNotificationPermissionPrompt;
+  bool get notificationsEnabled => _notificationsEnabled;
 
   UserPreferencesModel({
     String initialLanguage = 'en',
@@ -34,6 +42,8 @@ class UserPreferencesModel extends ChangeNotifier {
     String initialThemeMode = 'dark',
     bool initialHasSeenPermissionsPrompt = false,
     bool initialHasSeenLocationPrompt = false,
+    bool initialHasSeenNotificationPermissionPrompt = false,
+    bool initialNotificationsEnabled = true,
     bool skipLoad = false,
   }) {
     _language = initialLanguage;
@@ -43,6 +53,9 @@ class UserPreferencesModel extends ChangeNotifier {
     _themeMode = initialThemeMode;
     _hasSeenPermissionsPrompt = initialHasSeenPermissionsPrompt;
     _hasSeenLocationPrompt = initialHasSeenLocationPrompt;
+    _hasSeenNotificationPermissionPrompt =
+        initialHasSeenNotificationPermissionPrompt;
+    _notificationsEnabled = initialNotificationsEnabled;
 
     if (!skipLoad) {
       _loadFromPrefs();
@@ -61,6 +74,9 @@ class UserPreferencesModel extends ChangeNotifier {
       'hasSeenPermissionsPrompt':
           prefs.getBool(_kHasSeenPermissionsPrompt) ?? false,
       'hasSeenLocationPrompt': prefs.getBool(_kHasSeenLocationPrompt) ?? false,
+      'hasSeenNotificationPermissionPrompt':
+          prefs.getBool(_kHasSeenNotificationPermissionPrompt) ?? false,
+      'notificationsEnabled': prefs.getBool(_kNotificationsEnabled) ?? true,
     };
   }
 
@@ -74,6 +90,9 @@ class UserPreferencesModel extends ChangeNotifier {
         prefs.getBool(_kHasSeenPermissionsPrompt) ?? false;
     _hasSeenLocationPrompt = prefs.getBool(_kHasSeenLocationPrompt) ?? false;
     _themeMode = prefs.getString(_kThemeMode) ?? 'dark';
+    _hasSeenNotificationPermissionPrompt =
+        prefs.getBool(_kHasSeenNotificationPermissionPrompt) ?? false;
+    _notificationsEnabled = prefs.getBool(_kNotificationsEnabled) ?? true;
     notifyListeners();
   }
 
@@ -128,6 +147,24 @@ class UserPreferencesModel extends ChangeNotifier {
       _hasSeenLocationPrompt = value;
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_kHasSeenLocationPrompt, value);
+      notifyListeners();
+    }
+  }
+
+  Future<void> setHasSeenNotificationPermissionPrompt(bool value) async {
+    if (_hasSeenNotificationPermissionPrompt != value) {
+      _hasSeenNotificationPermissionPrompt = value;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_kHasSeenNotificationPermissionPrompt, value);
+      notifyListeners();
+    }
+  }
+
+  Future<void> setNotificationsEnabled(bool value) async {
+    if (_notificationsEnabled != value) {
+      _notificationsEnabled = value;
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_kNotificationsEnabled, value);
       notifyListeners();
     }
   }

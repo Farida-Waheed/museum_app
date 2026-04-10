@@ -7,10 +7,9 @@ import '../../models/user_preferences.dart';
 import '../../models/exhibit_provider.dart';
 import '../../models/tour_provider.dart';
 import '../../core/utils/audio_player.dart';
-import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
-import '../chat/chat_screen.dart';
+import '../../widgets/ask_the_guide_button.dart';
 import '../quiz/quiz_screen.dart'; // To navigate to quiz
 import '../../widgets/dialogs/premium_dialog.dart';
 import '../../core/constants/colors.dart';
@@ -79,7 +78,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
         backgroundColor: AppColors.cinematicCard,
         content: Text(
           isBookmarked ? l10n.addedToBookmarks : l10n.removedFromBookmarks,
-          style: AppTextStyles.body(context).copyWith(color: Colors.white),
+          style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white),
         ),
         duration: const Duration(milliseconds: 900),
         behavior: SnackBarBehavior.floating,
@@ -122,7 +121,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
             content: Text(
               l10n.quizPromptDescription ??
                   'Would you like to take the quiz for this exhibit?',
-              style: AppTextStyles.body(context).copyWith(color: Colors.white70),
+              style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white70),
             ),
             actions: [
               TextButton(
@@ -130,7 +129,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                   Navigator.pop(context);
                   tourProvider.postponeQuiz(exhibit.id);
                 },
-                child: Text(l10n.later ?? 'Later', style: AppTextStyles.button(context).copyWith(color: Colors.white60)),
+                child: Text(l10n.later ?? 'Later', style: AppTextStyles.buttonLabel(context).copyWith(color: Colors.white60)),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -142,7 +141,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                   foregroundColor: AppColors.darkInk,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: Text(l10n.takeNow ?? 'Take Now', style: AppTextStyles.button(context)),
+                child: Text(l10n.takeNow ?? 'Take Now', style: AppTextStyles.buttonLabel(context)),
               ),
             ],
           ),
@@ -154,7 +153,10 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
 
     return AppMenuShell(
       subHeader: const RobotStatusBanner(),
-      floatingActionButton: const RoboGuideEntry(),
+      floatingActionButton: AskTheGuideButton(
+        screen: 'exhibit_details',
+        currentExhibitId: exhibit.id,
+      ),
       body: CustomScrollView(
         slivers: [
           _buildSliverAppBar(
@@ -179,15 +181,13 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                   _buildFactChips(exhibit, l10n, cs),
                   const SizedBox(height: 28),
                   Text(
-                    l10n.description,
-                    style: AppTextStyles.cardTitle(context).copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                    l10n.description.toUpperCase(),
+                    style: AppTextStyles.displaySectionTitle(context),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 12),
                   Text(
                     exhibit.getDescription(prefs.language),
-                    style: AppTextStyles.body(context).copyWith(
+                    style: AppTextStyles.bodyPrimary(context).copyWith(
                       height: 1.6,
                       color: isDark ? AppColors.helperText : Colors.black87,
                     ),
@@ -245,7 +245,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
               Expanded(
                 child: Text(
                   l10n.takeQuickQuiz,
-                  style: AppTextStyles.body(context).copyWith(
+                  style: AppTextStyles.bodyPrimary(context).copyWith(
                     fontWeight: FontWeight.w900,
                     fontSize: 16,
                     color: isDark ? Colors.white : AppColors.darkInk,
@@ -272,7 +272,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                           isArabic
                               ? "أنهيت عرض توت عنخ آمون. هل تريد بدء الاختبار؟"
                               : "You finished the Tutankhamun exhibit. Ready to start the quiz?",
-                          style: AppTextStyles.body(context).copyWith(
+                          style: AppTextStyles.bodyPrimary(context).copyWith(
                             color: Colors.white70,
                             fontSize: 16,
                           ),
@@ -288,7 +288,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                             },
                             child: Text(
                               isArabic ? "لاحقاً" : "Later",
-                              style: AppTextStyles.button(context).copyWith(color: Colors.white60),
+                              style: AppTextStyles.buttonLabel(context).copyWith(color: Colors.white60),
                             ),
                           ),
                           ElevatedButton(
@@ -311,7 +311,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                             ),
                             child: Text(
                               l10n.startQuiz,
-                              style: AppTextStyles.button(context).copyWith(
+                              style: AppTextStyles.buttonLabel(context).copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -330,7 +330,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                   ),
                   child: Text(
                     l10n.startQuiz,
-                    style: AppTextStyles.button(context).copyWith(fontWeight: FontWeight.bold),
+                    style: AppTextStyles.buttonLabel(context).copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -344,7 +344,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                 },
                 child: Text(
                   isArabic ? "تخطي" : "Skip",
-                  style: AppTextStyles.button(context).copyWith(
+                  style: AppTextStyles.buttonLabel(context).copyWith(
                     color: isDark ? Colors.white70 : AppColors.mutedText,
                   ),
                 ),
@@ -375,7 +375,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
           const SizedBox(width: 10),
           Text(
             isArabic ? "الاختبار مكتمل" : "Quiz Completed",
-            style: AppTextStyles.body(context).copyWith(
+            style: AppTextStyles.bodyPrimary(context).copyWith(
               color: Colors.green,
               fontWeight: FontWeight.bold,
             ),
@@ -383,7 +383,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
           const Spacer(),
           Text(
             isArabic ? "النتيجة: $score" : "Score: $score",
-            style: AppTextStyles.body(context).copyWith(
+            style: AppTextStyles.bodyPrimary(context).copyWith(
               color: Colors.green.shade800,
               fontWeight: FontWeight.w900,
             ),
@@ -422,10 +422,9 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
         titlePadding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
         title: Text(
           exhibit.getName(language),
-          style: AppTextStyles.cardTitle(context).copyWith(
+          style: AppTextStyles.displayArtifactTitle(context).copyWith(
             color: Colors.white,
             fontSize: 18,
-            fontWeight: FontWeight.w700,
           ),
         ),
         background: Stack(
@@ -502,7 +501,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                 children: [
                   Text(
                     l10n.audioGuide,
-                    style: AppTextStyles.body(context).copyWith(
+                    style: AppTextStyles.bodyPrimary(context).copyWith(
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
                       color: isDark ? Colors.white : Colors.black,
@@ -511,7 +510,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                   const SizedBox(height: 4),
                   Text(
                     l10n.audioNarration,
-                    style: AppTextStyles.helper(context).copyWith(
+                    style: AppTextStyles.metadata(context).copyWith(
                       fontSize: 12,
                       color: isDark ? AppColors.helperText : Colors.black54,
                     ),
@@ -552,10 +551,10 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
               avatar: Icon(f['icon'] as IconData, size: 18, color: cs.primary),
               label: Text(
                 '${f['label']}: ${f['value']}',
-                style: AppTextStyles.helper(context).copyWith(fontSize: 12),
+                style: AppTextStyles.metadata(context),
               ),
               backgroundColor: AppColors.primaryGold.withOpacity(0.1),
-              labelStyle: AppTextStyles.helper(context).copyWith(
+              labelStyle: AppTextStyles.metadata(context).copyWith(
                 color: isDark ? Colors.white : Colors.black,
               ),
               shape: RoundedRectangleBorder(
@@ -581,7 +580,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
             ).showSnackBar(SnackBar(content: Text(l10n.addedToRoute)));
           },
           icon: const Icon(Icons.route),
-          label: Text(l10n.addToMyRoute, style: AppTextStyles.button(context).copyWith(fontSize: 14)),
+          label: Text(l10n.addToMyRoute, style: AppTextStyles.buttonLabel(context).copyWith(fontSize: 14)),
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.primaryGold,
             side: BorderSide(color: AppColors.primaryGold.withOpacity(0.4)),
@@ -601,7 +600,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
           icon: const Icon(Icons.map_outlined, color: AppColors.primaryGold),
           label: Text(
             l10n.viewOnMap,
-            style: AppTextStyles.button(context).copyWith(color: AppColors.primaryGold, fontSize: 14),
+            style: AppTextStyles.buttonLabel(context).copyWith(color: AppColors.primaryGold, fontSize: 14),
           ),
           style: TextButton.styleFrom(foregroundColor: AppColors.primaryGold),
         ),

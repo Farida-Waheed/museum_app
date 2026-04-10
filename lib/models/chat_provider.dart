@@ -48,5 +48,7 @@ class ChatProvider extends ChangeNotifier {
       timestamp: DateTime.now(),
       text: greeting,
     ));
+
+    // Removed: No longer adding suggestion cards as messages since they're now at the top
   }
 }

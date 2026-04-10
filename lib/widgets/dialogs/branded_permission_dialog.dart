@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
 
 class BrandedPermissionDialog extends StatefulWidget {
   final IconData icon;
@@ -143,20 +144,19 @@ class _BrandedPermissionDialogState extends State<BrandedPermissionDialog> with 
                         ),
                         const SizedBox(height: 24),
                         Text(
-                          widget.title,
+                          widget.title.toUpperCase(),
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: AppTextStyles.displaySectionTitle(context).copyWith(
                             color: textColor,
-                            fontSize: 21,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.2,
+                            fontSize: 18,
+                            letterSpacing: 1.2,
                           ),
                         ),
                         const SizedBox(height: 14),
                         Text(
                           widget.description,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: AppTextStyles.bodyPrimary(context).copyWith(
                             color: secondaryTextColor,
                             fontSize: 14.5,
                             height: 1.5,
@@ -167,7 +167,7 @@ class _BrandedPermissionDialogState extends State<BrandedPermissionDialog> with 
                           Text(
                             widget.helperText!,
                             textAlign: TextAlign.center,
-                            style: TextStyle(
+                            style: AppTextStyles.metadata(context).copyWith(
                               color: helperTextColor,
                               fontSize: 12.5,
                               fontStyle: FontStyle.italic,
@@ -189,10 +189,9 @@ class _BrandedPermissionDialogState extends State<BrandedPermissionDialog> with 
                                 ),
                                 child: Text(
                                   l10n.notNow,
-                                  style: TextStyle(
+                                  style: AppTextStyles.buttonLabel(context).copyWith(
                                     color: goldAccent,
                                     fontSize: 14.5,
-                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
@@ -213,9 +212,8 @@ class _BrandedPermissionDialogState extends State<BrandedPermissionDialog> with 
                                 ),
                                 child: Text(
                                   l10n.allow,
-                                  style: const TextStyle(
+                                  style: AppTextStyles.buttonLabel(context).copyWith(
                                     fontSize: 14.5,
-                                    fontWeight: FontWeight.w900,
                                   ),
                                 ),
                               ),

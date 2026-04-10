@@ -22,10 +22,9 @@ import '../screens/tickets/qr_scanner_screen.dart';
 import '../screens/feedback/feedback_screen.dart';
 import '../screens/language/language_screen.dart';
 import '../screens/settings/accessibility_screen.dart';
+import '../screens/settings/notification_settings_screen.dart';
 import '../screens/settings/project_info_screen.dart';
-import '../screens/ar/ar_screen.dart';
-
-import '../screens/profile/profile_screen.dart';
+import '../screens/debug/notification_test_screen.dart';
 import '../screens/profile/memories_screen.dart';
 import '../screens/planner/tour_planner_screen.dart';
 import '../screens/events/events_screen.dart';
@@ -53,6 +52,7 @@ class AppRoutes {
 
   static const String settings = '/settings';
   static const String accessibility = '/accessibility';
+  static const String notificationSettings = '/notification_settings';
   static const String projectInfo = '/project_info';
   static const String feedback = '/feedback';
   static const String language = '/language';
@@ -63,6 +63,7 @@ class AppRoutes {
   static const String tourPlanner = '/tour-planner';
   static const String events = '/events';
   static const String achievements = '/achievements';
+  static const String notificationTest = '/notification_test';
 
   static Map<String, WidgetBuilder> getRoutes() {
     return {
@@ -87,16 +88,18 @@ class AppRoutes {
 
       settings: (context) => const AccessibilityScreen(),
       accessibility: (context) => const AccessibilityScreen(),
+      notificationSettings: (context) => const NotificationSettingsScreen(),
       projectInfo: (context) => const ProjectInfoScreen(),
       feedback: (context) => const FeedbackScreen(),
       language: (context) => const LanguageScreen(),
-      arView: (context) => const ArScreen(),
+      arView: (context) => const SizedBox(), // TODO: Implement ArScreen
 
-      profile: (context) => const ProfileScreen(),
+      profile: (context) => const SizedBox(), // TODO: Implement ProfileScreen
       memories: (context) => const MemoriesScreen(),
       tourPlanner: (context) => const TourPlannerScreen(),
       events: (context) => const EventsScreen(),
       achievements: (context) => const AchievementsScreen(),
+      notificationTest: (context) => const NotificationTestScreen(),
     };
   }
 }

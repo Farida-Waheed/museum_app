@@ -14,7 +14,8 @@ class QrScannerScreen extends StatefulWidget {
   State<QrScannerScreen> createState() => _QrScannerScreenState();
 }
 
-class _QrScannerScreenState extends State<QrScannerScreen> with TickerProviderStateMixin {
+class _QrScannerScreenState extends State<QrScannerScreen>
+    with TickerProviderStateMixin {
   bool _isScanned = false;
   late final AnimationController _scanAnim;
 
@@ -76,12 +77,12 @@ class _QrScannerScreenState extends State<QrScannerScreen> with TickerProviderSt
 
   void _showResultDialog(String code) {
     final l10n = AppLocalizations.of(context)!;
-    bool isValid = code.startsWith("TKT-"); 
+    bool isValid = code.startsWith("TKT-");
 
     showGeneralDialog(
       context: context,
       barrierDismissible: false,
-      barrierLabel: 'Scan result',
+      barrierLabel: l10n.scanResult,
       barrierColor: Colors.black87,
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (ctx, anim, secondaryAnim) {
@@ -102,7 +103,10 @@ class _QrScannerScreenState extends State<QrScannerScreen> with TickerProviderSt
         );
       },
       transitionBuilder: (ctx, animation, secondary, child) {
-        final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutBack);
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutBack,
+        );
         return ScaleTransition(
           scale: Tween<double>(begin: 0.8, end: 1.0).animate(curved),
           child: FadeTransition(opacity: animation, child: child),
@@ -119,9 +123,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> with TickerProviderSt
       body: Stack(
         children: [
           // 1. Camera Feed
-          MobileScanner(
-            onDetect: _handleScan,
-          ),
+          MobileScanner(onDetect: _handleScan),
 
           // 2. Blurred Overlay with cutout
           const IgnorePointer(
@@ -151,7 +153,11 @@ class _QrScannerScreenState extends State<QrScannerScreen> with TickerProviderSt
                 const SizedBox(width: 16),
                 Text(
                   l10n.scanTicket,
-                  style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -168,7 +174,10 @@ class _QrScannerScreenState extends State<QrScannerScreen> with TickerProviderSt
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.black45,
                       borderRadius: BorderRadius.circular(16),
@@ -177,11 +186,19 @@ class _QrScannerScreenState extends State<QrScannerScreen> with TickerProviderSt
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.qr_code_2_rounded, color: Colors.white70, size: 20),
+                        const Icon(
+                          Icons.qr_code_2_rounded,
+                          color: Colors.white70,
+                          size: 20,
+                        ),
                         const SizedBox(width: 12),
                         Text(
                           l10n.alignQr,
-                          style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w500),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
                     ),
@@ -189,7 +206,7 @@ class _QrScannerScreenState extends State<QrScannerScreen> with TickerProviderSt
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -222,7 +239,11 @@ class _ResultPopup extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(32),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 40, spreadRadius: 10),
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 40,
+              spreadRadius: 10,
+            ),
           ],
         ),
         child: Column(
@@ -249,7 +270,11 @@ class _ResultPopup extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               "Ref: $code",
-              style: TextStyle(color: Colors.grey.shade500, fontSize: 13, fontStyle: FontStyle.italic),
+              style: TextStyle(
+                color: Colors.grey.shade500,
+                fontSize: 13,
+                fontStyle: FontStyle.italic,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -260,9 +285,14 @@ class _ResultPopup extends StatelessWidget {
                     onPressed: onRetry,
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
-                    child: Text(l10n.scanAnother, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text(
+                      l10n.scanAnother,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -274,9 +304,14 @@ class _ResultPopup extends StatelessWidget {
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
                     ),
-                    child: Text(l10n.done, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    child: Text(
+                      l10n.done,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ],
@@ -311,10 +346,7 @@ class QrScannerOverlayWidget extends StatelessWidget {
     return Stack(
       children: [
         ColorFiltered(
-          colorFilter: ColorFilter.mode(
-            overlayColor,
-            BlendMode.srcOut,
-          ),
+          colorFilter: ColorFilter.mode(overlayColor, BlendMode.srcOut),
           child: Stack(
             children: [
               Container(

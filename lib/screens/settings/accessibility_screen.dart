@@ -43,8 +43,9 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
 
   Future<void> _requestPermission(Permission p) async {
     if (kIsWeb) {
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Permissions are managed by your browser settings on web.")),
+        SnackBar(content: Text(l10n.webPermissionsNote)),
       );
       return;
     }
@@ -133,8 +134,8 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
               Image.asset("assets/icons/ankh.png", width: 24, height: 24),
               const SizedBox(width: 16),
               Text(
-                l10n.settings,
-                style: AppTextStyles.screenTitle(context).copyWith(fontSize: 20),
+                l10n.settings.toUpperCase(),
+                style: AppTextStyles.displayScreenTitle(context).copyWith(fontSize: 20),
               ),
             ],
           ),
@@ -169,12 +170,12 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                         children: [
                           Text(
                             l10n.comfortableApp,
-                            style: AppTextStyles.body(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                            style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             l10n.adjustSettings,
-                            style: AppTextStyles.helper(context).copyWith(fontSize: 13),
+                            style: AppTextStyles.metadata(context).copyWith(fontSize: 13),
                           ),
                         ],
                       ),
@@ -199,7 +200,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                     Text(
                       l10n.museumExperienceSub,
                       textAlign: TextAlign.center,
-                      style: AppTextStyles.helper(context).copyWith(fontSize: 13),
+                      style: AppTextStyles.metadata(context).copyWith(fontSize: 13),
                     ),
                     const SizedBox(height: 24),
                     _SwitchItem(
@@ -319,7 +320,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                       onChanged: (v) {},
                     ),
                     const SizedBox(height: 24),
-                    Text(l10n.appearanceMode, style: AppTextStyles.body(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+                    Text(l10n.appearanceMode, style: AppTextStyles.titleMedium(context).copyWith(fontSize: 16)),
                     const SizedBox(height: 16),
                     Row(
                       children: [
@@ -346,7 +347,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                       ],
                     ),
                     const SizedBox(height: 32),
-                    Text(l10n.textSize, style: AppTextStyles.body(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+                    Text(l10n.textSize, style: AppTextStyles.titleMedium(context).copyWith(fontSize: 16)),
                     const SizedBox(height: 16),
                     SliderTheme(
                       data: SliderTheme.of(context).copyWith(
@@ -401,9 +402,9 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(l10n.appLanguage, style: AppTextStyles.body(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold)),
+                          Text(l10n.appLanguage, style: AppTextStyles.titleMedium(context).copyWith(fontSize: 16)),
                           const SizedBox(height: 4),
-                          Text(l10n.appLanguageSubtitle, style: AppTextStyles.helper(context).copyWith(fontSize: 12)),
+                          Text(l10n.appLanguageSubtitle, style: AppTextStyles.metadata(context).copyWith(fontSize: 12)),
                         ],
                       ),
                     ),
@@ -412,11 +413,11 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                         value: prefs.language,
                         icon: const Icon(Icons.arrow_drop_down, color: Colors.white54),
                         dropdownColor: AppColors.cinematicElevated,
-                        style: AppTextStyles.body(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                        style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold),
                         onChanged: (v) => prefs.setLanguage(v!),
-                        items: const [
-                          DropdownMenuItem(value: 'en', child: Text("English")),
-                          DropdownMenuItem(value: 'ar', child: Text("العربية")),
+                        items: [
+                          DropdownMenuItem(value: 'en', child: Text(l10n.englishLanguage)),
+                          DropdownMenuItem(value: 'ar', child: Text(l10n.arabicLanguage)),
                         ],
                       ),
                     ),
@@ -438,14 +439,14 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.appVersion, style: AppTextStyles.cardTitle(context).copyWith(fontSize: 18)),
+                    Text(l10n.appVersion, style: AppTextStyles.titleLarge(context).copyWith(fontSize: 18)),
                     const SizedBox(height: 4),
-                    Text(l10n.appTagline, style: AppTextStyles.body(context).copyWith(fontSize: 14)),
+                    Text(l10n.appTagline, style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 14)),
                     const SizedBox(height: 24),
-                    Text(l10n.developedBy.toUpperCase(), style: AppTextStyles.sectionTitle(context).copyWith(fontSize: 11, letterSpacing: 1)),
+                    Text(l10n.developedBy.toUpperCase(), style: AppTextStyles.displaySectionTitle(context).copyWith(fontSize: 11, letterSpacing: 1)),
                     const SizedBox(height: 8),
-                    Text(l10n.organization, style: AppTextStyles.body(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
-                    Text(l10n.department, style: AppTextStyles.helper(context).copyWith(fontSize: 13)),
+                    Text(l10n.organization, style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                    Text(l10n.department, style: AppTextStyles.metadata(context).copyWith(fontSize: 13)),
                     const SizedBox(height: 24),
                     _AboutNavItem(
                       title: l10n.projectInfo,
@@ -454,6 +455,10 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                     _AboutNavItem(
                       title: l10n.team,
                       onTap: () => Navigator.pushNamed(context, AppRoutes.projectInfo),
+                    ),
+                    _AboutNavItem(
+                      title: 'Notification Test',
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.notificationTest),
                     ),
                     _AboutNavItem(title: l10n.privacyPolicy),
                   ],
@@ -478,7 +483,7 @@ class _SectionTitle extends StatelessWidget {
       padding: const EdgeInsets.only(left: 4, bottom: 16),
       child: Text(
         title,
-        style: AppTextStyles.sectionTitle(context).copyWith(fontSize: 12, letterSpacing: 1.5),
+        style: AppTextStyles.displaySectionTitle(context).copyWith(fontSize: 12, letterSpacing: 1.5),
       ),
     );
   }
@@ -502,10 +507,10 @@ class _SwitchItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: AppTextStyles.body(context).copyWith(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15)),
+                Text(title, style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15)),
                 if (subtitle != null) ...[
                   const SizedBox(height: 4),
-                  Text(subtitle!, style: AppTextStyles.helper(context).copyWith(fontSize: 12)),
+                  Text(subtitle!, style: AppTextStyles.metadata(context).copyWith(fontSize: 12)),
                 ],
               ],
             ),
@@ -554,9 +559,9 @@ class _PermissionItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: AppTextStyles.body(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text(title, style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
                     const SizedBox(height: 4),
-                    Text(subtitle, style: AppTextStyles.helper(context)),
+                    Text(subtitle, style: AppTextStyles.metadata(context)),
                   ],
                 ),
               ),
@@ -583,7 +588,7 @@ class _PermissionItem extends StatelessWidget {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 ),
-                child: Text(l10n.enable, style: AppTextStyles.button(context).copyWith(fontSize: 13)),
+                child: Text(l10n.enable, style: AppTextStyles.buttonLabel(context).copyWith(fontSize: 13)),
               ),
             ],
           ),
@@ -606,7 +611,7 @@ class _AboutNavItem extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: AppTextStyles.body(context).copyWith(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500)),
+            Text(title, style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500)),
             const Icon(Icons.chevron_right, color: AppColors.primaryGold, size: 20),
           ],
         ),

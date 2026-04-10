@@ -14,7 +14,7 @@ class TourPlannerScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     return AppMenuShell(
-      title: l10n.tourPlanner,
+      title: l10n.tourPlanner.toUpperCase(),
       backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 2),
       body: SingleChildScrollView(
@@ -26,14 +26,14 @@ class TourPlannerScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Text(
               l10n.tourPlanner.toUpperCase(),
-              style: AppTextStyles.sectionTitle(context),
+              style: AppTextStyles.displaySectionTitle(context),
             ),
             const SizedBox(height: 12),
             Text(
               isArabic
                   ? "قم بتخصيص جولتك في المتحف بناءً على اهتماماتك والوقت المتاح."
                   : "Customize your museum tour based on your interests and available time.",
-              style: AppTextStyles.body(context).copyWith(fontSize: 16, color: Colors.white70),
+              style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 16, color: Colors.white70),
             ),
             const SizedBox(height: 40),
             _buildInterestSection(context, l10n),
@@ -60,7 +60,7 @@ class TourPlannerScreen extends StatelessWidget {
       children: [
         Text(
           isArabic ? "ما هي اهتماماتك؟" : "What are your interests?",
-          style: AppTextStyles.cardTitle(context).copyWith(fontSize: 18),
+          style: AppTextStyles.titleLarge(context).copyWith(fontSize: 18),
         ),
         const SizedBox(height: 20),
         Wrap(
@@ -87,7 +87,7 @@ class _InterestChipState extends State<_InterestChip> {
   @override
   Widget build(BuildContext context) {
     return FilterChip(
-      label: Text(widget.label, style: AppTextStyles.helper(context).copyWith(color: _selected ? AppColors.darkInk : Colors.white, fontWeight: FontWeight.bold)),
+      label: Text(widget.label, style: AppTextStyles.metadata(context).copyWith(color: _selected ? AppColors.darkInk : Colors.white, fontWeight: FontWeight.bold)),
       selected: _selected,
       onSelected: (val) => setState(() => _selected = val),
       selectedColor: AppColors.primaryGold,

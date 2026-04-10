@@ -89,7 +89,7 @@ class RobotStatusBanner extends StatelessWidget {
                     children: [
                       Text(
                         (isArabic ? "حالة حوروس" : "HORUS-BOT STATUS").toUpperCase(),
-                        style: AppTextStyles.sectionTitle(context).copyWith(
+                        style: AppTextStyles.displaySectionTitle(context).copyWith(
                           fontSize: 10,
                           letterSpacing: 1.2,
                           color: Colors.white38,
@@ -98,7 +98,7 @@ class RobotStatusBanner extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         statusMsg,
-                        style: AppTextStyles.body(context).copyWith(
+                        style: AppTextStyles.bodyPrimary(context).copyWith(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
                           color: Colors.white,
@@ -221,7 +221,7 @@ class _EstimatedArrival extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: AppTextStyles.helper(context).copyWith(fontSize: 11, fontWeight: FontWeight.w900, color: color),
+        style: AppTextStyles.metadata(context).copyWith(fontSize: 11, fontWeight: FontWeight.w900, color: color),
       ),
     );
   }

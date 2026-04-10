@@ -8,8 +8,9 @@ import '../../core/services/mock_data.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
-import '../../widgets/primary_button.dart';
 import '../../widgets/dialogs/branded_permission_dialog.dart';
+import '../../widgets/primary_button.dart';
+import '../../widgets/ask_the_guide_button.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 import '../../core/constants/colors.dart';
@@ -46,7 +47,9 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final tourProvider = Provider.of<TourProvider>(context, listen: false);
       if (tourProvider.currentExhibitId == null) {
-        tourProvider.setCurrentExhibit(MockDataService.getAllExhibits().first.id);
+        tourProvider.setCurrentExhibit(
+          MockDataService.getAllExhibits().first.id,
+        );
       }
       _startSimulation();
     });
@@ -58,7 +61,10 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     if (exhibitId == null) return;
 
     final allExhibits = MockDataService.getAllExhibits();
-    final exhibit = allExhibits.firstWhere((e) => e.id == exhibitId, orElse: () => allExhibits.first);
+    final exhibit = allExhibits.firstWhere(
+      (e) => e.id == exhibitId,
+      orElse: () => allExhibits.first,
+    );
 
     final sentences = [
       "Welcome to the ${exhibit.nameEn}.",
@@ -131,7 +137,9 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   void _skipExhibit() {
     final tourProvider = Provider.of<TourProvider>(context, listen: false);
     final all = MockDataService.getAllExhibits();
-    final currentIdx = all.indexWhere((e) => e.id == tourProvider.currentExhibitId);
+    final currentIdx = all.indexWhere(
+      (e) => e.id == tourProvider.currentExhibitId,
+    );
     if (currentIdx < all.length - 1) {
       tourProvider.setCurrentExhibit(all[currentIdx + 1].id);
       setState(() {
@@ -147,14 +155,23 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     final allExhibits = MockDataService.getAllExhibits();
-    final currentExhibit = allExhibits.firstWhere((e) => e.id == tourProvider.currentExhibitId, orElse: () => allExhibits.first);
+    final currentExhibit = allExhibits.firstWhere(
+      (e) => e.id == tourProvider.currentExhibitId,
+      orElse: () => allExhibits.first,
+    );
     final currentIdx = allExhibits.indexWhere((e) => e.id == currentExhibit.id);
-    final nextExhibit = currentIdx < allExhibits.length - 1 ? allExhibits[currentIdx + 1] : null;
+    final nextExhibit = currentIdx < allExhibits.length - 1
+        ? allExhibits[currentIdx + 1]
+        : null;
 
     return AppMenuShell(
-      title: l10n.liveTour,
+      title: l10n.liveTour.toUpperCase(),
       subHeader: const RobotStatusBanner(),
       bottomNavigationBar: const BottomNav(currentIndex: 2),
+      floatingActionButton: AskTheGuideButton(
+        screen: 'live_tour',
+        currentExhibitId: tourProvider.currentExhibitId,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
@@ -189,7 +206,10 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
             const SizedBox(height: 24),
 
             // --- CURRENT STOP CARD ---
-            Text(l10n.currentStop.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
+            Text(
+              l10n.currentStop.toUpperCase(),
+              style: AppTextStyles.displaySectionTitle(context),
+            ),
             const SizedBox(height: 8),
             Card(
               elevation: 4,
@@ -207,7 +227,8 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                         height: 180,
                         width: double.infinity,
                         child: Image.asset(
-                          _imageMap[currentExhibit.id] ?? 'assets/images/museum_interior.jpg',
+                          _imageMap[currentExhibit.id] ??
+                              'assets/images/museum_interior.jpg',
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -216,17 +237,27 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                         left: 0,
                         right: 0,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 8,
+                            horizontal: 16,
+                          ),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
-                              colors: [Colors.transparent, Colors.black.withOpacity(0.7)],
+                              colors: [
+                                Colors.transparent,
+                                Colors.black.withOpacity(0.7),
+                              ],
                             ),
                           ),
                           child: Text(
-                            currentExhibit.getName(Localizations.localeOf(context).languageCode),
-                            style: AppTextStyles.cardTitle(context).copyWith(fontSize: 18),
+                            currentExhibit.getName(
+                              Localizations.localeOf(context).languageCode,
+                            ),
+                            style: AppTextStyles.displayArtifactTitle(
+                              context,
+                            ).copyWith(fontSize: 18),
                           ),
                         ),
                       ),
@@ -238,9 +269,20 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.smart_toy, color: Colors.blue, size: 20),
+                            const Icon(
+                              Icons.smart_toy,
+                              color: Colors.blue,
+                              size: 20,
+                            ),
                             const SizedBox(width: 8),
-                            Expanded(child: Text(l10n.robotDescribing, style: AppTextStyles.helper(context).copyWith(fontSize: 13))),
+                            Expanded(
+                              child: Text(
+                                l10n.robotDescribing,
+                                style: AppTextStyles.metadata(
+                                  context,
+                                ).copyWith(fontSize: 13),
+                              ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -272,7 +314,10 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
               children: [
                 const Icon(Icons.subject, color: Colors.grey),
                 const SizedBox(width: 8),
-                Text(l10n.liveTranscript.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
+                Text(
+                  l10n.liveTranscript.toUpperCase(),
+                  style: AppTextStyles.displaySectionTitle(context),
+                ),
               ],
             ),
             const SizedBox(height: 8),
@@ -293,10 +338,12 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Text(
                       _transcript[index],
-                      style: AppTextStyles.body(context).copyWith(
+                      style: AppTextStyles.bodyPrimary(context).copyWith(
                         fontSize: 14,
                         color: isLast ? Colors.white : AppColors.neutralMedium,
-                        fontWeight: isLast ? FontWeight.w600 : FontWeight.normal,
+                        fontWeight: isLast
+                            ? FontWeight.w600
+                            : FontWeight.normal,
                       ),
                     ),
                   );
@@ -307,37 +354,57 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
 
             // --- NEXT UP ---
             if (nextExhibit != null) ...[
-               Text(l10n.nextStopLabel.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
-               const SizedBox(height: 8),
-               Card(
-                 elevation: 0,
-                 shape: RoundedRectangleBorder(
-                   borderRadius: BorderRadius.circular(24),
-                   side: BorderSide(color: Colors.white.withOpacity(0.05)),
-                 ),
-                 color: AppColors.cinematicCard,
-                 child: ListTile(
-                   leading: ClipRRect(
-                     borderRadius: BorderRadius.circular(8),
-                     child: Image.asset(
-                       _imageMap[nextExhibit.id] ?? 'assets/images/museum_interior.jpg',
-                       width: 50,
-                       height: 50,
-                       fit: BoxFit.cover,
-                     ),
-                   ),
-                   title: Text(nextExhibit.getName(Localizations.localeOf(context).languageCode), style: AppTextStyles.cardTitle(context).copyWith(fontSize: 16)),
-                   subtitle: Text(l10n.robotWaiting, style: AppTextStyles.helper(context).copyWith(fontSize: 12)),
-                   trailing: const Icon(Icons.chevron_right, color: AppColors.neutralMedium),
-                   onTap: _skipExhibit,
-                 ),
-               ),
+              Text(
+                l10n.nextStopLabel.toUpperCase(),
+                style: AppTextStyles.displaySectionTitle(context),
+              ),
+              const SizedBox(height: 8),
+              Card(
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
+                  side: BorderSide(color: Colors.white.withOpacity(0.05)),
+                ),
+                color: AppColors.cinematicCard,
+                child: ListTile(
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.asset(
+                      _imageMap[nextExhibit.id] ??
+                          'assets/images/museum_interior.jpg',
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  title: Text(
+                    nextExhibit.getName(
+                      Localizations.localeOf(context).languageCode,
+                    ),
+                    style: AppTextStyles.titleMedium(
+                      context,
+                    ).copyWith(fontSize: 16),
+                  ),
+                  subtitle: Text(
+                    l10n.robotWaiting,
+                    style: AppTextStyles.metadata(
+                      context,
+                    ).copyWith(fontSize: 12),
+                  ),
+                  trailing: const Icon(
+                    Icons.chevron_right,
+                    color: AppColors.neutralMedium,
+                  ),
+                  onTap: _skipExhibit,
+                ),
+              ),
             ] else ...[
-               PrimaryButton(
-                 label: l10n.endTour,
-                 onPressed: () => Navigator.pushReplacementNamed(context, '/summary'),
-                 fullWidth: true,
-               ),
+              PrimaryButton(
+                label: l10n.endTour,
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, '/summary'),
+                fullWidth: true,
+              ),
             ],
           ],
         ),
@@ -376,9 +443,18 @@ class _StatusChip extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            isPulsing ? _PulsingDot(color: color) : Icon(icon, size: 16, color: color),
+            isPulsing
+                ? _PulsingDot(color: color)
+                : Icon(icon, size: 16, color: color),
             const SizedBox(width: 8),
-            Text(label, style: AppTextStyles.helper(context).copyWith(color: color, fontWeight: FontWeight.bold, fontSize: 12)),
+            Text(
+              label,
+              style: AppTextStyles.metadata(context).copyWith(
+                color: color,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            ),
           ],
         ),
       ),
@@ -394,14 +470,18 @@ class _PulsingDot extends StatefulWidget {
   State<_PulsingDot> createState() => _PulsingDotState();
 }
 
-class _PulsingDotState extends State<_PulsingDot> with SingleTickerProviderStateMixin {
+class _PulsingDotState extends State<_PulsingDot>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _opacity;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000))..repeat(reverse: true);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    )..repeat(reverse: true);
     _opacity = Tween<double>(begin: 0.3, end: 1.0).animate(_controller);
   }
 
@@ -429,7 +509,11 @@ class _ControlButton extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
 
-  const _ControlButton({required this.icon, required this.label, required this.onTap});
+  const _ControlButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -441,7 +525,12 @@ class _ControlButton extends StatelessWidget {
           iconSize: 28,
         ),
         const SizedBox(height: 4),
-        Text(label, style: AppTextStyles.helper(context).copyWith(fontSize: 12, fontWeight: FontWeight.w500)),
+        Text(
+          label,
+          style: AppTextStyles.metadata(
+            context,
+          ).copyWith(fontSize: 12, fontWeight: FontWeight.w500),
+        ),
       ],
     );
   }
@@ -452,7 +541,11 @@ class _TourProgressTimeline extends StatelessWidget {
   final int total;
   final String label;
 
-  const _TourProgressTimeline({required this.currentIndex, required this.total, required this.label});
+  const _TourProgressTimeline({
+    required this.currentIndex,
+    required this.total,
+    required this.label,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -462,8 +555,16 @@ class _TourProgressTimeline extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label.toUpperCase(), style: AppTextStyles.sectionTitle(context)),
-            Text("${currentIndex + 1} / $total", style: AppTextStyles.helper(context).copyWith(color: Colors.white70)),
+            Text(
+              label.toUpperCase(),
+              style: AppTextStyles.displaySectionTitle(context),
+            ),
+            Text(
+              "${currentIndex + 1} / $total",
+              style: AppTextStyles.metadata(
+                context,
+              ).copyWith(color: Colors.white70),
+            ),
           ],
         ),
         const SizedBox(height: 12),
@@ -480,8 +581,8 @@ class _TourProgressTimeline extends StatelessWidget {
                   color: isCompleted
                       ? AppColors.primaryGold
                       : (isCurrent
-                          ? AppColors.primaryGold.withOpacity(0.3)
-                          : AppColors.cinematicSection),
+                            ? AppColors.primaryGold.withOpacity(0.3)
+                            : AppColors.cinematicSection),
                   borderRadius: BorderRadius.circular(3),
                 ),
               ),

@@ -60,8 +60,8 @@ class BottomNav extends StatelessWidget {
             showUnselectedLabels: true,
             selectedFontSize: 11,
             unselectedFontSize: 11,
-            selectedLabelStyle: AppTextStyles.helper(context).copyWith(fontSize: 11, fontWeight: FontWeight.bold),
-            unselectedLabelStyle: AppTextStyles.helper(context).copyWith(fontSize: 11),
+            selectedLabelStyle: AppTextStyles.navLabel(context).copyWith(fontWeight: FontWeight.bold),
+            unselectedLabelStyle: AppTextStyles.navLabel(context),
             elevation: 0,
             backgroundColor: Colors.transparent,
             items: [

@@ -12,7 +12,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Horus';
 
   @override
-  String get exploreEgypt => 'Explore Egypt With Horus';
+  String get exploreEgypt => 'Explore Egypt With Horus-Bot';
 
   @override
   String nextStop(Object location, Object time) {
@@ -53,6 +53,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get alwaysAvailable => 'Always available';
 
   @override
+  String get discoverStoryBehind => 'Discover the story behind everything';
+
+  @override
   String get aboutHorusBot => 'About the Guide';
 
   @override
@@ -63,6 +66,53 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guestUser => 'Guest User';
+
+  @override
+  String get chatHeaderTitle => 'Horus Guide';
+
+  @override
+  String get chatHeaderSubtitle =>
+      'Ask your museum questions in a premium way.';
+
+  @override
+  String get voiceInputNotAvailable =>
+      'Voice input is not available on this platform yet.';
+
+  @override
+  String get micPermissionTitle => 'Microphone';
+
+  @override
+  String get micPermissionDesc =>
+      'Used for voice interaction and questions to Horus.';
+
+  @override
+  String get micPermissionDenied => 'Microphone permission was denied.';
+
+  @override
+  String get micPermissionSettings =>
+      'Please enable microphone access from Settings.';
+
+  @override
+  String get micListening => 'Listening... Speak now.';
+
+  @override
+  String get moreInfo => 'More info';
+
+  @override
+  String get moreInfoText =>
+      'Ask about tickets, opening hours, events, exhibits, or directions.';
+
+  @override
+  String get humanSupportLabel => 'Request live human support';
+
+  @override
+  String get humanSupportAck => 'Live human support request received.';
+
+  @override
+  String get chatLoading => 'Horus is thinking...';
+
+  @override
+  String get chatInputHint => 'Ask the Guide about anything...';
 
   @override
   String get exploreMuseum => 'Explore the museum';
@@ -385,10 +435,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your data is anonymous and used only for navigation.';
 
   @override
-  String get introTitle => 'The Egyptian Museums';
-
-  @override
-  String get introSubtitle => 'Explore Egyptian museums with Horus-Bot.';
+  String get introSubtitle => 'Discover ancient wonders with Horus-Bot';
 
   @override
   String get introThe => 'The ';
@@ -408,28 +455,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboarding1Desc =>
-      'Your smart guide to the museum. Navigate exhibits, follow the robot, and discover hidden stories.';
+      'Step into a world of ancient wonders, where every artifact has a story to tell.';
 
   @override
-  String get onboarding2Title => 'Meet the Guide';
+  String get onboarding2Title => 'Your Personal Guide';
 
   @override
   String get onboarding2Desc =>
-      'Your intelligent museum guide. Ask questions, listen to explanations, and explore during your visit.';
+      'Ask questions, hear stories, and explore the museum in a smarter, more immersive way.';
 
   @override
-  String get onboarding3Title => 'Guided Tour Mode';
+  String get onboarding3Title => 'Explore Seamlessly';
 
   @override
   String get onboarding3Desc =>
-      'Automatic guidance through exhibits. Stay connected with Horus-Bot throughout your journey.';
+      'Navigate through exhibits with ease and stay connected to your guide throughout your journey.';
 
   @override
-  String get onboarding4Title => 'Explore & Learn';
+  String get onboarding4Title => 'Discover More';
 
   @override
   String get onboarding4Desc =>
-      'Discover artifacts, ask questions, and enjoy interactive museum quizzes.';
+      'Uncover hidden stories, interact with exhibits, and make every visit unforgettable.';
 
   @override
   String get next => 'Next';
@@ -714,12 +761,202 @@ class AppLocalizationsEn extends AppLocalizations {
       'Needed for scanning QR tickets and future AR features.';
 
   @override
-  String get micPermissionTitle => 'Microphone';
-
-  @override
-  String get micPermissionDesc =>
-      'Used for voice interaction and questions to Horus.';
-
-  @override
   String get continueBtn => 'CONTINUE TO HOME';
+
+  @override
+  String get benhaUniversity => 'Benha University';
+
+  @override
+  String get facultyEngineeringShoubra => 'Faculty of Engineering at Shoubra';
+
+  @override
+  String get computerCommunicationProgram =>
+      'Computer & Communication Engineering Program';
+
+  @override
+  String get drMohamedHussein => 'Dr. Mohamed Hussein';
+
+  @override
+  String youScored(int score, int total) {
+    return 'You scored $score out of $total';
+  }
+
+  @override
+  String get retry => 'RETRY';
+
+  @override
+  String get doneButton => 'DONE';
+
+  @override
+  String get guestVisitor => 'Guest Visitor';
+
+  @override
+  String get englishLanguage => 'English';
+
+  @override
+  String get arabicLanguage => 'العربية';
+
+  @override
+  String get webPermissionsNote =>
+      'Permissions are managed by your browser settings on web.';
+
+  @override
+  String get ticketConfirmation => 'Ticket confirmation';
+
+  @override
+  String get scanResult => 'Scan result';
+
+  @override
+  String get feedbackSubmitted => 'Feedback submitted';
+
+  @override
+  String get horusBotTitle => 'Horus-Bot';
+
+  @override
+  String get version1 => 'Version 1.0';
+
+  @override
+  String get smartAutonomousGuide => 'Smart Autonomous Museum Guide';
+
+  @override
+  String get projectDescription =>
+      'Horus-Bot is a smart autonomous museum guide robot designed to enhance museum visitor experience through autonomous navigation, multilingual interaction, and a companion mobile application.';
+
+  @override
+  String get projectDescriptionLabel => 'Project Description';
+
+  @override
+  String get technologiesUsedLabel => 'Technologies Used';
+
+  @override
+  String get developedByLabel => 'Developed By';
+
+  @override
+  String get teamLabel => 'Team';
+
+  @override
+  String get supervisorLabel => 'Supervisor';
+
+  @override
+  String get copyrightYear => 'Copyright © 2026 Horus-Bot Project';
+
+  @override
+  String get notificationExplanationTitle =>
+      'Stay Connected with Notifications';
+
+  @override
+  String get notificationExplanationBody =>
+      'Receive timely updates about your museum journey to make the most of your visit.';
+
+  @override
+  String get notificationExampleTourStarting =>
+      'Your tour will start in 10 minutes';
+
+  @override
+  String get notificationExampleNextExhibit =>
+      'Next exhibit is ahead: Tutankhamun Hall';
+
+  @override
+  String get notificationExampleQuizAvailable =>
+      'Quick quiz available for Ancient Egypt';
+
+  @override
+  String get notificationExampleTicketReminder => 'Your museum visit is today';
+
+  @override
+  String get notificationExplanationAllow => 'Allow Notifications';
+
+  @override
+  String get notificationExplanationDecline => 'Not Now';
+
+  @override
+  String get notificationPermissionDeniedTitle => 'Notifications Disabled';
+
+  @override
+  String get notificationPermissionDeniedBody =>
+      'To receive tour updates and reminders, enable notifications in your device settings.';
+
+  @override
+  String get openSettings => 'Open Settings';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get notificationSettings => 'Notification Settings';
+
+  @override
+  String get notificationSettingsSubtitle =>
+      'Choose which notifications you want to receive';
+
+  @override
+  String get enableAllNotifications => 'Enable All Notifications';
+
+  @override
+  String get disableAllNotifications => 'Disable All Notifications';
+
+  @override
+  String get tourUpdatesCategory => 'Tour Updates';
+
+  @override
+  String get tourUpdatesCategoryDesc => 'Tour starts, progress, and completion';
+
+  @override
+  String get exhibitRemindersCategory => 'Exhibit Reminders';
+
+  @override
+  String get exhibitRemindersCategoryDesc =>
+      'Nearby exhibits and new discoveries';
+
+  @override
+  String get quizRemindersCategory => 'Quiz Reminders';
+
+  @override
+  String get quizRemindersCategoryDesc => 'Quiz availability notifications';
+
+  @override
+  String get guideRemindersCategory => 'Guide Reminders';
+
+  @override
+  String get guideRemindersCategoryDesc => 'Ask the guide suggestions';
+
+  @override
+  String get museumNewsCategory => 'Museum News';
+
+  @override
+  String get museumNewsCategoryDesc => 'Did you know facts and events';
+
+  @override
+  String get ticketRemindersCategory => 'Ticket Reminders';
+
+  @override
+  String get ticketRemindersCategoryDesc => 'Visit and event reminders';
+
+  @override
+  String get systemAlertsCategory => 'System Alerts';
+
+  @override
+  String get systemAlertsCategoryDesc => 'Connection and status updates';
+
+  @override
+  String get notificationPermissionStatus => 'Notification Permission';
+
+  @override
+  String get notificationPermissionGranted => 'Enabled';
+
+  @override
+  String get notificationPermissionDenied => 'Disabled';
+
+  @override
+  String get enableNotifications => 'Enable Notifications';
+
+  @override
+  String get disableNotifications => 'Disable Notifications';
+
+  @override
+  String get quickSuggestions => 'Quick suggestions';
+
+  @override
+  String get chatInfoPopup =>
+      'You can ask about tickets, events, hours, or exhibits.';
 }
