@@ -149,12 +149,6 @@ class _SideMenu extends StatelessWidget {
                         onTap: () => onReplace(AppRoutes.profile),
                       ),
                       _MenuItem(
-                        icon: Icons.language_outlined,
-                        label: l10n.language,
-                        selected: currentRoute == AppRoutes.language,
-                        onTap: () => onReplace(AppRoutes.language),
-                      ),
-                      _MenuItem(
                         icon: Icons.accessibility_outlined,
                         label: l10n.accessibility,
                         selected: currentRoute == AppRoutes.accessibility,

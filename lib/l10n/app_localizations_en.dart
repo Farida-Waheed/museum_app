@@ -72,7 +72,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatHeaderSubtitle =>
-      'Ask your museum questions in a premium way.';
+      'Ask your museum questions while you follow Horus-Bot.';
 
   @override
   String get voiceInputNotAvailable =>
@@ -109,10 +109,40 @@ class AppLocalizationsEn extends AppLocalizations {
   String get humanSupportAck => 'Live human support request received.';
 
   @override
+  String get humanSupportRequested => 'Human support requested';
+
+  @override
+  String get humanSupportRequestPending =>
+      'A human representative will respond shortly.';
+
+  @override
+  String get quickHelpTopics => 'Quick help topics';
+
+  @override
+  String get askButton => 'Ask';
+
+  @override
+  String robotArrivalIn(Object time) {
+    return 'Arrival in $time';
+  }
+
+  @override
+  String get supportRequestStatus => 'Request status';
+
+  @override
+  String get supportStatusPending => 'Pending';
+
+  @override
+  String get supportStatusInProgress => 'In progress';
+
+  @override
+  String get supportStatusResolved => 'Resolved';
+
+  @override
   String get chatLoading => 'Horus is thinking...';
 
   @override
-  String get chatInputHint => 'Ask the Guide about anything...';
+  String get chatInputHint => 'Ask the Guide while you follow Horus-Bot.';
 
   @override
   String get exploreMuseum => 'Explore the museum';
@@ -209,7 +239,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appLanguageSubtitle =>
-      'Choose your preferred language for the app UI and content.';
+      'Choose your preferred app language; Horus-Bot remains your tour leader.';
 
   @override
   String get saveNote => 'These settings are saved on this device only.';
@@ -448,7 +478,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get introSubtitleFull =>
-      'Explore Egypt with your Horus-Bot and its app.';
+      'Explore Egypt with Horus-Bot and its companion app.';
 
   @override
   String get onboarding1Title => 'Welcome to Horus';
@@ -462,7 +492,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get onboarding2Desc =>
-      'Ask questions, hear stories, and explore the museum in a smarter, more immersive way.';
+      'Ask questions, hear stories, and explore the museum with Horus-Bot and its companion app.';
 
   @override
   String get onboarding3Title => 'Explore Seamlessly';
@@ -609,7 +639,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appVersion => 'Version 1.0';
 
   @override
-  String get appTagline => 'Smart Autonomous Museum Guide';
+  String get appTagline => 'Companion app for Horus-Bot';
 
   @override
   String get developedBy => 'Developed by';
@@ -689,7 +719,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get version => 'Version 1.0';
 
   @override
-  String get aboutDesc => 'Your AI companion.';
+  String get aboutDesc => 'Your companion to Horus-Bot.';
 
   @override
   String get university => 'Benha University';
@@ -702,7 +732,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tourStartingMsg =>
-      'Your guided tour is starting. Follow Horus-Bot.';
+      'Your guided tour is starting. Follow Horus-Bot while using the app for extra details.';
 
   @override
   String get nextExhibitTitle => 'Next Exhibit Ahead';
@@ -730,7 +760,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get robotNearbyTitle => 'Horus-Bot is nearby';
 
   @override
-  String get robotNearbyMsg => 'Follow the robot to continue your tour.';
+  String get robotNearbyMsg =>
+      'Follow the robot and keep using the app for extra details.';
 
   @override
   String get permissionsTitle => 'App Permissions';
@@ -794,7 +825,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get englishLanguage => 'English';
 
   @override
-  String get arabicLanguage => 'العربية';
+  String get arabicLanguage => 'Arabic';
 
   @override
   String get webPermissionsNote =>

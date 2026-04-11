@@ -221,7 +221,7 @@ abstract class AppLocalizations {
   /// No description provided for @chatHeaderSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Ask your museum questions in a premium way.'**
+  /// **'Ask your museum questions while you follow Horus-Bot.'**
   String get chatHeaderSubtitle;
 
   /// No description provided for @voiceInputNotAvailable.
@@ -284,6 +284,60 @@ abstract class AppLocalizations {
   /// **'Live human support request received.'**
   String get humanSupportAck;
 
+  /// No description provided for @humanSupportRequested.
+  ///
+  /// In en, this message translates to:
+  /// **'Human support requested'**
+  String get humanSupportRequested;
+
+  /// No description provided for @humanSupportRequestPending.
+  ///
+  /// In en, this message translates to:
+  /// **'A human representative will respond shortly.'**
+  String get humanSupportRequestPending;
+
+  /// No description provided for @quickHelpTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick help topics'**
+  String get quickHelpTopics;
+
+  /// No description provided for @askButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask'**
+  String get askButton;
+
+  /// No description provided for @robotArrivalIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival in {time}'**
+  String robotArrivalIn(Object time);
+
+  /// No description provided for @supportRequestStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Request status'**
+  String get supportRequestStatus;
+
+  /// No description provided for @supportStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get supportStatusPending;
+
+  /// No description provided for @supportStatusInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get supportStatusInProgress;
+
+  /// No description provided for @supportStatusResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get supportStatusResolved;
+
   /// No description provided for @chatLoading.
   ///
   /// In en, this message translates to:
@@ -293,7 +347,7 @@ abstract class AppLocalizations {
   /// No description provided for @chatInputHint.
   ///
   /// In en, this message translates to:
-  /// **'Ask the Guide about anything...'**
+  /// **'Ask the Guide while you follow Horus-Bot.'**
   String get chatInputHint;
 
   /// No description provided for @exploreMuseum.
@@ -479,7 +533,7 @@ abstract class AppLocalizations {
   /// No description provided for @appLanguageSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Choose your preferred language for the app UI and content.'**
+  /// **'Choose your preferred app language; Horus-Bot remains your tour leader.'**
   String get appLanguageSubtitle;
 
   /// No description provided for @saveNote.
@@ -947,7 +1001,7 @@ abstract class AppLocalizations {
   /// No description provided for @introSubtitleFull.
   ///
   /// In en, this message translates to:
-  /// **'Explore Egypt with your Horus-Bot and its app.'**
+  /// **'Explore Egypt with Horus-Bot and its companion app.'**
   String get introSubtitleFull;
 
   /// No description provided for @onboarding1Title.
@@ -971,7 +1025,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboarding2Desc.
   ///
   /// In en, this message translates to:
-  /// **'Ask questions, hear stories, and explore the museum in a smarter, more immersive way.'**
+  /// **'Ask questions, hear stories, and explore the museum with Horus-Bot and its companion app.'**
   String get onboarding2Desc;
 
   /// No description provided for @onboarding3Title.
@@ -1247,7 +1301,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTagline.
   ///
   /// In en, this message translates to:
-  /// **'Smart Autonomous Museum Guide'**
+  /// **'Companion app for Horus-Bot'**
   String get appTagline;
 
   /// No description provided for @developedBy.
@@ -1403,7 +1457,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutDesc.
   ///
   /// In en, this message translates to:
-  /// **'Your AI companion.'**
+  /// **'Your companion to Horus-Bot.'**
   String get aboutDesc;
 
   /// No description provided for @university.
@@ -1427,7 +1481,7 @@ abstract class AppLocalizations {
   /// No description provided for @tourStartingMsg.
   ///
   /// In en, this message translates to:
-  /// **'Your guided tour is starting. Follow Horus-Bot.'**
+  /// **'Your guided tour is starting. Follow Horus-Bot while using the app for extra details.'**
   String get tourStartingMsg;
 
   /// No description provided for @nextExhibitTitle.
@@ -1475,7 +1529,7 @@ abstract class AppLocalizations {
   /// No description provided for @robotNearbyMsg.
   ///
   /// In en, this message translates to:
-  /// **'Follow the robot to continue your tour.'**
+  /// **'Follow the robot and keep using the app for extra details.'**
   String get robotNearbyMsg;
 
   /// No description provided for @permissionsTitle.
@@ -1589,7 +1643,7 @@ abstract class AppLocalizations {
   /// No description provided for @arabicLanguage.
   ///
   /// In en, this message translates to:
-  /// **'العربية'**
+  /// **'Arabic'**
   String get arabicLanguage;
 
   /// No description provided for @webPermissionsNote.

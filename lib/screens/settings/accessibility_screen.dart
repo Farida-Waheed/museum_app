@@ -100,12 +100,10 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
   }
 
   String _getStatusText(Permission p, AppLocalizations l10n) {
-    if (kIsWeb) return "Managed by browser";
+    if (kIsWeb) return l10n.webPermissionsNote;
     final s = _statuses[p];
     if (s == null) return l10n.settingsDisabled;
-    if (s.isGranted) return "Enabled";
-    if (s.isDenied) return l10n.settingsDisabled;
-    if (s.isPermanentlyDenied) return "Permanently Disabled";
+    if (s.isGranted) return l10n.notificationPermissionGranted;
     return l10n.settingsDisabled;
   }
 
@@ -115,7 +113,6 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final isArabic = prefs.language == 'ar';
 
     return AppMenuShell(
       hideDefaultAppBar: true,
@@ -573,7 +570,7 @@ class _PermissionItem extends StatelessWidget {
               Text(
                 status,
                 style: TextStyle(
-                  color: status == "Enabled" ? Colors.green : Colors.white38,
+                  color: status == l10n.notificationPermissionGranted ? Colors.green : Colors.white38,
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
                 ),

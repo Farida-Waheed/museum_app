@@ -1,8 +1,8 @@
-﻿import 'dart:math' as math;
-import '../models/exhibit.dart';
+﻿import '../models/exhibit.dart';
 import '../services/chat_context_builder.dart';
 import 'conversation_memory_service.dart';
 import 'museum_knowledge_service.dart';
+import 'robot_suggestion_service.dart';
 
 abstract class ChatAiService {
   Future<String> generateAnswer({
@@ -18,12 +18,15 @@ abstract class ChatAiService {
 class LocalMuseumChatService implements ChatAiService {
   final MuseumKnowledgeService _knowledge;
   final ConversationMemoryService _memory;
+  final RobotSuggestionService _robotSuggestion;
 
   LocalMuseumChatService({
     MuseumKnowledgeService? knowledge,
     ConversationMemoryService? memory,
+    RobotSuggestionService? robotSuggestion,
   })  : _knowledge = knowledge ?? MuseumKnowledgeService(),
-        _memory = memory ?? ConversationMemoryService();
+        _memory = memory ?? ConversationMemoryService(),
+        _robotSuggestion = robotSuggestion ?? RobotSuggestionService();
 
   String _buildSystemPrompt(ChatContext context) {
     if (context.language == 'ar') {
@@ -112,34 +115,36 @@ class LocalMuseumChatService implements ChatAiService {
         : 'I couldn’t match that exactly, but I can still help with tickets, hours, exhibits, events, or directions. Try asking about one of those topics.';
   }
 
-  String _composeExhibitResponse(Exhibit exhibit, String question, String language) {
+  String _composeShortExhibitAnswer(Exhibit exhibit, String question, String language) {
     final title = exhibit.getName(language);
-    final description = exhibit.getDescription(language);
-    if (language == 'ar') {
-      if (_isWhereIntent(_normalize(question))) {
-        return 'المعرض $title موجود في القاعة الرئيسية. استمر في الاتجاه نحو علامات المتحف وستجده قريبًا.';
-      }
-      if (question.contains('من') || question.toLowerCase().contains('who')) {
-        return '$title هو قطعة مهمة هنا. $description';
-      }
-      return '$title هو أحد المعروضات الرئيسية. $description';
-    }
+    final summary = _knowledge.getShortExhibitOverview(exhibit, language);
     if (_isWhereIntent(_normalize(question))) {
-      return '$title is located in the main hall route. Follow the museum signs to find it.';
+      return language == 'ar'
+          ? '$title موجود في القاعة الرئيسية. اتبع لافتات المتحف لتجده سريعًا.'
+          : '$title is in the main hall route. Follow museum signs to find it quickly.';
     }
+
+    if (language == 'ar') {
+      if (question.contains('من') || question.toLowerCase().contains('who')) {
+        return '$title هو معروض مهم هنا. $summary';
+      }
+      return '$title هو عرض مميز. $summary';
+    }
+
     if (question.toLowerCase().contains('who')) {
-      return '$title is a key piece in the collection. $description';
+      return '$title is a key piece in the collection. $summary';
     }
-    return '$title is one of the highlights. $description';
+
+    return '$title is a highlight of the museum. $summary';
   }
 
   String _composeCorrectionResponse(Exhibit exhibit, String query, String language) {
     final exhibitName = exhibit.getName(language);
-    final exhibitDescription = exhibit.getDescription(language);
+    final shortOverview = _knowledge.getShortExhibitOverview(exhibit, language);
     if (language == 'ar') {
-      return 'لم أجد شيئًا باسم "$query" ضمن معروضات المتحف. هل كنت تعني $exhibitName؟ $exhibitDescription';
+      return 'لم أجد شيئًا باسم "$query" ضمن معروضات المتحف. هل كنت تقصد $exhibitName؟ $shortOverview';
     }
-    return 'I could not find anything named "$query" in the museum context. Did you mean $exhibitName? $exhibitDescription';
+    return 'I could not find anything named "$query" in the museum context. Did you mean $exhibitName? $shortOverview';
   }
 
   String _composeNearMatchResponse(List<Exhibit> suggestions, String language) {
@@ -148,7 +153,7 @@ class LocalMuseumChatService implements ChatAiService {
     }
     final first = suggestions.first.getName(language);
     if (language == 'ar') {
-      return 'لم أجد تطابقًا دقيقًا، لكن هذه القطعة قد تكون ما تقصده: $first. اسألني عنها أو عن أي معروض آخر.';
+      return 'لم أجد تطابقًا دقيقًا، لكن هذه القطعة قد تكون ما تقصده: $first. اسألني عنها أو عن أي معرض آخر.';
     }
     return 'I didn’t find an exact match, but this may be what you mean: $first. Ask me about it or another exhibit.';
   }
@@ -249,13 +254,29 @@ class LocalMuseumChatService implements ChatAiService {
     }
 
     if (matchedExhibit != null) {
-      final answer = _composeExhibitResponse(matchedExhibit, question, language);
-      _memory.addAssistantMessage(answer);
-      return answer;
+      final answer = _composeShortExhibitAnswer(matchedExhibit, question, language);
+      final finalAnswer = _robotSuggestion.appendRobotSuggestion(
+        answer,
+        context,
+        isExhibitAnswer: true,
+      );
+      _memory.addAssistantMessage(finalAnswer);
+      return finalAnswer;
     }
 
-    final known = _knowledge.findClosestMatches(question);
-    final answer = _composeNearMatchResponse(known, language);
+    final closestMatches = _knowledge.findClosestMatches(question);
+    if (closestMatches.isNotEmpty) {
+      final answer = _composeCorrectionResponse(closestMatches.first, question, language);
+      final finalAnswer = _robotSuggestion.appendRobotSuggestion(
+        answer,
+        context,
+        isExhibitAnswer: true,
+      );
+      _memory.addAssistantMessage(finalAnswer);
+      return finalAnswer;
+    }
+
+    final answer = _composeNearMatchResponse(closestMatches, language);
     _memory.addAssistantMessage(answer);
     return answer;
   }

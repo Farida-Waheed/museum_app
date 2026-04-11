@@ -57,8 +57,8 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = AppLocalizations.of(context)?.localeName == 'ar';
-    final buttonText = isArabic ? 'اسأل' : 'Ask';
+    final l10n = AppLocalizations.of(context)!;
+    final buttonText = l10n.askButton;
     return AnimatedBuilder(
       animation: _glowCtrl,
       builder: (context, child) {

@@ -149,6 +149,20 @@ class _RequestSummaryCard extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
+              Text('${l10n.supportRequestStatus}: ', style: AppTextStyles.metadata(context).copyWith(color: Colors.white70)),
+              Text(
+                request.status == SupportRequestStatus.pending
+                    ? l10n.supportStatusPending
+                    : request.status == SupportRequestStatus.inProgress
+                        ? l10n.supportStatusInProgress
+                        : l10n.supportStatusResolved,
+                style: AppTextStyles.metadata(context).copyWith(color: Colors.white),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
               Text('${l10n.supportRequestCreatedAt}: ', style: AppTextStyles.metadata(context).copyWith(color: Colors.white70)),
               Text(request.createdAt.toLocal().toString(), style: AppTextStyles.metadata(context).copyWith(color: Colors.white)),
             ],

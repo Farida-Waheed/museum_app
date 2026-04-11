@@ -102,7 +102,11 @@ class _SupportRequestCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(
-                      request.statusLabel,
+                      request.status == SupportRequestStatus.pending
+                          ? l10n.supportStatusPending
+                          : request.status == SupportRequestStatus.inProgress
+                              ? l10n.supportStatusInProgress
+                              : l10n.supportStatusResolved,
                       style: AppTextStyles.metadata(context).copyWith(
                         color: AppColors.primaryGold,
                         fontSize: 12,

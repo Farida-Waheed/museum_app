@@ -71,7 +71,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get chatHeaderTitle => 'دليل حورس';
 
   @override
-  String get chatHeaderSubtitle => 'اطرح أسئلة المتحف بطريقة متميزة.';
+  String get chatHeaderSubtitle => 'اطرح أسئلتك أثناء متابعتك لحوروس-بوت.';
 
   @override
   String get voiceInputNotAvailable =>
@@ -108,10 +108,40 @@ class AppLocalizationsAr extends AppLocalizations {
   String get humanSupportAck => 'تم استلام طلب الدعم البشري.';
 
   @override
+  String get humanSupportRequested => 'تم طلب الدعم البشري';
+
+  @override
+  String get humanSupportRequestPending =>
+      'سيرد عليك ممثل الخدمة البشرية قريبًا جدًا.';
+
+  @override
+  String get quickHelpTopics => 'مواضيع سريعة';
+
+  @override
+  String get askButton => 'اسأل';
+
+  @override
+  String robotArrivalIn(Object time) {
+    return 'وصول خلال $time';
+  }
+
+  @override
+  String get supportRequestStatus => 'حالة الطلب';
+
+  @override
+  String get supportStatusPending => 'قيد الانتظار';
+
+  @override
+  String get supportStatusInProgress => 'قيد المعالجة';
+
+  @override
+  String get supportStatusResolved => 'تم الحل';
+
+  @override
   String get chatLoading => 'حورس يفكر...';
 
   @override
-  String get chatInputHint => 'اسأل الدليل عن أي شيء...';
+  String get chatInputHint => 'اسأل الدليل أثناء متابعتك لحوروس-بوت.';
 
   @override
   String get exploreMuseum => 'استكشف المتحف';
@@ -208,7 +238,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get appLanguageSubtitle =>
-      'اختر اللغة المفضلة لواجهة التطبيق والمحتوى.';
+      'اختر لغة التطبيق المفضلة؛ يظل حوروس-بوت قائدا لجولتك.';
 
   @override
   String get saveNote => 'يتم حفظ هذه الإعدادات على هذا الجهاز فقط.';
@@ -444,7 +474,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get introMuseums => 'المتاحف';
 
   @override
-  String get introSubtitleFull => 'استكشف مصر مع حورس-بوت وتطبيقه.';
+  String get introSubtitleFull => 'استكشف مصر مع حوروس-بوت وتطبيقه المكمّل.';
 
   @override
   String get onboarding1Title => 'مرحبًا بك في حورس';
@@ -458,7 +488,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get onboarding2Desc =>
-      'اطرح الأسئلة، استمع إلى القصص، واستكشف المتحف بطريقة أذكى وأكثر غمرًا.';
+      'اطرح الأسئلة، استمع إلى القصص، واستكشف المتحف مع حوروس-بوت وتطبيقه المكمّل.';
 
   @override
   String get onboarding3Title => 'استكشف بسلاسة';
@@ -604,7 +634,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get appVersion => 'الإصدار ١.٠';
 
   @override
-  String get appTagline => 'مرشد متحف ذكي ذاتي القيادة';
+  String get appTagline => 'تطبيق مكمّل لحوروس-بوت';
 
   @override
   String get developedBy => 'تم التطوير بواسطة';
@@ -682,7 +712,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get version => 'الإصدار ١.٠';
 
   @override
-  String get aboutDesc => 'رفيقك الذكي.';
+  String get aboutDesc => 'رفيقك لتجربة حوروس-بوت.';
 
   @override
   String get university => 'جامعة بنها';
@@ -694,7 +724,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tourStartingTitle => 'بدء الجولة';
 
   @override
-  String get tourStartingMsg => 'جولتك الإرشادية ستبدأ الآن. اتبع حوروس-بوت.';
+  String get tourStartingMsg =>
+      'جولتك الإرشادية تبدأ الآن. اتبع حوروس-بوت واستخدم التطبيق لمزيد من التفاصيل.';
 
   @override
   String get nextExhibitTitle => 'المعروض التالي قادم';
@@ -722,7 +753,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get robotNearbyTitle => 'حوروس قريب منك';
 
   @override
-  String get robotNearbyMsg => 'اتبع الروبوت لمواصلة جولتك.';
+  String get robotNearbyMsg =>
+      'اتبع الروبوت واستمر في استخدام التطبيق لمزيد من التفاصيل.';
 
   @override
   String get permissionsTitle => 'أذونات التطبيق';
@@ -782,7 +814,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get guestVisitor => 'زائر';
 
   @override
-  String get englishLanguage => 'English';
+  String get englishLanguage => 'الإنجليزية';
 
   @override
   String get arabicLanguage => 'العربية';

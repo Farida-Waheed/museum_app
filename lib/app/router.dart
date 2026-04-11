@@ -22,7 +22,6 @@ import '../screens/tickets/my_tickets_screen.dart';
 import '../screens/tickets/qr_scanner_screen.dart';
 
 import '../screens/feedback/feedback_screen.dart';
-import '../screens/language/language_screen.dart';
 import '../screens/settings/accessibility_screen.dart';
 import '../screens/settings/notification_settings_screen.dart';
 import '../screens/settings/project_info_screen.dart';
@@ -59,7 +58,6 @@ class AppRoutes {
   static const String notificationSettings = '/notification_settings';
   static const String projectInfo = '/project_info';
   static const String feedback = '/feedback';
-  static const String language = '/language';
   static const String arView = '/ar_view';
 
   static const String profile = '/profile';
@@ -108,7 +106,6 @@ class AppRoutes {
       notificationSettings: (context) => const NotificationSettingsScreen(),
       projectInfo: (context) => const ProjectInfoScreen(),
       feedback: (context) => const FeedbackScreen(),
-      language: (context) => const LanguageScreen(),
       arView: (context) => const SizedBox(), // TODO: Implement ArScreen
 
       profile: (context) => const SizedBox(), // TODO: Implement ProfileScreen

@@ -23,6 +23,24 @@ class UserPreferencesModel extends ChangeNotifier {
   bool _hasSeenNotificationPermissionPrompt = false;
   bool _notificationsEnabled = true;
 
+  static const List<String> supportedLanguages = ['en', 'ar'];
+  static const String defaultLanguage = 'en';
+
+  static String normalizeLanguage(String? language) {
+    if (language == null || language.isEmpty) {
+      return defaultLanguage;
+    }
+
+    final code = language.toLowerCase();
+    if (code.startsWith('ar')) {
+      return 'ar';
+    }
+    if (code.startsWith('en')) {
+      return 'en';
+    }
+    return defaultLanguage;
+  }
+
   String get language => _language;
   bool get isHighContrast => _isHighContrast;
   double get fontScale => _fontScale;
@@ -46,7 +64,7 @@ class UserPreferencesModel extends ChangeNotifier {
     bool initialNotificationsEnabled = true,
     bool skipLoad = false,
   }) {
-    _language = initialLanguage;
+    _language = normalizeLanguage(initialLanguage);
     _hasCompletedOnboarding = initialOnboardingCompleted;
     _isHighContrast = initialIsHighContrast;
     _fontScale = initialFontScale;
@@ -65,7 +83,7 @@ class UserPreferencesModel extends ChangeNotifier {
   static Future<Map<String, dynamic>> getInitialPrefs() async {
     final prefs = await SharedPreferences.getInstance();
     return {
-      'language': prefs.getString(_kLanguage) ?? 'en',
+      'language': normalizeLanguage(prefs.getString(_kLanguage)),
       'hasCompletedOnboarding':
           prefs.getBool(_kHasCompletedOnboarding) ?? false,
       'isHighContrast': prefs.getBool(_kIsHighContrast) ?? false,
@@ -82,7 +100,7 @@ class UserPreferencesModel extends ChangeNotifier {
 
   Future<void> _loadFromPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    _language = prefs.getString(_kLanguage) ?? 'en';
+    _language = normalizeLanguage(prefs.getString(_kLanguage));
     _isHighContrast = prefs.getBool(_kIsHighContrast) ?? false;
     _fontScale = prefs.getDouble(_kFontScale) ?? 1.0;
     _hasCompletedOnboarding = prefs.getBool(_kHasCompletedOnboarding) ?? false;
@@ -97,9 +115,13 @@ class UserPreferencesModel extends ChangeNotifier {
   }
 
   Future<void> setLanguage(String lang) async {
-    _language = lang;
+    final normalized = normalizeLanguage(lang);
+    if (_language == normalized) {
+      return;
+    }
+    _language = normalized;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_kLanguage, lang);
+    await prefs.setString(_kLanguage, normalized);
     notifyListeners();
   }
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/tour_provider.dart';
 import '../models/user_preferences.dart';
+import '../l10n/app_localizations.dart';
 import '../core/constants/colors.dart';
 import '../core/constants/text_styles.dart';
 
@@ -13,6 +14,7 @@ class RobotStatusBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final tourProvider = Provider.of<TourProvider>(context);
     final prefs = Provider.of<UserPreferencesModel>(context);
+    final l10n = AppLocalizations.of(context)!;
     final isArabic = prefs.language == 'ar';
 
     final state = tourProvider.robotState;
@@ -88,7 +90,7 @@ class RobotStatusBanner extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        (isArabic ? "حالة حوروس" : "HORUS-BOT STATUS").toUpperCase(),
+                        l10n.guideStatus.toUpperCase(),
                         style: AppTextStyles.displaySectionTitle(context).copyWith(
                           fontSize: 10,
                           letterSpacing: 1.2,
@@ -110,7 +112,7 @@ class RobotStatusBanner extends StatelessWidget {
                   ),
                 ),
                 if (state == RobotState.moving && tourProvider.nextExhibitId != null)
-                  _EstimatedArrival(seconds: tourProvider.estimatedTimeToNext, isArabic: isArabic, color: statusColor),
+                  _EstimatedArrival(seconds: tourProvider.estimatedTimeToNext, color: statusColor),
               ],
             ),
           ),
@@ -201,17 +203,15 @@ class _StatusIndicatorState extends State<_StatusIndicator>
 
 class _EstimatedArrival extends StatelessWidget {
   final double seconds;
-  final bool isArabic;
   final Color color;
-  const _EstimatedArrival({required this.seconds, required this.isArabic, required this.color});
+  const _EstimatedArrival({required this.seconds, required this.color});
 
   @override
   Widget build(BuildContext context) {
     final mins = (seconds / 60).floor();
     final secs = (seconds % 60).floor();
     final timeStr = mins > 0 ? "${mins}m ${secs}s" : "${secs}s";
-    final label = isArabic ? "وصول خلال $timeStr" : "Arrival in $timeStr";
-
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
@@ -220,7 +220,7 @@ class _EstimatedArrival extends StatelessWidget {
         border: Border.all(color: color.withOpacity(0.2)),
       ),
       child: Text(
-        label,
+        l10n.robotArrivalIn(timeStr),
         style: AppTextStyles.metadata(context).copyWith(fontSize: 11, fontWeight: FontWeight.w900, color: color),
       ),
     );

@@ -68,12 +68,7 @@ class MuseumKnowledgeService {
       'كليوباترا',
       'تمثال ملكة بطلمية',
     ],
-    'gem_anubis_chest': [
-      'anubis chest',
-      'anubis',
-      'أنوبيس',
-      'مقصورة أنوبيس',
-    ],
+    'gem_anubis_chest': ['anubis chest', 'anubis', 'أنوبيس', 'مقصورة أنوبيس'],
   };
 
   String _normalize(String input) {
@@ -82,6 +77,9 @@ class MuseumKnowledgeService {
         .replaceAll(RegExp(r'[^\w\s\u0600-\u06FF]'), ' ')
         .replaceAll(RegExp(r'[_\W]+'), ' ')
         .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+  }
+
   List<String> _searchTerms(Exhibit exhibit) {
     final terms = <String>[
       exhibit.nameEn,
@@ -103,7 +101,10 @@ class MuseumKnowledgeService {
   int _levenshteinDistance(String a, String b) {
     final lenA = a.length;
     final lenB = b.length;
-    final matrix = List.generate(lenA + 1, (_) => List<int>.filled(lenB + 1, 0));
+    final matrix = List.generate(
+      lenA + 1,
+      (_) => List<int>.filled(lenB + 1, 0),
+    );
     for (var i = 0; i <= lenA; i++) matrix[i][0] = i;
     for (var j = 0; j <= lenB; j++) matrix[0][j] = j;
     for (var i = 1; i <= lenA; i++) {
@@ -126,7 +127,8 @@ class MuseumKnowledgeService {
     // Exact and alias matches
     for (final exhibit in _exhibits) {
       for (final term in _searchTerms(exhibit)) {
-        if (term == normalizedQuery || term.contains(normalizedQuery) ||
+        if (term == normalizedQuery ||
+            term.contains(normalizedQuery) ||
             normalizedQuery.contains(term)) {
           return exhibit;
         }
@@ -162,9 +164,7 @@ class MuseumKnowledgeService {
       scores[exhibit] = maxScore;
     }
 
-    final sorted = scores.entries
-        .where((entry) => entry.value > 0.25)
-        .toList()
+    final sorted = scores.entries.where((entry) => entry.value > 0.25).toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
     return sorted.take(limit).map((entry) => entry.key).toList();
@@ -174,7 +174,9 @@ class MuseumKnowledgeService {
     final normalizedQuery = _normalize(query);
     if (normalizedQuery.isEmpty) return [];
     final results = _exhibits.where((exhibit) {
-      return _searchTerms(exhibit).any((term) => term.contains(normalizedQuery));
+      return _searchTerms(
+        exhibit,
+      ).any((term) => term.contains(normalizedQuery));
     }).toList();
     if (results.isNotEmpty) return results;
     return findClosestMatches(query);
@@ -197,6 +199,53 @@ class MuseumKnowledgeService {
     } catch (_) {
       return null;
     }
+  }
+
+  String getTicketInfo({required String language}) {
+    if (language == 'ar') {
+      return 'التذاكر متاحة عند المدخل. السعر القياسي 250 جنيهًا، مع خصومات للطلاب والأطفال. تُقبل بطاقات النقد وبطاقات الائتمان.';
+    }
+    return 'Tickets are available at the entrance. Standard admission is EGP 250, with discounts for students and children. Both cash and cards are accepted.';
+  }
+
+  String getMuseumHours({required String language}) {
+    if (language == 'ar') {
+      return 'المتحف مفتوح من 9 صباحًا حتى 5 مساءً يومياً ما عدا العطلات الرسمية. يُنصح بالوصول مبكراً لتفادي الزحام.';
+    }
+    return 'The museum is open daily from 9 AM to 5 PM, except public holidays. We recommend arriving early to avoid the crowds.';
+  }
+
+  String getEventHighlights({required String language}) {
+    if (language == 'ar') {
+      return 'تُقام جولات مرشدة وورش عمل خاصة طوال اليوم. تحقق من اللوحات الإرشادية في الردهة الرئيسية لمعرفة التوقيتات الدقيقة.';
+    }
+    return 'Guided tours and special workshops are running throughout the day. Check the signage in the main foyer for exact schedules.';
+  }
+
+  String getVisitDuration({required String language}) {
+    if (language == 'ar') {
+      return 'الزيارات العادية تستغرق عادة بين ساعة ونصف إلى ساعتين. إذا كنت ترغب في استكشاف كل التفاصيل، فخطط لبضع ساعات إضافية.';
+    }
+    return 'A typical visit takes about one and a half to two hours. If you want to explore every detail, plan for a few extra hours.';
+  }
+
+  String _shortTextExcerpt(String text, {int maxLength = 130}) {
+    final cleaned = text.replaceAll(RegExp(r'[\r\n]+'), ' ').trim();
+    final sentences = cleaned.split(RegExp(r'(?<=[.!?؟])\s+'));
+    var excerpt = sentences.isNotEmpty ? sentences.first : cleaned;
+    if (excerpt.length > maxLength) {
+      excerpt = '${excerpt.substring(0, maxLength).trim()}...';
+    }
+    return excerpt;
+  }
+
+  String getShortExhibitOverview(Exhibit exhibit, String language) {
+    final description = exhibit.getDescription(language);
+    final excerpt = _shortTextExcerpt(description);
+    if (language == 'ar') {
+      return excerpt;
+    }
+    return excerpt;
   }
 
   /// Produces a retrieval context snippet from the exhibit and environmental info.

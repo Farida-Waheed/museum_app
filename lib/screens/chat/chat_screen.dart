@@ -26,7 +26,12 @@ class ChatScreen extends StatefulWidget {
   final bool isPopup;
   final String screen;
   final String? currentExhibitId;
-  const ChatScreen({super.key, this.isPopup = false, this.screen = 'home', this.currentExhibitId});
+  const ChatScreen({
+    super.key,
+    this.isPopup = false,
+    this.screen = 'home',
+    this.currentExhibitId,
+  });
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -102,22 +107,26 @@ class _SuggestionChipsCard extends StatelessWidget {
         return ConstrainedBox(
           constraints: const BoxConstraints(minWidth: 80, maxWidth: 150),
           child: OutlinedButton(
-            style: TextButton.styleFrom(
-              backgroundColor: AppColors.primaryGold.withOpacity(0.16),
-              foregroundColor: Colors.white,
-              side: BorderSide(
-                color: AppColors.primaryGold.withOpacity(0.85),
-                width: 1,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(22),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            ).copyWith(
-              overlayColor: MaterialStateProperty.all(
-                AppColors.primaryGold.withOpacity(0.24),
-              ),
-            ),
+            style:
+                TextButton.styleFrom(
+                  backgroundColor: AppColors.primaryGold.withOpacity(0.16),
+                  foregroundColor: Colors.white,
+                  side: BorderSide(
+                    color: AppColors.primaryGold.withOpacity(0.85),
+                    width: 1,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
+                ).copyWith(
+                  overlayColor: MaterialStateProperty.all(
+                    AppColors.primaryGold.withOpacity(0.24),
+                  ),
+                ),
             onPressed: () {
               String query;
               if (isArabic) {
@@ -161,10 +170,9 @@ class _SuggestionChipsCard extends StatelessWidget {
               fit: BoxFit.scaleDown,
               child: Text(
                 s,
-                style: AppTextStyles.bodyPrimary(context).copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                ),
+                style: AppTextStyles.bodyPrimary(
+                  context,
+                ).copyWith(color: Colors.white, fontWeight: FontWeight.w700),
               ),
             ),
           ),
@@ -213,11 +221,11 @@ class _TypingIndicatorState extends State<_TypingIndicator>
 
   @override
   Widget build(BuildContext context) {
-    final text = widget.isArabic ? "الدليل يكتب..." : "The Guide is typing...";
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         Text(
-          text,
+          l10n.chatLoading,
           style: AppTextStyles.metadata(context).copyWith(
             color: AppColors.neutralMedium,
             fontSize: 11,
@@ -613,19 +621,23 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     setState(() => _voicePlaybackEnabled = !_voicePlaybackEnabled);
   }
 
-  void _requestHumanSupport() {
+  void _requestHumanSupport({required String userQuestion}) {
+    final l10n = AppLocalizations.of(context)!;
     final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
-    final isArabic = prefs.language == 'ar';
-    final requestName = isArabic ? 'زائر' : 'Visitor';
+    final requestName = l10n.guestUser;
     final contextData = ChatContextBuilder.build(
       context,
       screen: widget.screen,
       exhibitId: widget.currentExhibitId,
-      userQuestion: '',
+      userQuestion: userQuestion,
     );
     final initialMessages = _chatProvider.messages.map((message) {
-      final sender = message.isUser ? SupportSender.user : SupportSender.assistant;
-      final text = message.kind == MessageKind.text ? message.text : message.cardTitle ?? '';
+      final sender = message.isUser
+          ? SupportSender.user
+          : SupportSender.assistant;
+      final text = message.kind == MessageKind.text
+          ? message.text
+          : message.cardTitle ?? '';
       return SupportMessage(
         id: DateTime.now().microsecondsSinceEpoch.toString(),
         sender: sender,
@@ -642,23 +654,23 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       initialMessages: initialMessages,
     );
 
-    _addMessage(ChatMessageModel.card(
-      id: _id(),
-      isUser: false,
-      timestamp: DateTime.now(),
-      cardTitle: isArabic ? 'تم طلب الدعم البشري' : 'Human support requested',
-      cardItems: isArabic
-          ? ['سيرد عليك ممثل الخدمة البشرية قريبًا جدًا.']
-          : ['A human representative will respond shortly.'],
-    ));
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        duration: const Duration(seconds: 2),
-        content: Text(
-          AppLocalizations.of(context)?.humanSupportAck ??
-              'Your human support request is sent.',
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.humanSupportAck),
+          backgroundColor: AppColors.primaryGold,
+          behavior: SnackBarBehavior.floating,
         ),
+      );
+    }
+
+    _addMessage(
+      ChatMessageModel.card(
+        id: _id(),
+        isUser: false,
+        timestamp: DateTime.now(),
+        cardTitle: l10n.humanSupportRequested,
+        cardItems: [l10n.humanSupportRequestPending],
       ),
     );
   }
@@ -687,7 +699,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         text: trimmed,
       ),
     );
-    _conversationMemory.addUserMessage(trimmed);
 
     final isSupportRequest = _assistantService.isHumanSupportRequest(trimmed);
     setState(() {
@@ -709,8 +720,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       userQuestion: trimmed,
     );
 
-    final delay = const Duration(milliseconds: 80);
-    Future.delayed(delay, () async {
+    Future.microtask(() async {
       if (!mounted) return;
       final response = await _assistantService.generateAnswer(
         question: trimmed,
@@ -728,29 +738,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       id: _id(),
       isUser: false,
       timestamp: DateTime.now(),
-      text: '',
+      text: fullText,
     );
     _addMessage(botMsg);
-    int index = 0;
-    _typeTimer = Timer.periodic(const Duration(milliseconds: 8), (t) {
-      if (!mounted || index >= fullText.length) {
-        t.cancel();
-        _speakAssistantReply(fullText);
-        return;
-      }
-      final last = _chatProvider.lastMessage;
-      if (last != null && last.id == botMsg.id) {
-        _chatProvider.updateLastMessage(
-          ChatMessageModel.text(
-            id: last.id,
-            isUser: false,
-            timestamp: last.timestamp,
-            text: last.text + fullText[index],
-          ),
-        );
-      }
-      index++;
-    });
+    _speakAssistantReply(fullText);
   }
 
   @override
@@ -783,7 +774,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 itemCount: messages.length,
                 itemBuilder: (context, i) {
                   final m = messages[i];
-                  if (!m.isUser && m.kind == MessageKind.infoCard &&
+                  if (!m.isUser &&
+                      m.kind == MessageKind.infoCard &&
                       m.cardTitle?.toLowerCase().contains('quick') == true) {
                     return MessageEntryAnimator(
                       isUser: m.isUser,
@@ -823,7 +815,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 onPressed: _handleMicTap,
                 icon: Icon(
                   _isListening ? Icons.mic : Icons.mic_none_rounded,
-                  color: _isListening ? AppColors.primaryGold : AppColors.primaryGold,
+                  color: _isListening
+                      ? AppColors.primaryGold
+                      : AppColors.primaryGold,
                 ),
               ),
               Expanded(
@@ -833,16 +827,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       ? TextDirection.rtl
                       : TextDirection.ltr,
                   onSubmitted: _submit,
-                  style: AppTextStyles.bodyPrimary(context).copyWith(
-                    color: isDark ? Colors.white : AppColors.darkInk,
-                  ),
+                  style: AppTextStyles.bodyPrimary(
+                    context,
+                  ).copyWith(color: isDark ? Colors.white : AppColors.darkInk),
                   decoration: InputDecoration(
-                    hintText: isArabic
-                        ? "اسأل الدليل عن أي شيء..."
-                        : "Ask the Guide about anything...",
-                    hintStyle: AppTextStyles.bodyPrimary(context).copyWith(
-                      color: isDark ? Colors.white38 : Colors.black38,
-                    ),
+                    hintText: l10n.chatInputHint,
+                    hintStyle: AppTextStyles.bodyPrimary(
+                      context,
+                    ).copyWith(color: isDark ? Colors.white38 : Colors.black38),
                     fillColor: isDark
                         ? Colors.white.withOpacity(0.05)
                         : Colors.grey.shade50,
@@ -907,13 +899,17 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             padding: const EdgeInsets.only(top: 8, bottom: 4),
             child: Row(
               children: [
-                const Icon(Icons.hearing, size: 16, color: AppColors.primaryGold),
+                const Icon(
+                  Icons.hearing,
+                  size: 16,
+                  color: AppColors.primaryGold,
+                ),
                 const SizedBox(width: 8),
                 Text(
-                  isArabic ? 'يستمع الدليل للصوت...' : 'Listening for your question...',
-                  style: AppTextStyles.metadata(context).copyWith(
-                    color: AppColors.primaryGold,
-                  ),
+                  l10n.micListening,
+                  style: AppTextStyles.metadata(
+                    context,
+                  ).copyWith(color: AppColors.primaryGold),
                 ),
               ],
             ),
@@ -935,11 +931,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                           size: 20,
                           color: AppColors.primaryGold,
                         ),
-                        onPressed: () => setState(() => _showHelperPanel = !_showHelperPanel),
+                        onPressed: () => setState(
+                          () => _showHelperPanel = !_showHelperPanel,
+                        ),
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        isArabic ? 'المزيد من المعلومات' : 'More info',
+                        l10n.moreInfo,
                         style: AppTextStyles.metadata(context).copyWith(
                           color: AppColors.primaryGold,
                           fontWeight: FontWeight.w600,
@@ -953,10 +951,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 child: TextButton.icon(
                   icon: const Icon(Icons.support_agent_outlined, size: 18),
                   label: Text(
-                    isArabic ? 'أحتاج مساعدة بشرية' : 'Request live human support',
-                    style: AppTextStyles.metadata(context).copyWith(
-                      color: AppColors.primaryGold,
-                    ),
+                    l10n.humanSupportLabel,
+                    style: AppTextStyles.metadata(
+                      context,
+                    ).copyWith(color: AppColors.primaryGold),
                   ),
                   onPressed: _requestHumanSupport,
                 ),
@@ -1001,7 +999,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           CompositedTransformFollower(
             link: _infoLink,
             showWhenUnlinked: false,
-            targetAnchor: isArabic ? Alignment.bottomRight : Alignment.bottomLeft,
+            targetAnchor: isArabic
+                ? Alignment.bottomRight
+                : Alignment.bottomLeft,
             followerAnchor: isArabic ? Alignment.topRight : Alignment.topLeft,
             offset: const Offset(0, -12),
             child: Material(
@@ -1011,7 +1011,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 decoration: BoxDecoration(
                   color: AppColors.cinematicCard,
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: AppColors.primaryGold.withOpacity(0.25)),
+                  border: Border.all(
+                    color: AppColors.primaryGold.withOpacity(0.25),
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.25),
@@ -1020,13 +1022,18 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 14,
+                ),
                 child: Column(
-                  crossAxisAlignment: isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                  crossAxisAlignment: isArabic
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      isArabic ? 'مواضيع سريعة' : 'Quick help topics',
+                      l10n.quickHelpTopics,
                       style: AppTextStyles.titleMedium(context).copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w900,
@@ -1036,23 +1043,29 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     Wrap(
                       spacing: 10,
                       runSpacing: 10,
-                      alignment: isArabic ? WrapAlignment.end : WrapAlignment.start,
+                      alignment: isArabic
+                          ? WrapAlignment.end
+                          : WrapAlignment.start,
                       children: helperItems.entries.map((entry) {
                         return InkWell(
                           onTap: () => _submitQuickQuestion(entry.value),
                           borderRadius: BorderRadius.circular(18),
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 10,
+                            ),
                             decoration: BoxDecoration(
                               color: AppColors.primaryGold.withOpacity(0.18),
                               borderRadius: BorderRadius.circular(18),
                             ),
                             child: Text(
                               entry.key,
-                              style: AppTextStyles.bodyPrimary(context).copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                              ),
+                              style: AppTextStyles.bodyPrimary(context)
+                                  .copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w700,
+                                  ),
                             ),
                           ),
                         );
@@ -1082,7 +1095,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       appBar: AppBar(
         title: Text(
           l10n.askTheGuide.toUpperCase(),
-          style: AppTextStyles.displayScreenTitle(context).copyWith(fontWeight: FontWeight.w900, fontSize: 18),
+          style: AppTextStyles.displayScreenTitle(
+            context,
+          ).copyWith(fontWeight: FontWeight.w900, fontSize: 18),
         ),
         backgroundColor: isDark ? AppColors.darkHeader : Colors.white,
         elevation: 0,
@@ -1092,7 +1107,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Padding(padding: const EdgeInsets.all(16.0), child: contentWithFloatingHelper),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: contentWithFloatingHelper,
+      ),
       floatingActionButton: _showScrollBtn
           ? FloatingActionButton.small(
               onPressed: _scrollToBottom,
@@ -1104,5 +1122,3 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     );
   }
 }
-
-
