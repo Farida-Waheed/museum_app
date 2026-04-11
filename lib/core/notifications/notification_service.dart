@@ -309,7 +309,9 @@ class NotificationService {
   /// Encode payload for platform layer
   String _encodePayload(NotificationPayload payload) {
     final json = payload.toJson();
-    return json.entries.map((e) => '${e.key}=${e.value}').join('&');
+    return json.entries
+        .map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+        .join('&');
   }
 
   /// Decode payload from platform layer
@@ -317,10 +319,11 @@ class NotificationService {
     final parts = encodedPayload.split('&');
     final json = <String, dynamic>{};
     for (final part in parts) {
-      if (part.contains('=')) {
-        final keyValue = part.split('=');
-        json[keyValue[0]] = keyValue[1];
-      }
+      final equalsIndex = part.indexOf('=');
+      if (equalsIndex <= 0) continue;
+      final key = Uri.decodeComponent(part.substring(0, equalsIndex));
+      final value = Uri.decodeComponent(part.substring(equalsIndex + 1));
+      json[key] = value;
     }
     return NotificationPayload.fromJson(json);
   }
