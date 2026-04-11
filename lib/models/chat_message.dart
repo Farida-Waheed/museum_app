@@ -14,6 +14,7 @@ class ChatMessageModel {
   final String text;
   final String? cardTitle;
   final List<String>? cardItems;
+  final bool isHumanSupport;
 
   ChatMessageModel.text({
     required this.id,
@@ -22,7 +23,8 @@ class ChatMessageModel {
     required this.text,
   }) : kind = MessageKind.text,
        cardTitle = null,
-       cardItems = null;
+       cardItems = null,
+       isHumanSupport = false;
 
   ChatMessageModel.card({
     required this.id,
@@ -31,5 +33,16 @@ class ChatMessageModel {
     required this.cardTitle,
     required this.cardItems,
   }) : kind = MessageKind.infoCard,
-       text = '';
+       text = '',
+       isHumanSupport = false;
+
+  ChatMessageModel.humanSupport({
+    required this.id,
+    required this.timestamp,
+    required this.text,
+  }) : isUser = false,
+       kind = MessageKind.text,
+       cardTitle = null,
+       cardItems = null,
+       isHumanSupport = true;
 }

@@ -311,5 +311,15 @@
   "enableNotifications": "تفعيل التنبيهات",
   "disableNotifications": "تعطيل التنبيهات",
   "quickSuggestions": "اقتراحات سريعة",
-  "chatInfoPopup": "يمكنك السؤال عن التذاكر أو الفعاليات أو المواعيد أو المعروضات."
+  "chatInfoPopup": "يمكنك السؤال عن التذاكر أو الفعاليات أو المواعيد أو المعروضات.",
+  "supportConversationTitle": "محادثة الدعم",
+  "supportRequestNotFound": "طلب الدعم غير موجود",
+  "supportReplyHint": "اكتب ردك...",
+  "supportRequestFrom": "من",
+  "supportRequestCreatedAt": "أنشئ في",
+  "supportInboxTitle": "صندوق الدعم",
+  "supportNoRequests": "لا توجد طلبات دعم",
+  "supportStatusPending": "قيد الانتظار",
+  "supportStatusInProgress": "قيد المعالجة",
+  "supportStatusResolved": "تم الحل"
 }

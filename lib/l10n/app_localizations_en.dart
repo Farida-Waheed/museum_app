@@ -133,7 +133,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get supportStatusPending => 'Pending';
 
   @override
-  String get supportStatusInProgress => 'In progress';
+  String get supportStatusInProgress => 'In Progress';
 
   @override
   String get supportStatusResolved => 'Resolved';
@@ -590,6 +590,244 @@ class AppLocalizationsEn extends AppLocalizations {
       'Follow the robot and uncover the stories behind ancient artifacts.';
 
   @override
+  String get museumMap => 'Museum Map';
+
+  @override
+  String get grandEgyptianMuseum => 'Grand Egyptian Museum';
+
+  @override
+  String get eastWingGoldenArtifacts => 'East Wing • Golden Artifacts';
+
+  @override
+  String get entrance => 'Entrance';
+
+  @override
+  String get explain => 'Explain';
+
+  @override
+  String get generateMyRoute => 'Generate My Route';
+
+  @override
+  String get customizeTourDescription =>
+      'Customize your museum tour based on your interests and available time.';
+
+  @override
+  String get interestsQuestion => 'What are your interests?';
+
+  @override
+  String get visitorStatistics => 'Visitor Statistics';
+
+  @override
+  String get myTours => 'My Tours';
+
+  @override
+  String get savedExhibits => 'Saved Exhibits';
+
+  @override
+  String get learningProgress => 'Learning Progress';
+
+  @override
+  String get quickPreferences => 'Quick Preferences';
+
+  @override
+  String get signOut => 'Sign Out';
+
+  @override
+  String get explorerLabel => 'Explorer';
+
+  @override
+  String memberSince(Object period) {
+    return 'Member since $period';
+  }
+
+  @override
+  String get tours => 'Tours';
+
+  @override
+  String get artifactsLabel => 'Artifacts';
+
+  @override
+  String get quizScoreLabel => 'Quiz Score';
+
+  @override
+  String get newKingdomHighlights => 'New Kingdom Highlights';
+
+  @override
+  String get tutankhamunTreasures => 'Tutankhamun Treasures';
+
+  @override
+  String get museumTickets => 'Museum Tickets';
+
+  @override
+  String get bookTicketsEarly => 'Book your tickets early to save time.';
+
+  @override
+  String get selectDate => 'Select Date';
+
+  @override
+  String get change => 'Change';
+
+  @override
+  String get ticketTypes => 'Ticket Types';
+
+  @override
+  String get adult => 'Adult';
+
+  @override
+  String get ages12Plus => 'Ages 12+';
+
+  @override
+  String get student => 'Student';
+
+  @override
+  String get withValidID => 'With valid ID';
+
+  @override
+  String get child => 'Child';
+
+  @override
+  String get ages5to11 => 'Ages 5-11';
+
+  @override
+  String get totalLabel => 'Total';
+
+  @override
+  String get continueLabel => 'Continue';
+
+  @override
+  String get ticketsConfirmed => 'Tickets Confirmed';
+
+  @override
+  String reservedTickets(Object date, Object tickets) {
+    return 'Reserved $tickets ticket(s) for $date.';
+  }
+
+  @override
+  String get viewMyTickets => 'View My Tickets';
+
+  @override
+  String get museumEntryTicket => 'Museum entry ticket';
+
+  @override
+  String get ticketID => 'Ticket ID';
+
+  @override
+  String get priceLabel => 'Price';
+
+  @override
+  String get activeStatus => 'Active';
+
+  @override
+  String get expiredStatus => 'Expired';
+
+  @override
+  String get showEntryCode => 'Show entry code';
+
+  @override
+  String get noTicketsYet => 'No tickets yet';
+
+  @override
+  String get ticketsEmptyDesc =>
+      'When you buy tickets from the booking screen, they will appear here for entry.';
+
+  @override
+  String get searchExhibits => 'Search Exhibits';
+
+  @override
+  String get searchByExhibitName => 'Search by exhibit name...';
+
+  @override
+  String get noResultsFound => 'No results found';
+
+  @override
+  String get noResultsFoundDesc =>
+      'Try a different word or check the spelling.';
+
+  @override
+  String get tapToViewDetailsAndAudioGuide =>
+      'Tap to view details and audio guide';
+
+  @override
+  String get currentTour => 'Current tour';
+
+  @override
+  String get progressLabel => 'Progress';
+
+  @override
+  String get durationLabel => 'Duration';
+
+  @override
+  String get completedLabel => 'Completed';
+
+  @override
+  String get visitedLabel => 'Visited';
+
+  @override
+  String get notVisitedYetLabel => 'Not visited yet';
+
+  @override
+  String get quizzesCompleted => 'Quizzes Completed';
+
+  @override
+  String get totalQuizScoreLabel => 'Total Quiz Score';
+
+  @override
+  String get skippedQuizzes => 'Skipped Quizzes';
+
+  @override
+  String get howWasYourVisit => 'How was your visit today?';
+
+  @override
+  String get rateYourExperience =>
+      'Rate your experience with the museum and Horus-Bot.';
+
+  @override
+  String get overallRating => 'Overall rating';
+
+  @override
+  String get feedbackAboutOptional => 'What is this feedback about? (optional)';
+
+  @override
+  String get tellUsMoreOptional => 'Tell us more (optional)';
+
+  @override
+  String get feedbackPrompt => 'What worked well or could be improved?';
+
+  @override
+  String get writeFeedbackHere => 'Write your feedback here...';
+
+  @override
+  String get feedbackUsedNote =>
+      'Feedback is used only for research and improving the visitor experience.';
+
+  @override
+  String get submitFeedback => 'Submit feedback';
+
+  @override
+  String get excellentThankYou => 'Excellent, thank you!';
+
+  @override
+  String get greatExperience => 'Great experience.';
+
+  @override
+  String get overallGood => 'Overall good.';
+
+  @override
+  String get needsImprovement => 'Needs some improvement.';
+
+  @override
+  String get notGoodExperience => 'Not a good experience.';
+
+  @override
+  String get pleaseAddRatingOrComment =>
+      'Please add a rating or a short comment first.';
+
+  @override
+  String memberSinceNote(Object period) {
+    return 'Member since $period';
+  }
+
+  @override
   String get museumExperience => 'Museum Experience';
 
   @override
@@ -990,4 +1228,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get chatInfoPopup =>
       'You can ask about tickets, events, hours, or exhibits.';
+
+  @override
+  String get supportConversationTitle => 'Support Conversation';
+
+  @override
+  String get supportRequestNotFound => 'Support request not found';
+
+  @override
+  String get supportReplyHint => 'Type your reply...';
+
+  @override
+  String get supportRequestFrom => 'From';
+
+  @override
+  String get supportRequestCreatedAt => 'Created at';
+
+  @override
+  String get supportInboxTitle => 'Support Inbox';
+
+  @override
+  String get supportNoRequests => 'No support requests';
 }

@@ -16,7 +16,6 @@ import '../../core/constants/text_styles.dart';
 import '../../services/conversation_memory_service.dart';
 import '../../services/chat_assistant_service.dart';
 import '../../services/museum_knowledge_service.dart';
-import '../../services/voice_assistant_service.dart';
 import '../../services/support_request_service.dart';
 import '../../models/support_message.dart';
 import '../../services/chat_context_builder.dart';
@@ -56,6 +55,8 @@ class _MessageEntryAnimatorState extends State<MessageEntryAnimator>
   late final Animation<double> _fade;
   late final Animation<Offset> _slide;
 
+  late final StreamSubscription _supportSubscription;
+
   @override
   void initState() {
     super.initState();
@@ -73,6 +74,7 @@ class _MessageEntryAnimatorState extends State<MessageEntryAnimator>
 
   @override
   void dispose() {
+    _supportSubscription.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -195,6 +197,8 @@ class _TypingIndicatorState extends State<_TypingIndicator>
   late final AnimationController _controller;
   late final List<Animation<double>> _dots;
 
+  late final StreamSubscription _supportSubscription;
+
   @override
   void initState() {
     super.initState();
@@ -215,6 +219,7 @@ class _TypingIndicatorState extends State<_TypingIndicator>
 
   @override
   void dispose() {
+    _supportSubscription.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -307,15 +312,32 @@ class ChatBubble extends StatelessWidget {
             isUser: isUser,
             isArabic: msgIsArabic,
           )
-        : Text(
-            msg.text,
-            textDirection: dir,
-            style: AppTextStyles.bodyPrimary(context).copyWith(
-              color: textColor,
-              fontSize: 15,
-              height: 1.5,
-              fontWeight: isUser ? FontWeight.w900 : FontWeight.normal,
-            ),
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (msg.isHumanSupport)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(
+                    isArabicUI ? 'الدعم البشري' : 'Human Support',
+                    style: AppTextStyles.metadata(context).copyWith(
+                      color: AppColors.primaryGold,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              Text(
+                msg.text,
+                textDirection: dir,
+                style: AppTextStyles.bodyPrimary(context).copyWith(
+                  color: textColor,
+                  fontSize: 15,
+                  height: 1.5,
+                  fontWeight: isUser ? FontWeight.w900 : FontWeight.normal,
+                ),
+              ),
+            ],
           );
 
     final bubble = Container(
@@ -435,14 +457,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   bool _showScrollBtn = false;
   bool _canSend = false;
   bool _showHelperPanel = false;
-  bool _isListening = false;
-  bool _voicePlaybackEnabled = false;
   Timer? _typeTimer;
   late final ChatProvider _chatProvider;
   late final ConversationMemoryService _conversationMemory;
   late final ChatAiService _assistantService;
-  late final VoiceAssistantService _voiceService;
   late final SupportRequestService _supportService;
+
+  late final StreamSubscription _supportSubscription;
 
   @override
   void initState() {
@@ -454,12 +475,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       knowledge: MuseumKnowledgeService(),
       memory: _conversationMemory,
     );
-    _voiceService = VoiceAssistantService();
     _supportService = SupportRequestService();
-    _voiceService.init().then((_) {
-      if (!mounted) return;
-      setState(() {});
-    });
     _scroll.addListener(_scrollChecker);
     _controller.addListener(() {
       final ok = _controller.text.trim().isNotEmpty;
@@ -474,6 +490,20 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       // Ensure we scroll to bottom once the greeting message is added.
       Future.delayed(const Duration(milliseconds: 50), () {
         if (!mounted) return;
+        _scrollToBottom();
+      });
+    });
+
+    _supportSubscription = _supportService.onReply.listen((message) {
+      if (!mounted) return;
+      _chatProvider.addMessage(
+        ChatMessageModel.humanSupport(
+          id: message.id,
+          timestamp: message.timestamp,
+          text: message.text,
+        ),
+      );
+      Future.delayed(const Duration(milliseconds: 100), () {
         _scrollToBottom();
       });
     });
@@ -503,125 +533,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     });
   }
 
-  Future<void> _handleMicTap() async {
-    if (kIsWeb) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: const Duration(seconds: 3),
-          content: Text(
-            AppLocalizations.of(context)?.webPermissionsNote ??
-                'Voice input coming soon',
-          ),
-        ),
-      );
-      return;
-    }
-
-    final status = await Permission.microphone.status;
-    if (status.isPermanentlyDenied) {
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) {
-          final l10n = AppLocalizations.of(context)!;
-          return BrandedPermissionDialog(
-            icon: Icons.mic_none_rounded,
-            title: l10n.micPermissionTitle,
-            description: l10n.micPermissionSettings,
-            onAllow: () async {
-              Navigator.pop(context);
-              await openAppSettings();
-            },
-            onDeny: () => Navigator.pop(context),
-          );
-        },
-      );
-      return;
-    }
-
-    if (status.isDenied) {
-      final l10n = AppLocalizations.of(context)!;
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => BrandedPermissionDialog(
-          icon: Icons.mic_none_rounded,
-          title: l10n.micPermissionTitle,
-          description: l10n.micPermissionDesc,
-          onAllow: () async {
-            Navigator.pop(context);
-            final result = await Permission.microphone.request();
-            if (result.isGranted) {
-              await _startListening();
-            }
-          },
-          onDeny: () => Navigator.pop(context),
-        ),
-      );
-      return;
-    }
-
-    await _startListening();
-  }
-
-  Future<void> _startListening() async {
-    if (_isListening) {
-      await _stopListening();
-      return;
-    }
-
-    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
-    final localeId = _voiceService.speechLocaleForLanguage(prefs.language);
-
-    final available = await _voiceService.startListening(
-      localeId: localeId,
-      onResult: (recognized) {
-        if (!mounted) return;
-        setState(() {
-          _controller.text = recognized;
-          _canSend = recognized.trim().isNotEmpty;
-        });
-      },
-      onFinalResult: (isFinal) async {
-        if (!mounted) return;
-        await _stopListening();
-        if (isFinal && _controller.text.trim().isNotEmpty) {
-          _submit(_controller.text);
-        }
-      },
-    );
-
-    if (!available) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: const Duration(seconds: 3),
-          content: Text(
-            AppLocalizations.of(context)?.micPermissionDesc ??
-                'Unable to start voice recognition.',
-          ),
-        ),
-      );
-    } else {
-      setState(() {
-        _isListening = true;
-      });
-    }
-  }
-
-  Future<void> _stopListening() async {
-    await _voiceService.stopListening();
-    if (!mounted) return;
-    setState(() {
-      _isListening = false;
-    });
-  }
-
-  void _toggleVoicePlayback() {
-    setState(() => _voicePlaybackEnabled = !_voicePlaybackEnabled);
-  }
-
-  void _requestHumanSupport({required String userQuestion}) {
+  void _requestHumanSupport({String userQuestion = ''}) {
     final l10n = AppLocalizations.of(context)!;
     final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
     final requestName = l10n.guestUser;
@@ -680,12 +592,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     _submit(query);
   }
 
-  void _speakAssistantReply(String text) {
-    if (!_voicePlaybackEnabled) return;
-    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
-    _voiceService.speak(text, prefs.language);
-  }
-
   void _submit(String text) {
     final trimmed = text.trim();
     if (trimmed.isEmpty) return;
@@ -741,14 +647,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       text: fullText,
     );
     _addMessage(botMsg);
-    _speakAssistantReply(fullText);
   }
 
   @override
   void dispose() {
+    _supportSubscription.cancel();
     _typeTimer?.cancel();
-    _voiceService.stopListening();
-    _voiceService.stopSpeaking();
     _controller.dispose();
     _scroll.dispose();
     super.dispose();
@@ -811,15 +715,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
           child: Row(
             children: [
-              IconButton(
-                onPressed: _handleMicTap,
-                icon: Icon(
-                  _isListening ? Icons.mic : Icons.mic_none_rounded,
-                  color: _isListening
-                      ? AppColors.primaryGold
-                      : AppColors.primaryGold,
-                ),
-              ),
               Expanded(
                 child: TextField(
                   controller: _controller,
@@ -871,49 +766,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: _toggleVoicePlayback,
-                child: Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: _voicePlaybackEnabled
-                        ? AppColors.primaryGold.withOpacity(0.22)
-                        : AppColors.darkSurface.withOpacity(0.4),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    _voicePlaybackEnabled ? Icons.volume_up : Icons.volume_off,
-                    color: _voicePlaybackEnabled
-                        ? AppColors.primaryGold
-                        : Colors.white70,
-                    size: 20,
-                  ),
-                ),
-              ),
             ],
           ),
         ),
-        if (_isListening)
-          Padding(
-            padding: const EdgeInsets.only(top: 8, bottom: 4),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.hearing,
-                  size: 16,
-                  color: AppColors.primaryGold,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  l10n.micListening,
-                  style: AppTextStyles.metadata(
-                    context,
-                  ).copyWith(color: AppColors.primaryGold),
-                ),
-              ],
-            ),
-          ),
         Padding(
           padding: const EdgeInsets.only(top: 8, bottom: 4),
           child: Row(
@@ -956,7 +811,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       context,
                     ).copyWith(color: AppColors.primaryGold),
                   ),
-                  onPressed: _requestHumanSupport,
+                  onPressed: () => _requestHumanSupport(),
                 ),
               ),
             ],
@@ -1000,16 +855,16 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             link: _infoLink,
             showWhenUnlinked: false,
             targetAnchor: isArabic
-                ? Alignment.bottomRight
-                : Alignment.bottomLeft,
-            followerAnchor: isArabic ? Alignment.topRight : Alignment.topLeft,
+                ? Alignment.topRight
+                : Alignment.topLeft,
+            followerAnchor: isArabic ? Alignment.bottomRight : Alignment.bottomLeft,
             offset: const Offset(0, -12),
             child: Material(
               color: Colors.transparent,
               child: Container(
                 width: math.min(MediaQuery.of(context).size.width * 0.72, 280),
                 decoration: BoxDecoration(
-                  color: AppColors.cinematicCard,
+                  color: AppColors.darkSurfaceSecondary,
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(
                     color: AppColors.primaryGold.withOpacity(0.25),
