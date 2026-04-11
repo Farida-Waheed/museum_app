@@ -857,7 +857,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             targetAnchor: isArabic
                 ? Alignment.topRight
                 : Alignment.topLeft,
-            followerAnchor: isArabic ? Alignment.topRight : Alignment.topLeft,
+            followerAnchor: isArabic ? Alignment.bottomRight : Alignment.bottomLeft,
             offset: const Offset(0, -12),
             child: Material(
               color: Colors.transparent,
