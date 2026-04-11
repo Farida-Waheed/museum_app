@@ -224,23 +224,11 @@ abstract class AppLocalizations {
   /// **'Ask your museum questions while you follow Horus-Bot.'**
   String get chatHeaderSubtitle;
 
-  /// No description provided for @voiceInputNotAvailable.
-  ///
-  /// In en, this message translates to:
-  /// **'Voice input is not available on this platform yet.'**
-  String get voiceInputNotAvailable;
-
   /// No description provided for @micPermissionTitle.
   ///
   /// In en, this message translates to:
   /// **'Microphone'**
   String get micPermissionTitle;
-
-  /// No description provided for @micPermissionDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Used for voice interaction and questions to Horus.'**
-  String get micPermissionDesc;
 
   /// No description provided for @micPermissionDenied.
   ///
@@ -1682,12 +1670,6 @@ abstract class AppLocalizations {
   /// **'Enable exhibit explanations'**
   String get detailedExplanations;
 
-  /// No description provided for @voiceInteraction.
-  ///
-  /// In en, this message translates to:
-  /// **'Enable voice interaction'**
-  String get voiceInteraction;
-
   /// No description provided for @permissionsCenter.
   ///
   /// In en, this message translates to:
@@ -1849,12 +1831,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Connect to nearby robot beacons'**
   String get bluetoothSub;
-
-  /// No description provided for @microphoneSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Used for voice commands to Horus-Bot'**
-  String get microphoneSub;
 
   /// No description provided for @cameraSub.
   ///

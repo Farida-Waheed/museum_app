@@ -74,15 +74,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get chatHeaderSubtitle => 'اطرح أسئلتك أثناء متابعتك لحوروس-بوت.';
 
   @override
-  String get voiceInputNotAvailable =>
-      'الإدخال الصوتي غير متاح على هذه المنصة بعد.';
-
-  @override
   String get micPermissionTitle => 'الميكروفون';
-
-  @override
-  String get micPermissionDesc =>
-      'يستخدم للتفاعل الصوتي وطرح الأسئلة على حوروس.';
 
   @override
   String get micPermissionDenied => 'تم رفض إذن الميكروفون.';
@@ -839,9 +831,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get detailedExplanations => 'تفعيل شروحات المعروضات';
 
   @override
-  String get voiceInteraction => 'تفعيل التفاعل الصوتي';
-
-  @override
   String get permissionsCenter => 'الأذونات';
 
   @override
@@ -921,9 +910,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get bluetoothSub => 'اتصل بمنارات الروبوت القريبة';
-
-  @override
-  String get microphoneSub => 'يستخدم للأوامر الصوتية لحوروس-بوت';
 
   @override
   String get cameraSub => 'يستخدم لمسح تذاكر QR وعرض الواقع المعزز';

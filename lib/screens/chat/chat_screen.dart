@@ -55,8 +55,6 @@ class _MessageEntryAnimatorState extends State<MessageEntryAnimator>
   late final Animation<double> _fade;
   late final Animation<Offset> _slide;
 
-  late final StreamSubscription _supportSubscription;
-
   @override
   void initState() {
     super.initState();
@@ -74,7 +72,6 @@ class _MessageEntryAnimatorState extends State<MessageEntryAnimator>
 
   @override
   void dispose() {
-    _supportSubscription.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -197,8 +194,6 @@ class _TypingIndicatorState extends State<_TypingIndicator>
   late final AnimationController _controller;
   late final List<Animation<double>> _dots;
 
-  late final StreamSubscription _supportSubscription;
-
   @override
   void initState() {
     super.initState();
@@ -219,7 +214,6 @@ class _TypingIndicatorState extends State<_TypingIndicator>
 
   @override
   void dispose() {
-    _supportSubscription.cancel();
     _controller.dispose();
     super.dispose();
   }
