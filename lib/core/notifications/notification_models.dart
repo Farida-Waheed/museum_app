@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'notification_types.dart';
 
 /// Payload data for deep-linking and context when notification is tapped.
@@ -31,7 +32,7 @@ class NotificationPayload {
       'tourId': tourId ?? '',
       'eventId': eventId ?? '',
       'quizId': quizId ?? '',
-      if (routeParams != null) ...routeParams!,
+      if (routeParams != null) 'routeParams': jsonEncode(routeParams),
     };
   }
 
@@ -48,9 +49,21 @@ class NotificationPayload {
       );
     } catch (_) {}
 
+    Map<String, String>? routeParams;
+    final routeParamsRaw = json['routeParams'] as String?;
+    if (routeParamsRaw != null && routeParamsRaw.isNotEmpty) {
+      try {
+        final parsed = jsonDecode(routeParamsRaw) as Map<String, dynamic>;
+        routeParams = parsed.map((key, value) => MapEntry(key, value.toString()));
+      } catch (_) {
+        routeParams = null;
+      }
+    }
+
     return NotificationPayload(
       type: type,
       targetRoute: json['targetRoute'] as String?,
+      routeParams: routeParams,
       exhibitId: json['exhibitId'] as String?,
       tourId: json['tourId'] as String?,
       eventId: json['eventId'] as String?,

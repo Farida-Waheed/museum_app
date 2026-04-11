@@ -8,7 +8,6 @@ import '../../core/constants/text_styles.dart';
 import '../../app/router.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/app_menu_shell.dart';
-import '../../widgets/bottom_nav.dart';
 import '../../widgets/dialogs/branded_permission_dialog.dart';
 
 class AccessibilityScreen extends StatefulWidget {
@@ -33,7 +32,6 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
       Permission.location,
       Permission.notification,
       Permission.camera,
-      Permission.microphone,
       Permission.bluetooth,
     ].request();
     if (mounted) {
@@ -111,8 +109,6 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return AppMenuShell(
       hideDefaultAppBar: true,

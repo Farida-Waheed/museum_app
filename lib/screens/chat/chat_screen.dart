@@ -3,9 +3,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/foundation.dart';
-import '../../widgets/dialogs/branded_permission_dialog.dart';
 import '../../models/user_preferences.dart';
 import '../../models/chat_message.dart';
 import '../../models/chat_provider.dart';
@@ -529,7 +526,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   void _requestHumanSupport({String userQuestion = ''}) {
     final l10n = AppLocalizations.of(context)!;
-    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
     final requestName = l10n.guestUser;
     final contextData = ChatContextBuilder.build(
       context,
