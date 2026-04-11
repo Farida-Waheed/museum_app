@@ -75,15 +75,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Ask your museum questions while you follow Horus-Bot.';
 
   @override
-  String get voiceInputNotAvailable =>
-      'Voice input is not available on this platform yet.';
-
-  @override
   String get micPermissionTitle => 'Microphone';
-
-  @override
-  String get micPermissionDesc =>
-      'Used for voice interaction and questions to Horus.';
 
   @override
   String get micPermissionDenied => 'Microphone permission was denied.';
@@ -844,9 +836,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get detailedExplanations => 'Enable exhibit explanations';
 
   @override
-  String get voiceInteraction => 'Enable voice interaction';
-
-  @override
   String get permissionsCenter => 'Permissions';
 
   @override
@@ -927,9 +916,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bluetoothSub => 'Connect to nearby robot beacons';
-
-  @override
-  String get microphoneSub => 'Used for voice commands to Horus-Bot';
 
   @override
   String get cameraSub => 'Used for scanning QR tickets and AR view';

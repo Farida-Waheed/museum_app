@@ -65,6 +65,10 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
       icon = Icons.camera_alt_outlined;
       title = l10n.cameraPermissionTitle;
       desc = l10n.cameraPermissionDesc;
+    } else if (p == Permission.microphone) {
+      icon = Icons.mic_none_rounded;
+      title = l10n.micPermissionTitle;
+      desc = "";
     } else if (p == Permission.bluetooth) {
       icon = Icons.bluetooth;
       title = l10n.bluetooth;
@@ -207,6 +211,11 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                       value: true,
                       onChanged: (v) {},
                     ),
+                    _SwitchItem(
+                      title: "",
+                      value: false,
+                      onChanged: (v) {},
+                    ),
                   ],
                 ),
               ),
@@ -237,6 +246,14 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                       subtitle: l10n.bluetoothSub,
                       status: _getStatusText(Permission.bluetooth, l10n),
                       onEnable: () => _requestPermission(Permission.bluetooth),
+                    ),
+                    _Divider(),
+                    _PermissionItem(
+                      icon: Icons.mic_none,
+                      title: l10n.microphone,
+                      subtitle: "",
+                      status: _getStatusText(Permission.microphone, l10n),
+                      onEnable: () => _requestPermission(Permission.microphone),
                     ),
                     _Divider(),
                     _PermissionItem(
