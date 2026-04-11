@@ -577,241 +577,238 @@ class AppLocalizationsAr extends AppLocalizations {
       'اتبع الروبوت واكتشف القصص وراء القطع الأثرية القديمة.';
 
   @override
-  String get museumMap => 'Museum Map';
+  String get museumMap => 'خريطة المتحف';
 
   @override
-  String get grandEgyptianMuseum => 'Grand Egyptian Museum';
+  String get grandEgyptianMuseum => 'المتحف المصري الكبير';
 
   @override
-  String get eastWingGoldenArtifacts => 'East Wing • Golden Artifacts';
+  String get eastWingGoldenArtifacts => 'الجناح الشرقي • مقتنيات ذهبية';
 
   @override
-  String get entrance => 'Entrance';
+  String get entrance => 'المدخل';
 
   @override
-  String get explain => 'Explain';
+  String get explain => 'شرح';
 
   @override
-  String get generateMyRoute => 'Generate My Route';
+  String get generateMyRoute => 'إنشاء مساري';
 
   @override
   String get customizeTourDescription =>
-      'Customize your museum tour based on your interests and available time.';
+      'خصص جولتك في المتحف بناءً على اهتماماتك والوقت المتاح.';
 
   @override
-  String get interestsQuestion => 'What are your interests?';
+  String get interestsQuestion => 'ما هي اهتماماتك؟';
 
   @override
-  String get visitorStatistics => 'Visitor Statistics';
+  String get visitorStatistics => 'إحصائيات الزوار';
 
   @override
-  String get myTours => 'My Tours';
+  String get myTours => 'جولاتي';
 
   @override
-  String get savedExhibits => 'Saved Exhibits';
+  String get savedExhibits => 'المعروضات المحفوظة';
 
   @override
-  String get learningProgress => 'Learning Progress';
+  String get learningProgress => 'تقدم التعلم';
 
   @override
-  String get quickPreferences => 'Quick Preferences';
+  String get quickPreferences => 'التفضيلات السريعة';
 
   @override
-  String get signOut => 'Sign Out';
+  String get signOut => 'تسجيل الخروج';
 
   @override
-  String get explorerLabel => 'Explorer';
+  String get explorerLabel => 'مستكشف';
 
   @override
   String memberSince(Object period) {
-    return 'Member since $period';
+    return 'عضو منذ $period';
   }
 
   @override
-  String get tours => 'Tours';
+  String get tours => 'الجولات';
 
   @override
-  String get artifactsLabel => 'Artifacts';
+  String get artifactsLabel => 'القطع';
 
   @override
-  String get quizScoreLabel => 'Quiz Score';
+  String get quizScoreLabel => 'نقاط الاختبار';
 
   @override
-  String get newKingdomHighlights => 'New Kingdom Highlights';
+  String get newKingdomHighlights => 'أبرز مقتنيات الدولة الحديثة';
 
   @override
-  String get tutankhamunTreasures => 'Tutankhamun Treasures';
+  String get tutankhamunTreasures => 'كنوز توت عنخ آمون';
 
   @override
-  String get museumTickets => 'Museum Tickets';
+  String get museumTickets => 'تذاكر المتحف';
 
   @override
-  String get bookTicketsEarly => 'Book your tickets early to save time.';
+  String get bookTicketsEarly => 'احجز تذاكرك مبكراً لتوفير الوقت.';
 
   @override
-  String get selectDate => 'Select Date';
+  String get selectDate => 'اختر التاريخ';
 
   @override
-  String get change => 'Change';
+  String get change => 'تغيير';
 
   @override
-  String get ticketTypes => 'Ticket Types';
+  String get ticketTypes => 'أنواع التذاكر';
 
   @override
-  String get adult => 'Adult';
+  String get adult => 'بالغ';
 
   @override
-  String get ages12Plus => 'Ages 12+';
+  String get ages12Plus => '١٢+ سنة';
 
   @override
-  String get student => 'Student';
+  String get student => 'طالب';
 
   @override
-  String get withValidID => 'With valid ID';
+  String get withValidID => 'مع بطاقة هوية سارية';
 
   @override
-  String get child => 'Child';
+  String get child => 'طفل';
 
   @override
-  String get ages5to11 => 'Ages 5-11';
+  String get ages5to11 => '٥-١١ سنة';
 
   @override
-  String get totalLabel => 'Total';
+  String get totalLabel => 'المجموع';
 
   @override
-  String get continueLabel => 'Continue';
+  String get continueLabel => 'متابعة';
 
   @override
-  String get ticketsConfirmed => 'Tickets Confirmed';
+  String get ticketsConfirmed => 'تم تأكيد التذاكر';
 
   @override
   String reservedTickets(Object date, Object tickets) {
-    return 'Reserved $tickets ticket(s) for $date.';
+    return 'تم حجز $tickets تذكرة في $date.';
   }
 
   @override
-  String get viewMyTickets => 'View My Tickets';
+  String get viewMyTickets => 'عرض تذاكري';
 
   @override
-  String get museumEntryTicket => 'Museum entry ticket';
+  String get museumEntryTicket => 'تذكرة دخول المتحف';
 
   @override
-  String get ticketID => 'Ticket ID';
+  String get ticketID => 'معرّف التذكرة';
 
   @override
-  String get priceLabel => 'Price';
+  String get priceLabel => 'السعر';
 
   @override
-  String get activeStatus => 'Active';
+  String get activeStatus => 'سارية';
 
   @override
-  String get expiredStatus => 'Expired';
+  String get expiredStatus => 'منتهية';
 
   @override
-  String get showEntryCode => 'Show entry code';
+  String get showEntryCode => 'عرض رمز الدخول';
 
   @override
-  String get noTicketsYet => 'No tickets yet';
+  String get noTicketsYet => 'لا توجد تذاكر بعد';
 
   @override
   String get ticketsEmptyDesc =>
-      'When you buy tickets from the booking screen, they will appear here for entry.';
+      'عند شراء التذاكر من شاشة الحجز، ستظهر هنا لعرضها عند الدخول.';
 
   @override
-  String get searchExhibits => 'Search Exhibits';
+  String get searchExhibits => 'البحث في المعروضات';
 
   @override
-  String get searchByExhibitName => 'Search by exhibit name...';
+  String get searchByExhibitName => 'ابحث باسم المعروض...';
 
   @override
-  String get noResultsFound => 'No results found';
+  String get noResultsFound => 'لا توجد نتائج';
 
   @override
-  String get noResultsFoundDesc =>
-      'Try a different word or check the spelling.';
+  String get noResultsFoundDesc => 'جرّب كلمة مختلفة أو تحقق من الهجاء.';
 
   @override
-  String get tapToViewDetailsAndAudioGuide =>
-      'Tap to view details and audio guide';
+  String get tapToViewDetailsAndAudioGuide => 'اضغط لعرض التفاصيل ودليل الصوت';
 
   @override
-  String get currentTour => 'Current tour';
+  String get currentTour => 'الجولة الحالية';
 
   @override
-  String get progressLabel => 'Progress';
+  String get progressLabel => 'التقدّم';
 
   @override
-  String get durationLabel => 'Duration';
+  String get durationLabel => 'المدة';
 
   @override
-  String get completedLabel => 'Completed';
+  String get completedLabel => 'مكتمل';
 
   @override
-  String get visitedLabel => 'Visited';
+  String get visitedLabel => 'تمت الزيارة';
 
   @override
-  String get notVisitedYetLabel => 'Not visited yet';
+  String get notVisitedYetLabel => 'لم تُزر بعد';
 
   @override
-  String get quizzesCompleted => 'Quizzes Completed';
+  String get quizzesCompleted => 'الاختبارات المكتملة';
 
   @override
-  String get totalQuizScoreLabel => 'Total Quiz Score';
+  String get totalQuizScoreLabel => 'إجمالي نقاط الاختبار';
 
   @override
-  String get skippedQuizzes => 'Skipped Quizzes';
+  String get skippedQuizzes => 'الاختبارات المتجاوزة';
 
   @override
-  String get howWasYourVisit => 'How was your visit today?';
+  String get howWasYourVisit => 'كيف كانت زيارتك اليوم؟';
 
   @override
-  String get rateYourExperience =>
-      'Rate your experience with the museum and Horus-Bot.';
+  String get rateYourExperience => 'قيّم تجربتك';
 
   @override
-  String get overallRating => 'Overall rating';
+  String get overallRating => 'التقييم العام';
 
   @override
-  String get feedbackAboutOptional => 'What is this feedback about? (optional)';
+  String get feedbackAboutOptional => 'ما هو موضوع هذه الملاحظة؟ (اختياري)';
 
   @override
-  String get tellUsMoreOptional => 'Tell us more (optional)';
+  String get tellUsMoreOptional => 'أخبرنا المزيد (اختياري)';
 
   @override
-  String get feedbackPrompt => 'What worked well or could be improved?';
+  String get feedbackPrompt => 'ما الذي أعجبك أو يحتاج إلى تحسين؟';
 
   @override
-  String get writeFeedbackHere => 'Write your feedback here...';
+  String get writeFeedbackHere => 'اكتب ملاحظاتك هنا...';
 
   @override
   String get feedbackUsedNote =>
-      'Feedback is used only for research and improving the visitor experience.';
+      'تُستخدم الملاحظات فقط لأبحاث وتحسين تجربة الزوار.';
 
   @override
-  String get submitFeedback => 'Submit feedback';
+  String get submitFeedback => 'إرسال الملاحظات';
 
   @override
-  String get excellentThankYou => 'Excellent, thank you!';
+  String get excellentThankYou => 'ممتاز، شكراً لك!';
 
   @override
-  String get greatExperience => 'Great experience.';
+  String get greatExperience => 'تجربة رائعة.';
 
   @override
-  String get overallGood => 'Overall good.';
+  String get overallGood => 'جيدة بشكل عام.';
 
   @override
-  String get needsImprovement => 'Needs some improvement.';
+  String get needsImprovement => 'تحتاج بعض التحسين.';
 
   @override
-  String get notGoodExperience => 'Not a good experience.';
+  String get notGoodExperience => 'تجربة غير جيدة.';
 
   @override
   String get pleaseAddRatingOrComment =>
-      'Please add a rating or a short comment first.';
+      'من فضلك أضف تقييماً أو تعليقاً أولاً.';
 
   @override
   String memberSinceNote(Object period) {
-    return 'Member since $period';
+    return 'عضو منذ $period';
   }
 
   @override
