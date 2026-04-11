@@ -329,7 +329,7 @@ abstract class AppLocalizations {
   /// No description provided for @supportStatusInProgress.
   ///
   /// In en, this message translates to:
-  /// **'In progress'**
+  /// **'In Progress'**
   String get supportStatusInProgress;
 
   /// No description provided for @supportStatusResolved.
@@ -1202,6 +1202,456 @@ abstract class AppLocalizations {
   /// **'Follow the robot and uncover the stories behind ancient artifacts.'**
   String get followAndDiscover;
 
+  /// No description provided for @museumMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Museum Map'**
+  String get museumMap;
+
+  /// No description provided for @grandEgyptianMuseum.
+  ///
+  /// In en, this message translates to:
+  /// **'Grand Egyptian Museum'**
+  String get grandEgyptianMuseum;
+
+  /// No description provided for @eastWingGoldenArtifacts.
+  ///
+  /// In en, this message translates to:
+  /// **'East Wing • Golden Artifacts'**
+  String get eastWingGoldenArtifacts;
+
+  /// No description provided for @entrance.
+  ///
+  /// In en, this message translates to:
+  /// **'Entrance'**
+  String get entrance;
+
+  /// No description provided for @explain.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain'**
+  String get explain;
+
+  /// No description provided for @generateMyRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate My Route'**
+  String get generateMyRoute;
+
+  /// No description provided for @customizeTourDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize your museum tour based on your interests and available time.'**
+  String get customizeTourDescription;
+
+  /// No description provided for @interestsQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'What are your interests?'**
+  String get interestsQuestion;
+
+  /// No description provided for @visitorStatistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Visitor Statistics'**
+  String get visitorStatistics;
+
+  /// No description provided for @myTours.
+  ///
+  /// In en, this message translates to:
+  /// **'My Tours'**
+  String get myTours;
+
+  /// No description provided for @savedExhibits.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Exhibits'**
+  String get savedExhibits;
+
+  /// No description provided for @learningProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Learning Progress'**
+  String get learningProgress;
+
+  /// No description provided for @quickPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Preferences'**
+  String get quickPreferences;
+
+  /// No description provided for @signOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get signOut;
+
+  /// No description provided for @explorerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Explorer'**
+  String get explorerLabel;
+
+  /// No description provided for @memberSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Member since {period}'**
+  String memberSince(Object period);
+
+  /// No description provided for @tours.
+  ///
+  /// In en, this message translates to:
+  /// **'Tours'**
+  String get tours;
+
+  /// No description provided for @artifactsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Artifacts'**
+  String get artifactsLabel;
+
+  /// No description provided for @quizScoreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Quiz Score'**
+  String get quizScoreLabel;
+
+  /// No description provided for @newKingdomHighlights.
+  ///
+  /// In en, this message translates to:
+  /// **'New Kingdom Highlights'**
+  String get newKingdomHighlights;
+
+  /// No description provided for @tutankhamunTreasures.
+  ///
+  /// In en, this message translates to:
+  /// **'Tutankhamun Treasures'**
+  String get tutankhamunTreasures;
+
+  /// No description provided for @museumTickets.
+  ///
+  /// In en, this message translates to:
+  /// **'Museum Tickets'**
+  String get museumTickets;
+
+  /// No description provided for @bookTicketsEarly.
+  ///
+  /// In en, this message translates to:
+  /// **'Book your tickets early to save time.'**
+  String get bookTicketsEarly;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Date'**
+  String get selectDate;
+
+  /// No description provided for @change.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get change;
+
+  /// No description provided for @ticketTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket Types'**
+  String get ticketTypes;
+
+  /// No description provided for @adult.
+  ///
+  /// In en, this message translates to:
+  /// **'Adult'**
+  String get adult;
+
+  /// No description provided for @ages12Plus.
+  ///
+  /// In en, this message translates to:
+  /// **'Ages 12+'**
+  String get ages12Plus;
+
+  /// No description provided for @student.
+  ///
+  /// In en, this message translates to:
+  /// **'Student'**
+  String get student;
+
+  /// No description provided for @withValidID.
+  ///
+  /// In en, this message translates to:
+  /// **'With valid ID'**
+  String get withValidID;
+
+  /// No description provided for @child.
+  ///
+  /// In en, this message translates to:
+  /// **'Child'**
+  String get child;
+
+  /// No description provided for @ages5to11.
+  ///
+  /// In en, this message translates to:
+  /// **'Ages 5-11'**
+  String get ages5to11;
+
+  /// No description provided for @totalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get totalLabel;
+
+  /// No description provided for @continueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueLabel;
+
+  /// No description provided for @ticketsConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Tickets Confirmed'**
+  String get ticketsConfirmed;
+
+  /// No description provided for @reservedTickets.
+  ///
+  /// In en, this message translates to:
+  /// **'Reserved {tickets} ticket(s) for {date}.'**
+  String reservedTickets(Object date, Object tickets);
+
+  /// No description provided for @viewMyTickets.
+  ///
+  /// In en, this message translates to:
+  /// **'View My Tickets'**
+  String get viewMyTickets;
+
+  /// No description provided for @museumEntryTicket.
+  ///
+  /// In en, this message translates to:
+  /// **'Museum entry ticket'**
+  String get museumEntryTicket;
+
+  /// No description provided for @ticketID.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket ID'**
+  String get ticketID;
+
+  /// No description provided for @priceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get priceLabel;
+
+  /// No description provided for @activeStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeStatus;
+
+  /// No description provided for @expiredStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get expiredStatus;
+
+  /// No description provided for @showEntryCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Show entry code'**
+  String get showEntryCode;
+
+  /// No description provided for @noTicketsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No tickets yet'**
+  String get noTicketsYet;
+
+  /// No description provided for @ticketsEmptyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'When you buy tickets from the booking screen, they will appear here for entry.'**
+  String get ticketsEmptyDesc;
+
+  /// No description provided for @searchExhibits.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Exhibits'**
+  String get searchExhibits;
+
+  /// No description provided for @searchByExhibitName.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by exhibit name...'**
+  String get searchByExhibitName;
+
+  /// No description provided for @noResultsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get noResultsFound;
+
+  /// No description provided for @noResultsFoundDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different word or check the spelling.'**
+  String get noResultsFoundDesc;
+
+  /// No description provided for @tapToViewDetailsAndAudioGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to view details and audio guide'**
+  String get tapToViewDetailsAndAudioGuide;
+
+  /// No description provided for @currentTour.
+  ///
+  /// In en, this message translates to:
+  /// **'Current tour'**
+  String get currentTour;
+
+  /// No description provided for @progressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get progressLabel;
+
+  /// No description provided for @durationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get durationLabel;
+
+  /// No description provided for @completedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completedLabel;
+
+  /// No description provided for @visitedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Visited'**
+  String get visitedLabel;
+
+  /// No description provided for @notVisitedYetLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Not visited yet'**
+  String get notVisitedYetLabel;
+
+  /// No description provided for @quizzesCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Quizzes Completed'**
+  String get quizzesCompleted;
+
+  /// No description provided for @totalQuizScoreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Quiz Score'**
+  String get totalQuizScoreLabel;
+
+  /// No description provided for @skippedQuizzes.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped Quizzes'**
+  String get skippedQuizzes;
+
+  /// No description provided for @howWasYourVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'How was your visit today?'**
+  String get howWasYourVisit;
+
+  /// No description provided for @rateYourExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate your experience with the museum and Horus-Bot.'**
+  String get rateYourExperience;
+
+  /// No description provided for @overallRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall rating'**
+  String get overallRating;
+
+  /// No description provided for @feedbackAboutOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'What is this feedback about? (optional)'**
+  String get feedbackAboutOptional;
+
+  /// No description provided for @tellUsMoreOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us more (optional)'**
+  String get tellUsMoreOptional;
+
+  /// No description provided for @feedbackPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'What worked well or could be improved?'**
+  String get feedbackPrompt;
+
+  /// No description provided for @writeFeedbackHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Write your feedback here...'**
+  String get writeFeedbackHere;
+
+  /// No description provided for @feedbackUsedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback is used only for research and improving the visitor experience.'**
+  String get feedbackUsedNote;
+
+  /// No description provided for @submitFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit feedback'**
+  String get submitFeedback;
+
+  /// No description provided for @excellentThankYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent, thank you!'**
+  String get excellentThankYou;
+
+  /// No description provided for @greatExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Great experience.'**
+  String get greatExperience;
+
+  /// No description provided for @overallGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall good.'**
+  String get overallGood;
+
+  /// No description provided for @needsImprovement.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs some improvement.'**
+  String get needsImprovement;
+
+  /// No description provided for @notGoodExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Not a good experience.'**
+  String get notGoodExperience;
+
+  /// No description provided for @pleaseAddRatingOrComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Please add a rating or a short comment first.'**
+  String get pleaseAddRatingOrComment;
+
+  /// No description provided for @memberSinceNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Member since {period}'**
+  String memberSinceNote(Object period);
+
   /// No description provided for @museumExperience.
   ///
   /// In en, this message translates to:
@@ -1951,6 +2401,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You can ask about tickets, events, hours, or exhibits.'**
   String get chatInfoPopup;
+
+  /// No description provided for @supportConversationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support Conversation'**
+  String get supportConversationTitle;
+
+  /// No description provided for @supportRequestNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Support request not found'**
+  String get supportRequestNotFound;
+
+  /// No description provided for @supportReplyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type your reply...'**
+  String get supportReplyHint;
+
+  /// No description provided for @supportRequestFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get supportRequestFrom;
+
+  /// No description provided for @supportRequestCreatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Created at'**
+  String get supportRequestCreatedAt;
+
+  /// No description provided for @supportInboxTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support Inbox'**
+  String get supportInboxTitle;
+
+  /// No description provided for @supportNoRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No support requests'**
+  String get supportNoRequests;
 }
 
 class _AppLocalizationsDelegate

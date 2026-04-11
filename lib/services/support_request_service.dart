@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../core/notifications/notification_models.dart';
@@ -20,6 +21,8 @@ class SupportRequestService {
 
   final List<SupportRequest> _requests = [];
   int _idCounter = 1;
+  final _replyController = StreamController<SupportMessage>.broadcast();
+  Stream<SupportMessage> get onReply => _replyController.stream;
 
   List<SupportRequest> get requests => List.unmodifiable(_requests);
 
@@ -59,15 +62,16 @@ class SupportRequestService {
   }) {
     final request = getRequest(requestId);
     if (request == null) return;
-    request.messages.add(SupportMessage(
+    final message = SupportMessage(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       sender: SupportSender.human,
       timestamp: DateTime.now(),
       text: replyText,
-    ));
+    );
+    request.messages.add(message);
     request.status = SupportRequestStatus.inProgress;
+    _replyController.add(message);
   }
-
   void markResolved(String requestId) {
     final request = getRequest(requestId);
     if (request == null) return;

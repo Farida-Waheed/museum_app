@@ -1,3 +1,4 @@
+import '../../widgets/ask_the_guide_button.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -102,7 +103,7 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
       title: (isArabic ? "خريطة المتحف" : "Museum Map").toUpperCase(),
       subHeader: const RobotStatusBanner(),
       bottomNavigationBar: const BottomNav(currentIndex: 1),
-      floatingActionButton: const AskTheGuideButton(screen: 'map'),
+      floatingActionButton: AskTheGuideButton(screen: 'map'),
       body: Column(
         children: [
           // Header Info

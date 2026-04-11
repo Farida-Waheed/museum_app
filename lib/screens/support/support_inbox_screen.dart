@@ -103,10 +103,10 @@ class _SupportRequestCard extends StatelessWidget {
                     ),
                     child: Text(
                       request.status == SupportRequestStatus.pending
-                          ? l10n.supportStatusPending
+                          ? AppLocalizations.of(context)!.supportStatusPending
                           : request.status == SupportRequestStatus.inProgress
-                              ? l10n.supportStatusInProgress
-                              : l10n.supportStatusResolved,
+                              ? AppLocalizations.of(context)!.supportStatusInProgress
+                              : AppLocalizations.of(context)!.supportStatusResolved,
                       style: AppTextStyles.metadata(context).copyWith(
                         color: AppColors.primaryGold,
                         fontSize: 12,

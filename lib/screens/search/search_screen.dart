@@ -1,3 +1,4 @@
+import '../../widgets/ask_the_guide_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/colors.dart';
@@ -69,7 +70,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return AppMenuShell(
       title: isArabic ? "البحث في المعروضات" : "Search Exhibits",
       backgroundColor: AppColors.darkBackground,
-      floatingActionButton: const AskTheGuideButton(screen: 'search'),
+      floatingActionButton: AskTheGuideButton(screen: 'search'),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [

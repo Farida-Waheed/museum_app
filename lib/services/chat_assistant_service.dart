@@ -298,4 +298,12 @@ User question:
 ${context.question}
 ''';
   }
+
+
+  String _composeExhibitResponse(Exhibit exhibit, String question, String language) {
+    if (language == 'ar') {
+      return "إليك ما وجدته عن ${exhibit.nameAr}: ${exhibit.descriptionAr}";
+    }
+    return "Here is what I found about ${exhibit.nameEn}: ${exhibit.descriptionEn}";
+  }
 }
