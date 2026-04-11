@@ -301,9 +301,27 @@ ${context.question}
 
 
   String _composeExhibitResponse(Exhibit exhibit, String question, String language) {
-    if (language == 'ar') {
-      return "إليك ما وجدته عن ${exhibit.nameAr}: ${exhibit.descriptionAr}";
+    final normalized = _normalize(question);
+    final title = exhibit.getName(language);
+    final description = exhibit.getDescription(language);
+
+    if (_isWhereIntent(normalized)) {
+      if (language == 'ar') {
+        return '$title موجود في القاعة الرئيسية. $description';
+      }
+      return '$title is located in the main hall. $description';
     }
-    return "Here is what I found about ${exhibit.nameEn}: ${exhibit.descriptionEn}";
+
+    if (language == 'ar') {
+      if (question.toLowerCase().contains('من') || question.toLowerCase().contains('who')) {
+        return '$title هو معروض مهم هنا. $description';
+      }
+      return '$title هو عرض مميز. $description';
+    }
+
+    if (question.toLowerCase().contains('who')) {
+      return '$title is a key piece in the collection. $description';
+    }
+    return '$title is a highlight of the collection. $description';
   }
 }
