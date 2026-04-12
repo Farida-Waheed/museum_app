@@ -280,7 +280,7 @@ class ChatBubble extends StatelessWidget {
     final avatar = CircleAvatar(
       radius: 14,
       backgroundColor: isUser
-          ? AppColors.primaryGold.withOpacity(0.1)
+          ? AppColors.primaryGold.withOpacity(0.14)
           : (isDark ? Colors.white.withOpacity(0.1) : Colors.blueGrey.shade50),
       child: isUser
           ? const Icon(
@@ -324,48 +324,52 @@ class ChatBubble extends StatelessWidget {
                 style: AppTextStyles.bodyPrimary(context).copyWith(
                   color: textColor,
                   fontSize: 15,
-                  height: 1.5,
+                  height: 1.55,
                   fontWeight: isUser ? FontWeight.w900 : FontWeight.normal,
                 ),
               ),
             ],
           );
 
-    final bubble = Container(
-      constraints: BoxConstraints(
-        maxWidth: MediaQuery.of(context).size.width * 0.75,
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: bubbleColor,
-        borderRadius: BorderRadius.only(
-          topLeft: const Radius.circular(20),
-          topRight: const Radius.circular(20),
-          bottomLeft: Radius.circular(isUser ? 20 : 4),
-          bottomRight: Radius.circular(isUser ? 4 : 20),
-        ),
-        border: Border.all(color: AppColors.primaryGold.withOpacity(0.2)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+    final bubble = LayoutBuilder(
+      builder: (context, constraints) {
+        final maxBubbleWidth = constraints.maxWidth * (isUser ? 0.66 : 0.72);
+        return ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: maxBubbleWidth),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              color: bubbleColor,
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(20),
+                topRight: const Radius.circular(20),
+                bottomLeft: Radius.circular(isUser ? 20 : 6),
+                bottomRight: Radius.circular(isUser ? 6 : 20),
+              ),
+              border: Border.all(color: AppColors.primaryGold.withOpacity(0.16)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Directionality(textDirection: dir, child: content),
           ),
-        ],
-      ),
-      child: Directionality(textDirection: dir, child: content),
+        );
+      },
     );
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
       child: Row(
-        mainAxisAlignment: isUser
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
+        mainAxisAlignment:
+            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: isUser
-            ? [bubble, const SizedBox(width: 8), avatar]
-            : [avatar, const SizedBox(width: 8), bubble],
+            ? [Flexible(child: bubble), const SizedBox(width: 8), avatar]
+            : [avatar, const SizedBox(width: 8), Flexible(child: bubble)],
       ),
     );
   }
@@ -448,7 +452,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   bool _showScrollBtn = false;
   bool _canSend = false;
   bool _showHelperPanel = false;
-  Timer? _typeTimer;
   late final ChatProvider _chatProvider;
   late final ConversationMemoryService _conversationMemory;
   late final ChatAiService _assistantService;
@@ -629,7 +632,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   void _typeBotMessage(String fullText) {
-    _typeTimer?.cancel();
     final botMsg = ChatMessageModel.text(
       id: _id(),
       isUser: false,
@@ -642,7 +644,6 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   @override
   void dispose() {
     _supportSubscription.cancel();
-    _typeTimer?.cancel();
     _controller.dispose();
     _scroll.dispose();
     super.dispose();
@@ -719,30 +720,30 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     hintText: l10n.chatInputHint,
                     hintStyle: AppTextStyles.bodyPrimary(
                       context,
-                    ).copyWith(color: isDark ? Colors.white38 : Colors.black38),
+                    ).copyWith(color: isDark ? Colors.white54 : Colors.black45),
                     fillColor: isDark
-                        ? Colors.white.withOpacity(0.05)
-                        : Colors.grey.shade50,
+                        ? Colors.white.withOpacity(0.06)
+                        : Colors.grey.shade100,
                     filled: true,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(26),
                       borderSide: BorderSide.none,
                     ),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 20,
-                      vertical: 12,
+                      vertical: 14,
                     ),
                   ),
                 ),
               ),
               const SizedBox(width: 12),
               AnimatedScale(
-                scale: _canSend ? 1.0 : 0.9,
+                scale: _canSend ? 1.0 : 0.92,
                 duration: const Duration(milliseconds: 200),
                 child: CircleAvatar(
                   backgroundColor: _canSend
                       ? AppColors.primaryGold
-                      : (isDark ? Colors.white10 : Colors.grey.shade100),
+                      : (isDark ? Colors.white10 : Colors.grey.shade200),
                   radius: 22,
                   child: IconButton(
                     onPressed: _canSend
@@ -762,46 +763,52 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         Padding(
           padding: const EdgeInsets.only(top: 8, bottom: 4),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: CompositedTransformTarget(
-                  link: _infoLink,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          Icons.info_outline,
-                          size: 20,
-                          color: AppColors.primaryGold,
-                        ),
-                        onPressed: () => setState(
-                          () => _showHelperPanel = !_showHelperPanel,
-                        ),
+              CompositedTransformTarget(
+                link: _infoLink,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        Icons.info_outline,
+                        size: 20,
+                        color: AppColors.primaryGold,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        l10n.moreInfo,
-                        style: AppTextStyles.metadata(context).copyWith(
-                          color: AppColors.primaryGold,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      onPressed: () => setState(
+                        () => _showHelperPanel = !_showHelperPanel,
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      l10n.moreInfo,
+                      style: AppTextStyles.metadata(context).copyWith(
+                        color: AppColors.primaryGold,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                 ),
               ),
+              const Spacer(),
               Flexible(
                 child: TextButton.icon(
                   icon: const Icon(Icons.support_agent_outlined, size: 18),
-                  label: Text(
-                    l10n.humanSupportLabel,
-                    style: AppTextStyles.metadata(
-                      context,
-                    ).copyWith(color: AppColors.primaryGold),
+                  label: Flexible(
+                    child: Text(
+                      l10n.humanSupportLabel,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.metadata(
+                        context,
+                      ).copyWith(color: AppColors.primaryGold),
+                    ),
                   ),
                   onPressed: () => _requestHumanSupport(),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    foregroundColor: AppColors.primaryGold,
+                  ),
                 ),
               ),
             ],
