@@ -9,7 +9,6 @@ import '../../models/tour_provider.dart';
 import '../../core/utils/audio_player.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
-import '../../widgets/ask_the_guide_button.dart';
 import '../quiz/quiz_screen.dart'; // To navigate to quiz
 import '../../widgets/dialogs/premium_dialog.dart';
 import '../../core/constants/colors.dart';
@@ -116,11 +115,10 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
           context: context,
           barrierDismissible: false,
           builder: (_) => PremiumDialog(
-            title: l10n.quizPromptTitle ?? 'Quiz Time',
+            title: l10n.quizPromptTitle,
             icon: const Icon(Icons.quiz_rounded, color: AppColors.primaryGold, size: 28),
             content: Text(
-              l10n.quizPromptDescription ??
-                  'Would you like to take the quiz for this exhibit?',
+                l10n.quizPromptDescription,
               style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white70),
             ),
             actions: [
@@ -129,7 +127,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                   Navigator.pop(context);
                   tourProvider.postponeQuiz(exhibit.id);
                 },
-                child: Text(l10n.later ?? 'Later', style: AppTextStyles.buttonLabel(context).copyWith(color: Colors.white60)),
+                child: Text(l10n.later, style: AppTextStyles.buttonLabel(context).copyWith(color: Colors.white60)),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -141,7 +139,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                   foregroundColor: AppColors.darkInk,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: Text(l10n.takeNow ?? 'Take Now', style: AppTextStyles.buttonLabel(context)),
+                child: Text(l10n.takeNow, style: AppTextStyles.buttonLabel(context)),
               ),
             ],
           ),
@@ -153,10 +151,6 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
 
     return AppMenuShell(
       subHeader: const RobotStatusBanner(),
-      floatingActionButton: AskTheGuideButton(
-        screen: 'exhibit_details',
-        currentExhibitId: exhibit.id,
-      ),
       body: CustomScrollView(
         slivers: [
           _buildSliverAppBar(

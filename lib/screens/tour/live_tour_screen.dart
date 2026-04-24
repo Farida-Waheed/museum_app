@@ -10,7 +10,6 @@ import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
 import '../../widgets/dialogs/branded_permission_dialog.dart';
 import '../../widgets/primary_button.dart';
-import '../../widgets/ask_the_guide_button.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 import '../../core/constants/colors.dart';
@@ -27,9 +26,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   final List<String> _transcript = [];
   final ScrollController _scrollController = ScrollController();
   Timer? _simTimer;
-  bool _isGuided = true;
   bool _isPaused = false;
-
   final Map<String, String> _imageMap = {
     '1': 'assets/images/Grand Hall.jpg',
     '2': 'assets/images/Colossal Seated Statues.jpg',
@@ -50,6 +47,9 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         tourProvider.setCurrentExhibit(
           MockDataService.getAllExhibits().first.id,
         );
+      }
+      if (tourProvider.tourLifecycleState == TourLifecycleState.notStarted) {
+        tourProvider.startTour(context: context);
       }
       _startSimulation();
     });
@@ -105,11 +105,22 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   }
 
   void _toggleMode() {
-    setState(() => _isGuided = !_isGuided);
+    final tourProvider = Provider.of<TourProvider>(context, listen: false);
+    final nextMode = tourProvider.followMode == FollowModeState.on
+        ? FollowModeState.off
+        : FollowModeState.on;
+    tourProvider.setFollowMode(nextMode, context: context);
   }
 
   void _togglePause() {
-    setState(() => _isPaused = !_isPaused);
+    final tourProvider = Provider.of<TourProvider>(context, listen: false);
+    if (tourProvider.tourLifecycleState == TourLifecycleState.paused) {
+      tourProvider.resumeTour(context: context);
+      setState(() => _isPaused = false);
+    } else {
+      tourProvider.pauseTour(context: context);
+      setState(() => _isPaused = true);
+    }
   }
 
   Future<void> _checkLocationPermission() async {
@@ -168,10 +179,6 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       title: l10n.liveTour.toUpperCase(),
       subHeader: const RobotStatusBanner(),
       bottomNavigationBar: const BottomNav(currentIndex: 2),
-      floatingActionButton: AskTheGuideButton(
-        screen: 'live_tour',
-        currentExhibitId: tourProvider.currentExhibitId,
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
@@ -182,18 +189,31 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _StatusChip(
-                  label: _isGuided ? l10n.guidedMode : l10n.selfPacedMode,
-                  icon: _isGuided ? Icons.auto_awesome : Icons.person_outline,
-                  color: Colors.blue,
+                  label: tourProvider.followMode == FollowModeState.on
+                      ? l10n.followHorusBot
+                      : l10n.selfPacedMode,
+                  icon: tourProvider.followMode == FollowModeState.on
+                      ? Icons.auto_awesome
+                      : Icons.person_outline,
+                  color: tourProvider.followMode == FollowModeState.on
+                      ? Colors.green
+                      : Colors.blue,
                   onTap: _toggleMode,
                 ),
                 _StatusChip(
-                  label: l10n.live,
+                  label: tourProvider.getTourStateText(l10n.localeName),
                   icon: Icons.radio_button_checked,
-                  color: Colors.red,
-                  isPulsing: true,
+                  color: tourProvider.tourLifecycleState == TourLifecycleState.active
+                      ? Colors.green
+                      : Colors.orange,
+                  isPulsing: tourProvider.tourLifecycleState == TourLifecycleState.active,
                 ),
               ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              tourProvider.getProximityText(l10n.localeName),
+              style: AppTextStyles.metadata(context).copyWith(color: AppColors.neutralMedium),
             ),
             const SizedBox(height: 16),
 
@@ -298,6 +318,11 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                               icon: Icons.skip_next,
                               label: l10n.skip,
                               onTap: _skipExhibit,
+                            ),
+                            _ControlButton(
+                              icon: Icons.my_location,
+                              label: l10n.followHorusBot,
+                              onTap: () => tourProvider.requestRecovery(context),
                             ),
                           ],
                         ),

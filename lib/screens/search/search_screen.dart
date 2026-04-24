@@ -1,4 +1,3 @@
-import '../../widgets/ask_the_guide_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/colors.dart';
@@ -65,12 +64,9 @@ class _SearchScreenState extends State<SearchScreen> {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
 
-    const int currentIndex = 2; // assuming Search tab index
-
     return AppMenuShell(
       title: isArabic ? "البحث في المعروضات" : "Search Exhibits",
       backgroundColor: AppColors.darkBackground,
-      floatingActionButton: AskTheGuideButton(screen: 'search'),
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
@@ -196,7 +192,7 @@ class _SearchResultTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
+    // final cs = Theme.of(context).colorScheme; // Not needed here
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),

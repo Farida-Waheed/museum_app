@@ -8,13 +8,15 @@ import '../../app/router.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 import '../../core/services/mock_data.dart';
+import '../../models/tour_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/exhibit.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../widgets/primary_button.dart';
 import '../../widgets/dialogs/branded_permission_dialog.dart';
-import '../../widgets/ask_the_guide_button.dart';
+// Ask Guide is now provided globally through AppMenuShell.
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -45,16 +47,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     end: 1.15,
   ).animate(CurvedAnimation(parent: _robotPulseCtrl, curve: Curves.easeInOut));
 
-  late final AnimationController _fabPulseCtrl = AnimationController(
-    vsync: this,
-    duration: const Duration(milliseconds: 2000),
-  )..repeat(reverse: true);
-
-  late final Animation<double> _fabScale = Tween<double>(
-    begin: 1.0,
-    end: 1.05,
-  ).animate(CurvedAnimation(parent: _fabPulseCtrl, curve: Curves.easeInOut));
-
   @override
   void initState() {
     super.initState();
@@ -76,7 +68,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _scrollController.dispose();
     _pageCtrl.dispose();
     _robotPulseCtrl.dispose();
-    _fabPulseCtrl.dispose();
     super.dispose();
   }
 
@@ -174,14 +165,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ),
               ),
             ),
-            IconButton(
-              icon: const Icon(
-                Icons.qr_code_scanner,
-                color: Colors.white,
-                size: 26,
-              ),
-              onPressed: () => Navigator.pushNamed(context, AppRoutes.qrScan),
-            ),
+            const SizedBox(width: 44),
           ],
         ),
       ),
@@ -251,14 +235,80 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildNextStopCard(BuildContext context, AppLocalizations l10n) {
+    final tourProvider = Provider.of<TourProvider>(context);
+    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+    final timeLabel = tourProvider.tourLifecycleState == TourLifecycleState.active
+        ? (prefs.language == 'ar' ? 'الجولة جارية الآن' : 'Live now')
+        : l10n.fiveMinutesAway;
+    final locationLabel = tourProvider.tourLifecycleState == TourLifecycleState.completed
+        ? (prefs.language == 'ar' ? 'الجولة اكتملت' : 'Tour completed')
+        : l10n.tutankhamunHall;
     return _NextStopBadge(
       label: l10n.nextStopLabel.toUpperCase(),
-      location: l10n.tutankhamunHall,
-      time: l10n.fiveMinutesAway,
-      onTap: () => Navigator.pushNamedAndRemoveUntil(
-        context,
-        AppRoutes.liveTour,
-        (r) => false,
+      location: locationLabel,
+      time: timeLabel,
+      onTap: () {
+        if (tourProvider.tourLifecycleState == TourLifecycleState.notStarted) {
+          tourProvider.startTour(context: context);
+        }
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoutes.liveTour,
+          (r) => false,
+        );
+      },
+    );
+  }
+
+  Widget _buildCompanionStatus(BuildContext context, AppLocalizations l10n) {
+    final tourProvider = Provider.of<TourProvider>(context);
+    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+    final statusText = tourProvider.getConnectionText(prefs.language);
+    final tourText = tourProvider.getTourStateText(prefs.language);
+    final proximityText = tourProvider.getProximityText(prefs.language);
+    final buttonLabel = prefs.language == 'ar' ? 'اعثر على حوروس' : 'Find Horus-Bot';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        color: AppColors.cinematicCard,
+        clipBehavior: Clip.antiAlias,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                statusText,
+                style: AppTextStyles.titleMedium(context).copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                tourText,
+                style: AppTextStyles.bodyPrimary(context),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                proximityText,
+                style: AppTextStyles.metadata(context).copyWith(color: AppColors.neutralMedium),
+              ),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Expanded(
+                    child: PrimaryButton(
+                      label: buttonLabel,
+                      onPressed: () {
+                        tourProvider.requestRecovery(context);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -307,10 +357,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ? AppColors.darkBackground
           : AppColors.warmSurface,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
-      floatingActionButton: ScaleTransition(
-        scale: _fabScale,
-        child: const AskTheGuideButton(),
-      ),
       body: Builder(
         builder: (innerContext) => Stack(
           children: [
@@ -352,6 +398,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               physics: const BouncingScrollPhysics(),
               slivers: [
                 SliverToBoxAdapter(child: _buildHeroSection(innerContext, l10n)),
+                SliverToBoxAdapter(child: const SizedBox(height: 20)),
+                SliverToBoxAdapter(child: _buildCompanionStatus(innerContext, l10n)),
+                SliverToBoxAdapter(child: const SizedBox(height: 20)),
             const SliverToBoxAdapter(child: SizedBox(height: 72)),
             SliverToBoxAdapter(child: _buildSummaryStats(innerContext, l10n)),
             SliverToBoxAdapter(
@@ -381,12 +430,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         const SizedBox(width: 16),
                         Expanded(
                           child: _FeatureCard(
-                            icon: Icons.qr_code_scanner,
-                            title: l10n.scanTicket,
+                            icon: Icons.confirmation_number_outlined,
+                            title: l10n.tickets,
                             isHighlighted: true,
                             onTap: () => Navigator.pushNamed(
                               innerContext,
-                              AppRoutes.qrScan,
+                              AppRoutes.tickets,
                             ),
                           ),
                         ),

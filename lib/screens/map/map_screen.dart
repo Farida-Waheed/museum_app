@@ -1,11 +1,9 @@
-import '../../widgets/ask_the_guide_button.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/exhibit.dart';
 import '../../models/tour_provider.dart';
 import '../../core/services/mock_data.dart';
-import '../../app/router.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
@@ -26,6 +24,8 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMixin {
   final TransformationController _transformController = TransformationController();
   late List<Exhibit> exhibits;
+
+  FollowModeState _lastFollowMode = FollowModeState.off;
 
   // Robot pulse animation
   late AnimationController _pulseController;
@@ -99,11 +99,18 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
     final robotX = (currentExhibit.x / 400) * mapWidth;
     final robotY = (currentExhibit.y / 600) * mapHeight;
 
+    if (tourProvider.followMode == FollowModeState.on && _lastFollowMode != FollowModeState.on) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _transformController.value = Matrix4.identity()..translate(-robotX + 150, -robotY + 200);
+      });
+    }
+    _lastFollowMode = tourProvider.followMode;
+
     return AppMenuShell(
       title: (isArabic ? "خريطة المتحف" : "Museum Map").toUpperCase(),
       subHeader: const RobotStatusBanner(),
       bottomNavigationBar: const BottomNav(currentIndex: 1),
-      floatingActionButton: AskTheGuideButton(screen: 'map'),
       body: Column(
         children: [
           // Header Info
@@ -123,6 +130,44 @@ class _MapScreenState extends State<MapScreen> with SingleTickerProviderStateMix
                 ),
                 _FilterChip(label: isArabic ? "مقتنيات" : "Exhibits"),
               ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            child: Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              color: AppColors.darkSurfaceSecondary,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            tourProvider.followMode == FollowModeState.on
+                                ? (isArabic ? 'التتبع قيد التشغيل' : 'Follow mode is on')
+                                : (isArabic ? 'التتبع متوقف' : 'Follow mode is off'),
+                            style: AppTextStyles.bodyPrimary(context).copyWith(fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            tourProvider.getProximityText(l10n.localeName),
+                            style: AppTextStyles.metadata(context).copyWith(color: AppColors.neutralMedium),
+                          ),
+                        ],
+                      ),
+                    ),
+                    _MapActionBtn(
+                      icon: Icons.my_location_rounded,
+                      onPressed: () {
+                        tourProvider.requestRecovery(context);
+                      },
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
 

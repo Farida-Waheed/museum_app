@@ -15,52 +15,65 @@ class RobotStatusBanner extends StatelessWidget {
     final tourProvider = Provider.of<TourProvider>(context);
     final prefs = Provider.of<UserPreferencesModel>(context);
     final l10n = AppLocalizations.of(context)!;
-    final isArabic = prefs.language == 'ar';
 
     final state = tourProvider.robotState;
+    final connectionState = tourProvider.connectionState;
     final statusMsg = tourProvider.getStatusMessage(prefs.language);
 
     Color statusColor;
     IconData statusIcon;
     bool isPulsing = false;
 
-    switch (state) {
-      case RobotState.moving:
-        statusColor = Colors.blue;
-        statusIcon = Icons.directions_walk;
-        isPulsing = true;
-        break;
-      case RobotState.speaking:
-        statusColor = Colors.green;
-        statusIcon = Icons.volume_up;
-        break;
-      case RobotState.thinking:
-        statusColor = Colors.purple;
-        statusIcon = Icons.psychology;
-        isPulsing = true;
-        break;
-      case RobotState.disconnected:
-        statusColor = Colors.red;
-        statusIcon = Icons.signal_wifi_off;
-        break;
-      case RobotState.syncing:
-        statusColor = Colors.teal;
-        statusIcon = Icons.sync;
-        isPulsing = true;
-        break;
-      case RobotState.approaching:
-        statusColor = Colors.amber;
-        statusIcon = Icons.location_on;
-        isPulsing = true;
-        break;
-      case RobotState.listening:
-        statusColor = Colors.orange;
-        statusIcon = Icons.mic;
-        isPulsing = true;
-        break;
-      case RobotState.idle:
-        statusColor = Colors.blueGrey;
-        statusIcon = Icons.smart_toy_outlined;
+    if (connectionState == RobotConnectionState.disconnected) {
+      statusColor = Colors.red;
+      statusIcon = Icons.signal_wifi_off;
+    } else if (connectionState == RobotConnectionState.connecting) {
+      statusColor = Colors.amber;
+      statusIcon = Icons.sync;
+      isPulsing = true;
+    } else {
+      switch (state) {
+        case RobotState.moving:
+          statusColor = Colors.blue;
+          statusIcon = Icons.directions_walk;
+          isPulsing = true;
+          break;
+        case RobotState.speaking:
+          statusColor = Colors.green;
+          statusIcon = Icons.volume_up;
+          break;
+        case RobotState.thinking:
+          statusColor = Colors.purple;
+          statusIcon = Icons.psychology;
+          isPulsing = true;
+          break;
+        case RobotState.disconnected:
+          statusColor = Colors.red;
+          statusIcon = Icons.signal_wifi_off;
+          break;
+        case RobotState.syncing:
+          statusColor = Colors.teal;
+          statusIcon = Icons.sync;
+          isPulsing = true;
+          break;
+        case RobotState.approaching:
+          statusColor = Colors.amber;
+          statusIcon = Icons.location_on;
+          isPulsing = true;
+          break;
+        case RobotState.waiting:
+          statusColor = Colors.orange;
+          statusIcon = Icons.pause_circle_outline;
+          break;
+        case RobotState.listening:
+          statusColor = Colors.orange;
+          statusIcon = Icons.mic;
+          isPulsing = true;
+          break;
+        case RobotState.idle:
+          statusColor = Colors.blueGrey;
+          statusIcon = Icons.smart_toy_outlined;
+      }
     }
 
     return Container(

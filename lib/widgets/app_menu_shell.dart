@@ -1,9 +1,10 @@
-import 'dart:ui';
+﻿import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../core/constants/colors.dart';
 import '../core/constants/text_styles.dart';
+import '../widgets/ask_the_guide_button.dart';
 
 import '../models/user_preferences.dart';
 import '../app/router.dart';
@@ -43,7 +44,6 @@ class _SideMenu extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // --- HEADER ---
                 Padding(
                   padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
                   child: Column(
@@ -52,7 +52,7 @@ class _SideMenu extends StatelessWidget {
                       Row(
                         children: [
                           Image.asset(
-                            "assets/icons/ankh.png",
+                            'assets/icons/ankh.png',
                             width: 32,
                             height: 32,
                           ),
@@ -106,41 +106,15 @@ class _SideMenu extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 Divider(
                   height: 1,
                   thickness: 1,
-                  color: isDark
-                      ? AppColors.darkDivider
-                      : const Color(0xFFF5F5F5),
+                  color: isDark ? AppColors.darkDivider : const Color(0xFFF5F5F5),
                 ),
-
-                // --- MENU ITEMS ---
                 Expanded(
                   child: ListView(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     children: [
-                      _SectionHeader(label: l10n.visit),
-                      _MenuItem(
-                        icon: Icons.home_outlined,
-                        label: l10n.home,
-                        selected: currentRoute == AppRoutes.mainHome,
-                        onTap: () => onReplace(AppRoutes.mainHome),
-                      ),
-                      _MenuItem(
-                        icon: Icons.auto_awesome_mosaic_outlined,
-                        label: l10n.exhibits,
-                        selected: currentRoute == AppRoutes.exhibits,
-                        onTap: () => onReplace(AppRoutes.exhibits),
-                      ),
-                      _MenuItem(
-                        icon: Icons.quiz_outlined,
-                        label: l10n.quiz,
-                        selected: currentRoute == AppRoutes.quiz,
-                        onTap: () => onReplace(AppRoutes.quiz),
-                      ),
-
-                      const SizedBox(height: 16),
                       _SectionHeader(label: l10n.accountPreferences),
                       _MenuItem(
                         icon: Icons.person_outline,
@@ -160,7 +134,6 @@ class _SideMenu extends StatelessWidget {
                         selected: currentRoute == AppRoutes.settings,
                         onTap: () => onReplace(AppRoutes.settings),
                       ),
-
                       const SizedBox(height: 16),
                       _SectionHeader(label: l10n.extras),
                       _MenuItem(
@@ -290,7 +263,7 @@ class AppMenuShell extends StatefulWidget {
     this.title,
     this.actions,
     this.bottomNavigationBar,
-    this.showChatButton = false,
+    this.showChatButton = true,
     this.backgroundColor,
     this.hideDefaultAppBar = false,
     this.subHeader,
@@ -370,13 +343,13 @@ class AppMenuShellState extends State<AppMenuShell>
     final currentRoute = ModalRoute.of(context)?.settings.name;
 
     final bgColor =
-        widget.backgroundColor ??
-        (isDark ? AppColors.darkBackground : Colors.white);
+        widget.backgroundColor ?? (isDark ? AppColors.darkBackground : Colors.white);
 
     return Scaffold(
       backgroundColor: bgColor,
       bottomNavigationBar: widget.bottomNavigationBar,
-      floatingActionButton: widget.floatingActionButton,
+      floatingActionButton: widget.floatingActionButton ??
+          (widget.showChatButton ? const AskTheGuideButton() : null),
       body: AnimatedBuilder(
         animation: _menuController,
         builder: (context, _) {
@@ -389,7 +362,6 @@ class AppMenuShellState extends State<AppMenuShell>
           return Stack(
             children: [
               Container(color: bgColor),
-
               if (v > 0)
                 Positioned.fill(
                   child: GestureDetector(
@@ -402,7 +374,6 @@ class AppMenuShellState extends State<AppMenuShell>
                     ),
                   ),
                 ),
-
               _SideMenu(
                 isArabic: isArabic,
                 onClose: closeMenu,
@@ -410,7 +381,6 @@ class AppMenuShellState extends State<AppMenuShell>
                 onReplace: _goReplace,
                 currentRoute: currentRoute,
               ),
-
               Transform.translate(
                 offset: Offset(dx, 0),
                 child: Transform.scale(
@@ -462,9 +432,7 @@ class AppMenuShellState extends State<AppMenuShell>
                                                 : null,
                                           ),
                                           onPressed: () {
-                                            if (Navigator.canPop(
-                                              innerContext,
-                                            )) {
+                                            if (Navigator.canPop(innerContext)) {
                                               Navigator.pop(innerContext);
                                             } else {
                                               toggleMenu();
@@ -474,7 +442,7 @@ class AppMenuShellState extends State<AppMenuShell>
                                         title: Row(
                                           children: [
                                             Image.asset(
-                                              "assets/icons/ankh.png",
+                                              'assets/icons/ankh.png',
                                               width: 26,
                                               height: 26,
                                             ),
@@ -492,14 +460,12 @@ class AppMenuShellState extends State<AppMenuShell>
                                           ],
                                         ),
                                         actions: widget.actions,
-                                        backgroundColor: isDark
-                                            ? AppColors.darkHeader
-                                            : AppColors.warmSurface,
+                                        backgroundColor:
+                                            isDark ? AppColors.darkHeader : AppColors.warmSurface,
                                         elevation: 0,
                                         bottom: widget.subHeader != null
                                             ? PreferredSize(
-                                                preferredSize:
-                                                    const Size.fromHeight(48),
+                                                preferredSize: const Size.fromHeight(48),
                                                 child: widget.subHeader!,
                                               )
                                             : null,
