@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
+import '../../models/auth_provider.dart';
+import '../../app/router.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -17,6 +20,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final authProvider = context.watch<AuthProvider>();
 
     return AppMenuShell(
       title: l10n.profile.toUpperCase(),

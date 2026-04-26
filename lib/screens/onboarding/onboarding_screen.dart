@@ -46,7 +46,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     // Persist selected onboarding language and completion only on explicit action.
     prefs.setLanguage(_tempLanguage);
     prefs.setCompletedOnboarding(true);
-    Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
+    Navigator.pushReplacementNamed(context, AppRoutes.entryMode);
   }
 
   @override

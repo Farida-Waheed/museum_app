@@ -7,8 +7,11 @@ import 'models/user_preferences.dart';
 import 'models/exhibit_provider.dart';
 import 'models/tour_provider.dart';
 import 'models/chat_provider.dart';
+import 'models/app_session_provider.dart' as session;
+import 'models/auth_provider.dart';
+import 'models/ticket_provider.dart';
+import 'services/auth_service.dart';
 import 'core/notifications/notification_service.dart';
-import 'core/notifications/notification_permission_service.dart';
 import 'core/notifications/notification_trigger_service.dart';
 
 Future<void> main() async {
@@ -22,8 +25,6 @@ Future<void> main() async {
   // Initialize notification services
   final notificationService = NotificationService();
   final notificationTriggerService = NotificationTriggerService();
-  final notificationPermissionService = NotificationPermissionService();
-
   await notificationService.initialize(
     onNotificationTapped: (payload) {
       // Get the navigator key from the app context
@@ -33,7 +34,9 @@ Future<void> main() async {
   );
 
   await notificationTriggerService.initialize();
-  await notificationPermissionService.initialize();
+
+  // Initialize auth service
+  final authService = await AuthService.create();
 
   runApp(
     MultiProvider(
@@ -54,7 +57,10 @@ Future<void> main() async {
             skipLoad: true,
           ),
         ),
+        ChangeNotifierProvider(create: (_) => AuthProvider(authService)),
+        ChangeNotifierProvider(create: (_) => TicketProvider()),
         ChangeNotifierProvider(create: (_) => ExhibitProvider()),
+        ChangeNotifierProvider(create: (_) => session.AppSessionProvider()),
         ChangeNotifierProvider(create: (_) => TourProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],

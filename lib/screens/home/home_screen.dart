@@ -16,7 +16,8 @@ import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/primary_button.dart';
 import '../../widgets/dialogs/branded_permission_dialog.dart';
-// Ask Guide is now provided globally through AppMenuShell.
+import '../../models/app_session_provider.dart' as session;
+import '../../screens/tickets/qr_scanner_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -27,15 +28,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late final List<Exhibit> exhibits;
-  late final List<MockNews> news;
-
-  double robotX = 140;
-  double robotY = 80;
-
   late final ScrollController _scrollController;
-
-  int pageIndex = 0;
-  final PageController _pageCtrl = PageController(viewportFraction: 0.85);
 
   late final AnimationController _robotPulseCtrl = AnimationController(
     vsync: this,
@@ -52,7 +45,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.initState();
     _scrollController = ScrollController();
     exhibits = MockDataService.getAllExhibits();
-    news = MockDataService.getAllNews();
 
     Future.delayed(const Duration(seconds: 1), () async {
       if (!mounted) return;
@@ -66,7 +58,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void dispose() {
     _scrollController.dispose();
-    _pageCtrl.dispose();
     _robotPulseCtrl.dispose();
     super.dispose();
   }
@@ -147,11 +138,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Image.asset(
-                      'assets/icons/ankh.png',
-                      width: 20,
-                      height: 20,
-                    ),
+                    Image.asset('assets/icons/ankh.png', width: 20, height: 20),
                     const SizedBox(width: 8),
                     Text(
                       'HORUS-BOT',
@@ -177,7 +164,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       clipBehavior: Clip.none,
       children: [
         Container(
-          height: 560,
+          height: 300,
           width: double.infinity,
           foregroundDecoration: BoxDecoration(
             gradient: LinearGradient(
@@ -185,8 +172,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               end: Alignment.bottomCenter,
               colors: [
                 Colors.transparent,
-                Colors.black.withOpacity(0.45),
-                Colors.black.withOpacity(0.80),
+                Colors.black.withOpacity(0.35),
+                Colors.black.withOpacity(0.65),
               ],
               stops: const [0.0, 0.5, 1.0],
             ),
@@ -199,24 +186,30 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         AnimatedBuilder(
           animation: _scrollController,
           builder: (context, child) {
-            final double opacity = (1.0 - (_scrollController.offset / 200)).clamp(0.0, 1.0);
+            final double opacity = (1.0 - (_scrollController.offset / 150))
+                .clamp(0.0, 1.0);
             return Positioned(
               left: 24,
               right: 24,
-              bottom: 150,
+              bottom: 20,
               child: Opacity(
                 opacity: opacity,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      l10n.exploreEgypt,
-                      style: AppTextStyles.displayHero(context),
+                      (AppLocalizations.of(context)?.exploreEgypt ?? 'EXPLORE')
+                          .toUpperCase(),
+                      style: AppTextStyles.bodySecondary(
+                        context,
+                      ).copyWith(letterSpacing: 1.5, fontSize: 11),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     Text(
-                      l10n.followAndDiscover,
-                      style: AppTextStyles.bodySecondary(context),
+                      l10n.exploreEgypt,
+                      style: AppTextStyles.displayHero(
+                        context,
+                      ).copyWith(fontSize: 28),
                     ),
                   ],
                 ),
@@ -224,121 +217,483 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             );
           },
         ),
-        Positioned(
-          left: 20,
-          right: 20,
-          bottom: -40,
-          child: _buildNextStopCard(context, l10n),
-        ),
       ],
     );
   }
 
-  Widget _buildNextStopCard(BuildContext context, AppLocalizations l10n) {
-    final tourProvider = Provider.of<TourProvider>(context);
+  Widget _buildConnectionStatus(BuildContext context, AppLocalizations l10n) {
+    final sessionProvider = Provider.of<session.AppSessionProvider>(context);
     final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
-    final timeLabel = tourProvider.tourLifecycleState == TourLifecycleState.active
-        ? (prefs.language == 'ar' ? 'الجولة جارية الآن' : 'Live now')
-        : l10n.fiveMinutesAway;
-    final locationLabel = tourProvider.tourLifecycleState == TourLifecycleState.completed
-        ? (prefs.language == 'ar' ? 'الجولة اكتملت' : 'Tour completed')
-        : l10n.tutankhamunHall;
-    return _NextStopBadge(
-      label: l10n.nextStopLabel.toUpperCase(),
-      location: locationLabel,
-      time: timeLabel,
-      onTap: () {
-        if (tourProvider.tourLifecycleState == TourLifecycleState.notStarted) {
-          tourProvider.startTour(context: context);
-        }
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          AppRoutes.liveTour,
-          (r) => false,
-        );
-      },
+    final connectionText = sessionProvider.getConnectionStatusText(
+      prefs.language,
     );
-  }
 
-  Widget _buildCompanionStatus(BuildContext context, AppLocalizations l10n) {
-    final tourProvider = Provider.of<TourProvider>(context);
-    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
-    final statusText = tourProvider.getConnectionText(prefs.language);
-    final tourText = tourProvider.getTourStateText(prefs.language);
-    final proximityText = tourProvider.getProximityText(prefs.language);
-    final buttonLabel = prefs.language == 'ar' ? 'اعثر على حوروس' : 'Find Horus-Bot';
+    final isConnected = sessionProvider.isRobotConnected;
+    final statusColor = isConnected
+        ? Colors.green
+        : (sessionProvider.robotConnectionState ==
+                  session.RobotConnectionState.connecting
+              ? Colors.amber
+              : Colors.red);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        color: AppColors.cinematicCard,
-        clipBehavior: Clip.antiAlias,
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                statusText,
-                style: AppTextStyles.titleMedium(context).copyWith(fontWeight: FontWeight.w700),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColors.cinematicCard,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.darkBorder, width: 0.5),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                color: statusColor,
+                shape: BoxShape.circle,
               ),
-              const SizedBox(height: 6),
-              Text(
-                tourText,
-                style: AppTextStyles.bodyPrimary(context),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                connectionText,
+                style: AppTextStyles.bodyPrimary(
+                  context,
+                ).copyWith(fontSize: 13, fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 6),
-              Text(
-                proximityText,
-                style: AppTextStyles.metadata(context).copyWith(color: AppColors.neutralMedium),
-              ),
-              const SizedBox(height: 14),
-              Row(
-                children: [
-                  Expanded(
-                    child: PrimaryButton(
-                      label: buttonLabel,
-                      onPressed: () {
-                        tourProvider.requestRecovery(context);
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildSummaryStats(BuildContext context, AppLocalizations l10n) {
+  Widget _buildCurrentTourSection(BuildContext context, AppLocalizations l10n) {
+    final sessionProvider = Provider.of<session.AppSessionProvider>(context);
+    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+
+    // If in active tour, show current stop
+    if (sessionProvider.isInActiveTour) {
+      return _buildActiveTourSection(context, l10n, sessionProvider, prefs);
+    }
+
+    // If visiting mode but not connected, show ready to connect
+    if (sessionProvider.appUsageMode == session.AppUsageMode.visiting) {
+      return _buildReadyToConnectSection(context, l10n, sessionProvider, prefs);
+    }
+
+    // Default: planning mode, show plan your visit
+    return _buildPlanningSection(context, l10n, sessionProvider, prefs);
+  }
+
+  Widget _buildPlanningSection(
+    BuildContext context,
+    AppLocalizations l10n,
+    session.AppSessionProvider sessionProvider,
+    UserPreferencesModel prefs,
+  ) {
+    final title = prefs.language == 'ar'
+        ? 'خطط زيارتك للمتحف'
+        : 'Plan your museum visit';
+    final subtitle = prefs.language == 'ar'
+        ? 'اشترِ التذاكر، حضر جولتك، أو ابدأ عند الوصول.'
+        : 'Buy tickets, prepare your tour, or start when you arrive.';
+    final ticketsLabel = prefs.language == 'ar'
+        ? 'عرض التذاكر'
+        : 'View Tickets';
+    final startTourLabel = prefs.language == 'ar'
+        ? 'ابدأ جولتي'
+        : 'Start My Tour';
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: AppColors.cinematicCard,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.darkBorder, width: 0.5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.25),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: AppTextStyles.displayArtifactTitle(
+                context,
+              ).copyWith(fontSize: 24),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              subtitle,
+              style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 16),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: PrimaryButton(
+                    label: ticketsLabel,
+                    icon: Icons.confirmation_number,
+                    onPressed: () =>
+                        Navigator.pushNamed(context, AppRoutes.tickets),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      sessionProvider.startVisiting();
+                      if (sessionProvider.canStartRobotTour) {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.qrScan,
+                          arguments: QRScanMode.museumTicket,
+                        );
+                      } else {
+                        Navigator.pushNamed(context, AppRoutes.tickets);
+                      }
+                    },
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(
+                        color: AppColors.primaryGold,
+                        width: 1.5,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      startTourLabel,
+                      style: AppTextStyles.buttonLabel(
+                        context,
+                      ).copyWith(color: AppColors.primaryGold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReadyToConnectSection(
+    BuildContext context,
+    AppLocalizations l10n,
+    session.AppSessionProvider sessionProvider,
+    UserPreferencesModel prefs,
+  ) {
+    final title = prefs.language == 'ar'
+        ? 'اتصل بحوروس-بوت'
+        : 'Connect to Horus-Bot';
+    final subtitle = prefs.language == 'ar'
+        ? 'ابدأ جولتك الموجهة بالروبوت.'
+        : 'Start your guided robot tour.';
+    final scanLabel = prefs.language == 'ar'
+        ? 'مسح رمز الروبوت'
+        : 'Scan Robot QR';
+    final ticketsLabel = prefs.language == 'ar'
+        ? 'عرض التذاكر'
+        : 'View Tickets';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: AppColors.cinematicCard,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.darkBorder, width: 0.5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.25),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: AppTextStyles.displayArtifactTitle(
+                context,
+              ).copyWith(fontSize: 24),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              subtitle,
+              style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 16),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Expanded(
+                  child: PrimaryButton(
+                    label: scanLabel,
+                    icon: Icons.qr_code_scanner,
+                    onPressed: () => Navigator.pushNamed(
+                      context,
+                      AppRoutes.qrScan,
+                      arguments: QRScanMode.robotConnection,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () =>
+                        Navigator.pushNamed(context, AppRoutes.myTickets),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(
+                        color: AppColors.primaryGold,
+                        width: 1.5,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      ticketsLabel,
+                      style: AppTextStyles.buttonLabel(
+                        context,
+                      ).copyWith(color: AppColors.primaryGold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActiveTourSection(
+    BuildContext context,
+    AppLocalizations l10n,
+    session.AppSessionProvider sessionProvider,
+    UserPreferencesModel prefs,
+  ) {
+    final currentExhibit = exhibits.firstWhere(
+      (e) => e.id == sessionProvider.currentExhibitId,
+      orElse: () => exhibits.isNotEmpty
+          ? exhibits.first
+          : Exhibit(
+              id: '0',
+              nameEn: 'Not Selected',
+              nameAr: 'لم يتم تحديده',
+              descriptionEn: '',
+              descriptionAr: '',
+              imageAsset: '',
+              x: 0,
+              y: 0,
+            ),
+    );
+
+    final currentExhibitName = prefs.language == 'ar'
+        ? currentExhibit.nameAr
+        : currentExhibit.nameEn;
+    final tourStateText = sessionProvider.getTourLifecycleText(prefs.language);
+
+    final buttonLabel = prefs.language == 'ar'
+        ? 'اتبع حوروس'
+        : 'Follow Horus-Bot';
+    final mapLabel = prefs.language == 'ar' ? 'عرض على الخريطة' : 'View Map';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: AppColors.cinematicCard,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.darkBorder, width: 0.5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.25),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              (prefs.language == 'ar' ? 'المحطة الحالية' : 'Current Stop')
+                  .toUpperCase(),
+              style: AppTextStyles.displaySectionTitle(
+                context,
+              ).copyWith(fontSize: 11),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              currentExhibitName,
+              style: AppTextStyles.displayArtifactTitle(
+                context,
+              ).copyWith(fontSize: 24),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.cinematicSection,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Icon(
+                    Icons.smart_toy,
+                    size: 16,
+                    color: AppColors.primaryGold,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      tourStateText,
+                      style: AppTextStyles.bodyPrimary(
+                        context,
+                      ).copyWith(fontSize: 14),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: PrimaryButton(
+                    label: buttonLabel,
+                    icon: Icons.directions_run,
+                    onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      AppRoutes.liveTour,
+                      (r) => false,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      AppRoutes.map,
+                      (r) => false,
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(
+                        color: AppColors.primaryGold,
+                        width: 1.5,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      mapLabel,
+                      style: AppTextStyles.buttonLabel(
+                        context,
+                      ).copyWith(color: AppColors.primaryGold),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTourProgress(BuildContext context, AppLocalizations l10n) {
+    final tourProvider = Provider.of<TourProvider>(context);
+    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+
+    final visitedCount = tourProvider.visitedExhibitIds.length;
+    final totalCount = exhibits.length;
+    final progress = totalCount > 0 ? visitedCount / totalCount : 0.0;
+
+    final progressLabel = prefs.language == 'ar'
+        ? '$visitedCount / $totalCount قاعات تمت زيارتها'
+        : '$visitedCount / $totalCount exhibits visited';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.cinematicCard,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.darkBorder, width: 0.5),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              progressLabel,
+              style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 13),
+            ),
+            const SizedBox(height: 12),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: LinearProgressIndicator(
+                value: progress,
+                minHeight: 6,
+                backgroundColor: AppColors.cinematicSection,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  AppColors.primaryGold.withOpacity(0.8),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildQuickActions(BuildContext context, AppLocalizations l10n) {
+    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+    final mapLabel = prefs.language == 'ar' ? 'الخريطة' : 'Map';
+    final ticketsLabel = prefs.language == 'ar' ? 'التذاكر' : 'Tickets';
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
         children: [
           Expanded(
-            child: _StatCard(
-              icon: Icons.check_circle_outline_rounded,
-              value: '1',
-              label: l10n.visited,
+            child: _QuickActionCard(
+              icon: Icons.map_outlined,
+              label: mapLabel,
+              onTap: () => Navigator.pushNamedAndRemoveUntil(
+                context,
+                AppRoutes.map,
+                (r) => false,
+              ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 12),
           Expanded(
-            child: _StatCard(
-              icon: Icons.account_balance_outlined,
-              value: '${exhibits.length}',
-              label: l10n.exhibits,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _StatCard(
-              icon: Icons.timer_outlined,
-              value: '5 min',
-              label: l10n.duration,
+            child: _QuickActionCard(
+              icon: Icons.confirmation_number_outlined,
+              label: ticketsLabel,
+              onTap: () => Navigator.pushNamed(context, AppRoutes.tickets),
             ),
           ),
         ],
@@ -350,6 +705,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final sessionProvider = Provider.of<session.AppSessionProvider>(context);
 
     return AppMenuShell(
       hideDefaultAppBar: true,
@@ -357,6 +713,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ? AppColors.darkBackground
           : AppColors.warmSurface,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
+      showChatButton: false,
       body: Builder(
         builder: (innerContext) => Stack(
           children: [
@@ -369,7 +726,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         center: const Alignment(-0.2, -0.75),
                         radius: 1.05,
                         colors: [
-                          AppColors.primaryGold.withOpacity(0.08),
+                          AppColors.primaryGold.withOpacity(0.06),
                           Colors.transparent,
                         ],
                         stops: const [0.0, 1.0],
@@ -397,325 +754,38 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               controller: _scrollController,
               physics: const BouncingScrollPhysics(),
               slivers: [
-                SliverToBoxAdapter(child: _buildHeroSection(innerContext, l10n)),
-                SliverToBoxAdapter(child: const SizedBox(height: 20)),
-                SliverToBoxAdapter(child: _buildCompanionStatus(innerContext, l10n)),
-                SliverToBoxAdapter(child: const SizedBox(height: 20)),
-            const SliverToBoxAdapter(child: SizedBox(height: 72)),
-            SliverToBoxAdapter(child: _buildSummaryStats(innerContext, l10n)),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.exhibits.toUpperCase(),
-                      style: AppTextStyles.displaySectionTitle(innerContext),
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _FeatureCard(
-                            icon: Icons.map_outlined,
-                            title: l10n.map,
-                            onTap: () => Navigator.pushNamedAndRemoveUntil(
-                              innerContext,
-                              AppRoutes.map,
-                              (r) => false,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _FeatureCard(
-                            icon: Icons.confirmation_number_outlined,
-                            title: l10n.tickets,
-                            isHighlighted: true,
-                            onTap: () => Navigator.pushNamed(
-                              innerContext,
-                              AppRoutes.tickets,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                SliverToBoxAdapter(
+                  child: _buildPinnedTopRow(innerContext, l10n),
                 ),
-              ),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 48)),
-            SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      l10n.recommendedForYou.toUpperCase(),
-                        style: AppTextStyles.displaySectionTitle(innerContext),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    height: 240,
-                    child: PageView(
-                      controller: _pageCtrl,
-                      onPageChanged: (i) => setState(() => pageIndex = i),
-                      children: [
-                        _HighlightCard(
-                          title: l10n.tutankhamunMask,
-                          subtitle: l10n.goldenHallRecommended,
-                          image: 'assets/images/pharaoh_head.jpg',
-                          onTap: () {
-                            if (exhibits.isNotEmpty) {
-                              Navigator.pushNamed(
-                                innerContext,
-                                AppRoutes.exhibitDetails,
-                                arguments: exhibits.first,
-                              );
-                            }
-                          },
-                        ),
-                        _HighlightCard(
-                          title: l10n.ancientPapyrus,
-                          subtitle: l10n.westWingStory,
-                          image: 'assets/images/hieroglyphs.jpg',
-                          onTap: () {
-                            if (exhibits.length > 1) {
-                              Navigator.pushNamed(
-                                innerContext,
-                                AppRoutes.exhibitDetails,
-                                arguments: exhibits[1],
-                              );
-                            }
-                          },
-                        ),
-                        _HighlightCard(
-                          title: l10n.canopicJars,
-                          subtitle: l10n.southHallMummification,
-                          image: 'assets/images/canopic_jars.jpg',
-                          onTap: () {
-                            if (exhibits.length > 2) {
-                              Navigator.pushNamed(
-                                innerContext,
-                                AppRoutes.exhibitDetails,
-                                arguments: exhibits[2],
-                              );
-                            }
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  _Dots(count: 3, index: pageIndex),
-                ],
-              ),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 32)),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          l10n.mapPreview.toUpperCase(),
-                          style: AppTextStyles.displaySectionTitle(innerContext),
-                        ),
-                        _LiveBadge(label: l10n.live),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(28),
-                      child: Container(
-                        height: 260,
-                        decoration: BoxDecoration(
-                          color: AppColors.cinematicSection,
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.05),
-                          ),
-                        ),
-                        child: Stack(
-                          children: [
-                            Positioned.fill(
-                              child: CustomPaint(
-                                painter: _GridPainter(
-                                  gridColor: Colors.white.withOpacity(0.025),
-                                ),
-                              ),
-                            ),
-                            const Center(
-                              child: Opacity(
-                                opacity: 0.15,
-                                child: Icon(
-                                  Icons.museum,
-                                  size: 140,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              left: robotX,
-                              top: robotY,
-                              child: ScaleTransition(
-                                scale: _robotScale,
-                                child: Container(
-                                  width: 28,
-                                  height: 28,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.primaryGold,
-                                    shape: BoxShape.circle,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: AppColors.primaryGold
-                                            .withOpacity(0.4),
-                                        blurRadius: 15,
-                                        spreadRadius: 5,
-                                      ),
-                                    ],
-                                  ),
-                                  child: const Icon(
-                                    Icons.smart_toy,
-                                    color: AppColors.darkInk,
-                                    size: 16,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 20,
-                              left: 20,
-                              right: 20,
-                              child: Row(
-                                children: [
-                                  _LegendDot(
-                                    color: AppColors.primaryGold,
-                                    label: l10n.horusBot,
-                                  ),
-                                  const SizedBox(width: 20),
-                                  _LegendDot(
-                                    color: Colors.blueAccent,
-                                    label: l10n.you,
-                                  ),
-                                  const Spacer(),
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.pushNamedAndRemoveUntil(
-                                          innerContext,
-                                          AppRoutes.map,
-                                          (r) => false,
-                                        ),
-                                    child: Text(
-                                      l10n.fullView,
-                                        style: AppTextStyles.buttonLabel(context)
-                                          .copyWith(
-                                            color: AppColors.primaryGold,
-                                            fontSize: 13,
-                                          ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
+                SliverToBoxAdapter(
+                  child: _buildHeroSection(innerContext, l10n),
                 ),
-              ),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 48)),
-            SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      l10n.museumNews.toUpperCase(),
-                        style: AppTextStyles.displaySectionTitle(innerContext),
-                    ),
+                const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                // Only show connection status if not in planning mode
+                if (sessionProvider.appUsageMode !=
+                    session.AppUsageMode.planning)
+                  SliverToBoxAdapter(
+                    child: _buildConnectionStatus(innerContext, l10n),
                   ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    height: 180,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      itemCount: news.length,
-                      itemBuilder: (context, index) {
-                        final item = news[index];
-                        return _NewsCard(item: item);
-                      },
-                    ),
+                if (sessionProvider.appUsageMode !=
+                    session.AppUsageMode.planning)
+                  const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                SliverToBoxAdapter(
+                  child: _buildCurrentTourSection(innerContext, l10n),
+                ),
+                const SliverToBoxAdapter(child: SizedBox(height: 16)),
+                // Only show tour progress if in active tour
+                if (sessionProvider.isInActiveTour)
+                  SliverToBoxAdapter(
+                    child: _buildTourProgress(innerContext, l10n),
                   ),
-                ],
-              ),
-            ),
-            const SliverToBoxAdapter(child: SizedBox(height: 48)),
-            SliverToBoxAdapter(
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: const EdgeInsets.all(28),
-                decoration: BoxDecoration(
-                  color: AppColors.cinematicSection,
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: Colors.white.withOpacity(0.04)),
+                if (sessionProvider.isInActiveTour)
+                  const SliverToBoxAdapter(child: SizedBox(height: 20)),
+                SliverToBoxAdapter(
+                  child: _buildQuickActions(innerContext, l10n),
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryGold.withOpacity(0.12),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.auto_awesome,
-                            color: AppColors.primaryGold,
-                            size: 22,
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        Text(
-                          l10n.didYouKnow.toUpperCase(),
-                          style: AppTextStyles.displaySectionTitle(innerContext),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      l10n.didYouKnowFact,
-                      style: AppTextStyles.bodyPrimary(innerContext).copyWith(
-                        color: Colors.white,
-                        fontSize: 16,
-                        height: 1.7,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-                const SliverToBoxAdapter(child: SizedBox(height: 120)),
+                const SliverToBoxAdapter(child: SizedBox(height: 48)),
               ],
-            ),
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: _buildPinnedTopRow(innerContext, l10n),
             ),
           ],
         ),
@@ -724,516 +794,41 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 }
 
-class _NextStopBadge extends StatefulWidget {
-  final String label;
-  final String location;
-  final String time;
-  final VoidCallback onTap;
-
-  const _NextStopBadge({
-    required this.label,
-    required this.location,
-    required this.time,
-    required this.onTap,
-  });
-
-  @override
-  State<_NextStopBadge> createState() => _NextStopBadgeState();
-}
-
-class _NextStopBadgeState extends State<_NextStopBadge> {
-  bool _isHovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
-      cursor: SystemMouseCursors.click,
-      child: AnimatedScale(
-        scale: _isHovered ? 1.01 : 1.0,
-        duration: const Duration(milliseconds: 200),
-        child: InkWell(
-          onTap: widget.onTap,
-          borderRadius: BorderRadius.circular(24),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            padding: const EdgeInsets.all(28),
-            decoration: BoxDecoration(
-              color: AppColors.cinematicElevated,
-              borderRadius: BorderRadius.circular(24),
-              border: Border.all(
-                color: AppColors.primaryGold.withOpacity(0.4),
-                width: 1.5,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primaryGold.withOpacity(0.18),
-                  blurRadius: 28,
-                  spreadRadius: 2,
-                  offset: const Offset(0, 10),
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.6),
-                  blurRadius: 50,
-                  offset: const Offset(0, 25),
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryGold.withOpacity(0.12),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.near_me_rounded,
-                    color: AppColors.primaryGold,
-                    size: 32,
-                  ),
-                ),
-                const SizedBox(width: 24),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.label,
-                        style: AppTextStyles.displaySectionTitle(context),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        widget.location,
-                        style: AppTextStyles.titleMedium(context),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(widget.time, style: AppTextStyles.bodyPrimary(context)),
-                    ],
-                  ),
-                ),
-                const Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  color: AppColors.neutralDark,
-                  size: 20,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _FeatureCard extends StatefulWidget {
+class _QuickActionCard extends StatelessWidget {
   final IconData icon;
-  final String title;
+  final String label;
   final VoidCallback onTap;
-  final bool isHighlighted;
 
-  const _FeatureCard({
+  const _QuickActionCard({
     required this.icon,
-    required this.title,
+    required this.label,
     required this.onTap,
-    this.isHighlighted = false,
   });
 
   @override
-  State<_FeatureCard> createState() => _FeatureCardState();
-}
-
-class _FeatureCardState extends State<_FeatureCard>
-    with SingleTickerProviderStateMixin {
-  bool _isHovered = false;
-
-  late final AnimationController _glowCtrl = AnimationController(
-    vsync: this,
-    duration: const Duration(seconds: 2),
-  )..repeat(reverse: true);
-
-  @override
-  void dispose() {
-    _glowCtrl.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _glowCtrl,
-      builder: (context, child) {
-        return MouseRegion(
-          onEnter: (_) => setState(() => _isHovered = true),
-          onExit: (_) => setState(() => _isHovered = false),
-          cursor: SystemMouseCursors.click,
-          child: AnimatedScale(
-            scale: _isHovered ? 1.02 : 1.0,
-            duration: const Duration(milliseconds: 200),
-            child: InkWell(
-              onTap: widget.onTap,
-              borderRadius: BorderRadius.circular(24),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                height: 120,
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
-                  color: AppColors.cinematicCard,
-                  border: Border.all(
-                    color: widget.isHighlighted
-                        ? AppColors.primaryGold.withOpacity(
-                            0.35 + (_glowCtrl.value * 0.35),
-                          )
-                        : (_isHovered
-                              ? Colors.white.withOpacity(0.16)
-                              : Colors.white.withOpacity(0.05)),
-                    width: (widget.isHighlighted || _isHovered) ? 1.5 : 1.0,
-                  ),
-                  boxShadow: [
-                    if (widget.isHighlighted || _isHovered)
-                      BoxShadow(
-                        color: AppColors.primaryGold.withOpacity(
-                          0.10 + (_glowCtrl.value * 0.12),
-                        ),
-                        blurRadius: _isHovered ? 20 : 15,
-                        spreadRadius: _isHovered ? 3 : 2,
-                      ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Icon(widget.icon, color: AppColors.primaryGold, size: 28),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            widget.title,
-                            style: AppTextStyles.titleMedium(
-                              context,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _HighlightCard extends StatefulWidget {
-  final String title;
-  final String subtitle;
-  final String image;
-  final VoidCallback? onTap;
-
-  const _HighlightCard({
-    required this.title,
-    required this.subtitle,
-    required this.image,
-    this.onTap,
-  });
-
-  @override
-  State<_HighlightCard> createState() => _HighlightCardState();
-}
-
-class _HighlightCardState extends State<_HighlightCard> {
-  bool _isHovered = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _isHovered = true),
-        onExit: (_) => setState(() => _isHovered = false),
-        cursor: SystemMouseCursors.click,
-        child: GestureDetector(
-          onTap: widget.onTap,
-          child: AnimatedScale(
-            scale: _isHovered ? 1.02 : 1.0,
-            duration: const Duration(milliseconds: 300),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(28),
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  Image.asset(widget.image, fit: BoxFit.cover),
-                  Positioned.fill(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          colors: [
-                            Colors.black.withOpacity(0.95),
-                            Colors.transparent,
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    left: 28,
-                    right: 28,
-                    bottom: 28,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.title,
-                          style: AppTextStyles.displayArtifactTitle(context),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          widget.subtitle,
-                          style: AppTextStyles.bodySecondary(
-                            context,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NewsCard extends StatelessWidget {
-  final MockNews item;
-
-  const _NewsCard({required this.item});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(item.title)));
-      },
-      borderRadius: BorderRadius.circular(24),
+    return GestureDetector(
+      onTap: onTap,
       child: Container(
-        width: 300,
-        margin: const EdgeInsets.only(right: 16),
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
           color: AppColors.cinematicCard,
-          borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: Colors.white.withOpacity(0.05)),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.darkBorder, width: 0.5),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: AppColors.primaryGold.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                item.source.toUpperCase(),
-                style: const TextStyle(
-                  color: AppColors.primaryGold,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1,
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
+            Icon(icon, color: AppColors.primaryGold, size: 24),
+            const SizedBox(height: 8),
             Text(
-              item.title,
-              style: AppTextStyles.titleMedium(context),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const Spacer(),
-            Row(
-              children: [
-                Text(
-                  'Read More',
-                  style: AppTextStyles.buttonLabel(
-                    context,
-                  ).copyWith(color: AppColors.primaryGold, fontSize: 12),
-                ),
-                const SizedBox(width: 4),
-                const Icon(
-                  Icons.arrow_forward,
-                  color: AppColors.primaryGold,
-                  size: 14,
-                ),
-              ],
+              label,
+              style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 12),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
       ),
     );
   }
-}
-
-class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final String value;
-  final String label;
-
-  const _StatCard({
-    required this.icon,
-    required this.value,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 136,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.cinematicCard,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: AppColors.primaryGold, size: 24),
-          const Spacer(),
-          Text(
-            value,
-            style: AppTextStyles.titleLarge(
-              context,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(label, style: AppTextStyles.bodyPrimary(context)),
-        ],
-      ),
-    );
-  }
-}
-
-class _Dots extends StatelessWidget {
-  final int count;
-  final int index;
-
-  const _Dots({required this.count, required this.index});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(count, (i) {
-        final active = i == index;
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 400),
-          margin: const EdgeInsets.symmetric(horizontal: 6),
-          width: active ? 32 : 10,
-          height: 10,
-          decoration: BoxDecoration(
-            color: active
-                ? AppColors.primaryGold
-                : AppColors.neutralDark.withOpacity(0.4),
-            borderRadius: BorderRadius.circular(5),
-          ),
-        );
-      }),
-    );
-  }
-}
-
-class _LiveBadge extends StatelessWidget {
-  final String label;
-
-  const _LiveBadge({required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-      decoration: BoxDecoration(
-        color: AppColors.alertRed.withOpacity(0.12),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.alertRed.withOpacity(0.4)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 7,
-            height: 7,
-            decoration: const BoxDecoration(
-              color: AppColors.alertRed,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 10),
-          Text(
-            label.toUpperCase(),
-            style: AppTextStyles.sectionTitle(context).copyWith(
-              fontSize: 11,
-              color: AppColors.alertRed,
-              letterSpacing: 1.5,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _LegendDot extends StatelessWidget {
-  final Color color;
-  final String label;
-
-  const _LegendDot({required this.color, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(Icons.circle, size: 9, color: color),
-        const SizedBox(width: 10),
-        Text(label, style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 13)),
-      ],
-    );
-  }
-}
-
-class _GridPainter extends CustomPainter {
-  final Color gridColor;
-
-  _GridPainter({required this.gridColor});
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = gridColor
-      ..strokeWidth = 1;
-
-    for (double i = 0; i <= size.width; i += 32) {
-      canvas.drawLine(Offset(i, 0), Offset(i, size.height), paint);
-    }
-    for (double i = 0; i <= size.height; i += 32) {
-      canvas.drawLine(Offset(0, i), Offset(size.width, i), paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

@@ -77,7 +77,9 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
         backgroundColor: AppColors.cinematicCard,
         content: Text(
           isBookmarked ? l10n.addedToBookmarks : l10n.removedFromBookmarks,
-          style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white),
+          style: AppTextStyles.bodyPrimary(
+            context,
+          ).copyWith(color: Colors.white),
         ),
         duration: const Duration(milliseconds: 900),
         behavior: SnackBarBehavior.floating,
@@ -116,10 +118,16 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
           barrierDismissible: false,
           builder: (_) => PremiumDialog(
             title: l10n.quizPromptTitle,
-            icon: const Icon(Icons.quiz_rounded, color: AppColors.primaryGold, size: 28),
+            icon: const Icon(
+              Icons.quiz_rounded,
+              color: AppColors.primaryGold,
+              size: 28,
+            ),
             content: Text(
-                l10n.quizPromptDescription,
-              style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white70),
+              l10n.quizPromptDescription,
+              style: AppTextStyles.bodyPrimary(
+                context,
+              ).copyWith(color: Colors.white70),
             ),
             actions: [
               TextButton(
@@ -127,7 +135,12 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                   Navigator.pop(context);
                   tourProvider.postponeQuiz(exhibit.id);
                 },
-                child: Text(l10n.later, style: AppTextStyles.buttonLabel(context).copyWith(color: Colors.white60)),
+                child: Text(
+                  l10n.later,
+                  style: AppTextStyles.buttonLabel(
+                    context,
+                  ).copyWith(color: Colors.white60),
+                ),
               ),
               ElevatedButton(
                 onPressed: () {
@@ -137,9 +150,14 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryGold,
                   foregroundColor: AppColors.darkInk,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                child: Text(l10n.takeNow, style: AppTextStyles.buttonLabel(context)),
+                child: Text(
+                  l10n.takeNow,
+                  style: AppTextStyles.buttonLabel(context),
+                ),
               ),
             ],
           ),
@@ -266,10 +284,9 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                           isArabic
                               ? "أنهيت عرض توت عنخ آمون. هل تريد بدء الاختبار؟"
                               : "You finished the Tutankhamun exhibit. Ready to start the quiz?",
-                          style: AppTextStyles.bodyPrimary(context).copyWith(
-                            color: Colors.white70,
-                            fontSize: 16,
-                          ),
+                          style: AppTextStyles.bodyPrimary(
+                            context,
+                          ).copyWith(color: Colors.white70, fontSize: 16),
                         ),
                         actions: [
                           TextButton(
@@ -282,7 +299,9 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                             },
                             child: Text(
                               isArabic ? "لاحقاً" : "Later",
-                              style: AppTextStyles.buttonLabel(context).copyWith(color: Colors.white60),
+                              style: AppTextStyles.buttonLabel(
+                                context,
+                              ).copyWith(color: Colors.white60),
                             ),
                           ),
                           ElevatedButton(
@@ -305,9 +324,9 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                             ),
                             child: Text(
                               l10n.startQuiz,
-                              style: AppTextStyles.buttonLabel(context).copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
+                              style: AppTextStyles.buttonLabel(
+                                context,
+                              ).copyWith(fontWeight: FontWeight.bold),
                             ),
                           ),
                         ],
@@ -324,7 +343,9 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                   ),
                   child: Text(
                     l10n.startQuiz,
-                    style: AppTextStyles.buttonLabel(context).copyWith(fontWeight: FontWeight.bold),
+                    style: AppTextStyles.buttonLabel(
+                      context,
+                    ).copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -369,10 +390,9 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
           const SizedBox(width: 10),
           Text(
             isArabic ? "الاختبار مكتمل" : "Quiz Completed",
-            style: AppTextStyles.bodyPrimary(context).copyWith(
-              color: Colors.green,
-              fontWeight: FontWeight.bold,
-            ),
+            style: AppTextStyles.bodyPrimary(
+              context,
+            ).copyWith(color: Colors.green, fontWeight: FontWeight.bold),
           ),
           const Spacer(),
           Text(
@@ -416,10 +436,9 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
         titlePadding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
         title: Text(
           exhibit.getName(language),
-          style: AppTextStyles.displayArtifactTitle(context).copyWith(
-            color: Colors.white,
-            fontSize: 18,
-          ),
+          style: AppTextStyles.displayArtifactTitle(
+            context,
+          ).copyWith(color: Colors.white, fontSize: 18),
         ),
         background: Stack(
           fit: StackFit.expand,
@@ -548,9 +567,9 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                 style: AppTextStyles.metadata(context),
               ),
               backgroundColor: AppColors.primaryGold.withOpacity(0.1),
-              labelStyle: AppTextStyles.metadata(context).copyWith(
-                color: isDark ? Colors.white : Colors.black,
-              ),
+              labelStyle: AppTextStyles.metadata(
+                context,
+              ).copyWith(color: isDark ? Colors.white : Colors.black),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
                 side: BorderSide(color: AppColors.primaryGold.withOpacity(0.2)),
@@ -574,7 +593,10 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
             ).showSnackBar(SnackBar(content: Text(l10n.addedToRoute)));
           },
           icon: const Icon(Icons.route),
-          label: Text(l10n.addToMyRoute, style: AppTextStyles.buttonLabel(context).copyWith(fontSize: 14)),
+          label: Text(
+            l10n.addToMyRoute,
+            style: AppTextStyles.buttonLabel(context).copyWith(fontSize: 14),
+          ),
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.primaryGold,
             side: BorderSide(color: AppColors.primaryGold.withOpacity(0.4)),
@@ -594,7 +616,9 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
           icon: const Icon(Icons.map_outlined, color: AppColors.primaryGold),
           label: Text(
             l10n.viewOnMap,
-            style: AppTextStyles.buttonLabel(context).copyWith(color: AppColors.primaryGold, fontSize: 14),
+            style: AppTextStyles.buttonLabel(
+              context,
+            ).copyWith(color: AppColors.primaryGold, fontSize: 14),
           ),
           style: TextButton.styleFrom(foregroundColor: AppColors.primaryGold),
         ),

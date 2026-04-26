@@ -89,10 +89,13 @@ class _SideMenu extends StatelessWidget {
                               children: [
                                 Text(
                                   l10n.guestUser,
-                                  style: AppTextStyles.titleMedium(context).copyWith(
-                                    fontSize: 18,
-                                    color: isDark ? Colors.white : AppColors.darkInk,
-                                  ),
+                                  style: AppTextStyles.titleMedium(context)
+                                      .copyWith(
+                                        fontSize: 18,
+                                        color: isDark
+                                            ? Colors.white
+                                            : AppColors.darkInk,
+                                      ),
                                 ),
                                 Text(
                                   l10n.exploreTheMuseum,
@@ -109,7 +112,9 @@ class _SideMenu extends StatelessWidget {
                 Divider(
                   height: 1,
                   thickness: 1,
-                  color: isDark ? AppColors.darkDivider : const Color(0xFFF5F5F5),
+                  color: isDark
+                      ? AppColors.darkDivider
+                      : const Color(0xFFF5F5F5),
                 ),
                 Expanded(
                   child: ListView(
@@ -263,7 +268,7 @@ class AppMenuShell extends StatefulWidget {
     this.title,
     this.actions,
     this.bottomNavigationBar,
-    this.showChatButton = true,
+    this.showChatButton = false,
     this.backgroundColor,
     this.hideDefaultAppBar = false,
     this.subHeader,
@@ -343,12 +348,14 @@ class AppMenuShellState extends State<AppMenuShell>
     final currentRoute = ModalRoute.of(context)?.settings.name;
 
     final bgColor =
-        widget.backgroundColor ?? (isDark ? AppColors.darkBackground : Colors.white);
+        widget.backgroundColor ??
+        (isDark ? AppColors.darkBackground : Colors.white);
 
     return Scaffold(
       backgroundColor: bgColor,
       bottomNavigationBar: widget.bottomNavigationBar,
-      floatingActionButton: widget.floatingActionButton ??
+      floatingActionButton:
+          widget.floatingActionButton ??
           (widget.showChatButton ? const AskTheGuideButton() : null),
       body: AnimatedBuilder(
         animation: _menuController,
@@ -432,7 +439,9 @@ class AppMenuShellState extends State<AppMenuShell>
                                                 : null,
                                           ),
                                           onPressed: () {
-                                            if (Navigator.canPop(innerContext)) {
+                                            if (Navigator.canPop(
+                                              innerContext,
+                                            )) {
                                               Navigator.pop(innerContext);
                                             } else {
                                               toggleMenu();
@@ -448,24 +457,29 @@ class AppMenuShellState extends State<AppMenuShell>
                                             ),
                                             const SizedBox(width: 16),
                                             Text(
-                                              (widget.title ?? l10n.appTitle).toUpperCase(),
-                                              style: AppTextStyles.displayScreenTitle(
-                                                innerContext,
-                                              ).copyWith(
-                                                fontSize: 18,
-                                                color: AppColors.primaryGold,
-                                                letterSpacing: 1.2,
-                                              ),
+                                              (widget.title ?? l10n.appTitle)
+                                                  .toUpperCase(),
+                                              style:
+                                                  AppTextStyles.displayScreenTitle(
+                                                    innerContext,
+                                                  ).copyWith(
+                                                    fontSize: 18,
+                                                    color:
+                                                        AppColors.primaryGold,
+                                                    letterSpacing: 1.2,
+                                                  ),
                                             ),
                                           ],
                                         ),
                                         actions: widget.actions,
-                                        backgroundColor:
-                                            isDark ? AppColors.darkHeader : AppColors.warmSurface,
+                                        backgroundColor: isDark
+                                            ? AppColors.darkHeader
+                                            : AppColors.warmSurface,
                                         elevation: 0,
                                         bottom: widget.subHeader != null
                                             ? PreferredSize(
-                                                preferredSize: const Size.fromHeight(48),
+                                                preferredSize:
+                                                    const Size.fromHeight(48),
                                                 child: widget.subHeader!,
                                               )
                                             : null,

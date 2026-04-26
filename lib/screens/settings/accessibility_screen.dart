@@ -42,9 +42,9 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
   Future<void> _requestPermission(Permission p) async {
     if (kIsWeb) {
       final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.webPermissionsNote)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.webPermissionsNote)));
       return;
     }
 
@@ -128,7 +128,9 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
               const SizedBox(width: 16),
               Text(
                 l10n.settings.toUpperCase(),
-                style: AppTextStyles.displayScreenTitle(context).copyWith(fontSize: 20),
+                style: AppTextStyles.displayScreenTitle(
+                  context,
+                ).copyWith(fontSize: 20),
               ),
             ],
           ),
@@ -154,7 +156,11 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                         color: AppColors.primaryGold.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: const Icon(Icons.settings, color: AppColors.primaryGold, size: 28),
+                      child: const Icon(
+                        Icons.settings,
+                        color: AppColors.primaryGold,
+                        size: 28,
+                      ),
                     ),
                     const SizedBox(width: 20),
                     Expanded(
@@ -163,12 +169,18 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                         children: [
                           Text(
                             l10n.comfortableApp,
-                            style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                            style: AppTextStyles.bodyPrimary(context).copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
                           const SizedBox(height: 4),
                           Text(
                             l10n.adjustSettings,
-                            style: AppTextStyles.metadata(context).copyWith(fontSize: 13),
+                            style: AppTextStyles.metadata(
+                              context,
+                            ).copyWith(fontSize: 13),
                           ),
                         ],
                       ),
@@ -193,7 +205,9 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                     Text(
                       l10n.museumExperienceSub,
                       textAlign: TextAlign.center,
-                      style: AppTextStyles.metadata(context).copyWith(fontSize: 13),
+                      style: AppTextStyles.metadata(
+                        context,
+                      ).copyWith(fontSize: 13),
                     ),
                     const SizedBox(height: 24),
                     _SwitchItem(
@@ -211,11 +225,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                       value: true,
                       onChanged: (v) {},
                     ),
-                    _SwitchItem(
-                      title: "",
-                      value: false,
-                      onChanged: (v) {},
-                    ),
+                    _SwitchItem(title: "", value: false, onChanged: (v) {}),
                   ],
                 ),
               ),
@@ -269,7 +279,8 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                       title: l10n.notifications,
                       subtitle: l10n.notificationsSub,
                       status: _getStatusText(Permission.notification, l10n),
-                      onEnable: () => _requestPermission(Permission.notification),
+                      onEnable: () =>
+                          _requestPermission(Permission.notification),
                     ),
                   ],
                 ),
@@ -313,7 +324,12 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                       onChanged: (v) {},
                     ),
                     const SizedBox(height: 24),
-                    Text(l10n.appearanceMode, style: AppTextStyles.titleMedium(context).copyWith(fontSize: 16)),
+                    Text(
+                      l10n.appearanceMode,
+                      style: AppTextStyles.titleMedium(
+                        context,
+                      ).copyWith(fontSize: 16),
+                    ),
                     const SizedBox(height: 16),
                     Row(
                       children: [
@@ -340,7 +356,12 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                       ],
                     ),
                     const SizedBox(height: 32),
-                    Text(l10n.textSize, style: AppTextStyles.titleMedium(context).copyWith(fontSize: 16)),
+                    Text(
+                      l10n.textSize,
+                      style: AppTextStyles.titleMedium(
+                        context,
+                      ).copyWith(fontSize: 16),
+                    ),
                     const SizedBox(height: 16),
                     SliderTheme(
                       data: SliderTheme.of(context).copyWith(
@@ -362,7 +383,17 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: List.generate(5, (i) => Container(width: 3, height: 3, decoration: const BoxDecoration(color: Colors.white24, shape: BoxShape.circle))),
+                        children: List.generate(
+                          5,
+                          (i) => Container(
+                            width: 3,
+                            height: 3,
+                            decoration: const BoxDecoration(
+                              color: Colors.white24,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -388,29 +419,55 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                         color: AppColors.primaryGold.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.language, color: AppColors.primaryGold, size: 24),
+                      child: const Icon(
+                        Icons.language,
+                        color: AppColors.primaryGold,
+                        size: 24,
+                      ),
                     ),
                     const SizedBox(width: 20),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(l10n.appLanguage, style: AppTextStyles.titleMedium(context).copyWith(fontSize: 16)),
+                          Text(
+                            l10n.appLanguage,
+                            style: AppTextStyles.titleMedium(
+                              context,
+                            ).copyWith(fontSize: 16),
+                          ),
                           const SizedBox(height: 4),
-                          Text(l10n.appLanguageSubtitle, style: AppTextStyles.metadata(context).copyWith(fontSize: 12)),
+                          Text(
+                            l10n.appLanguageSubtitle,
+                            style: AppTextStyles.metadata(
+                              context,
+                            ).copyWith(fontSize: 12),
+                          ),
                         ],
                       ),
                     ),
                     DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
                         value: prefs.language,
-                        icon: const Icon(Icons.arrow_drop_down, color: Colors.white54),
+                        icon: const Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.white54,
+                        ),
                         dropdownColor: AppColors.cinematicElevated,
-                        style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                        style: AppTextStyles.bodyPrimary(context).copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                         onChanged: (v) => prefs.setLanguage(v!),
                         items: [
-                          DropdownMenuItem(value: 'en', child: Text(l10n.englishLanguage)),
-                          DropdownMenuItem(value: 'ar', child: Text(l10n.arabicLanguage)),
+                          DropdownMenuItem(
+                            value: 'en',
+                            child: Text(l10n.englishLanguage),
+                          ),
+                          DropdownMenuItem(
+                            value: 'ar',
+                            child: Text(l10n.arabicLanguage),
+                          ),
                         ],
                       ),
                     ),
@@ -432,27 +489,53 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.appVersion, style: AppTextStyles.titleLarge(context).copyWith(fontSize: 18)),
+                    Text(
+                      l10n.appVersion,
+                      style: AppTextStyles.titleLarge(
+                        context,
+                      ).copyWith(fontSize: 18),
+                    ),
                     const SizedBox(height: 4),
-                    Text(l10n.appTagline, style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 14)),
+                    Text(
+                      l10n.appTagline,
+                      style: AppTextStyles.bodyPrimary(
+                        context,
+                      ).copyWith(fontSize: 14),
+                    ),
                     const SizedBox(height: 24),
-                    Text(l10n.developedBy.toUpperCase(), style: AppTextStyles.displaySectionTitle(context).copyWith(fontSize: 11, letterSpacing: 1)),
+                    Text(
+                      l10n.developedBy.toUpperCase(),
+                      style: AppTextStyles.displaySectionTitle(
+                        context,
+                      ).copyWith(fontSize: 11, letterSpacing: 1),
+                    ),
                     const SizedBox(height: 8),
-                    Text(l10n.organization, style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
-                    Text(l10n.department, style: AppTextStyles.metadata(context).copyWith(fontSize: 13)),
+                    Text(
+                      l10n.organization,
+                      style: AppTextStyles.bodyPrimary(context).copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    ),
+                    Text(
+                      l10n.department,
+                      style: AppTextStyles.metadata(
+                        context,
+                      ).copyWith(fontSize: 13),
+                    ),
                     const SizedBox(height: 24),
                     _AboutNavItem(
                       title: l10n.projectInfo,
-                      onTap: () => Navigator.pushNamed(context, AppRoutes.projectInfo),
+                      onTap: () =>
+                          Navigator.pushNamed(context, AppRoutes.projectInfo),
                     ),
                     _AboutNavItem(
                       title: l10n.team,
-                      onTap: () => Navigator.pushNamed(context, AppRoutes.projectInfo),
+                      onTap: () =>
+                          Navigator.pushNamed(context, AppRoutes.projectInfo),
                     ),
-                    _AboutNavItem(
-                      title: 'Notification Test',
-                      onTap: () => Navigator.pushNamed(context, AppRoutes.notificationTest),
-                    ),
+                    // Notification test screen removed during cleanup.
                     _AboutNavItem(title: l10n.privacyPolicy),
                   ],
                 ),
@@ -476,7 +559,9 @@ class _SectionTitle extends StatelessWidget {
       padding: const EdgeInsets.only(left: 4, bottom: 16),
       child: Text(
         title,
-        style: AppTextStyles.displaySectionTitle(context).copyWith(fontSize: 12, letterSpacing: 1.5),
+        style: AppTextStyles.displaySectionTitle(
+          context,
+        ).copyWith(fontSize: 12, letterSpacing: 1.5),
       ),
     );
   }
@@ -488,7 +573,12 @@ class _SwitchItem extends StatelessWidget {
   final bool value;
   final ValueChanged<bool> onChanged;
 
-  const _SwitchItem({required this.title, this.subtitle, required this.value, required this.onChanged});
+  const _SwitchItem({
+    required this.title,
+    this.subtitle,
+    required this.value,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -500,10 +590,22 @@ class _SwitchItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 15)),
+                Text(
+                  title,
+                  style: AppTextStyles.bodyPrimary(context).copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
                 if (subtitle != null) ...[
                   const SizedBox(height: 4),
-                  Text(subtitle!, style: AppTextStyles.metadata(context).copyWith(fontSize: 12)),
+                  Text(
+                    subtitle!,
+                    style: AppTextStyles.metadata(
+                      context,
+                    ).copyWith(fontSize: 12),
+                  ),
                 ],
               ],
             ),
@@ -552,7 +654,14 @@ class _PermissionItem extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text(
+                      title,
+                      style: AppTextStyles.bodyPrimary(context).copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                     const SizedBox(height: 4),
                     Text(subtitle, style: AppTextStyles.metadata(context)),
                   ],
@@ -566,7 +675,9 @@ class _PermissionItem extends StatelessWidget {
               Text(
                 status,
                 style: TextStyle(
-                  color: status == l10n.notificationPermissionGranted ? Colors.green : Colors.white38,
+                  color: status == l10n.notificationPermissionGranted
+                      ? Colors.green
+                      : Colors.white38,
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
                 ),
@@ -578,10 +689,20 @@ class _PermissionItem extends StatelessWidget {
                   backgroundColor: AppColors.primaryGold,
                   foregroundColor: AppColors.darkInk,
                   elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 8,
+                  ),
                 ),
-                child: Text(l10n.enable, style: AppTextStyles.buttonLabel(context).copyWith(fontSize: 13)),
+                child: Text(
+                  l10n.enable,
+                  style: AppTextStyles.buttonLabel(
+                    context,
+                  ).copyWith(fontSize: 13),
+                ),
               ),
             ],
           ),
@@ -604,8 +725,19 @@ class _AboutNavItem extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: AppTextStyles.bodyPrimary(context).copyWith(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w500)),
-            const Icon(Icons.chevron_right, color: AppColors.primaryGold, size: 20),
+            Text(
+              title,
+              style: AppTextStyles.bodyPrimary(context).copyWith(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const Icon(
+              Icons.chevron_right,
+              color: AppColors.primaryGold,
+              size: 20,
+            ),
           ],
         ),
       ),
@@ -619,7 +751,12 @@ class _AppearanceChip extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _AppearanceChip({required this.label, required this.icon, required this.selected, required this.onTap});
+  const _AppearanceChip({
+    required this.label,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -629,12 +766,18 @@ class _AppearanceChip extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
-            color: selected ? AppColors.primaryGold : Colors.white.withOpacity(0.05),
+            color: selected
+                ? AppColors.primaryGold
+                : Colors.white.withOpacity(0.05),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
             children: [
-              Icon(icon, color: selected ? AppColors.darkInk : Colors.white, size: 22),
+              Icon(
+                icon,
+                color: selected ? AppColors.darkInk : Colors.white,
+                size: 22,
+              ),
               const SizedBox(height: 8),
               Text(
                 label,
@@ -655,6 +798,11 @@ class _AppearanceChip extends StatelessWidget {
 class _Divider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Divider(height: 1, color: Colors.white.withOpacity(0.05), indent: 20, endIndent: 20);
+    return Divider(
+      height: 1,
+      color: Colors.white.withOpacity(0.05),
+      indent: 20,
+      endIndent: 20,
+    );
   }
 }

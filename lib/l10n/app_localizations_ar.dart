@@ -9,7 +9,7 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
-  String get appTitle => 'حوروس';
+  String get appTitle => 'حوروس-بوت';
 
   @override
   String get exploreEgypt => 'استكشف مصر مع حورس-بوت';
@@ -38,7 +38,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get fullView => 'عرض كامل';
 
   @override
-  String get horusBot => 'حوروس';
+  String get horusBot => 'حوروس-بوت';
 
   @override
   String get talkToHorusBot => 'اسأل الدليل';
@@ -554,6 +554,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get liveTourActive => 'جولة حية نشطة';
 
   @override
+  String get liveTourLockedTitle => 'الجولة الحية غير متاحة';
+
+  @override
+  String get liveTourLockedDesc => 'اتصل بحوروس بوت لبدء جولتك الموجهة الحية';
+
+  @override
+  String get liveTourPausedDesc => 'جولتك متوقفة حالياً. استأنف للمتابعة.';
+
+  @override
+  String get scanQRToConnect =>
+      'امسح رمز الاستجابة السريعة عند مدخل المتحف للاتصال';
+
+  @override
   String currentlyVisiting(Object location) {
     return 'تزور حالياً: $location';
   }
@@ -708,7 +721,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get expiredStatus => 'منتهية';
 
   @override
-  String get showEntryCode => 'عرض رمز الدخول';
+  String get showEntryCode => 'إظهار رمز الدخول';
 
   @override
   String get noTicketsYet => 'لا توجد تذاكر بعد';
@@ -1222,4 +1235,197 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get supportNoRequests => 'لا توجد طلبات دعم';
+
+  @override
+  String get welcomeToHorusBot => 'مرحباً بك في حورس-بوت';
+
+  @override
+  String get howAreYouUsingTheAppToday => 'كيف ستستخدم التطبيق اليوم؟';
+
+  @override
+  String get planMyVisit => 'خطط لزيارتي';
+
+  @override
+  String get planMyVisitDescription =>
+      'استكشف المتحف، اشترِ التذاكر، واستعد لزيارتك.';
+
+  @override
+  String get startMyTour => 'ابدأ جولتي';
+
+  @override
+  String get startMyTourDescription =>
+      'استخدم تذاكرك، اتصل بحورس-بوت، وابدأ التجربة الموجهة.';
+
+  @override
+  String get login => 'تسجيل الدخول';
+
+  @override
+  String get register => 'إنشاء حساب';
+
+  @override
+  String get continueAsGuest => 'المتابعة كزائر';
+
+  @override
+  String get email => 'البريد الإلكتروني';
+
+  @override
+  String get emailHint => 'أدخل بريدك الإلكتروني';
+
+  @override
+  String get emailRequired => 'البريد الإلكتروني مطلوب';
+
+  @override
+  String get password => 'كلمة المرور';
+
+  @override
+  String get passwordHint => 'أدخل كلمة المرور';
+
+  @override
+  String get passwordRequired => 'كلمة المرور مطلوبة';
+
+  @override
+  String get fullName => 'الاسم الكامل';
+
+  @override
+  String get fullNameHint => 'أدخل اسمك الكامل';
+
+  @override
+  String get nameRequired => 'الاسم مطلوب';
+
+  @override
+  String get phone => 'رقم الهاتف';
+
+  @override
+  String get phoneHint => 'أدخل رقم هاتفك (اختياري)';
+
+  @override
+  String get confirmPassword => 'تأكيد كلمة المرور';
+
+  @override
+  String get confirmPasswordHint => 'أدخل كلمة المرور مرة أخرى';
+
+  @override
+  String get passwordMismatch => 'كلمات المرور غير متطابقة';
+
+  @override
+  String get passwordTooShort => 'يجب أن تكون كلمة المرور 6 أحرف على الأقل';
+
+  @override
+  String get createAccount => 'إنشاء حساب';
+
+  @override
+  String get alreadyHaveAccount => 'هل لديك حساب بالفعل؟';
+
+  @override
+  String get noAccount => 'ليس لديك حساب؟';
+
+  @override
+  String get welcomeBack => 'أهلاً وسهلاً بعودتك';
+
+  @override
+  String get signUp => 'إنشاء حساب';
+
+  @override
+  String get loggingIn => 'جاري تسجيل الدخول';
+
+  @override
+  String get signingUp => 'جاري إنشاء الحساب';
+
+  @override
+  String get loginFailed => 'فشل تسجيل الدخول. يرجى التحقق من بيانات اعتمادك.';
+
+  @override
+  String get registerFailed => 'فشل التسجيل. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get accountCreated => 'تم إنشاء الحساب بنجاح!';
+
+  @override
+  String get loginSuccess => 'تم تسجيل الدخول بنجاح!';
+
+  @override
+  String get logout => 'تسجيل الخروج';
+
+  @override
+  String get logoutConfirm => 'هل أنت متأكد من رغبتك في تسجيل الخروج؟';
+
+  @override
+  String get myAccount => 'حسابي';
+
+  @override
+  String get accountSettings => 'إعدادات الحساب';
+
+  @override
+  String get viewTickets => 'عرض التذاكر';
+
+  @override
+  String get myTickets => 'تذاكري';
+
+  @override
+  String get buyTickets => 'شراء التذاكر';
+
+  @override
+  String get loggedInAs => 'تم تسجيل الدخول باسم';
+
+  @override
+  String get guestMode => 'وضع الزائر';
+
+  @override
+  String get loginToViewTickets => 'سجل الدخول لعرض تذاكرك';
+
+  @override
+  String get loginToStartTour => 'سجل الدخول لبدء جولتك';
+
+  @override
+  String get accountRequired => 'الحساب مطلوب';
+
+  @override
+  String get createOrLoginToPreserve =>
+      'أنشئ حساباً أو سجل دخولك لحفظ تذاكرك والمدفوعات وإمكانية الوصول إلى جولة الروبوت.';
+
+  @override
+  String get accountRequiredForPurchase =>
+      'يجب عليك إنشاء حساب أو تسجيل الدخول قبل شراء التذاكر.';
+
+  @override
+  String get paymentHistory => 'سجل المدفوعات';
+
+  @override
+  String get visitHistory => 'سجل الزيارات';
+
+  @override
+  String get invalidEmail => 'صيغة بريد إلكتروني غير صحيحة';
+
+  @override
+  String get accountAlreadyExists => 'هذا البريد الإلكتروني مسجل بالفعل';
+
+  @override
+  String get visitDate => 'تاريخ الزيارة';
+
+  @override
+  String get timeSlot => 'فترة الدخول';
+
+  @override
+  String get ticketId => 'معرّف التذكرة';
+
+  @override
+  String get active => 'سارية';
+
+  @override
+  String get expired => 'منتهية';
+
+  @override
+  String get useQrAtMuseumEntrance => 'استخدم هذا الرمز عند بوابة المتحف';
+
+  @override
+  String get minutes => 'دقيقة';
+
+  @override
+  String get includedFeatures => 'المميزات المشمولة';
+
+  @override
+  String get startTourSetup => 'إعداد الجولة';
+
+  @override
+  String get scanQrOnRobot => 'امسح رمز QR الموجود على روبوت حورس-بوت للاتصال';
 }

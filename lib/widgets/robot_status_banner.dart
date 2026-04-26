@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/tour_provider.dart';
@@ -79,56 +78,55 @@ class RobotStatusBanner extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.cinematicNav.withOpacity(0.85),
+        color: AppColors.cinematicNav,
+        border: Border(
+          bottom: BorderSide(color: Colors.white.withOpacity(0.08), width: 0.5),
+        ),
       ),
-      child: ClipRect(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.05))),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        child: Row(
+          children: [
+            _StatusIndicator(
+              color: statusColor,
+              icon: statusIcon,
+              isPulsing: isPulsing,
             ),
-            child: Row(
-              children: [
-                _StatusIndicator(
-                  color: statusColor,
-                  icon: statusIcon,
-                  isPulsing: isPulsing,
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        l10n.guideStatus.toUpperCase(),
-                        style: AppTextStyles.displaySectionTitle(context).copyWith(
-                          fontSize: 10,
-                          letterSpacing: 1.2,
-                          color: Colors.white38,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        statusMsg,
-                        style: AppTextStyles.bodyPrimary(context).copyWith(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    l10n.guideStatus.toUpperCase(),
+                    style: AppTextStyles.displaySectionTitle(context).copyWith(
+                      fontSize: 10,
+                      letterSpacing: 1.2,
+                      color: Colors.white38,
+                    ),
                   ),
-                ),
-                if (state == RobotState.moving && tourProvider.nextExhibitId != null)
-                  _EstimatedArrival(seconds: tourProvider.estimatedTimeToNext, color: statusColor),
-              ],
+                  const SizedBox(height: 2),
+                  Text(
+                    statusMsg,
+                    style: AppTextStyles.bodyPrimary(context).copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
             ),
-          ),
+            if (state == RobotState.moving &&
+                tourProvider.nextExhibitId != null)
+              _EstimatedArrival(
+                seconds: tourProvider.estimatedTimeToNext,
+                color: statusColor,
+              ),
+          ],
         ),
       ),
     );
@@ -234,7 +232,9 @@ class _EstimatedArrival extends StatelessWidget {
       ),
       child: Text(
         l10n.robotArrivalIn(timeStr),
-        style: AppTextStyles.metadata(context).copyWith(fontSize: 11, fontWeight: FontWeight.w900, color: color),
+        style: AppTextStyles.metadata(
+          context,
+        ).copyWith(fontSize: 11, fontWeight: FontWeight.w900, color: color),
       ),
     );
   }

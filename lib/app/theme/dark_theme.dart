@@ -4,8 +4,12 @@ import '../../core/constants/colors.dart';
 
 ThemeData getDarkTheme(String languageCode) {
   final bool isArabic = languageCode == 'ar';
-  final String? bodyFont = isArabic ? GoogleFonts.notoSansArabic().fontFamily : GoogleFonts.inter().fontFamily;
-  final String? headingFont = isArabic ? GoogleFonts.amiri().fontFamily : 'Playfair Display';
+  final String? bodyFont = isArabic
+      ? GoogleFonts.notoSansArabic().fontFamily
+      : GoogleFonts.inter().fontFamily;
+  final String? headingFont = isArabic
+      ? GoogleFonts.amiri().fontFamily
+      : 'Playfair Display';
 
   return ThemeData(
     useMaterial3: true,
@@ -36,15 +40,16 @@ ThemeData getDarkTheme(String languageCode) {
     ),
 
     cardTheme: const CardThemeData(
-      color: AppColors.darkSurface,
+      color: AppColors.cinematicCard,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(18)),
+        side: BorderSide(color: AppColors.darkBorder, width: 0.5),
       ),
     ),
 
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: AppColors.darkHeader,
+      backgroundColor: AppColors.cinematicNav,
       selectedItemColor: AppColors.primaryGold,
       unselectedItemColor: AppColors.darkMutedText,
       showUnselectedLabels: true,
@@ -70,8 +75,17 @@ ThemeData getDarkTheme(String languageCode) {
         fontWeight: FontWeight.w600,
         color: Colors.white,
       ),
-      bodyLarge: TextStyle(fontFamily: bodyFont, fontSize: 14, color: Colors.white, height: 1.5),
-      bodySmall: TextStyle(fontFamily: bodyFont, fontSize: 12, color: AppColors.darkMutedText),
+      bodyLarge: TextStyle(
+        fontFamily: bodyFont,
+        fontSize: 14,
+        color: Colors.white,
+        height: 1.5,
+      ),
+      bodySmall: TextStyle(
+        fontFamily: bodyFont,
+        fontSize: 12,
+        color: AppColors.darkMutedText,
+      ),
     ),
 
     dividerTheme: const DividerThemeData(

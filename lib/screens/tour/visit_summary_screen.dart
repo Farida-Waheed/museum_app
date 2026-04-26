@@ -17,7 +17,10 @@ class VisitSummaryScreen extends StatelessWidget {
     final visitedCount = tourProvider.visitedExhibitIds.length;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
-    final totalQuizScore = tourProvider.quizScores.values.fold(0, (sum, score) => sum + score);
+    final totalQuizScore = tourProvider.quizScores.values.fold(
+      0,
+      (sum, score) => sum + score,
+    );
     final totalQuizzesCompleted = tourProvider.quizScores.length;
     final skippedQuizzesCount = tourProvider.skippedQuizzes.length;
 
@@ -28,7 +31,7 @@ class VisitSummaryScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
         child: Column(
           children: [
-            // 1. Trophy Icon with Glow
+            // 1. Trophy Icon with Subtle Glow
             Stack(
               alignment: Alignment.center,
               children: [
@@ -37,24 +40,44 @@ class VisitSummaryScreen extends StatelessWidget {
                   height: 140,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.primaryGold.withOpacity(0.1),
+                    color: AppColors.primaryGold.withOpacity(0.08),
                     boxShadow: [
-                      BoxShadow(color: AppColors.primaryGold.withOpacity(0.1), blurRadius: 40, spreadRadius: 10),
+                      BoxShadow(
+                        color: AppColors.primaryGold.withOpacity(0.06),
+                        blurRadius: 20,
+                        spreadRadius: 4,
+                      ),
                     ],
                   ),
                 ),
-                const Icon(Icons.emoji_events_rounded, size: 80, color: AppColors.primaryGold),
+                const Icon(
+                  Icons.emoji_events_rounded,
+                  size: 80,
+                  color: AppColors.primaryGold,
+                ),
               ],
             ),
             const SizedBox(height: 32),
 
             // 2. Main Congrats
-            Text(l10n.congrats, style: AppTextStyles.displayArtifactTitle(context).copyWith(fontSize: 32, fontWeight: FontWeight.w900, letterSpacing: -0.5, color: Colors.white)),
+            Text(
+              l10n.congrats,
+              style: AppTextStyles.displayArtifactTitle(context).copyWith(
+                fontSize: 32,
+                fontWeight: FontWeight.w900,
+                letterSpacing: -0.5,
+                color: Colors.white,
+              ),
+            ),
             const SizedBox(height: 12),
             Text(
               l10n.visitComplete,
               textAlign: TextAlign.center,
-              style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 16, color: AppColors.helperText, height: 1.5),
+              style: AppTextStyles.bodyPrimary(context).copyWith(
+                fontSize: 16,
+                color: AppColors.helperText,
+                height: 1.5,
+              ),
             ),
             const SizedBox(height: 48),
 
@@ -68,10 +91,28 @@ class VisitSummaryScreen extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  _buildStatRow(context, l10n.exhibitsVisited, "$visitedCount", Icons.museum_outlined),
-                  const Divider(height: 32, thickness: 1, color: AppColors.darkDivider),
-                  _buildStatRow(context, l10n.totalTime, "45 min", Icons.timer_outlined),
-                  const Divider(height: 32, thickness: 1, color: AppColors.darkDivider),
+                  _buildStatRow(
+                    context,
+                    l10n.exhibitsVisited,
+                    "$visitedCount",
+                    Icons.museum_outlined,
+                  ),
+                  const Divider(
+                    height: 32,
+                    thickness: 1,
+                    color: AppColors.darkDivider,
+                  ),
+                  _buildStatRow(
+                    context,
+                    l10n.totalTime,
+                    "45 min",
+                    Icons.timer_outlined,
+                  ),
+                  const Divider(
+                    height: 32,
+                    thickness: 1,
+                    color: AppColors.darkDivider,
+                  ),
                   _buildStatRow(
                     context,
                     isArabic ? "الاختبارات المكتملة" : "Quizzes Completed",
@@ -89,7 +130,11 @@ class VisitSummaryScreen extends StatelessWidget {
                     ),
                   ],
                   if (skippedQuizzesCount > 0) ...[
-                    const Divider(height: 32, thickness: 1, color: AppColors.darkDivider),
+                    const Divider(
+                      height: 32,
+                      thickness: 1,
+                      color: AppColors.darkDivider,
+                    ),
                     _buildStatRow(
                       context,
                       isArabic ? "اختبارات لم تُحل" : "Skipped Quizzes",
@@ -115,15 +160,20 @@ class VisitSummaryScreen extends StatelessWidget {
               width: double.infinity,
               height: 56,
               child: OutlinedButton(
-                onPressed: () => Navigator.pushReplacementNamed(context, '/home'),
+                onPressed: () =>
+                    Navigator.pushReplacementNamed(context, '/home'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.primaryGold,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   side: const BorderSide(color: AppColors.primaryGold),
                 ),
                 child: Text(
                   l10n.done,
-                  style: AppTextStyles.buttonLabel(context).copyWith(color: AppColors.primaryGold),
+                  style: AppTextStyles.buttonLabel(
+                    context,
+                  ).copyWith(color: AppColors.primaryGold),
                 ),
               ),
             ),
@@ -134,14 +184,32 @@ class VisitSummaryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatRow(BuildContext context, String label, String value, IconData icon, {Color valueColor = AppColors.primaryGold}) {
+  Widget _buildStatRow(
+    BuildContext context,
+    String label,
+    String value,
+    IconData icon, {
+    Color valueColor = AppColors.primaryGold,
+  }) {
     return Row(
       children: [
         Icon(icon, size: 22, color: AppColors.helperText),
         const SizedBox(width: 16),
-        Text(label, style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 15, fontWeight: FontWeight.w500, color: Colors.white)),
+        Text(
+          label,
+          style: AppTextStyles.bodyPrimary(context).copyWith(
+            fontSize: 15,
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+          ),
+        ),
         const Spacer(),
-        Text(value, style: AppTextStyles.titleLarge(context).copyWith(fontSize: 18, color: valueColor)),
+        Text(
+          value,
+          style: AppTextStyles.titleLarge(
+            context,
+          ).copyWith(fontSize: 18, color: valueColor),
+        ),
       ],
     );
   }

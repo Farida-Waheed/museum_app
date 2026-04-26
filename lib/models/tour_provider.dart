@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../core/notifications/notification_trigger_service.dart';
-import '../core/services/notification_service.dart';
-import 'app_notification.dart';
+import '../core/notifications/notification_models.dart';
+import '../core/notifications/notification_service.dart';
+import '../core/notifications/notification_types.dart';
 import '../app/router.dart';
 import '../widgets/dialogs/branded_permission_dialog.dart';
 import '../models/user_preferences.dart';
@@ -19,29 +20,13 @@ enum RobotState {
   syncing,
 }
 
-enum RobotConnectionState {
-  disconnected,
-  connecting,
-  connected,
-}
+enum RobotConnectionState { disconnected, connecting, connected }
 
-enum TourLifecycleState {
-  notStarted,
-  active,
-  paused,
-  completed,
-}
+enum TourLifecycleState { notStarted, active, paused, completed }
 
-enum FollowModeState {
-  off,
-  on,
-}
+enum FollowModeState { off, on }
 
-enum ProximityState {
-  near,
-  medium,
-  far,
-}
+enum ProximityState { near, medium, far }
 
 class TourProvider with ChangeNotifier {
   String? _currentExhibitId;
@@ -95,7 +80,9 @@ class TourProvider with ChangeNotifier {
       case RobotConnectionState.disconnected:
         return lang == 'ar' ? 'فقد الاتصال بحوروس' : 'Connection lost';
       case RobotConnectionState.connecting:
-        return lang == 'ar' ? 'جارٍ الاتصال بحوروس...' : 'Connecting to Horus-Bot...';
+        return lang == 'ar'
+            ? 'جارٍ الاتصال بحوروس...'
+            : 'Connecting to Horus-Bot...';
       case RobotConnectionState.connected:
         return lang == 'ar' ? 'متصل بحوروس' : 'Connected to Horus-Bot';
     }
@@ -104,13 +91,17 @@ class TourProvider with ChangeNotifier {
   String getTourStateText(String lang) {
     switch (_tourLifecycleState) {
       case TourLifecycleState.notStarted:
-        return lang == 'ar' ? 'الجولة جاهزة للبدء' : 'Tour ready to start';
+        return lang == 'ar'
+            ? 'حوروس جاهز للإرشاد'
+            : 'Horus-Bot is ready to guide';
       case TourLifecycleState.active:
-        return lang == 'ar' ? 'الجولة الجارية' : 'Tour active';
+        return lang == 'ar' ? 'حوروس يوجه الجولة' : 'Horus-Bot is guiding';
       case TourLifecycleState.paused:
-        return lang == 'ar' ? 'تم إيقاف الجولة مؤقتاً' : 'Tour paused';
+        return lang == 'ar' ? 'تم إيقاف حوروس مؤقتاً' : 'Horus-Bot paused';
       case TourLifecycleState.completed:
-        return lang == 'ar' ? 'اكتملت الجولة' : 'Tour completed';
+        return lang == 'ar'
+            ? 'أنهى حوروس الجولة'
+            : 'Horus-Bot finished the tour';
     }
   }
 
@@ -126,32 +117,25 @@ class TourProvider with ChangeNotifier {
     }
     switch (_proximityState) {
       case ProximityState.near:
-        return lang == 'ar'
-            ? 'أنت قريب من حوروس' : 'You are near Horus-Bot';
+        return lang == 'ar' ? 'أنت قريب من حوروس' : 'You are near Horus-Bot';
       case ProximityState.medium:
         return lang == 'ar'
-            ? 'أنت على بُعد متوسط من الدليل' : 'You are a short distance from the guide';
+            ? 'أنت على بُعد متوسط من الدليل'
+            : 'You are a short distance from the guide';
       case ProximityState.far:
         final distanceText = lang == 'ar'
-            ? 'أنت بعيد عن الدليل' : 'You are far from the guide';
+            ? 'أنت بعيد عن الدليل'
+            : 'You are far from the guide';
         return '$distanceText • ${_distanceMeters.toStringAsFixed(0)} ${lang == 'ar' ? 'م' : 'm'}';
     }
   }
 
   TourProvider() {
-    _initRobotConnection();
-  }
-
-  void _initRobotConnection() async {
-    setConnectionState(RobotConnectionState.connecting);
-    await Future.delayed(const Duration(seconds: 2));
-    setConnectionState(RobotConnectionState.connected);
-    setRobotState(
-      RobotState.idle,
-      msgEn: 'Connected to Horus-Bot',
-      msgAr: 'تم الاتصال بحوروس',
-    );
-    updateDistanceMeters(8.0);
+    // Don't auto-connect anymore. Connection happens via AppSessionProvider
+    // when user explicitly starts a tour after viewing EntryModeScreen.
+    // Initialize state as disconnected and not started.
+    _connectionState = RobotConnectionState.disconnected;
+    _tourLifecycleState = TourLifecycleState.notStarted;
   }
 
   void setConnectionState(RobotConnectionState state, {BuildContext? context}) {
@@ -168,7 +152,8 @@ class TourProvider with ChangeNotifier {
         msgEn: 'Connecting to Horus-Bot...',
         msgAr: 'جارٍ الاتصال بحوروس...',
       );
-    } else if (state == RobotConnectionState.connected && _robotState == RobotState.disconnected) {
+    } else if (state == RobotConnectionState.connected &&
+        _robotState == RobotState.disconnected) {
       setRobotState(
         RobotState.idle,
         msgEn: 'Connected to Horus-Bot',
@@ -178,7 +163,10 @@ class TourProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void setTourLifecycleState(TourLifecycleState state, {BuildContext? context}) {
+  void setTourLifecycleState(
+    TourLifecycleState state, {
+    BuildContext? context,
+  }) {
     _tourLifecycleState = state;
     if (state == TourLifecycleState.active) {
       setRobotState(
@@ -200,14 +188,14 @@ class TourProvider with ChangeNotifier {
     } else if (state == TourLifecycleState.paused) {
       setRobotState(
         RobotState.waiting,
-        msgEn: 'Tour paused. Resume when ready',
+        msgEn: 'Horus-Bot paused. Resume when ready',
         msgAr: 'تم إيقاف الجولة مؤقتاً. استأنف عندما تكون جاهزاً',
         context: context,
       );
     } else if (state == TourLifecycleState.completed) {
       setRobotState(
         RobotState.idle,
-        msgEn: 'Tour completed. Great job!',
+        msgEn: 'Horus-Bot completed the tour. Great job!',
         msgAr: 'اكتملت الجولة. عمل رائع!',
         context: context,
       );
@@ -217,19 +205,7 @@ class TourProvider with ChangeNotifier {
 
   void setFollowMode(FollowModeState mode, {BuildContext? context}) {
     _followMode = mode;
-    if (mode == FollowModeState.on && context != null) {
-      NotificationService.show(
-        context,
-        AppNotification(
-          id: 'follow_mode_on_${DateTime.now().millisecondsSinceEpoch}',
-          title: 'Follow mode enabled',
-          message: 'The map will now keep Horus-Bot in view.',
-          type: AppNotificationType.smartTip,
-          priority: AppNotificationPriority.medium,
-          icon: Icons.navigation_rounded,
-        ),
-      );
-    }
+    // Notification system removed during cleanup
     notifyListeners();
   }
 
@@ -238,37 +214,10 @@ class TourProvider with ChangeNotifier {
     final newState = meters < 5
         ? ProximityState.near
         : meters <= 15
-            ? ProximityState.medium
-            : ProximityState.far;
-    final previousState = _proximityState;
+        ? ProximityState.medium
+        : ProximityState.far;
     _proximityState = newState;
-    if (context != null && previousState != newState) {
-      if (newState == ProximityState.far) {
-        NotificationService.show(
-          context,
-          AppNotification(
-            id: 'too_far_${DateTime.now().millisecondsSinceEpoch}',
-            title: 'You are too far from Horus-Bot',
-            message: 'Open the map and follow the robot to recover.',
-            type: AppNotificationType.tourOffRoute,
-            priority: AppNotificationPriority.high,
-            icon: Icons.warning_amber_rounded,
-          ),
-        );
-      } else if (newState == ProximityState.near) {
-        NotificationService.show(
-          context,
-          AppNotification(
-            id: 'robot_near_${DateTime.now().millisecondsSinceEpoch}',
-            title: 'You are close to Horus-Bot',
-            message: 'Great! Stay on the tour path to keep up with the guide.',
-            type: AppNotificationType.tourRobotNearby,
-            priority: AppNotificationPriority.medium,
-            icon: Icons.check_circle_outline,
-          ),
-        );
-      }
-    }
+    // Notification system removed during cleanup
     notifyListeners();
   }
 
@@ -284,15 +233,18 @@ class TourProvider with ChangeNotifier {
     if (routeName != AppRoutes.map) {
       Navigator.pushNamed(context, AppRoutes.map);
     } else {
-      NotificationService.show(
-        context,
-        AppNotification(
-          id: 'recover_map_${DateTime.now().millisecondsSinceEpoch}',
+      NotificationService().showNotification(
+        ImmediateNotification(
+          id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+          type: NotificationType.mapHelpReminder,
           title: 'Find Horus-Bot',
-          message: 'The map is centering on the robot so you can recover quickly.',
-          type: AppNotificationType.tourRobotNearby,
-          priority: AppNotificationPriority.medium,
-          icon: Icons.my_location_rounded,
+          body: 'The map is centering on the robot so you can recover quickly.',
+          priority: NotificationPriority.medium,
+          category: NotificationCategory.guideReminders,
+          payload: NotificationPayload(
+            type: NotificationType.mapHelpReminder,
+            targetRoute: AppRoutes.map,
+          ),
         ),
       );
     }
@@ -363,15 +315,18 @@ class TourProvider with ChangeNotifier {
 
   void _triggerTourStartNotification(BuildContext context) {
     // In-app notification (banner)
-    NotificationService.show(
-      context,
-      AppNotification(
-        id: 'tour_start_${DateTime.now().millisecondsSinceEpoch}',
+    NotificationService().showNotification(
+      ImmediateNotification(
+        id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        type: NotificationType.tourStarted,
         title: "Tour Starting",
-        message: "Your guided tour is starting. Follow Horus-Bot.",
-        type: AppNotificationType.tourStart,
-        priority: AppNotificationPriority.high,
-        icon: Icons.play_circle_filled_rounded,
+        body: "Your guided tour is starting. Follow Horus-Bot.",
+        priority: NotificationPriority.high,
+        category: NotificationCategory.tourUpdates,
+        payload: NotificationPayload(
+          type: NotificationType.tourStarted,
+          targetRoute: AppRoutes.liveTour,
+        ),
       ),
     );
 
@@ -383,15 +338,18 @@ class TourProvider with ChangeNotifier {
   }
 
   void _triggerNextExhibitNotification(BuildContext context) {
-    NotificationService.show(
-      context,
-      AppNotification(
-        id: 'next_exhibit_${DateTime.now().millisecondsSinceEpoch}',
+    NotificationService().showNotification(
+      ImmediateNotification(
+        id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        type: NotificationType.nextExhibit,
         title: "Next Exhibit Ahead",
-        message: "You are approaching the next exhibit.",
-        type: AppNotificationType.nextExhibit,
-        priority: AppNotificationPriority.high,
-        icon: Icons.location_on_rounded,
+        body: "You are approaching the next exhibit.",
+        priority: NotificationPriority.high,
+        category: NotificationCategory.exhibitReminders,
+        payload: NotificationPayload(
+          type: NotificationType.nextExhibit,
+          targetRoute: AppRoutes.liveTour,
+        ),
       ),
     );
 
@@ -403,15 +361,18 @@ class TourProvider with ChangeNotifier {
   }
 
   void triggerRobotNearby(BuildContext context) {
-    NotificationService.show(
-      context,
-      AppNotification(
-        id: 'robot_nearby_${DateTime.now().millisecondsSinceEpoch}',
+    NotificationService().showNotification(
+      ImmediateNotification(
+        id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        type: NotificationType.horusNearby,
         title: "Horus-Bot is nearby",
-        message: "Follow the robot to continue your tour.",
-        type: AppNotificationType.robotNearby,
-        priority: AppNotificationPriority.high,
-        icon: Icons.smart_toy_rounded,
+        body: "Follow the robot to continue your tour.",
+        priority: NotificationPriority.high,
+        category: NotificationCategory.guideReminders,
+        payload: NotificationPayload(
+          type: NotificationType.horusNearby,
+          targetRoute: AppRoutes.map,
+        ),
       ),
     );
 
@@ -428,25 +389,24 @@ class TourProvider with ChangeNotifier {
     String? exhibitId,
     List<String>? topics,
   }) {
-    NotificationService.show(
-      context,
-      AppNotification(
-        id: 'quiz_${exhibitId ?? DateTime.now().millisecondsSinceEpoch}',
+    NotificationService().showNotification(
+      ImmediateNotification(
+        id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        type: NotificationType.quizAvailable,
         title: "Test What You Learned",
-        message:
+        body:
             "Horus-Bot prepared a short quiz for this exhibit. Would you like to take it now or save it until after the tour?",
-        type: AppNotificationType.quizAvailable,
-        priority: AppNotificationPriority.medium,
-        icon: Icons.quiz_rounded,
-        data: {
-          'exhibitId': exhibitId,
-          'location': location,
-          'topics': topics ?? ["History", "Symbolism", "Fun Facts"],
-        },
-        onTap: () {
-          // Logic to navigate to quiz screen
-          print("Navigating to quiz for $location");
-        },
+        priority: NotificationPriority.medium,
+        category: NotificationCategory.quizReminders,
+        payload: NotificationPayload(
+          type: NotificationType.quizAvailable,
+          targetRoute: AppRoutes.quiz,
+          exhibitId: exhibitId,
+          customData: {
+            'location': location,
+            'topics': topics ?? ["History", "Symbolism", "Fun Facts"],
+          },
+        ),
       ),
     );
 
@@ -465,23 +425,20 @@ class TourProvider with ChangeNotifier {
   }
 
   void triggerSmartTip(BuildContext context, String title, String message) {
-    NotificationService.show(
-      context,
-      AppNotification(
-        id: 'tip_${DateTime.now().millisecondsSinceEpoch}',
+    NotificationService().showNotification(
+      ImmediateNotification(
+        id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+        type: NotificationType.didYouKnow,
         title: title,
-        message: message,
-        type: AppNotificationType.smartTip,
-        priority: AppNotificationPriority.low,
-        icon: Icons.lightbulb_outline_rounded,
+        body: message,
+        priority: NotificationPriority.low,
+        category: NotificationCategory.museumNews,
+        payload: NotificationPayload(type: NotificationType.didYouKnow),
       ),
     );
 
     // System notification
-    NotificationTriggerService().triggerDidYouKnow(
-      title: title,
-      body: message,
-    );
+    NotificationTriggerService().triggerDidYouKnow(title: title, body: message);
   }
 
   void setCurrentExhibit(String? id, {BuildContext? context}) {

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 
 import '../../models/tour_provider.dart';
+import '../../models/app_session_provider.dart' as session;
 import '../../core/services/mock_data.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
@@ -163,7 +164,21 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   @override
   Widget build(BuildContext context) {
     final tourProvider = Provider.of<TourProvider>(context);
+    final sessionProvider = Provider.of<session.AppSessionProvider>(context);
     final l10n = AppLocalizations.of(context)!;
+
+    // If not in active tour, show locked state
+    if (!sessionProvider.isInActiveTour) {
+      return AppMenuShell(
+        title: l10n.liveTour.toUpperCase(),
+        subHeader: sessionProvider.shouldShowRobotOnMap
+            ? const RobotStatusBanner()
+            : null,
+        bottomNavigationBar: const BottomNav(currentIndex: 2),
+        showChatButton: false,
+        body: _buildLockedState(context, sessionProvider, l10n),
+      );
+    }
 
     final allExhibits = MockDataService.getAllExhibits();
     final currentExhibit = allExhibits.firstWhere(
@@ -179,6 +194,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       title: l10n.liveTour.toUpperCase(),
       subHeader: const RobotStatusBanner(),
       bottomNavigationBar: const BottomNav(currentIndex: 2),
+      showChatButton: true,
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
@@ -203,17 +219,23 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                 _StatusChip(
                   label: tourProvider.getTourStateText(l10n.localeName),
                   icon: Icons.radio_button_checked,
-                  color: tourProvider.tourLifecycleState == TourLifecycleState.active
+                  color:
+                      tourProvider.tourLifecycleState ==
+                          TourLifecycleState.active
                       ? Colors.green
                       : Colors.orange,
-                  isPulsing: tourProvider.tourLifecycleState == TourLifecycleState.active,
+                  isPulsing:
+                      tourProvider.tourLifecycleState ==
+                      TourLifecycleState.active,
                 ),
               ],
             ),
             const SizedBox(height: 16),
             Text(
               tourProvider.getProximityText(l10n.localeName),
-              style: AppTextStyles.metadata(context).copyWith(color: AppColors.neutralMedium),
+              style: AppTextStyles.metadata(
+                context,
+              ).copyWith(color: AppColors.neutralMedium),
             ),
             const SizedBox(height: 16),
 
@@ -322,7 +344,8 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                             _ControlButton(
                               icon: Icons.my_location,
                               label: l10n.followHorusBot,
-                              onTap: () => tourProvider.requestRecovery(context),
+                              onTap: () =>
+                                  tourProvider.requestRecovery(context),
                             ),
                           ],
                         ),
@@ -431,6 +454,53 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                 fullWidth: true,
               ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLockedState(
+    BuildContext context,
+    session.AppSessionProvider sessionProvider,
+    AppLocalizations l10n,
+  ) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.lock_outline,
+              size: 80,
+              color: AppColors.neutralMedium,
+            ),
+            const SizedBox(height: 24),
+            Text(
+              l10n.liveTourLockedTitle,
+              style: AppTextStyles.displaySectionTitle(context),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              sessionProvider.robotConnectionState ==
+                      session.RobotConnectionState.disconnected
+                  ? l10n.liveTourLockedDesc
+                  : l10n.liveTourPausedDesc,
+              style: AppTextStyles.bodyPrimary(
+                context,
+              ).copyWith(color: AppColors.neutralMedium),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 32),
+            if (sessionProvider.robotConnectionState ==
+                session.RobotConnectionState.disconnected)
+              Text(
+                l10n.scanQRToConnect,
+                style: AppTextStyles.metadata(context),
+                textAlign: TextAlign.center,
+              ),
           ],
         ),
       ),

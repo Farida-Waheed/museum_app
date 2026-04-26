@@ -9,7 +9,7 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Horus';
+  String get appTitle => 'Horus-Bot';
 
   @override
   String get exploreEgypt => 'Explore Egypt With Horus-Bot';
@@ -38,7 +38,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fullView => 'Full View';
 
   @override
-  String get horusBot => 'Horus';
+  String get horusBot => 'Horus-Bot';
 
   @override
   String get talkToHorusBot => 'Ask the Guide';
@@ -559,6 +559,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get liveTourActive => 'Live Tour Active';
 
   @override
+  String get liveTourLockedTitle => 'Live Tour Unavailable';
+
+  @override
+  String get liveTourLockedDesc =>
+      'Connect to Horus Bot to start your live guided tour';
+
+  @override
+  String get liveTourPausedDesc =>
+      'Your tour is currently paused. Resume to continue.';
+
+  @override
+  String get scanQRToConnect => 'Scan QR code at museum entrance to connect';
+
+  @override
   String currentlyVisiting(Object location) {
     return 'Currently Visiting: $location';
   }
@@ -1056,7 +1070,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Permissions are managed by your browser settings on web.';
 
   @override
-  String get ticketConfirmation => 'Ticket confirmation';
+  String get ticketConfirmation => 'Ticket Confirmation';
 
   @override
   String get scanResult => 'Scan result';
@@ -1235,4 +1249,198 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get supportNoRequests => 'No support requests';
+
+  @override
+  String get welcomeToHorusBot => 'Welcome to Horus-Bot';
+
+  @override
+  String get howAreYouUsingTheAppToday => 'How are you using the app today?';
+
+  @override
+  String get planMyVisit => 'Plan My Visit';
+
+  @override
+  String get planMyVisitDescription =>
+      'Explore the museum, buy tickets, and prepare your visit.';
+
+  @override
+  String get startMyTour => 'Start My Tour';
+
+  @override
+  String get startMyTourDescription =>
+      'Use your tickets, connect to Horus-Bot, and begin the guided experience.';
+
+  @override
+  String get login => 'Log In';
+
+  @override
+  String get register => 'Create Account';
+
+  @override
+  String get continueAsGuest => 'Continue as Guest';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get emailHint => 'Enter your email';
+
+  @override
+  String get emailRequired => 'Email is required';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get passwordHint => 'Enter your password';
+
+  @override
+  String get passwordRequired => 'Password is required';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get fullNameHint => 'Enter your full name';
+
+  @override
+  String get nameRequired => 'Name is required';
+
+  @override
+  String get phone => 'Phone Number';
+
+  @override
+  String get phoneHint => 'Enter your phone number (optional)';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get confirmPasswordHint => 'Re-enter your password';
+
+  @override
+  String get passwordMismatch => 'Passwords do not match';
+
+  @override
+  String get passwordTooShort => 'Password must be at least 6 characters';
+
+  @override
+  String get createAccount => 'Create Account';
+
+  @override
+  String get alreadyHaveAccount => 'Already have an account?';
+
+  @override
+  String get noAccount => 'Don\'t have an account?';
+
+  @override
+  String get welcomeBack => 'Welcome Back';
+
+  @override
+  String get signUp => 'Sign Up';
+
+  @override
+  String get loggingIn => 'Logging in';
+
+  @override
+  String get signingUp => 'Creating account';
+
+  @override
+  String get loginFailed => 'Login failed. Please check your credentials.';
+
+  @override
+  String get registerFailed => 'Registration failed. Please try again.';
+
+  @override
+  String get accountCreated => 'Account created successfully!';
+
+  @override
+  String get loginSuccess => 'Logged in successfully!';
+
+  @override
+  String get logout => 'Log Out';
+
+  @override
+  String get logoutConfirm => 'Are you sure you want to log out?';
+
+  @override
+  String get myAccount => 'My Account';
+
+  @override
+  String get accountSettings => 'Account Settings';
+
+  @override
+  String get viewTickets => 'View Tickets';
+
+  @override
+  String get myTickets => 'My Tickets';
+
+  @override
+  String get buyTickets => 'Buy Tickets';
+
+  @override
+  String get loggedInAs => 'Logged in as';
+
+  @override
+  String get guestMode => 'Guest Mode';
+
+  @override
+  String get loginToViewTickets => 'Log in to view your tickets';
+
+  @override
+  String get loginToStartTour => 'Log in to start your tour';
+
+  @override
+  String get accountRequired => 'Account Required';
+
+  @override
+  String get createOrLoginToPreserve =>
+      'Create an account or log in to save your tickets, payments, and robot tour access.';
+
+  @override
+  String get accountRequiredForPurchase =>
+      'You need to create an account or log in before purchasing tickets.';
+
+  @override
+  String get paymentHistory => 'Payment History';
+
+  @override
+  String get visitHistory => 'Visit History';
+
+  @override
+  String get invalidEmail => 'Invalid email format';
+
+  @override
+  String get accountAlreadyExists => 'This email is already registered';
+
+  @override
+  String get visitDate => 'Visit Date';
+
+  @override
+  String get timeSlot => 'Time Slot';
+
+  @override
+  String get ticketId => 'Ticket ID';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get expired => 'Expired';
+
+  @override
+  String get useQrAtMuseumEntrance => 'Use this QR at the museum entrance';
+
+  @override
+  String get minutes => 'minutes';
+
+  @override
+  String get includedFeatures => 'Included Features';
+
+  @override
+  String get startTourSetup => 'Start Tour Setup';
+
+  @override
+  String get scanQrOnRobot =>
+      'Scan the QR on the physical Horus-Bot robot to connect';
 }

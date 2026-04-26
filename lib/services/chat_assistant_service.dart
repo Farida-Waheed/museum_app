@@ -24,15 +24,15 @@ class LocalMuseumChatService implements ChatAiService {
     MuseumKnowledgeService? knowledge,
     ConversationMemoryService? memory,
     RobotSuggestionService? robotSuggestion,
-  })  : _knowledge = knowledge ?? MuseumKnowledgeService(),
-        _memory = memory ?? ConversationMemoryService(),
-        _robotSuggestion = robotSuggestion ?? RobotSuggestionService();
+  }) : _knowledge = knowledge ?? MuseumKnowledgeService(),
+       _memory = memory ?? ConversationMemoryService(),
+       _robotSuggestion = robotSuggestion ?? RobotSuggestionService();
 
   String _buildSystemPrompt(ChatContext context) {
     if (context.language == 'ar') {
-      return 'أنت دليل متحف ذكي، أنيق، ودافئ. استخدم نهج قصصي ومعلوماتي. اجعله مختصراً ومفيداً. لا تكرر السؤال. لا تقل \'جاري المعالجة\'.';
+      return 'أنت مساعد متحف عملي ومباشر. أجب باختصار ووضوح. ركز على المساعدة العملية مثل التذاكر والمواعيد والإرشادات. لا تكن قصصياً أو تعليمياً. إذا سئل عن معروضات، أعد توجيه إلى الروبوت.';
     }
-    return 'You are a smart museum guide assistant. Answer elegantly, helpfully and with storytelling style. Avoid generic phrases and don’t repeat the user question.';
+    return 'You are a practical museum assistant. Answer briefly and clearly. Focus on operational help like tickets, hours, and directions. Do not be storytelling or educational. If asked about exhibits, redirect to the robot.';
   }
 
   String _normalize(String input) {
@@ -41,9 +41,13 @@ class LocalMuseumChatService implements ChatAiService {
 
   bool _isGreeting(String normalized, String language) {
     if (language == 'ar') {
-      return RegExp(r'\b(مرحبا|السلام|اهلا|كيف|صباح|مساء|هاي|ها)\b').hasMatch(normalized);
+      return RegExp(
+        r'\b(مرحبا|السلام|اهلا|كيف|صباح|مساء|هاي|ها)\b',
+      ).hasMatch(normalized);
     }
-    return RegExp(r'\b(hi|hello|hey|howdy|greetings|good morning|good afternoon|good evening)\b').hasMatch(normalized);
+    return RegExp(
+      r'\b(hi|hello|hey|howdy|greetings|good morning|good afternoon|good evening)\b',
+    ).hasMatch(normalized);
   }
 
   @override
@@ -104,47 +108,63 @@ class LocalMuseumChatService implements ChatAiService {
 
   String _greetingResponse(String language) {
     if (language == 'ar') {
-      return 'مرحباً! أنا دليلك في المتحف. يمكنني مساعدتك في معرفة التذاكر والمواعيد والفعاليات والمعروضات. ماذا تود أن تستكشف؟';
+      return 'مرحباً! أنا هنا لمساعدتك في التذاكر والمواعيد والإرشادات. ماذا تحتاج؟';
     }
-    return 'Hello! I am your museum guide. I can help you with tickets, hours, events, and exhibits. What would you like to explore?';
+    return 'Hello! I can help with tickets, hours, and directions. What do you need?';
   }
 
   String _fallbackResponse(String language) {
     return language == 'ar'
-        ? 'لم أتمكن من تحديد طلبك تمامًا، لكنني هنا لمساعدتك حول التذاكر والمواعيد والمعروضات والاتجاهات. جرّب سؤالاً مثل "التذاكر" أو "أين هو".'
-        : 'I couldn’t match that exactly, but I can still help with tickets, hours, exhibits, events, or directions. Try asking about one of those topics.';
+        ? 'لم أفهم تماماً. يمكنني المساعدة في التذاكر، المواعيد، الإرشادات، أو الفعاليات. جرّب سؤالاً مثل "أسعار التذاكر" أو "أين دورة المياه".'
+        : 'I didn\'t catch that. I can help with tickets, hours, directions, or events. Try asking about "ticket prices" or "where is the restroom".';
   }
 
-  String _composeShortExhibitAnswer(Exhibit exhibit, String question, String language) {
+  String _composeShortExhibitAnswer(
+    Exhibit exhibit,
+    String question,
+    String language,
+  ) {
     final title = exhibit.getName(language);
-    final summary = _knowledge.getShortExhibitOverview(exhibit, language);
     if (_isWhereIntent(_normalize(question))) {
       return language == 'ar'
           ? '$title موجود في القاعة الرئيسية. اتبع لافتات المتحف لتجده سريعًا.'
           : '$title is in the main hall route. Follow museum signs to find it quickly.';
     }
 
-    if (language == 'ar') {
-      if (question.contains('من') || question.toLowerCase().contains('who')) {
-        return '$title هو معروض مهم هنا. $summary';
+    // For any explanation requests, redirect to robot
+    final normalized = _normalize(question);
+    if (normalized.contains('tell') ||
+        normalized.contains('explain') ||
+        normalized.contains('more') ||
+        normalized.contains('حدثني') ||
+        normalized.contains('اشرح') ||
+        normalized.contains('story') ||
+        normalized.contains('قصة') ||
+        normalized.contains('history') ||
+        normalized.contains('تاريخ')) {
+      if (language == 'ar') {
+        return 'للقصة الكاملة، اسأل روبوت المتحف في القاعة.';
       }
-      return '$title هو عرض مميز. $summary';
+      return 'For the full story, ask the museum robot in the hall.';
     }
 
-    if (question.toLowerCase().contains('who')) {
-      return '$title is a key piece in the collection. $summary';
+    // Short acknowledgment only
+    if (language == 'ar') {
+      return '$title معروض في المتحف. للمزيد من المعلومات، اسأل الروبوت.';
     }
-
-    return '$title is a highlight of the museum. $summary';
+    return '$title is on display. For more information, ask the robot.';
   }
 
-  String _composeCorrectionResponse(Exhibit exhibit, String query, String language) {
+  String _composeCorrectionResponse(
+    Exhibit exhibit,
+    String query,
+    String language,
+  ) {
     final exhibitName = exhibit.getName(language);
-    final shortOverview = _knowledge.getShortExhibitOverview(exhibit, language);
     if (language == 'ar') {
-      return 'لم أجد شيئًا باسم "$query" ضمن معروضات المتحف. هل كنت تقصد $exhibitName؟ $shortOverview';
+      return 'لم أجد "$query" بدقة. هل تقصد $exhibitName؟ للقصة الكاملة، اسأل الروبوت.';
     }
-    return 'I could not find anything named "$query" in the museum context. Did you mean $exhibitName? $shortOverview';
+    return 'I couldn\'t find "$query" exactly. Did you mean $exhibitName? For the full story, ask the robot.';
   }
 
   String _composeNearMatchResponse(List<Exhibit> suggestions, String language) {
@@ -153,9 +173,9 @@ class LocalMuseumChatService implements ChatAiService {
     }
     final first = suggestions.first.getName(language);
     if (language == 'ar') {
-      return 'لم أجد تطابقًا دقيقًا، لكن هذه القطعة قد تكون ما تقصده: $first. اسألني عنها أو عن أي معرض آخر.';
+      return 'لم أجد تطابقًا دقيقًا، لكن $first قد يكون ما تقصده. للمزيد من التفاصيل، اسأل الروبوت.';
     }
-    return 'I didn’t find an exact match, but this may be what you mean: $first. Ask me about it or another exhibit.';
+    return 'I didn\'t find an exact match, but $first may be what you mean. For more details, ask the robot.';
   }
 
   Exhibit? _rememberRecentExhibit() {
@@ -221,9 +241,7 @@ class LocalMuseumChatService implements ChatAiService {
     }
 
     Exhibit? matchedExhibit = exhibitContext ?? _rememberRecentExhibit();
-    if (matchedExhibit == null) {
-      matchedExhibit = _knowledge.findBestExhibitMatch(question);
-    }
+    matchedExhibit ??= _knowledge.findBestExhibitMatch(question);
 
     if (matchedExhibit != null &&
         (normalized.contains('tell') ||
@@ -231,13 +249,21 @@ class LocalMuseumChatService implements ChatAiService {
             normalized.contains('more') ||
             normalized.contains('حدثني') ||
             normalized.contains('اشرح'))) {
-      final answer = _composeExhibitResponse(matchedExhibit, question, language);
+      final answer = _composeExhibitResponse(
+        matchedExhibit,
+        question,
+        language,
+      );
       _memory.addAssistantMessage(answer);
       return answer;
     }
 
     if (_isWhereIntent(normalized) && matchedExhibit != null) {
-      final answer = _composeExhibitResponse(matchedExhibit, question, language);
+      final answer = _composeExhibitResponse(
+        matchedExhibit,
+        question,
+        language,
+      );
       _memory.addAssistantMessage(answer);
       return answer;
     }
@@ -254,7 +280,11 @@ class LocalMuseumChatService implements ChatAiService {
     }
 
     if (matchedExhibit != null) {
-      final answer = _composeShortExhibitAnswer(matchedExhibit, question, language);
+      final answer = _composeShortExhibitAnswer(
+        matchedExhibit,
+        question,
+        language,
+      );
       final finalAnswer = _robotSuggestion.appendRobotSuggestion(
         answer,
         context,
@@ -266,7 +296,11 @@ class LocalMuseumChatService implements ChatAiService {
 
     final closestMatches = _knowledge.findClosestMatches(question);
     if (closestMatches.isNotEmpty) {
-      final answer = _composeCorrectionResponse(closestMatches.first, question, language);
+      final answer = _composeCorrectionResponse(
+        closestMatches.first,
+        question,
+        language,
+      );
       final finalAnswer = _robotSuggestion.appendRobotSuggestion(
         answer,
         context,
@@ -299,29 +333,41 @@ ${context.question}
 ''';
   }
 
-
-  String _composeExhibitResponse(Exhibit exhibit, String question, String language) {
+  String _composeExhibitResponse(
+    Exhibit exhibit,
+    String question,
+    String language,
+  ) {
     final normalized = _normalize(question);
     final title = exhibit.getName(language);
-    final description = exhibit.getDescription(language);
 
     if (_isWhereIntent(normalized)) {
       if (language == 'ar') {
-        return '$title موجود في القاعة الرئيسية. $description';
+        return '$title موجود في القاعة الرئيسية. اتبع لافتات المتحف للوصول إليه.';
       }
-      return '$title is located in the main hall. $description';
+      return '$title is located in the main hall. Follow museum signs to find it.';
     }
 
+    // For any deep explanation requests, redirect to robot
+    if (normalized.contains('tell') ||
+        normalized.contains('explain') ||
+        normalized.contains('more') ||
+        normalized.contains('حدثني') ||
+        normalized.contains('اشرح') ||
+        normalized.contains('story') ||
+        normalized.contains('قصة') ||
+        normalized.contains('history') ||
+        normalized.contains('تاريخ')) {
+      if (language == 'ar') {
+        return 'للحصول على القصة الكاملة والتفاصيل التاريخية، اسأل روبوت المتحف الموجود في القاعة.';
+      }
+      return 'For the full story and historical details, ask the museum robot in the hall.';
+    }
+
+    // Short acknowledgment for basic exhibit mentions
     if (language == 'ar') {
-      if (question.toLowerCase().contains('من') || question.toLowerCase().contains('who')) {
-        return '$title هو معروض مهم هنا. $description';
-      }
-      return '$title هو عرض مميز. $description';
+      return '$title هو معروض مهم في المتحف. للمزيد من التفاصيل، اسأل الروبوت.';
     }
-
-    if (question.toLowerCase().contains('who')) {
-      return '$title is a key piece in the collection. $description';
-    }
-    return '$title is a highlight of the collection. $description';
+    return '$title is a key exhibit in the museum. For more details, ask the robot.';
   }
 }

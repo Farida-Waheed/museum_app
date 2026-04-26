@@ -5,9 +5,14 @@ import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 
 import '../../models/user_preferences.dart';
+import '../../models/auth_provider.dart';
+import '../../models/ticket_provider.dart';
+import '../../models/tour_package.dart';
 import '../../l10n/app_localizations.dart';
 import '../../app/router.dart';
+import '../../screens/tickets/qr_scanner_screen.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../models/app_session_provider.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../core/constants/text_styles.dart';
 import '../../core/notifications/notification_trigger_service.dart';
@@ -20,29 +25,10 @@ class TicketScreen extends StatefulWidget {
 }
 
 class _TicketScreenState extends State<TicketScreen> {
-  final Map<String, double> _prices = {
-    'Adult': 20.0,
-    'Student': 15.0,
-    'Child': 10.0,
-  };
-
-  final Map<String, int> _quantities = {'Adult': 1, 'Student': 0, 'Child': 0};
-
+  TourPackage? _selectedPackage;
   DateTime _selectedDate = DateTime.now();
-
-  double get _totalPrice {
-    double total = 0;
-    _quantities.forEach((type, qty) {
-      total += _prices[type]! * qty;
-    });
-    return total;
-  }
-
-  int get _totalTickets {
-    int total = 0;
-    _quantities.forEach((_, qty) => total += qty);
-    return total;
-  }
+  final String _selectedTimeSlot = '10:00 AM - 12:00 PM';
+  final int _visitorCount = 1;
 
   Future<void> _selectDate() async {
     final picked = await showDatePicker(
@@ -56,30 +42,55 @@ class _TicketScreenState extends State<TicketScreen> {
     }
   }
 
-  void _updateQuantity(String type, int change) {
-    final newQty = _quantities[type]! + change;
-    if (newQty >= 0) {
-      setState(() => _quantities[type] = newQty);
-    }
-  }
-
   Future<void> _handleCheckout(bool isArabic) async {
     final l10n = AppLocalizations.of(context)!;
-    if (_totalPrice <= 0) {
+    final sessionProvider = Provider.of<AppSessionProvider>(
+      context,
+      listen: false,
+    );
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final ticketProvider = Provider.of<TicketProvider>(context, listen: false);
+
+    if (_selectedPackage == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             isArabic
-                ? "اختر تذكرة واحدة على الأقل للمتابعة."
-                : "Please select at least one ticket to continue.",
+                ? "يرجى اختيار باقة للمتابعة."
+                : "Please select a package to continue.",
           ),
         ),
       );
       return;
     }
 
+    // Check if user is logged in
+    if (!authProvider.isLoggedIn) {
+      _showAccountRequiredDialog(context);
+      return;
+    }
+
     HapticFeedback.mediumImpact();
     SystemSound.play(SystemSoundType.click);
+
+    // Buy the package
+    ticketProvider.buyPackage(
+      userId: authProvider.currentUser!.id,
+      package: _selectedPackage!,
+      visitDate: _selectedDate,
+      timeSlot: _selectedTimeSlot,
+      visitorCount: _visitorCount,
+    );
+
+    // Update session provider
+    sessionProvider.setTicketStates(
+      museumState: _selectedPackage!.includesMuseumEntry
+          ? MuseumTicketState.active
+          : MuseumTicketState.none,
+      robotState: _selectedPackage!.includesRobotTour
+          ? RobotTourTicketState.available
+          : RobotTourTicketState.none,
+    );
 
     final shortDate = DateFormat('d MMM yyyy').format(_selectedDate);
 
@@ -91,15 +102,13 @@ class _TicketScreenState extends State<TicketScreen> {
       transitionDuration: const Duration(milliseconds: 280),
       pageBuilder: (ctx, anim, secondaryAnim) {
         return Center(
-          child: _TicketConfirmationDialog(
+          child: _PurchaseConfirmationDialog(
             isArabic: isArabic,
-            totalTickets: _totalTickets,
-            totalPrice: _totalPrice,
+            package: _selectedPackage!,
             shortDate: shortDate,
             onGoToTickets: () {
               Navigator.of(ctx, rootNavigator: true).pop();
               Navigator.pushReplacementNamed(context, AppRoutes.myTickets);
-
               // Schedule ticket reminder notification for visit day
               NotificationTriggerService().triggerTicketReminder(
                 title: "Your Museum Visit Today",
@@ -108,9 +117,30 @@ class _TicketScreenState extends State<TicketScreen> {
                   _selectedDate.year,
                   _selectedDate.month,
                   _selectedDate.day,
-                  9, 0, // 9 AM on visit day
+                  9,
+                  0, // 9 AM on visit day
                 ),
               );
+            },
+            onStartTourSetup: () {
+              Navigator.of(ctx, rootNavigator: true).pop();
+              if (sessionProvider.canStartRobotTour) {
+                Navigator.pushReplacementNamed(
+                  context,
+                  AppRoutes.qrScan,
+                  arguments: QRScanMode.robotConnection,
+                );
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      isArabic
+                          ? "هذه التذكرة لا تشمل جولة الروبوت."
+                          : "This ticket does not include a robot guided tour.",
+                    ),
+                  ),
+                );
+              }
             },
           ),
         );
@@ -169,15 +199,18 @@ class _TicketScreenState extends State<TicketScreen> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppColors.darkSurface,
+                      color: AppColors.cinematicCard,
                       borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.white.withOpacity(0.05)),
+                      border: Border.all(
+                        color: AppColors.darkBorder,
+                        width: 0.5,
+                      ),
                     ),
                     child: Row(
                       children: [
                         CircleAvatar(
                           backgroundColor: AppColors.primaryGold.withOpacity(
-                            0.1,
+                            0.12,
                           ),
                           child: const Icon(
                             Icons.museum_outlined,
@@ -261,33 +294,40 @@ class _TicketScreenState extends State<TicketScreen> {
 
                   const SizedBox(height: 32),
 
-                  // Ticket Types
+                  // Museum Entry Section
                   Text(
-                    isArabic ? "أنواع التذاكر" : "Ticket Types",
+                    isArabic ? "دخول المتحف" : "Museum Entry",
                     style: AppTextStyles.displaySectionTitle(context),
                   ),
                   const SizedBox(height: 16),
-                  _ticketRow(
-                    "Adult",
-                    isArabic ? "بالغ" : "Adult",
-                    isArabic ? "١٢+ سنة" : "Ages 12+",
-                    _prices["Adult"]!,
+                  _buildPackageCard(
+                    TourPackage.mockPackages[0], // Museum Entry Only
                     isArabic,
                   ),
-                  const SizedBox(height: 12),
-                  _ticketRow(
-                    "Student",
-                    isArabic ? "طالب" : "Student",
-                    isArabic ? "مع بطاقة سارية" : "With valid ID",
-                    _prices["Student"]!,
+
+                  const SizedBox(height: 32),
+
+                  // Horus-Bot Guided Tours Section
+                  Text(
+                    isArabic ? "جولات حورس-بوت" : "Horus-Bot Guided Tours",
+                    style: AppTextStyles.displaySectionTitle(context),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildPackageCard(
+                    TourPackage.mockPackages[1], // Robot Tour Only
                     isArabic,
                   ),
-                  const SizedBox(height: 12),
-                  _ticketRow(
-                    "Child",
-                    isArabic ? "طفل" : "Child",
-                    isArabic ? "٥-١١ سنة" : "Ages 5-11",
-                    _prices["Child"]!,
+
+                  const SizedBox(height: 32),
+
+                  // Complete Experience Section
+                  Text(
+                    isArabic ? "التجربة الكاملة" : "Complete Experience",
+                    style: AppTextStyles.displaySectionTitle(context),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildPackageCard(
+                    TourPackage.mockPackages[2], // Complete Bundle
                     isArabic,
                   ),
 
@@ -301,12 +341,12 @@ class _TicketScreenState extends State<TicketScreen> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.darkHeader,
+              color: AppColors.cinematicNav,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  blurRadius: 10,
-                  offset: const Offset(0, -5),
+                  color: Colors.black.withOpacity(0.15),
+                  blurRadius: 6,
+                  offset: const Offset(0, -3),
                 ),
               ],
             ),
@@ -325,7 +365,7 @@ class _TicketScreenState extends State<TicketScreen> {
                         ).copyWith(fontSize: 13),
                       ),
                       Text(
-                        "\$${_totalPrice.toStringAsFixed(2)}",
+                        "\$${_selectedPackage?.price.toStringAsFixed(2) ?? '0.00'}",
                         style: AppTextStyles.titleLarge(
                           context,
                         ).copyWith(fontSize: 24, color: AppColors.primaryGold),
@@ -337,7 +377,7 @@ class _TicketScreenState extends State<TicketScreen> {
                     child: SizedBox(
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: _totalPrice > 0
+                        onPressed: _selectedPackage != null
                             ? () => _handleCheckout(isArabic)
                             : null,
                         style: ElevatedButton.styleFrom(
@@ -366,95 +406,209 @@ class _TicketScreenState extends State<TicketScreen> {
     );
   }
 
-  Widget _ticketRow(
-    String typeKey,
-    String label,
-    String subtitle,
-    double price,
-    bool isArabic,
-  ) {
-    final qty = _quantities[typeKey]!;
+  Widget _buildPackageCard(TourPackage package, bool isArabic) {
+    final isSelected = _selectedPackage?.id == package.id;
 
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.cinematicCard,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: qty > 0
-              ? AppColors.primaryGold.withOpacity(0.3)
-              : Colors.white.withOpacity(0.05),
-        ),
-        boxShadow: [
-          if (qty > 0)
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: AppTextStyles.titleMedium(
-                    context,
-                  ).copyWith(fontSize: 16),
-                ),
-                Text(
-                  subtitle,
-                  style: AppTextStyles.metadata(context).copyWith(fontSize: 12),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "\$${price.toStringAsFixed(2)}",
-                  style: AppTextStyles.bodyPrimary(context).copyWith(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primaryGold,
-                  ),
-                ),
-              ],
-            ),
+    return InkWell(
+      onTap: () => setState(() => _selectedPackage = package),
+      borderRadius: BorderRadius.circular(24),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: AppColors.cinematicCard,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: isSelected
+                ? AppColors.primaryGold.withOpacity(0.5)
+                : AppColors.darkBorder,
+            width: isSelected ? 2 : 0.5,
           ),
-          Container(
-            decoration: BoxDecoration(
-              color: AppColors.darkBackground,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.primaryGold.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.remove_rounded, size: 20),
-                  onPressed: qty > 0
-                      ? () => _updateQuantity(typeKey, -1)
-                      : null,
-                  color: qty > 0 ? Colors.white70 : Colors.white24,
-                ),
-                SizedBox(
-                  width: 24,
-                  child: Text(
-                    "$qty",
-                    textAlign: TextAlign.center,
-                    style: AppTextStyles.bodyPrimary(context).copyWith(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 16,
-                      color: Colors.white,
-                    ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            isArabic ? package.name : package.name,
+                            style: AppTextStyles.titleMedium(
+                              context,
+                            ).copyWith(fontSize: 16, color: Colors.white),
+                          ),
+                          if (package.recommended) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryGold.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                isArabic ? "موصى بها" : "Recommended",
+                                style: AppTextStyles.metadata(context).copyWith(
+                                  fontSize: 10,
+                                  color: AppColors.primaryGold,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        isArabic ? package.subtitle : package.subtitle,
+                        style: AppTextStyles.metadata(
+                          context,
+                        ).copyWith(fontSize: 12, color: AppColors.helperText),
+                      ),
+                    ],
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.add_rounded, size: 20),
-                  onPressed: () => _updateQuantity(typeKey, 1),
-                  color: AppColors.primaryGold,
+                Text(
+                  "\$${package.price.toStringAsFixed(2)}",
+                  style: AppTextStyles.titleMedium(context).copyWith(
+                    fontSize: 18,
+                    color: AppColors.primaryGold,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
+            const SizedBox(height: 16),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: package.includedFeatures.map((feature) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.darkSurface,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    feature,
+                    style: AppTextStyles.metadata(
+                      context,
+                    ).copyWith(fontSize: 11, color: Colors.white70),
+                  ),
+                );
+              }).toList(),
+            ),
+            if (!package.includesMuseumEntry) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.orange.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.orange.withOpacity(0.3)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.info_outline,
+                      size: 16,
+                      color: Colors.orange,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        isArabic
+                            ? "تتطلب تذكرة دخول صالحة للمتحف"
+                            : "Requires valid museum entry ticket",
+                        style: AppTextStyles.metadata(
+                          context,
+                        ).copyWith(fontSize: 12, color: Colors.orange),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            if (package.includesRobotTour) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.blue.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.smart_toy_outlined,
+                      size: 16,
+                      color: Colors.blue,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        isArabic
+                            ? "امسح رمز QR على الروبوت لبدء الجولة"
+                            : "Scan robot QR to start guided tour",
+                        style: AppTextStyles.metadata(
+                          context,
+                        ).copyWith(fontSize: 12, color: Colors.blue),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAccountRequiredDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.accountRequired),
+        content: Text(l10n.accountRequiredForPurchase),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n.continueAsGuest),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.pushReplacementNamed(context, AppRoutes.login);
+            },
+            child: Text(l10n.login),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              Navigator.pushReplacementNamed(context, AppRoutes.register);
+            },
+            child: Text(l10n.createAccount),
           ),
         ],
       ),
@@ -462,19 +616,19 @@ class _TicketScreenState extends State<TicketScreen> {
   }
 }
 
-class _TicketConfirmationDialog extends StatelessWidget {
+class _PurchaseConfirmationDialog extends StatelessWidget {
   final bool isArabic;
-  final int totalTickets;
-  final double totalPrice;
+  final TourPackage package;
   final String shortDate;
   final VoidCallback onGoToTickets;
+  final VoidCallback onStartTourSetup;
 
-  const _TicketConfirmationDialog({
+  const _PurchaseConfirmationDialog({
     required this.isArabic,
-    required this.totalTickets,
-    required this.totalPrice,
+    required this.package,
     required this.shortDate,
     required this.onGoToTickets,
+    required this.onStartTourSetup,
   });
 
   @override
@@ -504,7 +658,7 @@ class _TicketConfirmationDialog extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              isArabic ? "تم تأكيد التذاكر" : "Tickets Confirmed",
+              isArabic ? "تم تأكيد الشراء" : "Purchase Confirmed",
               style: AppTextStyles.displayScreenTitle(
                 context,
               ).copyWith(fontSize: 22, fontWeight: FontWeight.w900),
@@ -512,13 +666,45 @@ class _TicketConfirmationDialog extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               isArabic
-                  ? "حجزنا لك $totalTickets تذكرة ليوم $shortDate."
-                  : "Reserved $totalTickets ticket(s) for $shortDate.",
+                  ? "تم شراء ${package.name} ليوم $shortDate."
+                  : "${package.name} purchased for $shortDate.",
               textAlign: TextAlign.center,
               style: AppTextStyles.bodyPrimary(context).copyWith(
                 color: AppColors.helperText,
                 fontSize: 15,
                 height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.darkBackground,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isArabic ? "ما تم شراؤه:" : "What's included:",
+                    style: AppTextStyles.titleMedium(
+                      context,
+                    ).copyWith(fontSize: 14, color: Colors.white),
+                  ),
+                  const SizedBox(height: 8),
+                  if (package.includesMuseumEntry)
+                    _buildIncludedItem(
+                      isArabic ? "تذكرة دخول المتحف" : "Museum Entry Ticket",
+                      Icons.museum_outlined,
+                      Colors.blue,
+                    ),
+                  if (package.includesRobotTour)
+                    _buildIncludedItem(
+                      isArabic ? "تذكرة جولة الروبوت" : "Robot Tour Ticket",
+                      Icons.smart_toy_outlined,
+                      Colors.green,
+                    ),
+                ],
               ),
             ),
             const SizedBox(height: 32),
@@ -541,6 +727,28 @@ class _TicketConfirmationDialog extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: OutlinedButton(
+                onPressed: onStartTourSetup,
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(
+                    color: AppColors.primaryGold,
+                    width: 1.5,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  foregroundColor: AppColors.primaryGold,
+                ),
+                child: Text(
+                  isArabic ? "إعداد الجولة" : "Start Tour Setup",
+                  style: AppTextStyles.buttonLabel(context),
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
             TextButton(
               onPressed: () => Navigator.pop(context),
               child: Text(
@@ -550,6 +758,22 @@ class _TicketConfirmationDialog extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildIncludedItem(String text, IconData icon, Color color) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 8),
+          Text(
+            text,
+            style: const TextStyle(fontSize: 12, color: Colors.white70),
+          ),
+        ],
       ),
     );
   }

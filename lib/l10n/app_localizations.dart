@@ -101,7 +101,7 @@ abstract class AppLocalizations {
   /// The title of the application
   ///
   /// In en, this message translates to:
-  /// **'Horus'**
+  /// **'Horus-Bot'**
   String get appTitle;
 
   /// No description provided for @exploreEgypt.
@@ -155,7 +155,7 @@ abstract class AppLocalizations {
   /// No description provided for @horusBot.
   ///
   /// In en, this message translates to:
-  /// **'Horus'**
+  /// **'Horus-Bot'**
   String get horusBot;
 
   /// No description provided for @talkToHorusBot.
@@ -1154,6 +1154,30 @@ abstract class AppLocalizations {
   /// **'Live Tour Active'**
   String get liveTourActive;
 
+  /// No description provided for @liveTourLockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Tour Unavailable'**
+  String get liveTourLockedTitle;
+
+  /// No description provided for @liveTourLockedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to Horus Bot to start your live guided tour'**
+  String get liveTourLockedDesc;
+
+  /// No description provided for @liveTourPausedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Your tour is currently paused. Resume to continue.'**
+  String get liveTourPausedDesc;
+
+  /// No description provided for @scanQRToConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR code at museum entrance to connect'**
+  String get scanQRToConnect;
+
   /// No description provided for @currentlyVisiting.
   ///
   /// In en, this message translates to:
@@ -2081,7 +2105,7 @@ abstract class AppLocalizations {
   /// No description provided for @ticketConfirmation.
   ///
   /// In en, this message translates to:
-  /// **'Ticket confirmation'**
+  /// **'Ticket Confirmation'**
   String get ticketConfirmation;
 
   /// No description provided for @scanResult.
@@ -2419,6 +2443,384 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No support requests'**
   String get supportNoRequests;
+
+  /// No description provided for @welcomeToHorusBot.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Horus-Bot'**
+  String get welcomeToHorusBot;
+
+  /// No description provided for @howAreYouUsingTheAppToday.
+  ///
+  /// In en, this message translates to:
+  /// **'How are you using the app today?'**
+  String get howAreYouUsingTheAppToday;
+
+  /// No description provided for @planMyVisit.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan My Visit'**
+  String get planMyVisit;
+
+  /// No description provided for @planMyVisitDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore the museum, buy tickets, and prepare your visit.'**
+  String get planMyVisitDescription;
+
+  /// No description provided for @startMyTour.
+  ///
+  /// In en, this message translates to:
+  /// **'Start My Tour'**
+  String get startMyTour;
+
+  /// No description provided for @startMyTourDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Use your tickets, connect to Horus-Bot, and begin the guided experience.'**
+  String get startMyTourDescription;
+
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Log In'**
+  String get login;
+
+  /// No description provided for @register.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get register;
+
+  /// No description provided for @continueAsGuest.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue as Guest'**
+  String get continueAsGuest;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @emailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email'**
+  String get emailHint;
+
+  /// No description provided for @emailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get emailRequired;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @passwordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get passwordHint;
+
+  /// No description provided for @passwordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get passwordRequired;
+
+  /// No description provided for @fullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get fullName;
+
+  /// No description provided for @fullNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your full name'**
+  String get fullNameHint;
+
+  /// No description provided for @nameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get nameRequired;
+
+  /// No description provided for @phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get phone;
+
+  /// No description provided for @phoneHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your phone number (optional)'**
+  String get phoneHint;
+
+  /// No description provided for @confirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get confirmPassword;
+
+  /// No description provided for @confirmPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter your password'**
+  String get confirmPasswordHint;
+
+  /// No description provided for @passwordMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordMismatch;
+
+  /// No description provided for @passwordTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get passwordTooShort;
+
+  /// No description provided for @createAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get createAccount;
+
+  /// No description provided for @alreadyHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get alreadyHaveAccount;
+
+  /// No description provided for @noAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account?'**
+  String get noAccount;
+
+  /// No description provided for @welcomeBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome Back'**
+  String get welcomeBack;
+
+  /// No description provided for @signUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get signUp;
+
+  /// No description provided for @loggingIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Logging in'**
+  String get loggingIn;
+
+  /// No description provided for @signingUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating account'**
+  String get signingUp;
+
+  /// No description provided for @loginFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Login failed. Please check your credentials.'**
+  String get loginFailed;
+
+  /// No description provided for @registerFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration failed. Please try again.'**
+  String get registerFailed;
+
+  /// No description provided for @accountCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Account created successfully!'**
+  String get accountCreated;
+
+  /// No description provided for @loginSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged in successfully!'**
+  String get loginSuccess;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Log Out'**
+  String get logout;
+
+  /// No description provided for @logoutConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out?'**
+  String get logoutConfirm;
+
+  /// No description provided for @myAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'My Account'**
+  String get myAccount;
+
+  /// No description provided for @accountSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Settings'**
+  String get accountSettings;
+
+  /// No description provided for @viewTickets.
+  ///
+  /// In en, this message translates to:
+  /// **'View Tickets'**
+  String get viewTickets;
+
+  /// No description provided for @myTickets.
+  ///
+  /// In en, this message translates to:
+  /// **'My Tickets'**
+  String get myTickets;
+
+  /// No description provided for @buyTickets.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy Tickets'**
+  String get buyTickets;
+
+  /// No description provided for @loggedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged in as'**
+  String get loggedInAs;
+
+  /// No description provided for @guestMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest Mode'**
+  String get guestMode;
+
+  /// No description provided for @loginToViewTickets.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in to view your tickets'**
+  String get loginToViewTickets;
+
+  /// No description provided for @loginToStartTour.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in to start your tour'**
+  String get loginToStartTour;
+
+  /// No description provided for @accountRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Required'**
+  String get accountRequired;
+
+  /// No description provided for @createOrLoginToPreserve.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an account or log in to save your tickets, payments, and robot tour access.'**
+  String get createOrLoginToPreserve;
+
+  /// No description provided for @accountRequiredForPurchase.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to create an account or log in before purchasing tickets.'**
+  String get accountRequiredForPurchase;
+
+  /// No description provided for @paymentHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment History'**
+  String get paymentHistory;
+
+  /// No description provided for @visitHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit History'**
+  String get visitHistory;
+
+  /// No description provided for @invalidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid email format'**
+  String get invalidEmail;
+
+  /// No description provided for @accountAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'This email is already registered'**
+  String get accountAlreadyExists;
+
+  /// No description provided for @visitDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit Date'**
+  String get visitDate;
+
+  /// No description provided for @timeSlot.
+  ///
+  /// In en, this message translates to:
+  /// **'Time Slot'**
+  String get timeSlot;
+
+  /// No description provided for @ticketId.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket ID'**
+  String get ticketId;
+
+  /// No description provided for @active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get active;
+
+  /// No description provided for @expired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get expired;
+
+  /// No description provided for @useQrAtMuseumEntrance.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this QR at the museum entrance'**
+  String get useQrAtMuseumEntrance;
+
+  /// No description provided for @minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'minutes'**
+  String get minutes;
+
+  /// No description provided for @includedFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Included Features'**
+  String get includedFeatures;
+
+  /// No description provided for @startTourSetup.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Tour Setup'**
+  String get startTourSetup;
+
+  /// No description provided for @scanQrOnRobot.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan the QR on the physical Horus-Bot robot to connect'**
+  String get scanQrOnRobot;
 }
 
 class _AppLocalizationsDelegate

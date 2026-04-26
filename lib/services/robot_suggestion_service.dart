@@ -22,24 +22,24 @@ class RobotSuggestionService {
     final language = context.language;
     if (context.exhibit != null || context.screen == 'exhibit_details') {
       return language == 'ar'
-          ? 'يمكنك سؤال الروبوت القريب للحصول على القصة الكاملة.'
-          : 'You can ask the robot nearby for the full story.';
+          ? 'اسأل الروبوت الآن للحصول على القصة الكاملة.'
+          : 'Ask the robot now for the full story.';
     }
 
     if (context.screen == 'home') {
       return language == 'ar'
-          ? 'يمكنك سؤال روبوت المتحف خلال زيارتك للحصول على المزيد من التفاصيل.'
-          : 'You can ask the museum robot during your visit.';
+          ? 'ابدأ الجولة لتجربة تفاعلية مع الروبوت.'
+          : 'Start your tour for an interactive experience with the robot.';
     }
 
     if (context.screen == 'tour' || context.tourState != null) {
       return language == 'ar'
-          ? 'سيشرح دليل الروبوت هذا الأمر بالتفصيل.'
-          : 'The robot guide will explain this in detail.';
+          ? 'الروبوت جاهز ليشرح هذا بالتفصيل.'
+          : 'The robot is ready to explain this in detail.';
     }
 
     return language == 'ar'
-        ? 'للحصول على قصة أعمق، اسأل دليل الروبوت في المتحف.'
-        : 'For a richer experience, try the museum robot.';
+        ? 'للحصول على تجربة أعمق، ابدأ جولة مع الروبوت.'
+        : 'For a richer experience, start a tour with the robot.';
   }
 }
