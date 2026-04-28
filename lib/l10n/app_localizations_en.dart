@@ -258,6 +258,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get alignQr => 'Align QR Code within the frame';
 
   @override
+  String get robotQrInMuseumMode =>
+      'This is a robot QR code and cannot be used for museum entry.';
+
+  @override
+  String get connectedReady =>
+      'Connected and ready. Your Horus-Bot can now start the tour.';
+
+  @override
+  String get museumTicketInRobotMode =>
+      'This museum ticket is not valid for robot connection.';
+
+  @override
+  String get notHorusBotQr => 'This QR code is not a Horus-Bot robot code.';
+
+  @override
+  String get connectToHorusBot => 'Connect to Horus-Bot';
+
+  @override
+  String get scanMuseumEntryTicket => 'Scan Museum Entry Ticket';
+
+  @override
+  String get scanRobotQrSubtitle =>
+      'Hold the robot QR code inside the frame to connect.';
+
+  @override
+  String get scanMuseumQrSubtitle =>
+      'Hold your museum entry ticket QR code inside the frame.';
+
+  @override
+  String get simulateRobotScan => 'Simulate Robot Scan';
+
+  @override
+  String get prototypeOnly => 'Prototype only';
+
+  @override
   String get audioGuide => 'Audio Guide Mode';
 
   @override

@@ -274,6 +274,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     final sessionProvider = Provider.of<session.AppSessionProvider>(context);
     final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
 
+    // If tour completed, show completed section
+    if (sessionProvider.tourLifecycleState ==
+        session.TourLifecycleState.completed) {
+      return _buildCompletedTourSection(context, l10n, sessionProvider, prefs);
+    }
+
     // If in active tour, show current stop
     if (sessionProvider.isInActiveTour) {
       return _buildActiveTourSection(context, l10n, sessionProvider, prefs);
@@ -286,6 +292,82 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     // Default: planning mode, show plan your visit
     return _buildPlanningSection(context, l10n, sessionProvider, prefs);
+  }
+
+  Widget _buildCompletedTourSection(
+    BuildContext context,
+    AppLocalizations l10n,
+    session.AppSessionProvider sessionProvider,
+    UserPreferencesModel prefs,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: AppColors.cinematicCard,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.darkBorder, width: 0.5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.25),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              (prefs.language == 'ar' ? 'اكتملت الجولة' : 'Tour Completed')
+                  .toUpperCase(),
+              style: AppTextStyles.displaySectionTitle(
+                context,
+              ).copyWith(fontSize: 11),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              prefs.language == 'ar'
+                  ? 'شكراً لزيارتك مع حوروس-بوت'
+                  : 'Thank you for your visit with Horus-Bot',
+              style: AppTextStyles.displayArtifactTitle(
+                context,
+              ).copyWith(fontSize: 24),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.cinematicSection,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.check_circle, size: 16, color: Colors.green),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      prefs.language == 'ar'
+                          ? 'الجولة مكتملة بنجاح'
+                          : 'Tour completed successfully',
+                      style: AppTextStyles.bodyPrimary(
+                        context,
+                      ).copyWith(fontSize: 14),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            PrimaryButton(
+              label: prefs.language == 'ar' ? 'عرض الملخص' : 'View Summary',
+              onPressed: () => Navigator.pushNamed(context, '/visit-summary'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildPlanningSection(
@@ -354,11 +436,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     onPressed: () {
                       sessionProvider.startVisiting();
                       if (sessionProvider.canStartRobotTour) {
-                        Navigator.pushNamed(
-                          context,
-                          AppRoutes.qrScan,
-                          arguments: QRScanMode.museumTicket,
-                        );
+                        if (sessionProvider.hasTourPreferences) {
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.qrScan,
+                            arguments: QRScanMode.robotConnection,
+                          );
+                        } else {
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.tourCustomization,
+                          );
+                        }
                       } else {
                         Navigator.pushNamed(context, AppRoutes.tickets);
                       }

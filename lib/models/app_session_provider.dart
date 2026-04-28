@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'quiz.dart';
+import 'tour_memory.dart';
+import 'tour_preferences.dart';
 
 /// App usage mode - where the user is in their journey
 enum AppUsageMode {
@@ -65,6 +68,9 @@ class AppSessionProvider with ChangeNotifier {
   // Tour lifecycle
   TourLifecycleState _tourLifecycleState = TourLifecycleState.notStarted;
 
+  // Tour preferences
+  TourPreferences? _tourPreferences;
+
   // Follow mode
   FollowModeState _followMode = FollowModeState.off;
 
@@ -78,6 +84,26 @@ class AppSessionProvider with ChangeNotifier {
   // Current exhibit (used when in active tour)
   String? _currentExhibitId;
   String? _nextExhibitId;
+
+  // Tour session ID for organizing memories
+  String? _currentTourSessionId;
+
+  // Mock tour stops for demo
+  final List<String> mockTourStops = [
+    'Tutankhamun Gallery',
+    'Royal Mummies Hall',
+    'Ancient Tools Section',
+    'Grand Statue Atrium',
+  ];
+  final int _currentStopIndex = 0;
+
+  // Tour memories
+  final List<TourMemory> _tourMemories = [];
+
+  // Quiz / reward state
+  final List<QuizResult> _quizResults = [];
+  int _rewardPoints = 0;
+  final List<String> _earnedBadges = [];
 
   // ========================
   // GETTERS
@@ -95,6 +121,16 @@ class AppSessionProvider with ChangeNotifier {
   RobotActivityState get robotActivityState => _robotActivityState;
   String? get currentExhibitId => _currentExhibitId;
   String? get nextExhibitId => _nextExhibitId;
+  TourPreferences? get tourPreferences => _tourPreferences;
+  List<TourMemory> get tourMemories => List.unmodifiable(_tourMemories);
+  List<QuizResult> get quizResults => List.unmodifiable(_quizResults);
+  int get rewardPoints => _rewardPoints;
+  List<String> get earnedBadges => List.unmodifiable(_earnedBadges);
+
+  bool get canTakeQuiz =>
+      _tourLifecycleState == TourLifecycleState.active ||
+      _tourLifecycleState == TourLifecycleState.completed ||
+      _tourLifecycleState == TourLifecycleState.paused;
 
   // ========================
   // COMPUTED BOOLEAN GETTERS
@@ -162,6 +198,8 @@ class AppSessionProvider with ChangeNotifier {
   /// Default is false; enabled only on Map and Live Tour screens
   bool get shouldShowAskButton => false; // Per-screen control is preferred
 
+  bool get hasTourPreferences => _tourPreferences != null;
+
   // ========================
   // SETTERS / STATE UPDATES
   // ========================
@@ -223,6 +261,8 @@ class AppSessionProvider with ChangeNotifier {
     _tourLifecycleState = TourLifecycleState.active;
     _robotActivityState = RobotActivityState.waiting;
     _followMode = FollowModeState.on;
+    // Generate a new session ID when tour starts
+    _currentTourSessionId = DateTime.now().millisecondsSinceEpoch.toString();
     notifyListeners();
   }
 
@@ -286,6 +326,98 @@ class AppSessionProvider with ChangeNotifier {
     }
   }
 
+  void setTourPreferences(TourPreferences? preferences) {
+    _tourPreferences = preferences;
+    notifyListeners();
+  }
+
+  // ========================
+  // TOUR CONTROL METHODS
+  // ========================
+
+  void pauseTour() {
+    if (_robotConnectionState == RobotConnectionState.connected &&
+        _tourLifecycleState == TourLifecycleState.active) {
+      _tourLifecycleState = TourLifecycleState.paused;
+      _robotActivityState = RobotActivityState.waiting;
+      notifyListeners();
+    }
+  }
+
+  void resumeTour() {
+    if (_robotConnectionState == RobotConnectionState.connected &&
+        _tourLifecycleState == TourLifecycleState.paused) {
+      _tourLifecycleState = TourLifecycleState.active;
+      _robotActivityState = RobotActivityState.moving;
+      notifyListeners();
+    }
+  }
+
+  void endTour() {
+    if (_robotConnectionState == RobotConnectionState.connected &&
+        (_tourLifecycleState == TourLifecycleState.active ||
+            _tourLifecycleState == TourLifecycleState.paused)) {
+      _tourLifecycleState = TourLifecycleState.completed;
+      _robotConnectionState = RobotConnectionState.disconnected;
+      _followMode = FollowModeState.off;
+      // Keep session ID so memories can still be accessed
+      notifyListeners();
+    }
+  }
+
+  // ========================
+  // TOUR MEMORY METHODS
+  // ========================
+
+  void addMemory(TourMemory memory) {
+    _tourMemories.add(memory);
+    notifyListeners();
+  }
+
+  void clearMemories() {
+    _tourMemories.clear();
+    notifyListeners();
+  }
+
+  void deleteMemory(String memoryId) {
+    _tourMemories.removeWhere((memory) => memory.id == memoryId);
+    notifyListeners();
+  }
+
+  void updateMemoryNote(String memoryId, String? note) {
+    final index = _tourMemories.indexWhere((memory) => memory.id == memoryId);
+    if (index != -1) {
+      _tourMemories[index] = _tourMemories[index].copyWith(note: note);
+      notifyListeners();
+    }
+  }
+
+  void addQuizResult(QuizResult result) {
+    final existingIndex = _quizResults.indexWhere(
+      (item) => item.id == result.id,
+    );
+    if (existingIndex != -1) {
+      _rewardPoints -= _quizResults[existingIndex].pointsEarned;
+      _quizResults[existingIndex] = result;
+    } else {
+      _quizResults.add(result);
+    }
+    _rewardPoints += result.pointsEarned;
+    for (final badge in result.earnedBadges) {
+      if (!_earnedBadges.contains(badge)) {
+        _earnedBadges.add(badge);
+      }
+    }
+    notifyListeners();
+  }
+
+  void clearQuizRewards() {
+    _quizResults.clear();
+    _rewardPoints = 0;
+    _earnedBadges.clear();
+    notifyListeners();
+  }
+
   // ========================
   // STATE TRANSITION HELPERS
   // ========================
@@ -328,12 +460,16 @@ class AppSessionProvider with ChangeNotifier {
     _robotTourTicketState = RobotTourTicketState.none;
     _robotConnectionState = RobotConnectionState.disconnected;
     _tourLifecycleState = TourLifecycleState.notStarted;
+    _tourPreferences = null;
     _followMode = FollowModeState.off;
     _proximityState = ProximityState.unknown;
     _distanceMeters = 0.0;
     _robotActivityState = RobotActivityState.unavailable;
     _currentExhibitId = null;
     _nextExhibitId = null;
+    _quizResults.clear();
+    _rewardPoints = 0;
+    _earnedBadges.clear();
     notifyListeners();
   }
 

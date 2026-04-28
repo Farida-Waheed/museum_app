@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../../models/app_session_provider.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 import '../../models/tour_provider.dart';
@@ -14,15 +15,18 @@ class VisitSummaryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final tourProvider = Provider.of<TourProvider>(context);
+    final sessionProvider = Provider.of<AppSessionProvider>(context);
     final visitedCount = tourProvider.visitedExhibitIds.length;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
-    final totalQuizScore = tourProvider.quizScores.values.fold(
+    final totalQuizScore = sessionProvider.quizResults.fold(
       0,
-      (sum, score) => sum + score,
+      (sum, result) => sum + result.correctAnswers,
     );
-    final totalQuizzesCompleted = tourProvider.quizScores.length;
+    final totalQuizzesCompleted = sessionProvider.quizResults.length;
     final skippedQuizzesCount = tourProvider.skippedQuizzes.length;
+    final rewardPoints = sessionProvider.rewardPoints;
+    final earnedBadges = sessionProvider.earnedBadges;
 
     return AppMenuShell(
       title: l10n.visitSummary.toUpperCase(),
@@ -128,6 +132,14 @@ class VisitSummaryScreen extends StatelessWidget {
                       Icons.star_outline,
                       valueColor: AppColors.primaryGold,
                     ),
+                    const SizedBox(height: 8),
+                    _buildStatRow(
+                      context,
+                      isArabic ? 'نقاط المكافآت' : 'Reward Points',
+                      '$rewardPoints',
+                      Icons.military_tech_outlined,
+                      valueColor: AppColors.primaryGold,
+                    ),
                   ],
                   if (skippedQuizzesCount > 0) ...[
                     const Divider(
@@ -141,6 +153,20 @@ class VisitSummaryScreen extends StatelessWidget {
                       "$skippedQuizzesCount",
                       Icons.help_outline,
                       valueColor: AppColors.helperText,
+                    ),
+                  ],
+                  if (earnedBadges.isNotEmpty) ...[
+                    const Divider(
+                      height: 32,
+                      thickness: 1,
+                      color: AppColors.darkDivider,
+                    ),
+                    _buildStatRow(
+                      context,
+                      isArabic ? 'الشارات المكتسبة' : 'Earned Badges',
+                      '${earnedBadges.length}',
+                      Icons.emoji_events_rounded,
+                      valueColor: AppColors.primaryGold,
                     ),
                   ],
                 ],

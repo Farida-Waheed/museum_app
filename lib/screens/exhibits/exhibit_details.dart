@@ -6,6 +6,8 @@ import '../../models/exhibit.dart';
 import '../../models/user_preferences.dart';
 import '../../models/exhibit_provider.dart';
 import '../../models/tour_provider.dart';
+import '../../models/app_session_provider.dart';
+import '../../models/tour_memory.dart';
 import '../../core/utils/audio_player.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
@@ -94,6 +96,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
     final prefs = Provider.of<UserPreferencesModel>(context);
     final exhibitProvider = Provider.of<ExhibitProvider>(context);
     final tourProvider = Provider.of<TourProvider>(context);
+    final sessionProvider = Provider.of<AppSessionProvider>(context);
     final l10n = AppLocalizations.of(context)!;
 
     final theme = Theme.of(context);
@@ -102,16 +105,18 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
     final isBookmarked = exhibitProvider.isBookmarked(exhibit.id);
     final isArabic = prefs.language == 'ar';
 
+    final hasCompletedQuiz = sessionProvider.quizResults.any(
+      (result) => result.exhibitId == exhibit.id,
+    );
+    final canTakeQuiz = sessionProvider.canTakeQuiz;
+
     // Mark as visited when viewing details
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<TourProvider>(
         context,
         listen: false,
       ).setCurrentExhibit(exhibit.id);
-      if (!_quizPromptShown &&
-          !tourProvider.quizScores.containsKey(exhibit.id) &&
-          !tourProvider.skippedQuizzes.contains(exhibit.id) &&
-          !tourProvider.pendingQuizzes.contains(exhibit.id)) {
+      if (!_quizPromptShown && canTakeQuiz && !hasCompletedQuiz) {
         _quizPromptShown = true;
         showDialog(
           context: context,
@@ -165,8 +170,6 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
       }
     });
 
-    final hasCompletedQuiz = tourProvider.quizScores.containsKey(exhibit.id);
-
     return AppMenuShell(
       subHeader: const RobotStatusBanner(),
       body: CustomScrollView(
@@ -190,6 +193,8 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                 children: [
                   _buildAudioCard(exhibit, l10n, cs),
                   const SizedBox(height: 24),
+                  if (sessionProvider.isInActiveTour)
+                    _buildTakePhotoButton(l10n, cs, exhibit, prefs.language),
                   _buildFactChips(exhibit, l10n, cs),
                   const SizedBox(height: 28),
                   Text(
@@ -207,13 +212,17 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                   const SizedBox(height: 28),
 
                   // Integrated Quiz Prompt
-                  if (!hasCompletedQuiz)
+                  if (!hasCompletedQuiz && canTakeQuiz)
                     _buildQuizPrompt(l10n, cs, exhibit.id, isArabic)
                   else
                     _buildQuizCompletedChip(
                       l10n,
                       cs,
-                      tourProvider.quizScores[exhibit.id]!,
+                      sessionProvider.quizResults
+                          .firstWhere(
+                            (result) => result.exhibitId == exhibit.id,
+                          )
+                          .correctAnswers,
                       isArabic,
                     ),
 
@@ -624,5 +633,39 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
         ),
       ],
     );
+  }
+
+  Widget _buildTakePhotoButton(
+    AppLocalizations l10n,
+    ColorScheme cs,
+    Exhibit exhibit,
+    String language,
+  ) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    return ElevatedButton.icon(
+      onPressed: () => _takePhoto(exhibit, language),
+      icon: const Icon(Icons.camera_alt),
+      label: Text(isArabic ? 'التقط صورة' : 'Take Photo'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primaryGold,
+        foregroundColor: AppColors.darkInk,
+        minimumSize: const Size(double.infinity, 48),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+    );
+  }
+
+  void _takePhoto(Exhibit exhibit, String language) {
+    // Simulate taking photo - in real app, would use camera
+    final memory = TourMemory(
+      exhibitId: exhibit.id,
+      exhibitName: exhibit.getName(language),
+      note: 'Photo taken at ${DateTime.now()}',
+      imagePath: 'assets/images/placeholder_photo.jpg', // Mock path
+    );
+    context.read<AppSessionProvider>().addMemory(memory);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Photo saved to memories!')));
   }
 }

@@ -257,6 +257,40 @@ class AppLocalizationsAr extends AppLocalizations {
   String get alignQr => 'ضع رمز QR داخل الإطار';
 
   @override
+  String get robotQrInMuseumMode =>
+      'هذا رمز QR للروبوت ولا يمكن استخدامه لدخول المتحف.';
+
+  @override
+  String get connectedReady => 'تم الاتصال وجاهز. يمكن لحوروس-بوت البدء الآن.';
+
+  @override
+  String get museumTicketInRobotMode =>
+      'تذكرة المتحف هذه غير صالحة لاتصال الروبوت.';
+
+  @override
+  String get notHorusBotQr => 'هذا الرمز ليس رمز QR لحوروس-بوت.';
+
+  @override
+  String get connectToHorusBot => 'الاتصال بحوروس-بوت';
+
+  @override
+  String get scanMuseumEntryTicket => 'مسح تذكرة دخول المتحف';
+
+  @override
+  String get scanRobotQrSubtitle =>
+      'ضع رمز QR الخاص بالروبوت داخل الإطار للاتصال.';
+
+  @override
+  String get scanMuseumQrSubtitle =>
+      'ضع رمز QR لتذكرة دخول المتحف داخل الإطار.';
+
+  @override
+  String get simulateRobotScan => 'محاكاة مسح الروبوت';
+
+  @override
+  String get prototypeOnly => 'نموذج تجريبي فقط';
+
+  @override
   String get audioGuide => 'وضع الدليل الصوتي';
 
   @override

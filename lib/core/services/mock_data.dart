@@ -103,14 +103,22 @@ class MockDataService {
   static final List<QuizQuestion> questions = [
     QuizQuestion(
       id: 'q1',
+      exhibitId: 'gem_tut_golden_mask',
+      exhibitNameEn: 'Golden Burial Mask of Tutankhamun',
+      exhibitNameAr: 'قناع دفن توت عنخ آمون الذهبي',
       questionEn: 'In what year was Tutankhamun\'s tomb discovered?',
       questionAr: 'في أي عام تم اكتشاف مقبرة توت عنخ آمون؟',
       optionsEn: ['1900', '1922', '1950', '1890'],
       optionsAr: ['1900', '1922', '1950', '1890'],
       correctAnswerIndex: 1,
+      explanationEn: 'The tomb was discovered in 1922 by Howard Carter.',
+      explanationAr: 'تم اكتشاف المقبرة في عام 1922 بواسطة هوارد كارتر.',
     ),
     QuizQuestion(
       id: 'q2',
+      exhibitId: 'gem_anubis_chest',
+      exhibitNameEn: 'Anubis on a Chest',
+      exhibitNameAr: 'أنوبيس على مقصورة',
       questionEn: 'What were Canopic Jars used for?',
       questionAr: 'فيما كانت تستخدم الأواني الكانوبية؟',
       optionsEn: [
@@ -126,14 +134,23 @@ class MockDataService {
         'تخزين المجوهرات',
       ],
       correctAnswerIndex: 1,
+      explanationEn: 'Canopic jars held organs removed during mummification.',
+      explanationAr:
+          'كانت الأواني الكانوبية تحتفظ بالأعضاء التي أُزيلت أثناء التحنيط.',
     ),
     QuizQuestion(
       id: 'q3',
+      exhibitId: 'gem_ramses2_colossus',
+      exhibitNameEn: 'Colossal Statue of Ramesses II',
+      exhibitNameAr: 'تمثال رمسيس الثاني الضخم',
       questionEn: 'What is the material used to cover the royal sandals?',
       questionAr: 'ما هي المادة المستخدمة لتغطية الصنادل الملكية؟',
       optionsEn: ['Silver', 'Bronze', 'Gold', 'Iron'],
       optionsAr: ['الفضة', 'البرونز', 'الذهب', 'الحديد'],
       correctAnswerIndex: 2,
+      explanationEn:
+          'Gold was a symbol of eternity and used to decorate royal items.',
+      explanationAr: 'كان الذهب رمزًا للأبدية ويُستخدم لتزيين الأشياء الملكية.',
     ),
   ];
 

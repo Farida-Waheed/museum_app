@@ -1,76 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../widgets/app_menu_shell.dart';
-import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
+import '../../models/app_session_provider.dart';
+import '../../models/tour_memory.dart';
 
 class MemoriesScreen extends StatelessWidget {
   const MemoriesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
+    // final l10n = AppLocalizations.of(context)!;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-
-    // Mock data for memories
-    final List<Map<String, String>> memories = [
-      {
-        'exhibit': isArabic ? 'تمثال رمسيس الثاني' : 'Statue of Ramesses II',
-        'date': '2023-10-25',
-        'image': 'assets/images/museum_interior.jpg',
-      },
-      {
-        'exhibit': isArabic ? 'قناع توت عنخ آمون' : 'Tutankhamun Mask',
-        'date': '2023-10-25',
-        'image': 'assets/images/pharaoh_head.jpg',
-      },
-      {
-        'exhibit': isArabic ? 'الأواني الكانوبية' : 'Canopic Jars',
-        'date': '2023-10-25',
-        'image': 'assets/images/canopic_jars.jpg',
-      },
-      {
-        'exhibit': isArabic ? 'الجدار الهيروغليفي' : 'Hieroglyphic Wall',
-        'date': '2023-10-25',
-        'image': 'assets/images/hieroglyphs.jpg',
-      },
-    ];
+    final sessionProvider = context.watch<AppSessionProvider>();
+    final memories = sessionProvider.tourMemories;
 
     return AppMenuShell(
       title: (isArabic ? 'ذكرياتي' : 'My Memories').toUpperCase(),
       backgroundColor: AppColors.cinematicBackground,
-      body: GridView.builder(
-        padding: const EdgeInsets.all(20),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          childAspectRatio: 0.72,
-        ),
-        itemCount: memories.length,
-        itemBuilder: (context, index) {
-          final memory = memories[index];
-          return _MemoryCard(
-            exhibit: memory['exhibit']!,
-            date: memory['date']!,
-            image: memory['image']!,
-          );
-        },
-      ),
+      body: memories.isEmpty
+          ? Center(
+              child: Text(
+                isArabic ? 'لا توجد ذكريات بعد' : 'No memories yet',
+                style: AppTextStyles.bodyPrimary(context),
+              ),
+            )
+          : GridView.builder(
+              padding: const EdgeInsets.all(20),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 0.72,
+              ),
+              itemCount: memories.length,
+              itemBuilder: (context, index) {
+                final memory = memories[index];
+                return _MemoryCard(memory: memory);
+              },
+            ),
     );
   }
 }
 
 class _MemoryCard extends StatelessWidget {
-  final String exhibit;
-  final String date;
-  final String image;
+  final TourMemory memory;
 
-  const _MemoryCard({
-    required this.exhibit,
-    required this.date,
-    required this.image,
-  });
+  const _MemoryCard({required this.memory});
 
   @override
   Widget build(BuildContext context) {
@@ -92,33 +69,52 @@ class _MemoryCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Image.asset(
-                image,
-                width: double.infinity,
-                fit: BoxFit.cover,
+            if (memory.imagePath != null)
+              Expanded(
+                child: Image.asset(
+                  memory.imagePath!,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              )
+            else
+              Expanded(
+                child: Container(
+                  color: AppColors.primaryGold.withOpacity(0.1),
+                  child: const Icon(Icons.photo, size: 48),
+                ),
               ),
-            ),
             Padding(
               padding: const EdgeInsets.all(14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    exhibit,
-                    style: AppTextStyles.displayArtifactTitle(context).copyWith(
-                      fontSize: 14,
-                    ),
+                    memory.exhibitName,
+                    style: AppTextStyles.displayArtifactTitle(
+                      context,
+                    ).copyWith(fontSize: 14),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    date,
-                    style: AppTextStyles.metadata(context).copyWith(
-                      fontSize: 11,
-                    ),
+                    '${memory.timestamp.day}/${memory.timestamp.month}/${memory.timestamp.year}',
+                    style: AppTextStyles.metadata(
+                      context,
+                    ).copyWith(fontSize: 11),
                   ),
+                  if (memory.note != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      memory.note!,
+                      style: AppTextStyles.metadata(
+                        context,
+                      ).copyWith(fontSize: 10),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                   const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -662,7 +662,30 @@ class _ExhibitInfoPopup extends StatelessWidget {
                         child: _PopupBtn(
                           label: isArabic ? "اختبار" : "Quiz",
                           icon: Icons.quiz,
-                          onTap: () {},
+                          onTap: () {
+                            final sessionProvider =
+                                Provider.of<session.AppSessionProvider>(
+                                  context,
+                                  listen: false,
+                                );
+                            if (sessionProvider.canTakeQuiz) {
+                              Navigator.pushNamed(
+                                context,
+                                '/quiz',
+                                arguments: exhibit.id,
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    isArabic
+                                        ? 'الاختبارات متاحة فقط خلال الجولة أو بعدها.'
+                                        : 'Quizzes are only available during or after a tour.',
+                                  ),
+                                ),
+                              );
+                            }
+                          },
                         ),
                       ),
                       const SizedBox(width: 12),

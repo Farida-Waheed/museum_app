@@ -15,6 +15,7 @@ import '../screens/search/search_screen.dart';
 import '../screens/tour/tour_progress.dart';
 import '../screens/tour/live_tour_screen.dart';
 import '../screens/tour/visit_summary_screen.dart';
+import '../screens/tour/tour_customization_screen.dart';
 import '../screens/support/support_conversation_screen.dart';
 import '../screens/support/support_inbox_screen.dart';
 
@@ -55,6 +56,7 @@ class AppRoutes {
   static const String progress = '/progress';
   static const String liveTour = '/live_tour';
   static const String summary = '/summary';
+  static const String tourCustomization = '/tour_customization';
 
   static const String tickets = '/tickets';
   static const String myTickets = '/my_tickets';
@@ -102,6 +104,7 @@ class AppRoutes {
       progress: (context) => const TourProgressScreen(),
       liveTour: (context) => const LiveTourScreen(),
       summary: (context) => const VisitSummaryScreen(),
+      tourCustomization: (context) => const TourCustomizationScreen(),
 
       tickets: (context) => const TicketScreen(),
       myTickets: (context) => const MyTicketsScreen(),

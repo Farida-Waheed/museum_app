@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../models/user_preferences.dart';
 import '../../models/quiz.dart';
+import '../../models/app_session_provider.dart';
 import '../../models/tour_provider.dart';
 import '../../core/services/mock_data.dart';
 import '../../l10n/app_localizations.dart';
@@ -29,7 +30,11 @@ class _QuizScreenState extends State<QuizScreen> {
   void initState() {
     super.initState();
     final all = MockDataService.getAllQuestions();
-    _questions = widget.exhibitId != null ? all.take(2).toList() : all;
+    _questions = widget.exhibitId != null
+        ? all
+              .where((question) => question.exhibitId == widget.exhibitId)
+              .toList()
+        : all;
   }
 
   void _checkAnswer(int selectedIndex) {
@@ -51,16 +56,41 @@ class _QuizScreenState extends State<QuizScreen> {
         _isAnswered = false;
       });
     } else {
-      if (widget.exhibitId != null)
+      final elapsed = DateTime.now();
+      final points = _score * 10;
+      final earnedBadges = <String>[];
+      final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+      if (_score == _questions.length) {
+        earnedBadges.add(isArabic ? 'متعلم متميز' : 'Perfect Score');
+      } else if (_score >= (_questions.length * 0.75).ceil()) {
+        earnedBadges.add(isArabic ? 'مستكشف ذكي' : 'Quiz Warrior');
+      }
+      final result = QuizResult(
+        id: widget.exhibitId != null
+            ? widget.exhibitId!
+            : 'general_${elapsed.millisecondsSinceEpoch}',
+        exhibitId: widget.exhibitId ?? 'general',
+        completedAt: elapsed,
+        totalQuestions: _questions.length,
+        correctAnswers: _score,
+        pointsEarned: points,
+        earnedBadges: earnedBadges,
+      );
+      Provider.of<AppSessionProvider>(
+        context,
+        listen: false,
+      ).addQuizResult(result);
+      if (widget.exhibitId != null) {
         Provider.of<TourProvider>(
           context,
           listen: false,
         ).recordQuizResult(widget.exhibitId!, _score);
-      _showResultDialog();
+      }
+      _showResultDialog(result);
     }
   }
 
-  void _showResultDialog() {
+  void _showResultDialog(QuizResult result) {
     final l10n = AppLocalizations.of(context)!;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final isPass = _score >= (_questions.length / 2);
@@ -90,6 +120,52 @@ class _QuizScreenState extends State<QuizScreen> {
               ).copyWith(color: Colors.white70, fontSize: 18),
               textAlign: TextAlign.center,
             ),
+            const SizedBox(height: 12),
+            Text(
+              isArabic
+                  ? 'النقاط المكتسبة: ${result.pointsEarned}'
+                  : 'Points earned: ${result.pointsEarned}',
+              style: AppTextStyles.bodyPrimary(
+                context,
+              ).copyWith(color: Colors.white70, fontSize: 16),
+              textAlign: TextAlign.center,
+            ),
+            if (result.earnedBadges.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Text(
+                isArabic ? 'الشارات المكتسبة:' : 'Badges earned:',
+                style: AppTextStyles.bodyPrimary(
+                  context,
+                ).copyWith(color: Colors.white70, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 8,
+                children: result.earnedBadges
+                    .map(
+                      (badge) => Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryGold.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          badge,
+                          style: AppTextStyles.bodyPrimary(context).copyWith(
+                            color: AppColors.primaryGold,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ],
           ],
         ),
         actions: [

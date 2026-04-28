@@ -572,6 +572,66 @@ abstract class AppLocalizations {
   /// **'Align QR Code within the frame'**
   String get alignQr;
 
+  /// No description provided for @robotQrInMuseumMode.
+  ///
+  /// In en, this message translates to:
+  /// **'This is a robot QR code and cannot be used for museum entry.'**
+  String get robotQrInMuseumMode;
+
+  /// No description provided for @connectedReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected and ready. Your Horus-Bot can now start the tour.'**
+  String get connectedReady;
+
+  /// No description provided for @museumTicketInRobotMode.
+  ///
+  /// In en, this message translates to:
+  /// **'This museum ticket is not valid for robot connection.'**
+  String get museumTicketInRobotMode;
+
+  /// No description provided for @notHorusBotQr.
+  ///
+  /// In en, this message translates to:
+  /// **'This QR code is not a Horus-Bot robot code.'**
+  String get notHorusBotQr;
+
+  /// No description provided for @connectToHorusBot.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to Horus-Bot'**
+  String get connectToHorusBot;
+
+  /// No description provided for @scanMuseumEntryTicket.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Museum Entry Ticket'**
+  String get scanMuseumEntryTicket;
+
+  /// No description provided for @scanRobotQrSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold the robot QR code inside the frame to connect.'**
+  String get scanRobotQrSubtitle;
+
+  /// No description provided for @scanMuseumQrSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold your museum entry ticket QR code inside the frame.'**
+  String get scanMuseumQrSubtitle;
+
+  /// No description provided for @simulateRobotScan.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulate Robot Scan'**
+  String get simulateRobotScan;
+
+  /// No description provided for @prototypeOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Prototype only'**
+  String get prototypeOnly;
+
   /// No description provided for @audioGuide.
   ///
   /// In en, this message translates to:
