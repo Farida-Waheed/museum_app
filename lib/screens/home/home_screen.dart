@@ -241,9 +241,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     Text(
                       (AppLocalizations.of(context)?.exploreEgypt ?? 'EXPLORE')
                           .toUpperCase(),
-                      style: AppTextStyles.bodySecondary(
-                        context,
-                      ).copyWith(letterSpacing: 1.5, fontSize: 11, color: kTextMuted),
+                      style: AppTextStyles.bodySecondary(context).copyWith(
+                        letterSpacing: 1.5,
+                        fontSize: 11,
+                        color: kTextMuted,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -297,9 +299,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               Expanded(
                 child: Text(
                   connectionText,
-                  style: AppTextStyles.bodyPrimary(
-                    context,
-                  ).copyWith(fontSize: 13, fontWeight: FontWeight.w600, color: kTextWhite),
+                  style: AppTextStyles.bodyPrimary(context).copyWith(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: kTextWhite,
+                  ),
                 ),
               ),
             ],

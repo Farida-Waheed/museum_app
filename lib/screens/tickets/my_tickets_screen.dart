@@ -567,10 +567,7 @@ class MyTicketsScreen extends StatelessWidget {
                 if (isActive)
                   ElevatedButton.icon(
                     onPressed: () {
-                      Navigator.pushNamed(
-                        context,
-                        AppRoutes.tourCustomization,
-                      );
+                      Navigator.pushNamed(context, AppRoutes.tourCustomization);
                     },
                     icon: const Icon(Icons.qr_code_scanner, size: 16),
                     label: Text(

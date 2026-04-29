@@ -199,9 +199,9 @@ class VisitSummaryScreen extends StatelessWidget {
                 ),
                 child: Text(
                   isArabic ? 'عرض ذكرياتي' : 'View My Memories',
-                  style: AppTextStyles.buttonLabel(context).copyWith(
-                    color: AppColors.primaryGold,
-                  ),
+                  style: AppTextStyles.buttonLabel(
+                    context,
+                  ).copyWith(color: AppColors.primaryGold),
                 ),
               ),
             ),

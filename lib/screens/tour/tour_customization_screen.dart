@@ -125,9 +125,8 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
     context.read<AppSessionProvider>().setTourPreferences(preferences);
 
     // Navigate to QR scanner for robot connection
-    Navigator.of(context).pushNamed(
-      AppRoutes.qrScan,
-      arguments: QRScanMode.robotConnection,
-    );
+    Navigator.of(
+      context,
+    ).pushNamed(AppRoutes.qrScan, arguments: QRScanMode.robotConnection);
   }
 }

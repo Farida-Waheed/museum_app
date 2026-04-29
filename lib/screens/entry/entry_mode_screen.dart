@@ -41,11 +41,11 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
           title: Text(
             localizations?.welcomeToHorusBot ?? 'Welcome to Horus-Bot',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: const Color(0xFFC6A96B),
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.2,
-                  fontFamily: 'Cinzel',
-                ),
+              color: const Color(0xFFC6A96B),
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.2,
+              fontFamily: 'Cinzel',
+            ),
           ),
         ),
         body: Container(
@@ -54,10 +54,7 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [
-                Color(0xFF1A1A1A),
-                Color(0xFF0A0A0A),
-              ],
+              colors: [Color(0xFF1A1A1A), Color(0xFF0A0A0A)],
             ),
           ),
           child: SingleChildScrollView(
@@ -69,11 +66,11 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
                 Text(
                   localizations?.welcomeToHorusBot ?? 'Welcome to Horus-Bot',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: const Color(0xFFFFFFFF),
-                        fontSize: 36,
-                        fontWeight: FontWeight.w800,
-                        fontFamily: 'Cinzel',
-                      ),
+                    color: const Color(0xFFFFFFFF),
+                    fontSize: 36,
+                    fontWeight: FontWeight.w800,
+                    fontFamily: 'Cinzel',
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 20),
@@ -81,17 +78,18 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
                   localizations?.howAreYouUsingTheAppToday ??
                       'How are you using the app today?',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: const Color(0xFFB8B8B8),
-                        fontSize: 18,
-                        fontWeight: FontWeight.w400,
-                      ),
+                    color: const Color(0xFFB8B8B8),
+                    fontSize: 18,
+                    fontWeight: FontWeight.w400,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
                 _buildModeCard(
                   context: context,
                   title: localizations?.planMyVisit ?? 'Plan My Visit',
-                  description: localizations?.planMyVisitDescription ??
+                  description:
+                      localizations?.planMyVisitDescription ??
                       'Explore the museum, buy tickets, and prepare your visit.',
                   icon: Icons.explore,
                   onTap: () {
@@ -104,7 +102,8 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
                 _buildModeCard(
                   context: context,
                   title: localizations?.startMyTour ?? 'Start My Tour',
-                  description: localizations?.startMyTourDescription ??
+                  description:
+                      localizations?.startMyTourDescription ??
                       'Use your tickets, connect to Horus-Bot, and begin the guided experience.',
                   icon: Icons.play_arrow,
                   onTap: () {
@@ -196,7 +195,9 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: const Color(0xFFC6A96B).withOpacity(0.16),
+                                color: const Color(
+                                  0xFFC6A96B,
+                                ).withOpacity(0.16),
                                 blurRadius: 16,
                                 offset: const Offset(0, 4),
                               ),
@@ -215,18 +216,19 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
                             children: [
                               Text(
                                 title,
-                                style:
-                                    Theme.of(context).textTheme.titleLarge?.copyWith(
-                                          color: const Color(0xFFFFFFFF),
-                                          fontWeight: FontWeight.w700,
-                                          fontSize: 18,
-                                          fontFamily: 'Cinzel',
-                                        ),
+                                style: Theme.of(context).textTheme.titleLarge
+                                    ?.copyWith(
+                                      color: const Color(0xFFFFFFFF),
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 18,
+                                      fontFamily: 'Cinzel',
+                                    ),
                               ),
                               const SizedBox(height: 12),
                               Text(
                                 description,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(
                                       color: const Color(0xFFB8B8B8),
                                       height: 1.5,
                                     ),
@@ -258,9 +260,7 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.accountRequired),
-        content: Text(
-          l10n.createOrLoginToPreserve,
-        ),
+        content: Text(l10n.createOrLoginToPreserve),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
