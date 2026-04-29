@@ -117,7 +117,11 @@ class AppRoutes {
       settings: (context) => const AccessibilityScreen(),
       accessibility: (context) => const AccessibilityScreen(),
       notificationSettings: (context) => const NotificationSettingsScreen(),
-      projectInfo: (context) => const ProjectInfoScreen(),
+      projectInfo: (context) {
+        final args = ModalRoute.of(context)?.settings.arguments;
+        final targetSection = args is String ? args : null;
+        return ProjectInfoScreen(targetSection: targetSection);
+      },
       feedback: (context) => const FeedbackScreen(),
 
       profile: (context) => const ProfileScreen(),

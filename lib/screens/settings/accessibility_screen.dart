@@ -532,8 +532,11 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                     ),
                     _AboutNavItem(
                       title: l10n.team,
-                      onTap: () =>
-                          Navigator.pushNamed(context, AppRoutes.projectInfo),
+                      onTap: () => Navigator.pushNamed(
+                        context,
+                        AppRoutes.projectInfo,
+                        arguments: 'team',
+                      ),
                     ),
                     // Notification test screen removed during cleanup.
                     _AboutNavItem(title: l10n.privacyPolicy),

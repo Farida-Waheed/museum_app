@@ -5,8 +5,43 @@ import '../../core/constants/text_styles.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
 
-class ProjectInfoScreen extends StatelessWidget {
-  const ProjectInfoScreen({super.key});
+class ProjectInfoScreen extends StatefulWidget {
+  final String? targetSection;
+
+  const ProjectInfoScreen({super.key, this.targetSection});
+
+  @override
+  State<ProjectInfoScreen> createState() => _ProjectInfoScreenState();
+}
+
+class _ProjectInfoScreenState extends State<ProjectInfoScreen> {
+  final ScrollController _scrollController = ScrollController();
+  final GlobalKey _teamSectionKey = GlobalKey();
+  bool _hasScrolledToTeam = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.targetSection == 'team' && !_hasScrolledToTeam) {
+        _hasScrolledToTeam = true;
+        final context = _teamSectionKey.currentContext;
+        if (context != null) {
+          Scrollable.ensureVisible(
+            context,
+            duration: const Duration(milliseconds: 350),
+            curve: Curves.easeInOut,
+          );
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +59,7 @@ class ProjectInfoScreen extends StatelessWidget {
           : AppColors.warmSurface,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: SingleChildScrollView(
+        controller: _scrollController,
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,7 +161,7 @@ class ProjectInfoScreen extends StatelessWidget {
             ),
 
             const SizedBox(height: 32),
-            _SectionTitle(title: l10n.teamLabel),
+            _SectionTitle(key: _teamSectionKey, title: l10n.teamLabel),
             const _InfoCard(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -202,7 +238,7 @@ class _InfoCard extends StatelessWidget {
 
 class _SectionTitle extends StatelessWidget {
   final String title;
-  const _SectionTitle({required this.title});
+  const _SectionTitle({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {

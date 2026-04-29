@@ -12,7 +12,6 @@ import '../../models/museum_ticket.dart';
 import '../../models/robot_tour_ticket.dart';
 import '../../l10n/app_localizations.dart';
 import '../../app/router.dart';
-import 'qr_scanner_screen.dart';
 
 class MyTicketsScreen extends StatelessWidget {
   const MyTicketsScreen({super.key});
@@ -570,8 +569,7 @@ class MyTicketsScreen extends StatelessWidget {
                     onPressed: () {
                       Navigator.pushNamed(
                         context,
-                        AppRoutes.qrScan,
-                        arguments: QRScanMode.robotConnection,
+                        AppRoutes.tourCustomization,
                       );
                     },
                     icon: const Icon(Icons.qr_code_scanner, size: 16),

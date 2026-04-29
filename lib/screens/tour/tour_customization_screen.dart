@@ -5,6 +5,7 @@ import '../../app/router.dart';
 import '../../models/app_session_provider.dart';
 import '../../models/exhibit_provider.dart';
 import '../../models/tour_preferences.dart';
+import '../tickets/qr_scanner_screen.dart';
 
 class TourCustomizationScreen extends StatefulWidget {
   const TourCustomizationScreen({super.key});
@@ -124,6 +125,9 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
     context.read<AppSessionProvider>().setTourPreferences(preferences);
 
     // Navigate to QR scanner for robot connection
-    Navigator.of(context).pushNamed(AppRoutes.qrScan);
+    Navigator.of(context).pushNamed(
+      AppRoutes.qrScan,
+      arguments: QRScanMode.robotConnection,
+    );
   }
 }

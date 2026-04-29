@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/app_session_provider.dart';
+import '../../app/router.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 import '../../models/tour_provider.dart';
@@ -180,6 +181,29 @@ class VisitSummaryScreen extends StatelessWidget {
               onPressed: () {},
               icon: Icons.share,
               fullWidth: true,
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: OutlinedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, AppRoutes.memories);
+                },
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.primaryGold,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  side: const BorderSide(color: AppColors.primaryGold),
+                ),
+                child: Text(
+                  isArabic ? 'عرض ذكرياتي' : 'View My Memories',
+                  style: AppTextStyles.buttonLabel(context).copyWith(
+                    color: AppColors.primaryGold,
+                  ),
+                ),
+              ),
             ),
             const SizedBox(height: 16),
             SizedBox(

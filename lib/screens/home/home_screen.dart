@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -18,6 +19,46 @@ import '../../widgets/primary_button.dart';
 import '../../widgets/dialogs/branded_permission_dialog.dart';
 import '../../models/app_session_provider.dart' as session;
 import '../../screens/tickets/qr_scanner_screen.dart';
+
+const Color kBgBlack = Color(0xFF0A0A0A);
+const Color kWarmBlack = Color(0xFF11100E);
+const Color kCardDark = Color(0xFF1C1C1C);
+const Color kCardGlass = Color(0xB31F1F1F);
+const Color kGold = Color(0xFFC9A85A);
+const Color kSoftGold = Color(0xFFE6C97A);
+const Color kBronze = Color(0xFF8A6A2F);
+const Color kTextWhite = Color(0xFFF5F1E8);
+const Color kTextMuted = Color(0xFFB8B0A2);
+const Color kTextDim = Color(0xFF7D766B);
+
+Widget _buildGlassCard({required Widget child, double radius = 24}) {
+  return ClipRRect(
+    borderRadius: BorderRadius.circular(radius),
+    child: BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+      child: Container(
+        decoration: BoxDecoration(
+          color: kCardGlass,
+          borderRadius: BorderRadius.circular(radius),
+          border: Border.all(color: kGold.withOpacity(0.22), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.30),
+              blurRadius: 20,
+              offset: const Offset(0, 10),
+            ),
+            BoxShadow(
+              color: kGold.withOpacity(0.08),
+              blurRadius: 30,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: child,
+      ),
+    ),
+  );
+}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -172,8 +213,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               end: Alignment.bottomCenter,
               colors: [
                 Colors.transparent,
-                Colors.black.withOpacity(0.35),
-                Colors.black.withOpacity(0.65),
+                kBgBlack.withOpacity(0.35),
+                kBgBlack.withOpacity(0.72),
               ],
               stops: const [0.0, 0.5, 1.0],
             ),
@@ -202,14 +243,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           .toUpperCase(),
                       style: AppTextStyles.bodySecondary(
                         context,
-                      ).copyWith(letterSpacing: 1.5, fontSize: 11),
+                      ).copyWith(letterSpacing: 1.5, fontSize: 11, color: kTextMuted),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       l10n.exploreEgypt,
                       style: AppTextStyles.displayHero(
                         context,
-                      ).copyWith(fontSize: 28),
+                      ).copyWith(fontSize: 28, color: kTextWhite),
                     ),
                   ],
                 ),
@@ -238,33 +279,31 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColors.cinematicCard,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.darkBorder, width: 0.5),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 10,
-              height: 10,
-              decoration: BoxDecoration(
-                color: statusColor,
-                shape: BoxShape.circle,
+      child: _buildGlassCard(
+        radius: 18,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                  color: statusColor,
+                  shape: BoxShape.circle,
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                connectionText,
-                style: AppTextStyles.bodyPrimary(
-                  context,
-                ).copyWith(fontSize: 13, fontWeight: FontWeight.w600),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  connectionText,
+                  style: AppTextStyles.bodyPrimary(
+                    context,
+                  ).copyWith(fontSize: 13, fontWeight: FontWeight.w600, color: kTextWhite),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
