@@ -3,10 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:museum_app/models/chat_message.dart';
 
 /// Keeps a simple in-memory chat history for the Horus chatbot.
-///
-/// This allows the chat screen to be reopened without re-adding the
-/// initial greeting message over and over, and provides a single
-/// source-of-truth for the last message for popups.
 class ChatProvider extends ChangeNotifier {
   final List<ChatMessageModel> _messages = [];
 
@@ -24,7 +20,6 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Updates the last message if the IDs match (for typewriter-style updates).
   void updateLastMessage(ChatMessageModel message) {
     if (_messages.isEmpty) return;
     if (_messages.last.id != message.id) return;
@@ -32,23 +27,20 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Ensures the initial greeting is present.
-  ///
-  /// This is idempotent: calling it multiple times will not add duplicates.
   void ensureGreeting({required bool isArabic}) {
     if (_messages.isNotEmpty) return;
 
     final greeting = isArabic
-        ? "مرحباً! أنا دليلك في المتحف، كيف يمكنني مساعدتك؟"
-        : "Welcome! I am your museum guide. How can I help you today?";
+        ? 'مرحبا! أنا دليلك في المتحف، كيف يمكنني مساعدتك؟'
+        : 'Welcome! I am your museum guide. How can I help you today?';
 
-    addMessage(ChatMessageModel.text(
-      id: DateTime.now().microsecondsSinceEpoch.toString(),
-      isUser: false,
-      timestamp: DateTime.now(),
-      text: greeting,
-    ));
-
-    // Removed: No longer adding suggestion cards as messages since they're now at the top
+    addMessage(
+      ChatMessageModel.text(
+        id: DateTime.now().microsecondsSinceEpoch.toString(),
+        isUser: false,
+        timestamp: DateTime.now(),
+        text: greeting,
+      ),
+    );
   }
 }

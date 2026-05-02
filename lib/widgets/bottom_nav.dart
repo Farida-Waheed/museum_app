@@ -45,12 +45,18 @@ class BottomNav extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: isDark ? AppColors.cinematicNav : AppColors.warmSurface,
-        border: Border(top: BorderSide(color: isDark ? AppColors.cinematicSection : AppColors.mutedText.withOpacity(0.1))),
+        border: Border(
+          top: BorderSide(
+            color: isDark
+                ? AppColors.goldBorder(0.10)
+                : AppColors.mutedText.withValues(alpha: 0.1),
+          ),
+        ),
       ),
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
+          padding: const EdgeInsets.symmetric(vertical: 6),
           child: BottomNavigationBar(
             currentIndex: currentIndex,
             onTap: handleTap,
@@ -60,8 +66,8 @@ class BottomNav extends StatelessWidget {
             showUnselectedLabels: true,
             selectedFontSize: 11,
             unselectedFontSize: 11,
-            selectedLabelStyle: AppTextStyles.navLabel(context).copyWith(fontWeight: FontWeight.bold),
-            unselectedLabelStyle: AppTextStyles.navLabel(context),
+            selectedLabelStyle: AppTextStyles.premiumNavLabel(context).copyWith(fontWeight: FontWeight.w600),
+            unselectedLabelStyle: AppTextStyles.premiumNavLabel(context),
             elevation: 0,
             backgroundColor: Colors.transparent,
             items: [
@@ -83,7 +89,7 @@ class BottomNav extends StatelessWidget {
       activeIcon: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(activeIcon, size: 24),
+          Icon(activeIcon, size: 23),
           const SizedBox(height: 4),
           Container(
             width: 16,

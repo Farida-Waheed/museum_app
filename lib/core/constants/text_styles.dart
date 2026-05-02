@@ -198,6 +198,193 @@ class AppTextStyles {
     );
   }
 
+  static TextStyle premiumHero(BuildContext context) {
+    if (_isArabic(context)) {
+      return GoogleFonts.amiri(
+        textStyle: const TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 32,
+          color: AppColors.whiteTitle,
+          height: 1.18,
+        ),
+      );
+    }
+    return GoogleFonts.cinzel(
+      textStyle: const TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 32,
+        color: AppColors.whiteTitle,
+        height: 1.16,
+        letterSpacing: 0.9,
+      ),
+    );
+  }
+
+  static TextStyle premiumScreenTitle(BuildContext context) {
+    if (_isArabic(context)) {
+      return GoogleFonts.amiri(
+        textStyle: const TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 23,
+          color: AppColors.whiteTitle,
+          height: 1.18,
+        ),
+      );
+    }
+    return GoogleFonts.cinzel(
+      textStyle: const TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 23,
+        color: AppColors.whiteTitle,
+        height: 1.16,
+        letterSpacing: 0.8,
+      ),
+    );
+  }
+
+  static TextStyle premiumSectionLabel(BuildContext context) {
+    if (_isArabic(context)) {
+      return GoogleFonts.amiri(
+        textStyle: const TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 12,
+          color: AppColors.softGold,
+          height: 1.1,
+        ),
+      );
+    }
+    return GoogleFonts.cinzel(
+      textStyle: const TextStyle(
+        fontWeight: FontWeight.w700,
+        fontSize: 12,
+        color: AppColors.softGold,
+        height: 1.1,
+        letterSpacing: 1.7,
+      ),
+    );
+  }
+
+  static TextStyle premiumCardTitle(BuildContext context) {
+    if (_isArabic(context)) {
+      return GoogleFonts.amiri(
+        textStyle: const TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 21,
+          color: AppColors.whiteTitle,
+          height: 1.18,
+        ),
+      );
+    }
+    return GoogleFonts.cinzel(
+      textStyle: const TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 21,
+        color: AppColors.whiteTitle,
+        height: 1.16,
+        letterSpacing: 0.4,
+      ),
+    );
+  }
+
+  static TextStyle premiumBody(BuildContext context) {
+    if (_isArabic(context)) {
+      return GoogleFonts.notoSansArabic(
+        textStyle: const TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 15,
+          color: AppColors.bodyText,
+          height: 1.42,
+        ),
+      );
+    }
+    return GoogleFonts.inter(
+      textStyle: const TextStyle(
+        fontWeight: FontWeight.w400,
+        fontSize: 15,
+        color: AppColors.bodyText,
+        height: 1.42,
+      ),
+    );
+  }
+
+  static TextStyle premiumMutedBody(BuildContext context) {
+    if (_isArabic(context)) {
+      return GoogleFonts.notoSansArabic(
+        textStyle: const TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 14,
+          color: AppColors.mutedText,
+          height: 1.42,
+        ),
+      );
+    }
+    return GoogleFonts.inter(
+      textStyle: const TextStyle(
+        fontWeight: FontWeight.w400,
+        fontSize: 14,
+        color: AppColors.mutedText,
+        height: 1.42,
+      ),
+    );
+  }
+
+  static TextStyle premiumButtonLabel(BuildContext context) {
+    if (_isArabic(context)) {
+      return GoogleFonts.notoSansArabic(
+        textStyle: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 16,
+        ),
+      );
+    }
+    return GoogleFonts.inter(
+      textStyle: const TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 16,
+        letterSpacing: 0.2,
+      ),
+    );
+  }
+
+  static TextStyle premiumNavLabel(BuildContext context) {
+    if (_isArabic(context)) {
+      return GoogleFonts.notoSansArabic(
+        textStyle: const TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 11,
+        ),
+      );
+    }
+    return GoogleFonts.inter(
+      textStyle: const TextStyle(
+        fontWeight: FontWeight.w500,
+        fontSize: 11,
+      ),
+    );
+  }
+
+  static TextStyle premiumBrandTitle(BuildContext context) {
+    if (_isArabic(context)) {
+      return GoogleFonts.amiri(
+        textStyle: const TextStyle(
+          fontWeight: FontWeight.w700,
+          fontSize: 18,
+          color: AppColors.primaryGold,
+          height: 1.1,
+        ),
+      );
+    }
+    return GoogleFonts.cinzel(
+      textStyle: const TextStyle(
+        fontWeight: FontWeight.w600,
+        fontSize: 18,
+        color: AppColors.primaryGold,
+        letterSpacing: 1.1,
+        height: 1.1,
+      ),
+    );
+  }
+
   // --- NEW TYPOGRAPHY SYSTEM (Main App) ---
 
   // 1. DISPLAY STYLES (Cinzel/Playfair for EN, Amiri for AR)

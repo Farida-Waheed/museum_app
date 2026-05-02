@@ -1,9 +1,10 @@
-﻿import 'dart:ui';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 import '../core/constants/colors.dart';
 import '../core/constants/text_styles.dart';
+import '../models/auth_provider.dart';
 import '../widgets/ask_the_guide_button.dart';
 
 import '../models/user_preferences.dart';
@@ -27,10 +28,13 @@ class _SideMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final width = size.width * 0.75;
+    final width = (size.width * 0.78).clamp(280.0, 340.0).toDouble();
     final l10n = AppLocalizations.of(context)!;
-
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final authProvider = context.watch<AuthProvider>();
+    final userName = authProvider.currentUser?.name ?? l10n.guestUser;
+    final userSubtitle = authProvider.isLoggedIn
+        ? authProvider.currentUser?.email ?? l10n.exploreTheMuseum
+        : l10n.exploreTheMuseum;
 
     return Align(
       alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft,
@@ -38,14 +42,23 @@ class _SideMenu extends StatelessWidget {
         width: width,
         child: Container(
           decoration: BoxDecoration(
-            color: isDark ? AppColors.darkHeader : AppColors.warmSurface,
+            gradient: LinearGradient(
+              begin: isArabic ? Alignment.centerRight : Alignment.centerLeft,
+              end: isArabic ? Alignment.centerLeft : Alignment.centerRight,
+              colors: [
+                Colors.black.withValues(alpha: 0.90),
+                Colors.black.withValues(alpha: 0.74),
+                Colors.transparent,
+              ],
+              stops: const [0.0, 0.76, 1.0],
+            ),
           ),
           child: SafeArea(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+                  padding: const EdgeInsets.fromLTRB(24, 28, 24, 22),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -59,47 +72,42 @@ class _SideMenu extends StatelessWidget {
                           const SizedBox(width: 16),
                           Text(
                             l10n.appTitle.toUpperCase(),
-                            style: AppTextStyles.navLabel(context).copyWith(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w900,
-                              color: isDark ? Colors.white : AppColors.darkInk,
-                              letterSpacing: 2.0,
-                            ),
+                            style: AppTextStyles.premiumBrandTitle(
+                              context,
+                            ).copyWith(color: AppColors.primaryGold),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: 26),
                       Row(
                         children: [
                           CircleAvatar(
-                            radius: 28,
-                            backgroundColor: isDark
-                                ? AppColors.darkSurfaceSecondary
-                                : AppColors.softSurface,
+                            radius: 25,
+                            backgroundColor: AppColors.secondaryGlass(0.82),
                             child: const Icon(
                               Icons.person_outline,
                               color: AppColors.primaryGold,
-                              size: 32,
+                              size: 28,
                             ),
                           ),
-                          const SizedBox(width: 16),
+                          const SizedBox(width: 14),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  l10n.guestUser,
-                                  style: AppTextStyles.titleMedium(context)
-                                      .copyWith(
-                                        fontSize: 18,
-                                        color: isDark
-                                            ? Colors.white
-                                            : AppColors.darkInk,
-                                      ),
+                                  userName,
+                                  style: AppTextStyles.premiumCardTitle(
+                                    context,
+                                  ).copyWith(fontSize: 18, color: Colors.white),
                                 ),
                                 Text(
-                                  l10n.exploreTheMuseum,
-                                  style: AppTextStyles.bodyPrimary(context),
+                                  userSubtitle,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppTextStyles.premiumMutedBody(
+                                    context,
+                                  ),
                                 ),
                               ],
                             ),
@@ -112,13 +120,11 @@ class _SideMenu extends StatelessWidget {
                 Divider(
                   height: 1,
                   thickness: 1,
-                  color: isDark
-                      ? AppColors.darkDivider
-                      : const Color(0xFFF5F5F5),
+                  color: AppColors.goldBorder(0.12),
                 ),
                 Expanded(
                   child: ListView(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
                     children: [
                       _SectionHeader(label: l10n.accountPreferences),
                       _MenuItem(
@@ -193,10 +199,10 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(28, 24, 24, 12),
       child: Text(
         label.toUpperCase(),
-        style: AppTextStyles.displaySectionTitle(context).copyWith(
-          fontSize: 11,
-          letterSpacing: 1.5,
-          color: AppColors.primaryGold.withOpacity(0.7),
+        style: AppTextStyles.premiumSectionLabel(context).copyWith(
+          fontSize: 12,
+          letterSpacing: 2.1,
+          color: AppColors.softGold.withValues(alpha: 0.78),
         ),
       ),
     );
@@ -224,27 +230,28 @@ class _MenuItem extends StatelessWidget {
       child: ListTile(
         onTap: onTap,
         dense: true,
-        visualDensity: const VisualDensity(vertical: -2),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+        visualDensity: const VisualDensity(vertical: -3),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         leading: Icon(
           icon,
-          size: 22,
+          size: 23,
           color: selected
               ? AppColors.primaryGold
-              : (isDark ? Colors.white : AppColors.darkInk),
+              : (isDark ? AppColors.bodyText : AppColors.darkInk),
         ),
         title: Text(
           label,
-          style: AppTextStyles.bodyPrimary(context).copyWith(
-            fontSize: 16,
-            fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
+          style: AppTextStyles.premiumBody(context).copyWith(
+            fontSize: 15,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
             color: selected
                 ? AppColors.primaryGold
-                : (isDark ? Colors.white : AppColors.darkInk),
+                : (isDark ? AppColors.bodyText : AppColors.darkInk),
           ),
         ),
         tileColor: selected
-            ? AppColors.primaryGold.withOpacity(0.08)
+            ? AppColors.primaryGold.withValues(alpha: 0.08)
             : Colors.transparent,
       ),
     );
@@ -376,7 +383,7 @@ class AppMenuShellState extends State<AppMenuShell>
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
                       child: Container(
-                        color: Colors.black.withOpacity(0.2 * v),
+                        color: Colors.black.withValues(alpha: 0.6 * v),
                       ),
                     ),
                   ),
@@ -414,7 +421,7 @@ class AppMenuShellState extends State<AppMenuShell>
                           boxShadow: [
                             if (v > 0)
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 blurRadius: 20,
                                 spreadRadius: 5,
                               ),
@@ -460,7 +467,7 @@ class AppMenuShellState extends State<AppMenuShell>
                                               (widget.title ?? l10n.appTitle)
                                                   .toUpperCase(),
                                               style:
-                                                  AppTextStyles.displayScreenTitle(
+                                                  AppTextStyles.premiumBrandTitle(
                                                     innerContext,
                                                   ).copyWith(
                                                     fontSize: 18,

@@ -1,9 +1,13 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../models/auth_provider.dart';
-import '../../l10n/app_localizations.dart';
+
 import '../../app/router.dart';
-import '../../widgets/primary_button.dart';
+import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
+import '../../l10n/app_localizations.dart';
+import '../../models/auth_provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -13,11 +17,11 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  late TextEditingController _nameController;
-  late TextEditingController _emailController;
-  late TextEditingController _passwordController;
-  late TextEditingController _confirmPasswordController;
-  late TextEditingController _phoneController;
+  late final TextEditingController _nameController;
+  late final TextEditingController _emailController;
+  late final TextEditingController _passwordController;
+  late final TextEditingController _confirmPasswordController;
+  late final TextEditingController _phoneController;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
@@ -46,26 +50,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final l10n = AppLocalizations.of(context)!;
     final authProvider = context.read<AuthProvider>();
 
-    // Validation
     if (_nameController.text.trim().isEmpty) {
-      _showError(l10n.nameRequired ?? 'Name is required');
+      _showError(l10n.nameRequired);
       return;
     }
 
     if (_emailController.text.isEmpty) {
-      _showError(l10n.emailRequired ?? 'Email is required');
+      _showError(l10n.emailRequired);
       return;
     }
 
     if (_passwordController.text.length < 6) {
-      _showError(
-        l10n.passwordTooShort ?? 'Password must be at least 6 characters',
-      );
+      _showError(l10n.passwordTooShort);
       return;
     }
 
     if (_passwordController.text != _confirmPasswordController.text) {
-      _showError(l10n.passwordMismatch ?? 'Passwords do not match');
+      _showError(l10n.passwordMismatch);
       return;
     }
 
@@ -75,30 +76,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       password: _passwordController.text,
-      phone: _phoneController.text.isEmpty
-          ? null
-          : _phoneController.text.trim(),
+      phone: _phoneController.text.isEmpty ? null : _phoneController.text.trim(),
     );
 
     if (!mounted) return;
 
     if (success) {
-      // Navigate to home
       Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
     } else {
-      _showError(
-        authProvider.errorMessage ??
-            (l10n.registerFailed ?? 'Registration failed'),
-      );
+      _showError(authProvider.errorMessage ?? l10n.registerFailed);
     }
 
     setState(() => _isLoading = false);
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -107,156 +100,251 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.register ?? 'Create Account'),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Title
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 32.0),
-              child: Text(
-                l10n.signUp ?? 'Sign Up',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.primary,
+      backgroundColor: AppColors.baseBlack,
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppGradients.screenBackground),
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 14, sigmaY: 14),
+                    child: Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: AppDecorations.premiumGlassCard(
+                        radius: 30,
+                        opacity: 0.72,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Center(
+                            child: Column(
+                              children: [
+                                Image.asset('assets/icons/ankh.png', width: 28, height: 28),
+                                const SizedBox(height: 10),
+                                Text(
+                                  'HORUS-BOT',
+                                  style: AppTextStyles.premiumBrandTitle(context),
+                                ),
+                                const SizedBox(height: 28),
+                                Text(
+                                  l10n.createAccount,
+                                  textAlign: TextAlign.center,
+                                  style: AppTextStyles.premiumHero(context).copyWith(
+                                    fontSize: isArabic ? 34 : 32,
+                                    shadows: [
+                                      Shadow(
+                                        color: Colors.black.withValues(alpha: 0.45),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  isArabic
+                                      ? 'احفظ التذاكر والتفضيلات ووصول جولتك مع حورس-بوت.'
+                                      : 'Save tickets, preferences, and your Horus-Bot tour access.',
+                                  textAlign: TextAlign.center,
+                                  style: AppTextStyles.premiumBody(context).copyWith(
+                                    color: AppColors.bodyText,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 28),
+                          _GlassField(
+                            controller: _nameController,
+                            label: l10n.fullName,
+                            hintText: l10n.fullNameHint,
+                            icon: Icons.person_outline_rounded,
+                            isArabic: isArabic,
+                          ),
+                          const SizedBox(height: 16),
+                          _GlassField(
+                            controller: _emailController,
+                            label: l10n.email,
+                            hintText: l10n.emailHint,
+                            keyboardType: TextInputType.emailAddress,
+                            icon: Icons.email_outlined,
+                            isArabic: isArabic,
+                          ),
+                          const SizedBox(height: 16),
+                          _GlassField(
+                            controller: _phoneController,
+                            label: l10n.phone,
+                            hintText: l10n.phoneHint,
+                            keyboardType: TextInputType.phone,
+                            icon: Icons.phone_outlined,
+                            isArabic: isArabic,
+                          ),
+                          const SizedBox(height: 16),
+                          _GlassField(
+                            controller: _passwordController,
+                            label: l10n.password,
+                            hintText: l10n.passwordHint,
+                            obscureText: _obscurePassword,
+                            icon: Icons.lock_outline_rounded,
+                            isArabic: isArabic,
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() => _obscurePassword = !_obscurePassword);
+                              },
+                              icon: Icon(
+                                _obscurePassword
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                                color: AppColors.softGold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          _GlassField(
+                            controller: _confirmPasswordController,
+                            label: l10n.confirmPassword,
+                            hintText: l10n.confirmPasswordHint,
+                            obscureText: _obscureConfirmPassword,
+                            icon: Icons.lock_outline_rounded,
+                            isArabic: isArabic,
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _obscureConfirmPassword = !_obscureConfirmPassword;
+                                });
+                              },
+                              icon: Icon(
+                                _obscureConfirmPassword
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
+                                color: AppColors.softGold,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 22),
+                          SizedBox(
+                            height: 52,
+                            child: ElevatedButton(
+                              onPressed: _isLoading ? null : _handleRegister,
+                              style: AppDecorations.primaryButton().copyWith(
+                                shape: const WidgetStatePropertyAll(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(20),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              child: Text(
+                                _isLoading
+                                    ? '${l10n.signingUp}...'
+                                    : l10n.createAccount,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pushReplacementNamed(context, AppRoutes.login);
+                            },
+                            child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                style: AppTextStyles.premiumMutedBody(context).copyWith(
+                                  color: AppColors.bodyText,
+                                ),
+                                children: [
+                                  TextSpan(text: '${l10n.alreadyHaveAccount} '),
+                                  TextSpan(
+                                    text: l10n.login,
+                                    style: AppTextStyles.premiumButtonLabel(context).copyWith(
+                                      color: AppColors.primaryGold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
-
-            // Name field
-            _buildTextField(
-              controller: _nameController,
-              label: l10n.fullName ?? 'Full Name',
-              hintText: l10n.fullNameHint ?? 'Enter your full name',
-              icon: Icons.person_outline,
-              isArabic: isArabic,
-            ),
-            const SizedBox(height: 20),
-
-            // Email field
-            _buildTextField(
-              controller: _emailController,
-              label: l10n.email ?? 'Email',
-              hintText: l10n.emailHint ?? 'Enter your email',
-              keyboardType: TextInputType.emailAddress,
-              icon: Icons.email_outlined,
-              isArabic: isArabic,
-            ),
-            const SizedBox(height: 20),
-
-            // Phone field
-            _buildTextField(
-              controller: _phoneController,
-              label: l10n.phone ?? 'Phone Number',
-              hintText: l10n.phoneHint ?? 'Enter your phone number (optional)',
-              keyboardType: TextInputType.phone,
-              icon: Icons.phone_outlined,
-              isArabic: isArabic,
-            ),
-            const SizedBox(height: 20),
-
-            // Password field
-            _buildTextField(
-              controller: _passwordController,
-              label: l10n.password ?? 'Password',
-              hintText: l10n.passwordHint ?? 'Enter your password',
-              obscureText: _obscurePassword,
-              icon: Icons.lock_outlined,
-              suffixIcon: _buildPasswordToggle(_obscurePassword, (value) {
-                setState(() => _obscurePassword = value);
-              }),
-              isArabic: isArabic,
-            ),
-            const SizedBox(height: 20),
-
-            // Confirm password field
-            _buildTextField(
-              controller: _confirmPasswordController,
-              label: l10n.confirmPassword ?? 'Confirm Password',
-              hintText: l10n.confirmPasswordHint ?? 'Re-enter your password',
-              obscureText: _obscureConfirmPassword,
-              icon: Icons.lock_outline,
-              suffixIcon: _buildPasswordToggle(_obscureConfirmPassword, (
-                value,
-              ) {
-                setState(() => _obscureConfirmPassword = value);
-              }),
-              isArabic: isArabic,
-            ),
-            const SizedBox(height: 32),
-
-            // Register button
-            PrimaryButton(
-              label: _isLoading
-                  ? '${l10n.signingUp ?? 'Creating account'}...'
-                  : (l10n.createAccount ?? 'Create Account'),
-              onPressed: _isLoading ? null : _handleRegister,
-              loading: _isLoading,
-            ),
-            const SizedBox(height: 16),
-
-            // Login link
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  l10n.alreadyHaveAccount ?? 'Already have an account?',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const SizedBox(width: 8),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, AppRoutes.login);
-                  },
-                  child: Text(l10n.login ?? 'Login'),
-                ),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hintText,
-    TextInputType keyboardType = TextInputType.text,
-    bool obscureText = false,
-    IconData? icon,
-    Widget? suffixIcon,
-    required bool isArabic,
-  }) {
+class _GlassField extends StatelessWidget {
+  const _GlassField({
+    required this.controller,
+    required this.label,
+    required this.hintText,
+    required this.isArabic,
+    this.keyboardType = TextInputType.text,
+    this.obscureText = false,
+    this.icon,
+    this.suffixIcon,
+  });
+
+  final TextEditingController controller;
+  final String label;
+  final String hintText;
+  final bool isArabic;
+  final TextInputType keyboardType;
+  final bool obscureText;
+  final IconData? icon;
+  final Widget? suffixIcon;
+
+  @override
+  Widget build(BuildContext context) {
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
       obscureText: obscureText,
       textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+      style: AppTextStyles.premiumBody(context).copyWith(
+        color: AppColors.whiteTitle,
+      ),
       decoration: InputDecoration(
         labelText: label,
         hintText: hintText,
-        prefixIcon: icon != null ? Icon(icon) : null,
+        labelStyle: AppTextStyles.premiumMutedBody(context).copyWith(
+          color: AppColors.bodyText,
+        ),
+        hintStyle: AppTextStyles.premiumMutedBody(context).copyWith(
+          color: AppColors.bodyText.withValues(alpha: 0.70),
+        ),
+        prefixIcon: icon == null
+            ? null
+            : Icon(icon, color: AppColors.softGold, size: 20),
         suffixIcon: suffixIcon,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
+        filled: true,
+        fillColor: AppColors.panelGlassBase.withValues(alpha: 0.70),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide(color: AppColors.goldBorder(0.18)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide(color: AppColors.goldBorder(0.18)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(color: AppColors.primaryGold, width: 1.1),
         ),
       ),
-    );
-  }
-
-  Widget _buildPasswordToggle(bool obscure, Function(bool) onChanged) {
-    return IconButton(
-      icon: Icon(obscure ? Icons.visibility_off : Icons.visibility),
-      onPressed: () => onChanged(!obscure),
     );
   }
 }
