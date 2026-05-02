@@ -373,7 +373,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   physics: const BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics(),
                   ),
-                  padding: const EdgeInsets.only(bottom: 86),
+                  padding: const EdgeInsets.only(bottom: 104),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -385,8 +385,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             _HeroSection(
                               height: heroHeight,
                               title: isArabic
-                                  ? 'استكشف مصر مع حورس-بوت'
-                                  : 'Explore Egypt With Horus-Bot',
+                                  ? 'استكشف مع حورس'
+                                  : 'Explore With Horus',
                               subtitle: isArabic
                                   ? 'اتبع حورس داخل المتحف.'
                                   : 'Follow Horus through the museum.',
@@ -493,7 +493,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           bodyColor: AppColors.whiteTitle,
                         ),
                       ),
-                      const SizedBox(height: 24),
                     ],
                   ),
                 ),
@@ -605,10 +604,11 @@ class _HeroSection extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        maxLines: 2,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         textAlign: isArabic ? TextAlign.right : TextAlign.left,
                         style: AppTextStyles.premiumHero(context).copyWith(
-                          fontSize: isArabic ? 34 : 32,
+                          fontSize: isArabic ? 30 : 32,
                           shadows: [
                             Shadow(
                               color: Colors.black.withValues(alpha: 0.66),

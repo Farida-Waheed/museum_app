@@ -29,39 +29,36 @@ class HomeHeader extends StatelessWidget {
         final topPadding = MediaQuery.paddingOf(context).top;
 
         return SizedBox(
-          height: topPadding + 78,
+          height: topPadding + 102,
           child: Stack(
             alignment: Alignment.topCenter,
             children: [
-              if (scrollStrength > 0)
-                Positioned.fill(
-                  child: ClipRect(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(
-                        sigmaX: 14 * scrollStrength,
-                        sigmaY: 14 * scrollStrength,
-                      ),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.black.withValues(
-                                alpha: 0.38 * scrollStrength,
-                              ),
-                              Colors.black.withValues(
-                                alpha: 0.20 * scrollStrength,
-                              ),
-                              Colors.transparent,
-                            ],
-                            stops: const [0.0, 0.68, 1.0],
-                          ),
+              Positioned.fill(
+                child: ClipRect(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(
+                      sigmaX: 4 + (8 * scrollStrength),
+                      sigmaY: 4 + (8 * scrollStrength),
+                    ),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withValues(alpha: 0.52),
+                            Colors.black.withValues(
+                              alpha: 0.24 + (0.08 * scrollStrength),
+                            ),
+                            Colors.transparent,
+                          ],
+                          stops: const [0.0, 0.52, 1.0],
                         ),
                       ),
                     ),
                   ),
                 ),
+              ),
               SafeArea(
                 bottom: false,
                 child: Padding(

@@ -368,39 +368,86 @@ class AppMenuShellState extends State<AppMenuShell>
         animation: _menuController,
         builder: (context, _) {
           final v = _menuController.value;
-          final scale = 1 - 0.1 * v;
-          final radius = 24 * v;
-          final dx = (isArabic ? -1 : 1) * size.width * 0.7 * v;
           final blur = 10 * v;
+          final menuWidth = (size.width * 0.78).clamp(280.0, 340.0).toDouble();
+          final menuDx = (isArabic ? 1 : -1) * menuWidth * (1 - v);
 
           return Stack(
             children: [
-              Container(color: bgColor),
+              AbsorbPointer(
+                absorbing: _isMenuOpen,
+                child: Container(
+                  color: bgColor,
+                  child: Builder(
+                    builder: (innerContext) {
+                      return widget.hideDefaultAppBar
+                          ? widget.body
+                          : Scaffold(
+                              backgroundColor: bgColor,
+                              appBar: AppBar(
+                                leading: IconButton(
+                                  icon: Icon(
+                                    Navigator.canPop(innerContext)
+                                        ? Icons.arrow_back_ios_new
+                                        : Icons.menu,
+                                    size: Navigator.canPop(innerContext)
+                                        ? 20
+                                        : null,
+                                  ),
+                                  onPressed: () {
+                                    if (Navigator.canPop(innerContext)) {
+                                      Navigator.pop(innerContext);
+                                    } else {
+                                      toggleMenu();
+                                    }
+                                  },
+                                ),
+                                title: Row(
+                                  children: [
+                                    Image.asset(
+                                      'assets/icons/ankh.png',
+                                      width: 26,
+                                      height: 26,
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Text(
+                                      (widget.title ?? l10n.appTitle)
+                                          .toUpperCase(),
+                                      style:
+                                          AppTextStyles.premiumBrandTitle(
+                                            innerContext,
+                                          ).copyWith(
+                                            fontSize: 18,
+                                            color: AppColors.primaryGold,
+                                            letterSpacing: 1.2,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                                actions: widget.actions,
+                                backgroundColor: isDark
+                                    ? AppColors.darkHeader
+                                    : AppColors.warmSurface,
+                                elevation: 0,
+                                bottom: widget.subHeader != null
+                                    ? PreferredSize(
+                                        preferredSize: const Size.fromHeight(
+                                          48,
+                                        ),
+                                        child: widget.subHeader!,
+                                      )
+                                    : null,
+                              ),
+                              body: widget.body,
+                            );
+                    },
+                  ),
+                ),
+              ),
               if (v > 0)
                 Positioned.fill(
                   child: GestureDetector(
                     onTap: closeMenu,
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-                      child: Container(
-                        color: Colors.black.withValues(alpha: 0.6 * v),
-                      ),
-                    ),
-                  ),
-                ),
-              _SideMenu(
-                isArabic: isArabic,
-                onClose: closeMenu,
-                onPush: _goPush,
-                onReplace: _goReplace,
-                currentRoute: currentRoute,
-              ),
-              Transform.translate(
-                offset: Offset(dx, 0),
-                child: Transform.scale(
-                  scale: scale,
-                  child: GestureDetector(
-                    onTap: _isMenuOpen ? closeMenu : null,
                     onHorizontalDragUpdate: (details) {
                       if (isArabic) {
                         if (details.primaryDelta! > 10 && _isMenuOpen) {
@@ -412,93 +459,22 @@ class AppMenuShellState extends State<AppMenuShell>
                         }
                       }
                     },
-                    child: AbsorbPointer(
-                      absorbing: _isMenuOpen,
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
                       child: Container(
-                        decoration: BoxDecoration(
-                          color: bgColor,
-                          borderRadius: BorderRadius.circular(radius),
-                          boxShadow: [
-                            if (v > 0)
-                              BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.1),
-                                blurRadius: 20,
-                                spreadRadius: 5,
-                              ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(radius),
-                          child: Builder(
-                            builder: (innerContext) {
-                              return widget.hideDefaultAppBar
-                                  ? widget.body
-                                  : Scaffold(
-                                      backgroundColor: bgColor,
-                                      appBar: AppBar(
-                                        leading: IconButton(
-                                          icon: Icon(
-                                            Navigator.canPop(innerContext)
-                                                ? Icons.arrow_back_ios_new
-                                                : Icons.menu,
-                                            size: Navigator.canPop(innerContext)
-                                                ? 20
-                                                : null,
-                                          ),
-                                          onPressed: () {
-                                            if (Navigator.canPop(
-                                              innerContext,
-                                            )) {
-                                              Navigator.pop(innerContext);
-                                            } else {
-                                              toggleMenu();
-                                            }
-                                          },
-                                        ),
-                                        title: Row(
-                                          children: [
-                                            Image.asset(
-                                              'assets/icons/ankh.png',
-                                              width: 26,
-                                              height: 26,
-                                            ),
-                                            const SizedBox(width: 16),
-                                            Text(
-                                              (widget.title ?? l10n.appTitle)
-                                                  .toUpperCase(),
-                                              style:
-                                                  AppTextStyles.premiumBrandTitle(
-                                                    innerContext,
-                                                  ).copyWith(
-                                                    fontSize: 18,
-                                                    color:
-                                                        AppColors.primaryGold,
-                                                    letterSpacing: 1.2,
-                                                  ),
-                                            ),
-                                          ],
-                                        ),
-                                        actions: widget.actions,
-                                        backgroundColor: isDark
-                                            ? AppColors.darkHeader
-                                            : AppColors.warmSurface,
-                                        elevation: 0,
-                                        bottom: widget.subHeader != null
-                                            ? PreferredSize(
-                                                preferredSize:
-                                                    const Size.fromHeight(48),
-                                                child: widget.subHeader!,
-                                              )
-                                            : null,
-                                      ),
-                                      body: widget.body,
-                                    );
-                            },
-                          ),
-                        ),
+                        color: Colors.black.withValues(alpha: 0.46 * v),
                       ),
                     ),
                   ),
+                ),
+              Transform.translate(
+                offset: Offset(menuDx, 0),
+                child: _SideMenu(
+                  isArabic: isArabic,
+                  onClose: closeMenu,
+                  onPush: _goPush,
+                  onReplace: _goReplace,
+                  currentRoute: currentRoute,
                 ),
               ),
             ],
