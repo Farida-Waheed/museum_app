@@ -35,7 +35,7 @@ class HomeQuickActionsGrid extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
-        childAspectRatio: 1.55,
+        childAspectRatio: 1.34,
       ),
       itemBuilder: (context, index) {
         final item = items[index];
@@ -50,60 +50,89 @@ class HomeQuickActionsGrid extends StatelessWidget {
                 filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 18,
-                    vertical: 14,
+                    horizontal: 17,
+                    vertical: 15,
                   ),
-                  decoration: AppDecorations.secondaryGlassCard(radius: 24),
-                  child: Column(
-                    crossAxisAlignment: isArabic
-                        ? CrossAxisAlignment.end
-                        : CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        width: 46,
-                        height: 46,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColors.cardGlass(0.58),
-                          border: Border.all(color: AppColors.goldBorder(0.16)),
-                        ),
-                        child: Icon(
-                          item.icon,
-                          color: AppColors.primaryGold,
-                          size: 24,
-                        ),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondaryGlass(0.60),
+                    borderRadius: BorderRadius.circular(24),
+                    border: Border.all(color: AppColors.goldBorder(0.16)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.24),
+                        blurRadius: 18,
+                        offset: const Offset(0, 9),
                       ),
+                      BoxShadow(
+                        color: AppColors.bronzeGlow(0.035),
+                        blurRadius: 18,
+                      ),
+                    ],
+                  ),
+                  child: Stack(
+                    children: [
+                      const Positioned.fill(child: _QuickActionHighlight()),
                       Column(
                         crossAxisAlignment: isArabic
                             ? CrossAxisAlignment.end
                             : CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            item.label,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            textAlign: isArabic
-                                ? TextAlign.right
-                                : TextAlign.left,
-                            style: AppTextStyles.premiumCardTitle(
-                              context,
-                            ).copyWith(fontSize: 16),
-                          ),
-                          if (item.subtitle != null) ...[
-                            const SizedBox(height: 3),
-                            Text(
-                              item.subtitle!,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: isArabic
-                                  ? TextAlign.right
-                                  : TextAlign.left,
-                              style: AppTextStyles.premiumMutedBody(
-                                context,
-                              ).copyWith(fontSize: 12),
+                          Container(
+                            width: 50,
+                            height: 50,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: AppColors.cardGlass(0.62),
+                              border: Border.all(
+                                color: AppColors.goldBorder(0.18),
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.20),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 6),
+                                ),
+                              ],
                             ),
-                          ],
+                            child: Icon(
+                              item.icon,
+                              color: AppColors.primaryGold,
+                              size: 26,
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: isArabic
+                                ? CrossAxisAlignment.end
+                                : CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.label,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: isArabic
+                                    ? TextAlign.right
+                                    : TextAlign.left,
+                                style: AppTextStyles.premiumCardTitle(
+                                  context,
+                                ).copyWith(fontSize: 16),
+                              ),
+                              if (item.subtitle != null) ...[
+                                const SizedBox(height: 3),
+                                Text(
+                                  item.subtitle!,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: isArabic
+                                      ? TextAlign.right
+                                      : TextAlign.left,
+                                  style: AppTextStyles.premiumMutedBody(
+                                    context,
+                                  ).copyWith(fontSize: 12),
+                                ),
+                              ],
+                            ],
+                          ),
                         ],
                       ),
                     ],
@@ -114,6 +143,31 @@ class HomeQuickActionsGrid extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _QuickActionHighlight extends StatelessWidget {
+  const _QuickActionHighlight();
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.white.withValues(alpha: 0.030),
+              Colors.white.withValues(alpha: 0.008),
+              Colors.transparent,
+            ],
+            stops: const [0.0, 0.18, 0.52],
+          ),
+        ),
+      ),
     );
   }
 }

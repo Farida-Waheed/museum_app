@@ -35,9 +35,22 @@ class HomeMapPreviewCard extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
             height: 154,
-            decoration: AppDecorations.premiumGlassCard(radius: 24),
+            decoration: BoxDecoration(
+              color: AppColors.cardGlass(0.64),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: AppColors.goldBorder(0.20)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.26),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+                BoxShadow(color: AppColors.bronzeGlow(0.035), blurRadius: 18),
+              ],
+            ),
             child: Stack(
               children: [
+                const Positioned.fill(child: _MapCardHighlight()),
                 const Positioned.fill(
                   child: CustomPaint(painter: _GridPainter()),
                 ),
@@ -105,6 +118,11 @@ class HomeMapPreviewCard extends StatelessWidget {
                     color: const Color(0xFF4D8DFF),
                     icon: Icons.person_pin_circle_outlined,
                   ),
+                  PositionedDirectional(
+                    start: 16,
+                    top: 16,
+                    child: _LiveStatusPill(text: data.hint),
+                  ),
                 ] else
                   Center(
                     child: Padding(
@@ -164,6 +182,58 @@ class HomeMapPreviewCard extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _MapCardHighlight extends StatelessWidget {
+  const _MapCardHighlight();
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.white.withValues(alpha: 0.030),
+              Colors.white.withValues(alpha: 0.008),
+              Colors.transparent,
+            ],
+            stops: const [0.0, 0.20, 0.52],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _LiveStatusPill extends StatelessWidget {
+  const _LiveStatusPill({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 190),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: AppColors.cardGlass(0.54),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.goldBorder(0.24)),
+      ),
+      child: Text(
+        text,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: AppTextStyles.premiumMutedBody(
+          context,
+        ).copyWith(color: AppColors.whiteTitle, fontSize: 12),
       ),
     );
   }

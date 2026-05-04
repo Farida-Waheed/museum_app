@@ -42,6 +42,10 @@ class HomeController {
     final isPaused =
         sessionProvider.isTourPaused ||
         tourProvider.tourLifecycleState == TourLifecycleState.paused;
+    final isCompleted =
+        sessionProvider.tourLifecycleState ==
+            app.TourLifecycleState.completed ||
+        tourProvider.tourLifecycleState == TourLifecycleState.completed;
     final hasValidMuseumTicket =
         sessionProvider.hasMuseumEntryTicket || ticketProvider.hasMuseumTicket;
     final hasRobotTourTicket =
@@ -83,6 +87,7 @@ class HomeController {
       lastRobotSyncTime: connected ? DateTime.now() : null,
       hasActiveTour: hasActiveTour,
       isTourPaused: isPaused,
+      isTourCompleted: isCompleted,
       currentExhibitName: currentExhibit == null
           ? null
           : (lang == 'ar' ? currentExhibit.nameAr : currentExhibit.nameEn),

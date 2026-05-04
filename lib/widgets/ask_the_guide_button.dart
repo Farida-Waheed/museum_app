@@ -16,11 +16,13 @@ import '../screens/chat/chat_screen.dart';
 class AskTheGuideButton extends StatefulWidget {
   final String screen;
   final String? currentExhibitId;
+  final bool subtle;
 
   const AskTheGuideButton({
     super.key,
     this.screen = 'home',
     this.currentExhibitId,
+    this.subtle = false,
   });
 
   @override
@@ -58,7 +60,10 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final buttonText = l10n.askButton;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final buttonText = widget.subtle
+        ? (isArabic ? 'اسأل' : 'Ask')
+        : l10n.askButton;
     return AnimatedBuilder(
       animation: _glowCtrl,
       builder: (context, child) {
@@ -77,48 +82,57 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 decoration: BoxDecoration(
-                  color: AppColors.cinematicElevated,
-                  borderRadius: BorderRadius.circular(30),
+                  color: widget.subtle
+                      ? AppColors.cardGlass(0.46)
+                      : AppColors.cinematicElevated,
+                  borderRadius: BorderRadius.circular(widget.subtle ? 24 : 30),
                   border: Border.all(
-                    color: AppColors.primaryGold.withOpacity(
-                      0.6 + (_glowCtrl.value * 0.4),
+                    color: AppColors.primaryGold.withValues(
+                      alpha: widget.subtle
+                          ? 0.30
+                          : 0.6 + (_glowCtrl.value * 0.4),
                     ),
-                    width: _isHovered ? 1.8 : 1.2,
+                    width: widget.subtle ? 1.0 : (_isHovered ? 1.5 : 1.1),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.6),
-                      blurRadius: 24,
-                      offset: const Offset(0, 12),
-                    ),
-                    BoxShadow(
-                      color: AppColors.primaryGold.withOpacity(
-                        0.2 + (_glowCtrl.value * 0.3),
+                      color: Colors.black.withValues(
+                        alpha: widget.subtle ? 0.18 : 0.6,
                       ),
-                      blurRadius: _isHovered ? 30 : 22,
-                      spreadRadius: _isHovered ? 8 : 5,
+                      blurRadius: widget.subtle ? 6 : 24,
+                      offset: Offset(0, widget.subtle ? 3 : 12),
                     ),
+                    if (!widget.subtle)
+                      BoxShadow(
+                        color: AppColors.primaryGold.withValues(
+                          alpha: 0.2 + (_glowCtrl.value * 0.3),
+                        ),
+                        blurRadius: _isHovered ? 30 : 22,
+                        spreadRadius: _isHovered ? 8 : 5,
+                      ),
                   ],
                 ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18,
-                  vertical: 12,
+                padding: EdgeInsets.symmetric(
+                  horizontal: widget.subtle ? 13 : 18,
+                  vertical: widget.subtle ? 8 : 12,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.chat_bubble_outline,
                       color: AppColors.primaryGold,
-                      size: 24,
+                      size: widget.subtle ? 16 : 24,
                     ),
-                    const SizedBox(width: 10),
+                    SizedBox(width: widget.subtle ? 6 : 10),
                     Text(
                       buttonText,
                       style: AppTextStyles.buttonLabel(context).copyWith(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w900,
+                        color: Colors.white.withValues(
+                          alpha: widget.subtle ? 0.92 : 1.0,
+                        ),
+                        fontSize: widget.subtle ? 12 : 14,
+                        fontWeight: FontWeight.w800,
                       ),
                     ),
                   ],

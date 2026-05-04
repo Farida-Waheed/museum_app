@@ -28,6 +28,7 @@ import 'widgets/home_header.dart';
 import 'widgets/home_info_card.dart';
 import 'widgets/home_map_preview_card.dart';
 import 'widgets/home_quick_actions_grid.dart';
+import 'widgets/home_stats_row.dart';
 import 'widgets/live_status_card.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -164,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    if (snapshot.hasActiveTour) {
+    if (snapshot.hasActiveTour || snapshot.isTourCompleted) {
       Navigator.pushNamed(context, AppRoutes.liveTour);
       return;
     }
@@ -211,10 +212,10 @@ class _HomeScreenState extends State<HomeScreen> {
     if (!snapshot.hasAnyTicket) {
       return (
         label: isArabic ? 'جاهز للاستكشاف؟' : 'READY TO EXPLORE?',
-        title: isArabic ? 'جاهز للاستكشاف؟' : 'Ready to Explore?',
+        title: isArabic ? 'جاهز للاستكشاف؟' : 'Ready to explore?',
         subtitle: isArabic
-            ? 'اشتر تذكرتك أو جهز جولتك الإرشادية.'
-            : 'Buy your ticket or prepare your guided tour.',
+            ? 'اشتر تذكرتك أو امسح رمز الروبوت عند الوصول.'
+            : 'Buy your ticket or scan your robot QR when you arrive.',
         icon: Icons.explore_rounded,
         onTap: () => _openTickets(context, snapshot),
       );
@@ -232,57 +233,92 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
+    if (snapshot.isTourCompleted) {
+      return (
+        label: isArabic ? 'اكتملت الجولة' : 'TOUR COMPLETED',
+        title: isArabic ? 'ملخص الجولة جاهز' : 'Tour completed',
+        subtitle: isArabic
+            ? 'يمكنك مراجعة محطاتك داخل تجربة الجولة.'
+            : 'Summary available inside your tour view.',
+        icon: Icons.verified_rounded,
+        onTap: () => _openTourFlow(context, snapshot),
+      );
+    }
+
     if (snapshot.isTourPaused) {
       return (
         label: isArabic ? 'الجولة متوقفة' : 'TOUR PAUSED',
-        title: isArabic ? 'استأنف جولتك' : 'Resume Your Tour',
+        title: isArabic ? 'استأنف جولتك' : 'Resume your museum tour',
         subtitle: isArabic
-            ? 'استأنف عندما تكون جاهزا.'
-            : 'Resume when you are ready.',
+            ? 'استأنف الجولة عندما تكون جاهزا.'
+            : 'Resume your museum tour when you are ready.',
         icon: Icons.pause_circle_outline_rounded,
         onTap: () => _openTourFlow(context, snapshot),
       );
     }
 
+    if (snapshot.hasActiveTour) {
+      final exhibit = snapshot.currentExhibitName ?? snapshot.nextStopName;
+      switch (snapshot.robotStatus) {
+        case HomeRobotStatus.speaking:
+          return (
+            label: isArabic ? 'حورس يتحدث الآن' : 'HORUS IS SPEAKING NOW',
+            title: exhibit ?? (isArabic ? 'المعرض الحالي' : 'Current stop'),
+            subtitle: exhibit == null
+                ? (isArabic
+                      ? 'استمع إلى الروبوت للحصول على القصة الكاملة.'
+                      : 'Listen to the robot for the full story.')
+                : (isArabic
+                      ? 'المحطة الحالية: $exhibit'
+                      : 'Current stop: $exhibit'),
+            icon: Icons.record_voice_over_rounded,
+            onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
+          );
+        case HomeRobotStatus.moving:
+          return (
+            label: isArabic ? 'حورس يتحرك' : 'HORUS IS MOVING',
+            title:
+                snapshot.nextStopName ??
+                (isArabic ? 'المحطة التالية' : 'Next stop'),
+            subtitle: isArabic
+                ? 'ابق قريبا من دليلك أثناء الانتقال.'
+                : 'Stay close to your guide while moving.',
+            icon: Icons.route_rounded,
+            onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
+          );
+        default:
+          return (
+            label: isArabic ? 'حورس في الانتظار' : 'HORUS IS WAITING',
+            title:
+                exhibit ?? (isArabic ? 'متابعة الجولة' : 'Continue your tour'),
+            subtitle: isArabic
+                ? 'يمكنك طرح سؤال قصير أو متابعة المحطة التالية.'
+                : 'Ask a short question or continue to the next stop.',
+            icon: Icons.hourglass_top_rounded,
+            onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
+          );
+      }
+    }
+
     if (snapshot.hasValidMuseumTicket && !snapshot.isRobotConnected) {
       return (
-        label: isArabic ? 'اتصل بحورس-بوت' : 'CONNECT TO HORUS-BOT',
-        title: isArabic ? 'اتصل بحورس-بوت' : 'Connect to Horus-Bot',
+        label: isArabic ? 'تذكرة المتحف جاهزة' : 'MUSEUM TICKET READY',
+        title: isArabic ? 'اتصل بحورس-بوت' : 'Museum ticket ready',
         subtitle: isArabic
-            ? 'امسح رمز QR الخاص بالروبوت لبدء جولتك.'
-            : 'Scan the robot QR code to begin your tour.',
+            ? 'اتصل بحورس-بوت لبدء جولتك الإرشادية.'
+            : 'Connect to Horus-Bot to start your guided tour.',
         icon: Icons.qr_code_scanner_rounded,
         onTap: () => _openRobotPairing(context),
       );
     }
 
-    if (snapshot.hasActiveTour &&
-        snapshot.robotStatus == HomeRobotStatus.speaking) {
+    if (snapshot.isRobotConnected) {
       return (
-        label: isArabic ? 'حورس يتحدث' : 'HORUS IS SPEAKING',
-        title:
-            snapshot.currentExhibitName ??
-            (isArabic ? 'المعروض الحالي' : 'Current Exhibit'),
-        subtitle: isArabic
-            ? 'استمع إلى الروبوت للحصول على القصة الكاملة.'
-            : 'Listen to the robot for the full story.',
-        icon: Icons.record_voice_over_rounded,
-        onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
-      );
-    }
-
-    if (snapshot.hasActiveTour &&
-        snapshot.robotStatus == HomeRobotStatus.moving) {
-      return (
-        label: isArabic ? 'حورس يتحرك' : 'HORUS IS MOVING',
-        title:
-            snapshot.nextStopName ??
-            (isArabic ? 'المحطة التالية' : 'Next Stop'),
-        subtitle: isArabic
-            ? 'ابق قريبا من دليلك.'
-            : 'Stay close to your guide.',
-        icon: Icons.route_rounded,
-        onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
+        label: isArabic ? 'متصل بحورس-بوت' : 'CONNECTED TO HORUS-BOT',
+        title: isArabic ? 'متصل بحورس-بوت' : 'Connected to Horus-Bot',
+        subtitle: _robotMetaLine(snapshot, isArabic),
+        icon: Icons.smart_toy_outlined,
+        onTap: () => _openTourFlow(context, snapshot),
       );
     }
 
@@ -299,6 +335,39 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  String _robotMetaLine(HomeSnapshot snapshot, bool isArabic) {
+    final parts = <String>[];
+    if (snapshot.connectedRobotName.isNotEmpty) {
+      parts.add(snapshot.connectedRobotName);
+    }
+    if (snapshot.robotBatteryPercent != null) {
+      parts.add(
+        isArabic
+            ? 'البطارية ${snapshot.robotBatteryPercent}%'
+            : 'Battery ${snapshot.robotBatteryPercent}%',
+      );
+    }
+    if (snapshot.lastRobotSyncTime != null) {
+      parts.add(_syncLabel(snapshot.lastRobotSyncTime!, isArabic));
+    }
+    return parts.join(' · ');
+  }
+
+  String _syncLabel(DateTime time, bool isArabic) {
+    final elapsed = DateTime.now().difference(time);
+    if (elapsed.inMinutes < 1) {
+      return isArabic ? 'تمت المزامنة الآن' : 'synced just now';
+    }
+    if (elapsed.inMinutes < 60) {
+      return isArabic
+          ? 'تمت المزامنة قبل ${elapsed.inMinutes} د'
+          : 'synced ${elapsed.inMinutes} min ago';
+    }
+    return isArabic
+        ? 'تمت المزامنة قبل ${elapsed.inHours} س'
+        : 'synced ${elapsed.inHours} hr ago';
+  }
+
   String _primaryActionLabel(HomeSnapshot snapshot, bool isArabic) {
     if (snapshot.robotStatus == HomeRobotStatus.error) {
       return isArabic ? 'إعادة الاتصال' : 'Reconnect';
@@ -306,7 +375,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (snapshot.isTourPaused) {
       return isArabic ? 'استئناف الجولة' : 'Resume Tour';
     }
-    if (snapshot.hasActiveTour) {
+    if (snapshot.hasActiveTour || snapshot.isTourCompleted) {
       return isArabic ? 'متابعة الجولة' : 'Continue Tour';
     }
     if (snapshot.hasValidMuseumTicket && !snapshot.isRobotConnected) {
@@ -315,13 +384,125 @@ class _HomeScreenState extends State<HomeScreen> {
     return isArabic ? 'ابدأ جولتي' : 'Start My Tour';
   }
 
+  String _ticketStatusLine(HomeSnapshot snapshot, bool isArabic) {
+    if (!snapshot.hasAnyTicket) {
+      return isArabic ? 'لا توجد تذاكر بعد' : 'No tickets yet';
+    }
+    if (snapshot.hasValidMuseumTicket && !snapshot.hasRobotTourTicket) {
+      return isArabic ? 'تذكرة المتحف جاهزة' : 'Museum ticket ready';
+    }
+    if (snapshot.hasValidMuseumTicket && snapshot.hasRobotTourTicket) {
+      return isArabic
+          ? 'تذكرة المتحف والجولة جاهزتان'
+          : 'Museum and robot tour tickets ready';
+    }
+    if (snapshot.ticketCount == 1) {
+      return isArabic ? 'تذكرة واحدة جاهزة' : '1 ticket ready';
+    }
+    return isArabic
+        ? '${snapshot.ticketCount} تذاكر محفوظة'
+        : '${snapshot.ticketCount} tickets saved';
+  }
+
+  List<HomeStatItem> _tourStats(HomeSnapshot snapshot, bool isArabic) {
+    final stopsValue = '${snapshot.visitedCount} / ${snapshot.totalExhibits}';
+    final nextStop = snapshot.isTourCompleted
+        ? (isArabic ? 'اكتملت' : 'Complete')
+        : (snapshot.nextStopName ?? snapshot.currentExhibitName ?? '-');
+    final minutes = snapshot.estimatedTimeToNextStop;
+    return [
+      HomeStatItem(
+        icon: Icons.account_tree_outlined,
+        value: stopsValue,
+        label: isArabic ? 'محطات تمت زيارتها' : 'Stops visited',
+      ),
+      HomeStatItem(
+        icon: Icons.place_outlined,
+        value: nextStop,
+        label: snapshot.currentExhibitName != null && snapshot.hasActiveTour
+            ? (isArabic ? 'المعرض الحالي' : 'Current stop')
+            : (isArabic ? 'التالي' : 'Next stop'),
+      ),
+      HomeStatItem(
+        icon: Icons.schedule_rounded,
+        value: snapshot.isTourCompleted
+            ? (isArabic ? 'تم' : 'Done')
+            : (minutes == null
+                  ? '${snapshot.tourDurationMinutes}m'
+                  : (isArabic ? '$minutes د' : '$minutes min')),
+        label: isArabic ? 'الوقت المتبقي' : 'Time left',
+      ),
+    ];
+  }
+
+  String _artifactSectionLabel(HomeSnapshot snapshot, bool isArabic) {
+    if (snapshot.hasActiveTour && snapshot.currentExhibitName != null) {
+      return isArabic ? 'المعرض الحالي' : 'CURRENT EXHIBIT';
+    }
+    if ((snapshot.hasActiveTour || snapshot.isTourPaused) &&
+        snapshot.nextStopName != null) {
+      return isArabic ? 'المحطة التالية' : 'NEXT STOP';
+    }
+    return isArabic ? 'اكتشف المعروضات' : 'DISCOVER ARTIFACTS';
+  }
+
+  HomeFeaturedArtifact _contextualArtifact(
+    HomeSnapshot snapshot,
+    bool isArabic,
+  ) {
+    if (snapshot.hasActiveTour && snapshot.currentExhibitName != null) {
+      return HomeFeaturedArtifact(
+        id: snapshot.featuredArtifact.id,
+        title: snapshot.currentExhibitName!,
+        subtitle: isArabic
+            ? 'حورس يشرح هذه المحطة'
+            : 'Horus is explaining this stop',
+        imageAsset: snapshot.featuredArtifact.imageAsset,
+        contextHint: isArabic ? 'تابع القصة' : 'Continue the story',
+      );
+    }
+    if ((snapshot.hasActiveTour || snapshot.isTourPaused) &&
+        snapshot.nextStopName != null) {
+      return HomeFeaturedArtifact(
+        id: snapshot.featuredArtifact.id,
+        title: snapshot.nextStopName!,
+        subtitle: isArabic
+            ? 'معاينة قبل وصول حورس'
+            : 'Preview before Horus arrives',
+        imageAsset: snapshot.featuredArtifact.imageAsset,
+        contextHint: isArabic ? 'اضغط للتفاصيل' : 'Tap for details',
+      );
+    }
+    return HomeFeaturedArtifact(
+      id: snapshot.featuredArtifact.id,
+      title: snapshot.featuredArtifact.title,
+      subtitle: isArabic
+          ? 'القاعة الذهبية - موصى به الآن'
+          : 'Golden Hall - Recommended now',
+      imageAsset: snapshot.featuredArtifact.imageAsset,
+      contextHint: snapshot.featuredArtifact.contextHint,
+    );
+  }
+
+  String _heroSubtitle(HomeSnapshot snapshot, bool isArabic) {
+    if (snapshot.isLoggedIn) {
+      return isArabic
+          ? 'مرحبا ${snapshot.userName}، اتبع حورس داخل المتحف.'
+          : 'Welcome ${snapshot.userName}, follow Horus through the museum.';
+    }
+    return isArabic
+        ? 'وضع الضيف - اتبع حورس داخل المتحف.'
+        : 'Guest visit mode - follow Horus through the museum.';
+  }
+
   @override
   Widget build(BuildContext context) {
     final prefs = context.watch<UserPreferencesModel>();
     final isArabic = prefs.language == 'ar';
     final snapshot = _snapshot(context);
     final status = _statusModel(context, snapshot, isArabic);
-    final heroHeight = MediaQuery.sizeOf(context).height * 0.60;
+    final heroHeight = MediaQuery.sizeOf(context).height * 0.56;
+    final contextualArtifact = _contextualArtifact(snapshot, isArabic);
 
     final quickActions = <HomeQuickActionItem>[
       HomeQuickActionItem(
@@ -333,7 +514,7 @@ class _HomeScreenState extends State<HomeScreen> {
       HomeQuickActionItem(
         icon: Icons.qr_code_scanner_rounded,
         label: isArabic ? 'مسح QR للروبوت' : 'Scan Robot QR',
-        subtitle: isArabic ? 'بدء الاقتران' : 'Pair with Horus',
+        subtitle: isArabic ? 'الاقتران بحورس' : 'Pair with Horus',
         onTap: () => _openRobotPairing(context),
       ),
       HomeQuickActionItem(
@@ -373,7 +554,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   physics: const BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics(),
                   ),
-                  padding: const EdgeInsets.only(bottom: 104),
+                  padding: const EdgeInsets.only(bottom: 160),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -387,9 +568,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               title: isArabic
                                   ? 'استكشف مع حورس'
                                   : 'Explore With Horus',
-                              subtitle: isArabic
-                                  ? 'اتبع حورس داخل المتحف.'
-                                  : 'Follow Horus through the museum.',
+                              subtitle: _heroSubtitle(snapshot, isArabic),
                               isArabic: isArabic,
                               scrollController: _scrollController,
                             ),
@@ -412,7 +591,18 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 22),
+                      const SizedBox(height: 24),
+                      if (snapshot.shouldShowStats) ...[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.screenHorizontal,
+                          ),
+                          child: HomeStatsRow(
+                            items: _tourStats(snapshot, isArabic),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.screenHorizontal,
@@ -425,6 +615,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           subtitle: isArabic
                               ? 'اشتر التذاكر، حضر جولتك، أو ابدأ عند الوصول.'
                               : 'Buy tickets, prepare your tour, or start when you arrive.',
+                          statusLine: _ticketStatusLine(snapshot, isArabic),
                           primaryLabel: isArabic
                               ? 'عرض التذاكر'
                               : 'View Tickets',
@@ -436,7 +627,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onSecondary: () => _openTourFlow(context, snapshot),
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 30),
                       _SectionLabel(
                         label: isArabic ? 'إجراءات سريعة' : 'QUICK ACTIONS',
                       ),
@@ -446,25 +637,21 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: HomeQuickActionsGrid(items: quickActions),
                       ),
-                      const SizedBox(height: 26),
+                      const SizedBox(height: 30),
                       _SectionLabel(
-                        label: isArabic
-                            ? 'اكتشف المعروضات'
-                            : 'DISCOVER ARTIFACTS',
+                        label: _artifactSectionLabel(snapshot, isArabic),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.screenHorizontal,
                         ),
                         child: HomeFeaturedArtifactCard(
-                          artifact: snapshot.featuredArtifact,
-                          onTap: () => _openArtifactDetails(
-                            context,
-                            snapshot.featuredArtifact,
-                          ),
+                          artifact: contextualArtifact,
+                          onTap: () =>
+                              _openArtifactDetails(context, contextualArtifact),
                         ),
                       ),
-                      const SizedBox(height: 26),
+                      const SizedBox(height: 30),
                       _SectionLabel(
                         label: isArabic ? 'معاينة الخريطة' : 'MAP PREVIEW',
                       ),
@@ -481,7 +668,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onFullView: () => _openMap(context),
                         ),
                       ),
-                      const SizedBox(height: 26),
+                      const SizedBox(height: 30),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.screenHorizontal,
@@ -493,6 +680,20 @@ class _HomeScreenState extends State<HomeScreen> {
                           bodyColor: AppColors.whiteTitle,
                         ),
                       ),
+                      if (snapshot.smallUpdateCard != null) ...[
+                        const SizedBox(height: 18),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.screenHorizontal,
+                          ),
+                          child: HomeInfoCard(
+                            title: isArabic ? 'تحديث المتحف' : 'MUSEUM UPDATE',
+                            body: snapshot.smallUpdateCard!,
+                            icon: Icons.campaign_outlined,
+                            bodyColor: AppColors.bodyText,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -508,13 +709,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               PositionedDirectional(
-                end: 16,
-                bottom: 70,
+                end: 8,
+                bottom: 8,
                 child: AskTheGuideButton(
                   screen: 'home',
                   currentExhibitId: context
                       .watch<TourProvider>()
                       .currentExhibitId,
+                  subtle: true,
                 ),
               ),
             ],
@@ -558,22 +760,41 @@ class _HeroSection extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Image.asset(
-                  'assets/images/colossal-statue-of-ramesses-ii.jpg',
-                  fit: BoxFit.cover,
-                  alignment: Alignment.topCenter,
+                Transform.scale(
+                  scale: 1.045,
+                  child: Image.asset(
+                    'assets/images/colossal-statue-of-ramesses-ii.jpg',
+                    fit: BoxFit.cover,
+                    alignment: Alignment.topCenter,
+                  ),
+                ),
+                Positioned.fill(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: const Alignment(0, -0.08),
+                        radius: 0.92,
+                        colors: [
+                          Colors.transparent,
+                          Colors.black.withValues(alpha: 0.10),
+                          Colors.black.withValues(alpha: 0.24),
+                        ],
+                        stops: const [0.58, 0.82, 1.0],
+                      ),
+                    ),
+                  ),
                 ),
                 const Positioned(
                   top: 0,
                   left: 0,
                   right: 0,
-                  height: 100,
+                  height: 72,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [Color(0x99000000), Colors.transparent],
+                        colors: [Color(0x26000000), Colors.transparent],
                       ),
                     ),
                   ),
@@ -582,19 +803,25 @@ class _HeroSection extends StatelessWidget {
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  height: 140,
+                  height: 306,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
-                        colors: [Color(0xE6000000), Colors.transparent],
+                        colors: [
+                          Color(0xFF000000),
+                          Color(0xE8000000),
+                          Color(0x82000000),
+                          Color(0x00000000),
+                        ],
+                        stops: [0.0, 0.34, 0.70, 1.0],
                       ),
                     ),
                   ),
                 ),
                 Positioned(
-                  bottom: 106,
+                  bottom: 82,
                   left: 16,
                   right: 16,
                   child: Column(
@@ -604,15 +831,16 @@ class _HeroSection extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         textAlign: isArabic ? TextAlign.right : TextAlign.left,
                         style: AppTextStyles.premiumHero(context).copyWith(
                           fontSize: isArabic ? 30 : 32,
+                          height: 1.08,
                           shadows: [
                             Shadow(
-                              color: Colors.black.withValues(alpha: 0.66),
-                              blurRadius: 18,
+                              color: Colors.black.withValues(alpha: 0.82),
+                              blurRadius: 22,
                               offset: const Offset(0, 4),
                             ),
                           ],
@@ -635,7 +863,7 @@ class _HeroSection extends StatelessWidget {
                             style: AppTextStyles.premiumBody(context).copyWith(
                               fontSize: 14.5,
                               color: AppColors.whiteTitle.withValues(
-                                alpha: 0.78,
+                                alpha: 0.84,
                               ),
                             ),
                           ),
@@ -671,9 +899,10 @@ class _SectionLabel extends StatelessWidget {
       child: Text(
         label,
         textAlign: isArabic ? TextAlign.right : TextAlign.left,
-        style: AppTextStyles.premiumSectionLabel(
-          context,
-        ).copyWith(fontSize: 12),
+        style: AppTextStyles.premiumSectionLabel(context).copyWith(
+          fontSize: 12.5,
+          color: AppColors.softGold.withValues(alpha: 0.92),
+        ),
       ),
     );
   }
@@ -684,6 +913,7 @@ class _PrimaryActionCard extends StatelessWidget {
     required this.isArabic,
     required this.title,
     required this.subtitle,
+    required this.statusLine,
     required this.primaryLabel,
     required this.secondaryLabel,
     required this.onPrimary,
@@ -693,6 +923,7 @@ class _PrimaryActionCard extends StatelessWidget {
   final bool isArabic;
   final String title;
   final String subtitle;
+  final String statusLine;
   final String primaryLabel;
   final String secondaryLabel;
   final VoidCallback onPrimary;
@@ -706,75 +937,165 @@ class _PrimaryActionCard extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
           padding: const EdgeInsets.all(20),
-          decoration: AppDecorations.premiumGlassCard(
-            radius: 28,
-            opacity: 0.70,
+          decoration: BoxDecoration(
+            color: AppColors.cardGlass(0.62),
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: AppColors.goldBorder(0.16)),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                AppColors.secondaryGlass(0.58),
+                AppColors.cardGlass(0.62),
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.26),
+                blurRadius: 20,
+                offset: const Offset(0, 10),
+              ),
+              BoxShadow(color: AppColors.bronzeGlow(0.035), blurRadius: 20),
+            ],
           ),
-          child: Column(
-            crossAxisAlignment: isArabic
-                ? CrossAxisAlignment.end
-                : CrossAxisAlignment.start,
+          child: Stack(
             children: [
-              Text(
-                title,
-                textAlign: isArabic ? TextAlign.right : TextAlign.left,
-                style: AppTextStyles.premiumScreenTitle(
-                  context,
-                ).copyWith(fontSize: 22),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                subtitle,
-                textAlign: isArabic ? TextAlign.right : TextAlign.left,
-                style: AppTextStyles.premiumBody(
-                  context,
-                ).copyWith(fontSize: 14, color: AppColors.bodyText),
-              ),
-              const SizedBox(height: 18),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final stackButtons = constraints.maxWidth < 330;
-                  if (stackButtons) {
-                    return Column(
-                      children: [
-                        _ActionButton.primary(
-                          label: primaryLabel,
-                          icon: Icons.confirmation_number_outlined,
-                          onTap: onPrimary,
-                        ),
-                        const SizedBox(height: 12),
-                        _ActionButton.secondary(
-                          label: secondaryLabel,
-                          icon: Icons.play_arrow_rounded,
-                          onTap: onSecondary,
-                        ),
-                      ],
-                    );
-                  }
+              const Positioned.fill(child: _CardTopHighlight(borderRadius: 28)),
+              Column(
+                crossAxisAlignment: isArabic
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                    style: AppTextStyles.premiumScreenTitle(
+                      context,
+                    ).copyWith(fontSize: 22),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    subtitle,
+                    textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                    style: AppTextStyles.premiumBody(
+                      context,
+                    ).copyWith(fontSize: 14, color: AppColors.bodyText),
+                  ),
+                  const SizedBox(height: 15),
+                  _TicketStatusPill(label: statusLine, isArabic: isArabic),
+                  const SizedBox(height: 28),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final stackButtons = constraints.maxWidth < 330;
+                      if (stackButtons) {
+                        return Column(
+                          children: [
+                            _ActionButton.primary(
+                              label: primaryLabel,
+                              icon: Icons.confirmation_number_outlined,
+                              onTap: onPrimary,
+                            ),
+                            const SizedBox(height: 12),
+                            _ActionButton.secondary(
+                              label: secondaryLabel,
+                              icon: Icons.play_arrow_rounded,
+                              onTap: onSecondary,
+                            ),
+                          ],
+                        );
+                      }
 
-                  return Row(
-                    children: [
-                      Expanded(
-                        child: _ActionButton.primary(
-                          label: primaryLabel,
-                          icon: Icons.confirmation_number_outlined,
-                          onTap: onPrimary,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _ActionButton.secondary(
-                          label: secondaryLabel,
-                          icon: Icons.play_arrow_rounded,
-                          onTap: onSecondary,
-                        ),
-                      ),
-                    ],
-                  );
-                },
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: _ActionButton.primary(
+                              label: primaryLabel,
+                              icon: Icons.confirmation_number_outlined,
+                              onTap: onPrimary,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _ActionButton.secondary(
+                              label: secondaryLabel,
+                              icon: Icons.play_arrow_rounded,
+                              onTap: onSecondary,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CardTopHighlight extends StatelessWidget {
+  const _CardTopHighlight({required this.borderRadius});
+
+  final double borderRadius;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(borderRadius),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.white.withValues(alpha: 0.032),
+              Colors.white.withValues(alpha: 0.010),
+              Colors.transparent,
+            ],
+            stops: const [0.0, 0.18, 0.48],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TicketStatusPill extends StatelessWidget {
+  const _TicketStatusPill({required this.label, required this.isArabic});
+
+  final String label;
+  final bool isArabic;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+          children: [
+            const Icon(
+              Icons.confirmation_number_outlined,
+              color: AppColors.primaryGold,
+              size: 15,
+            ),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.premiumMutedBody(
+                  context,
+                ).copyWith(color: AppColors.bodyText, fontSize: 12.5),
+              ),
+            ),
+          ],
         ),
       ),
     );

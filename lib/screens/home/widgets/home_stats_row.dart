@@ -6,10 +6,7 @@ import '../../../core/constants/colors.dart';
 import '../../../core/constants/text_styles.dart';
 
 class HomeStatsRow extends StatelessWidget {
-  const HomeStatsRow({
-    super.key,
-    required this.items,
-  });
+  const HomeStatsRow({super.key, required this.items});
 
   final List<HomeStatItem> items;
 
@@ -64,6 +61,7 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Directionality.of(context) == TextDirection.rtl;
     return ClipRRect(
       borderRadius: BorderRadius.circular(22),
       child: BackdropFilter(
@@ -74,22 +72,30 @@ class _StatCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           decoration: AppDecorations.secondaryGlassCard(radius: 22),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: isArabic
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
             children: [
               Icon(item.icon, color: AppColors.primaryGold, size: 22),
               const Spacer(),
               Text(
                 item.value,
-                style: AppTextStyles.premiumScreenTitle(context).copyWith(
-                  fontSize: 19,
-                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                style: AppTextStyles.premiumScreenTitle(
+                  context,
+                ).copyWith(fontSize: 19),
               ),
               const SizedBox(height: 2),
               Text(
                 item.label,
-                style: AppTextStyles.premiumMutedBody(context).copyWith(
-                  fontSize: 13,
-                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                style: AppTextStyles.premiumMutedBody(
+                  context,
+                ).copyWith(fontSize: 13),
               ),
             ],
           ),

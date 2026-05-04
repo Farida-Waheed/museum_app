@@ -29,16 +29,20 @@ class HomeHeader extends StatelessWidget {
         final topPadding = MediaQuery.paddingOf(context).top;
 
         return SizedBox(
-          height: topPadding + 102,
+          height: topPadding + 54,
           child: Stack(
             alignment: Alignment.topCenter,
             children: [
-              Positioned.fill(
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                height: topPadding + 42,
                 child: ClipRect(
                   child: BackdropFilter(
                     filter: ImageFilter.blur(
-                      sigmaX: 4 + (8 * scrollStrength),
-                      sigmaY: 4 + (8 * scrollStrength),
+                      sigmaX: 4 * scrollStrength,
+                      sigmaY: 4 * scrollStrength,
                     ),
                     child: DecoratedBox(
                       decoration: BoxDecoration(
@@ -46,13 +50,13 @@ class HomeHeader extends StatelessWidget {
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            Colors.black.withValues(alpha: 0.52),
+                            Colors.transparent,
                             Colors.black.withValues(
-                              alpha: 0.24 + (0.08 * scrollStrength),
+                              alpha: 0.13 * scrollStrength,
                             ),
                             Colors.transparent,
                           ],
-                          stops: const [0.0, 0.52, 1.0],
+                          stops: const [0.0, 0.46, 1.0],
                         ),
                       ),
                     ),
@@ -62,9 +66,9 @@ class HomeHeader extends StatelessWidget {
               SafeArea(
                 bottom: false,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  padding: const EdgeInsets.fromLTRB(16, 3, 16, 0),
                   child: SizedBox(
-                    height: 54,
+                    height: 50,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
@@ -110,11 +114,11 @@ class _HeaderBrand extends StatelessWidget {
         Text(
           'HORUS-BOT',
           style: AppTextStyles.premiumBrandTitle(context).copyWith(
-            fontSize: 18,
+            fontSize: 17.5,
             shadows: [
               Shadow(
                 color: Colors.black.withValues(alpha: 0.70),
-                blurRadius: 14,
+                blurRadius: 10,
               ),
             ],
           ),
@@ -149,21 +153,21 @@ class _HeaderButton extends StatelessWidget {
               sigmaY: 8 + (8 * scrollStrength),
             ),
             child: Container(
-              width: 46,
-              height: 46,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
                 color: Colors.black.withValues(
-                  alpha: 0.25 + (0.20 * scrollStrength),
+                  alpha: 0.09 + (0.15 * scrollStrength),
                 ),
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.goldBorder(0.30), width: 1),
+                border: Border.all(color: AppColors.goldBorder(0.18), width: 1),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(
-                      alpha: 0.22 + (0.14 * scrollStrength),
+                      alpha: 0.10 + (0.10 * scrollStrength),
                     ),
-                    blurRadius: 18,
-                    offset: const Offset(0, 8),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),

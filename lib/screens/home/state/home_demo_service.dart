@@ -18,7 +18,7 @@ class HomeDemoService {
         subtitle: lang == 'ar'
             ? 'القاعة الذهبية - موصى به الآن'
             : 'Golden Hall - Recommended now',
-        imageAsset: 'assets/artifacts/golden-mask.jpeg',
+        imageAsset: 'assets/images/pharaoh_head.jpg',
         contextHint: lang == 'ar'
             ? 'اضغط لعرض التفاصيل'
             : 'Tap for the full story',
@@ -36,9 +36,9 @@ class HomeDemoService {
       subtitle: lang == 'ar'
           ? 'القاعة الذهبية - موصى به الآن'
           : 'Golden Hall - Recommended now',
-      imageAsset: exhibit.imageAsset.startsWith('assets/artifacts/')
+      imageAsset: exhibit.imageAsset.isNotEmpty
           ? exhibit.imageAsset
-          : 'assets/artifacts/golden-mask.jpeg',
+          : 'assets/images/pharaoh_head.jpg',
       contextHint: lang == 'ar'
           ? 'اضغط لعرض التفاصيل'
           : 'Tap for the full story',
@@ -68,19 +68,19 @@ class HomeDemoService {
         horusPosition: const Offset(0.34, 0.42),
         userPosition: const Offset(0.58, 0.66),
         hint: lang == 'ar'
-            ? 'اتصل بحورس-بوت لرؤية الموقع المباشر.'
-            : 'Connect to Horus-Bot to see live position.',
+            ? 'ابدأ جولة لرؤية موقع حورس المباشر.'
+            : 'Start a tour to see Horus live.',
       );
     }
 
     if (!hasActiveTour) {
       return HomeMapPreviewData(
-        isLive: false,
+        isLive: true,
         horusPosition: const Offset(0.40, 0.36),
         userPosition: const Offset(0.62, 0.70),
         hint: lang == 'ar'
-            ? 'امسح رمز QR الخاص بالروبوت لتفعيل الخريطة الحية.'
-            : 'Scan Robot QR to activate live map.',
+            ? 'واجهة الموقع المباشر جاهزة.'
+            : 'Live position prepared.',
       );
     }
 
@@ -88,9 +88,7 @@ class HomeDemoService {
       isLive: true,
       horusPosition: const Offset(0.34, 0.38),
       userPosition: const Offset(0.54, 0.64),
-      hint: lang == 'ar'
-          ? 'الموقع الحي لحورس-بوت والمسار القريب منك.'
-          : 'Live position for Horus-Bot and your nearby route.',
+      hint: lang == 'ar' ? 'الموقع المباشر نشط.' : 'Live position active.',
     );
   }
 }

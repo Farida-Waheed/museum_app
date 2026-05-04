@@ -57,6 +57,7 @@ class HomeSnapshot {
     required this.lastRobotSyncTime,
     required this.hasActiveTour,
     required this.isTourPaused,
+    required this.isTourCompleted,
     required this.currentExhibitName,
     required this.nextStopName,
     required this.nextStopLocation,
@@ -90,6 +91,7 @@ class HomeSnapshot {
 
   final bool hasActiveTour;
   final bool isTourPaused;
+  final bool isTourCompleted;
   final String? currentExhibitName;
   final String? nextStopName;
   final String? nextStopLocation;
@@ -107,6 +109,5 @@ class HomeSnapshot {
   final bool isLiveMapAvailable;
 
   bool get hasAnyTicket => hasValidMuseumTicket || hasRobotTourTicket;
-  bool get shouldShowStats =>
-      hasActiveTour || isTourPaused || (isRobotConnected && hasAnyTicket);
+  bool get shouldShowStats => hasActiveTour || isTourPaused || isTourCompleted;
 }
