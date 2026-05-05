@@ -36,21 +36,19 @@ class HomeMapPreviewCard extends StatelessWidget {
           child: Container(
             height: 154,
             decoration: BoxDecoration(
-              color: AppColors.cardGlass(0.64),
+              color: AppColors.cardGlass(0.58),
               borderRadius: BorderRadius.circular(24),
               border: Border.all(color: AppColors.goldBorder(0.20)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.26),
-                  blurRadius: 20,
-                  offset: const Offset(0, 10),
+                  color: Colors.black.withValues(alpha: 0.20),
+                  blurRadius: 16,
+                  offset: const Offset(0, 8),
                 ),
-                BoxShadow(color: AppColors.bronzeGlow(0.035), blurRadius: 18),
               ],
             ),
             child: Stack(
               children: [
-                const Positioned.fill(child: _MapCardHighlight()),
                 const Positioned.fill(
                   child: CustomPaint(painter: _GridPainter()),
                 ),
@@ -180,31 +178,6 @@ class HomeMapPreviewCard extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _MapCardHighlight extends StatelessWidget {
-  const _MapCardHighlight();
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(24),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.white.withValues(alpha: 0.030),
-              Colors.white.withValues(alpha: 0.008),
-              Colors.transparent,
-            ],
-            stops: const [0.0, 0.20, 0.52],
           ),
         ),
       ),

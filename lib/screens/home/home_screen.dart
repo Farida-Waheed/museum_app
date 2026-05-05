@@ -554,7 +554,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   physics: const BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics(),
                   ),
-                  padding: const EdgeInsets.only(bottom: 160),
+                  padding: const EdgeInsets.only(bottom: 188),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -627,7 +627,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onSecondary: () => _openTourFlow(context, snapshot),
                         ),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 24),
                       _SectionLabel(
                         label: isArabic ? 'إجراءات سريعة' : 'QUICK ACTIONS',
                       ),
@@ -637,7 +637,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: HomeQuickActionsGrid(items: quickActions),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 24),
                       _SectionLabel(
                         label: _artifactSectionLabel(snapshot, isArabic),
                       ),
@@ -651,7 +651,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               _openArtifactDetails(context, contextualArtifact),
                         ),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 24),
                       _SectionLabel(
                         label: isArabic ? 'معاينة الخريطة' : 'MAP PREVIEW',
                       ),
@@ -668,7 +668,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onFullView: () => _openMap(context),
                         ),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 24),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.screenHorizontal,
@@ -681,7 +681,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       if (snapshot.smallUpdateCard != null) ...[
-                        const SizedBox(height: 18),
+                        const SizedBox(height: 16),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.screenHorizontal,
@@ -709,8 +709,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               PositionedDirectional(
-                end: 8,
-                bottom: 8,
+                end: 12,
+                bottom: 108,
                 child: AskTheGuideButton(
                   screen: 'home',
                   currentExhibitId: context
@@ -760,29 +760,10 @@ class _HeroSection extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                Transform.scale(
-                  scale: 1.045,
-                  child: Image.asset(
-                    'assets/images/colossal-statue-of-ramesses-ii.jpg',
-                    fit: BoxFit.cover,
-                    alignment: Alignment.topCenter,
-                  ),
-                ),
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        center: const Alignment(0, -0.08),
-                        radius: 0.92,
-                        colors: [
-                          Colors.transparent,
-                          Colors.black.withValues(alpha: 0.10),
-                          Colors.black.withValues(alpha: 0.24),
-                        ],
-                        stops: const [0.58, 0.82, 1.0],
-                      ),
-                    ),
-                  ),
+                Image.asset(
+                  'assets/images/colossal-statue-of-ramesses-ii.jpg',
+                  fit: BoxFit.cover,
+                  alignment: Alignment.topCenter,
                 ),
                 const Positioned(
                   top: 0,
@@ -803,19 +784,19 @@ class _HeroSection extends StatelessWidget {
                   left: 0,
                   right: 0,
                   bottom: 0,
-                  height: 306,
+                  height: 284,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
                         colors: [
-                          Color(0xFF000000),
-                          Color(0xE8000000),
-                          Color(0x82000000),
+                          Color(0xF2000000),
+                          Color(0xD1000000),
+                          Color(0x66000000),
                           Color(0x00000000),
                         ],
-                        stops: [0.0, 0.34, 0.70, 1.0],
+                        stops: [0.0, 0.32, 0.68, 1.0],
                       ),
                     ),
                   ),
@@ -899,10 +880,9 @@ class _SectionLabel extends StatelessWidget {
       child: Text(
         label,
         textAlign: isArabic ? TextAlign.right : TextAlign.left,
-        style: AppTextStyles.premiumSectionLabel(context).copyWith(
-          fontSize: 12.5,
-          color: AppColors.softGold.withValues(alpha: 0.92),
-        ),
+        style: AppTextStyles.premiumSectionLabel(
+          context,
+        ).copyWith(color: AppColors.softGold),
       ),
     );
   }
@@ -938,124 +918,83 @@ class _PrimaryActionCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: AppColors.cardGlass(0.62),
+            color: AppColors.cardGlass(0.58),
             borderRadius: BorderRadius.circular(28),
             border: Border.all(color: AppColors.goldBorder(0.16)),
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                AppColors.secondaryGlass(0.58),
-                AppColors.cardGlass(0.62),
-              ],
-            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.26),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
+                color: Colors.black.withValues(alpha: 0.22),
+                blurRadius: 16,
+                offset: const Offset(0, 8),
               ),
-              BoxShadow(color: AppColors.bronzeGlow(0.035), blurRadius: 20),
             ],
           ),
-          child: Stack(
+          child: Column(
+            crossAxisAlignment: isArabic
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
             children: [
-              const Positioned.fill(child: _CardTopHighlight(borderRadius: 28)),
-              Column(
-                crossAxisAlignment: isArabic
-                    ? CrossAxisAlignment.end
-                    : CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    textAlign: isArabic ? TextAlign.right : TextAlign.left,
-                    style: AppTextStyles.premiumScreenTitle(
-                      context,
-                    ).copyWith(fontSize: 22),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    subtitle,
-                    textAlign: isArabic ? TextAlign.right : TextAlign.left,
-                    style: AppTextStyles.premiumBody(
-                      context,
-                    ).copyWith(fontSize: 14, color: AppColors.bodyText),
-                  ),
-                  const SizedBox(height: 15),
-                  _TicketStatusPill(label: statusLine, isArabic: isArabic),
-                  const SizedBox(height: 28),
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      final stackButtons = constraints.maxWidth < 330;
-                      if (stackButtons) {
-                        return Column(
-                          children: [
-                            _ActionButton.primary(
-                              label: primaryLabel,
-                              icon: Icons.confirmation_number_outlined,
-                              onTap: onPrimary,
-                            ),
-                            const SizedBox(height: 12),
-                            _ActionButton.secondary(
-                              label: secondaryLabel,
-                              icon: Icons.play_arrow_rounded,
-                              onTap: onSecondary,
-                            ),
-                          ],
-                        );
-                      }
+              Text(
+                title,
+                textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                style: AppTextStyles.premiumScreenTitle(
+                  context,
+                ).copyWith(fontSize: 22),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                subtitle,
+                textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                style: AppTextStyles.premiumBody(
+                  context,
+                ).copyWith(fontSize: 14, color: AppColors.bodyText),
+              ),
+              const SizedBox(height: 15),
+              _TicketStatusPill(label: statusLine, isArabic: isArabic),
+              const SizedBox(height: 28),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final stackButtons = constraints.maxWidth < 330;
+                  if (stackButtons) {
+                    return Column(
+                      children: [
+                        _ActionButton.primary(
+                          label: primaryLabel,
+                          icon: Icons.confirmation_number_outlined,
+                          onTap: onPrimary,
+                        ),
+                        const SizedBox(height: 12),
+                        _ActionButton.secondary(
+                          label: secondaryLabel,
+                          icon: Icons.play_arrow_rounded,
+                          onTap: onSecondary,
+                        ),
+                      ],
+                    );
+                  }
 
-                      return Row(
-                        children: [
-                          Expanded(
-                            child: _ActionButton.primary(
-                              label: primaryLabel,
-                              icon: Icons.confirmation_number_outlined,
-                              onTap: onPrimary,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _ActionButton.secondary(
-                              label: secondaryLabel,
-                              icon: Icons.play_arrow_rounded,
-                              onTap: onSecondary,
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ],
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: _ActionButton.primary(
+                          label: primaryLabel,
+                          icon: Icons.confirmation_number_outlined,
+                          onTap: onPrimary,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _ActionButton.secondary(
+                          label: secondaryLabel,
+                          icon: Icons.play_arrow_rounded,
+                          onTap: onSecondary,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CardTopHighlight extends StatelessWidget {
-  const _CardTopHighlight({required this.borderRadius});
-
-  final double borderRadius;
-
-  @override
-  Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(borderRadius),
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.white.withValues(alpha: 0.032),
-              Colors.white.withValues(alpha: 0.010),
-              Colors.transparent,
-            ],
-            stops: const [0.0, 0.18, 0.48],
           ),
         ),
       ),
