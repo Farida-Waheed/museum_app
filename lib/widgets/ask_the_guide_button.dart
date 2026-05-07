@@ -85,7 +85,7 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
                   color: widget.subtle
                       ? AppColors.cardGlass(0.46)
                       : AppColors.cinematicElevated,
-                  borderRadius: BorderRadius.circular(widget.subtle ? 24 : 30),
+                  borderRadius: BorderRadius.circular(widget.subtle ? 26 : 30),
                   border: Border.all(
                     color: AppColors.primaryGold.withValues(
                       alpha: widget.subtle
@@ -99,8 +99,8 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
                       color: Colors.black.withValues(
                         alpha: widget.subtle ? 0.18 : 0.6,
                       ),
-                      blurRadius: widget.subtle ? 6 : 24,
-                      offset: Offset(0, widget.subtle ? 3 : 12),
+                      blurRadius: widget.subtle ? 10 : 24,
+                      offset: Offset(0, widget.subtle ? 5 : 12),
                     ),
                     if (!widget.subtle)
                       BoxShadow(
@@ -113,8 +113,8 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
                   ],
                 ),
                 padding: EdgeInsets.symmetric(
-                  horizontal: widget.subtle ? 13 : 18,
-                  vertical: widget.subtle ? 8 : 12,
+                  horizontal: widget.subtle ? 17 : 18,
+                  vertical: widget.subtle ? 10 : 12,
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -122,16 +122,16 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
                     Icon(
                       Icons.chat_bubble_outline,
                       color: AppColors.primaryGold,
-                      size: widget.subtle ? 16 : 24,
+                      size: widget.subtle ? 18 : 24,
                     ),
-                    SizedBox(width: widget.subtle ? 6 : 10),
+                    SizedBox(width: widget.subtle ? 8 : 10),
                     Text(
                       buttonText,
                       style: AppTextStyles.buttonLabel(context).copyWith(
                         color: Colors.white.withValues(
                           alpha: widget.subtle ? 0.92 : 1.0,
                         ),
-                        fontSize: widget.subtle ? 12 : 14,
+                        fontSize: widget.subtle ? 13 : 14,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
