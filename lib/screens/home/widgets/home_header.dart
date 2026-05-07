@@ -29,7 +29,7 @@ class HomeHeader extends StatelessWidget {
         final topPadding = MediaQuery.paddingOf(context).top;
 
         return SizedBox(
-          height: topPadding + 78,
+          height: topPadding + 86,
           child: Stack(
             alignment: Alignment.topCenter,
             children: [
@@ -37,48 +37,9 @@ class HomeHeader extends StatelessWidget {
                 top: 0,
                 left: 0,
                 right: 0,
-                height: topPadding + 72,
-                child: ClipRect(
-                  child: ShaderMask(
-                    blendMode: BlendMode.dstIn,
-                    shaderCallback: (bounds) {
-                      return const LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          Colors.white,
-                          Colors.white,
-                          Colors.transparent,
-                        ],
-                        stops: [0.0, 0.54, 1.0],
-                      ).createShader(bounds);
-                    },
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(
-                        sigmaX: 4 * scrollStrength,
-                        sigmaY: 4 * scrollStrength,
-                      ),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.transparent,
-                              Colors.black.withValues(
-                                alpha: 0.12 * scrollStrength,
-                              ),
-                              Colors.black.withValues(
-                                alpha: 0.05 * scrollStrength,
-                              ),
-                              Colors.transparent,
-                            ],
-                            stops: const [0.0, 0.38, 0.70, 1.0],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                height: topPadding + 86,
+                child: IgnorePointer(
+                  child: _HeaderProtectionLayer(scrollStrength: scrollStrength),
                 ),
               ),
               SafeArea(
@@ -115,6 +76,55 @@ class HomeHeader extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _HeaderProtectionLayer extends StatelessWidget {
+  const _HeaderProtectionLayer({required this.scrollStrength});
+
+  final double scrollStrength;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        ShaderMask(
+          blendMode: BlendMode.dstIn,
+          shaderCallback: (bounds) {
+            return const LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Colors.white, Colors.white, Colors.transparent],
+              stops: [0.0, 0.56, 1.0],
+            ).createShader(bounds);
+          },
+          child: ClipRect(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: 7 * scrollStrength,
+                sigmaY: 7 * scrollStrength,
+              ),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.12 * scrollStrength),
+                      Colors.black.withValues(alpha: 0.18 * scrollStrength),
+                      Colors.black.withValues(alpha: 0.08 * scrollStrength),
+                      Colors.transparent,
+                    ],
+                    stops: const [0.0, 0.36, 0.68, 1.0],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
