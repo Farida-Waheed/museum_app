@@ -554,7 +554,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   physics: const BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics(),
                   ),
-                  padding: const EdgeInsets.only(bottom: 208),
+                  padding: const EdgeInsets.only(bottom: 112),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -710,7 +710,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               PositionedDirectional(
                 end: 12,
-                bottom: 96,
+                bottom: 12,
                 child: AskTheGuideButton(
                   screen: 'home',
                   currentExhibitId: context

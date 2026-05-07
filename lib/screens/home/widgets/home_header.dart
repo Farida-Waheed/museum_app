@@ -29,7 +29,7 @@ class HomeHeader extends StatelessWidget {
         final topPadding = MediaQuery.paddingOf(context).top;
 
         return SizedBox(
-          height: topPadding + 54,
+          height: topPadding + 78,
           child: Stack(
             alignment: Alignment.topCenter,
             children: [
@@ -37,26 +37,44 @@ class HomeHeader extends StatelessWidget {
                 top: 0,
                 left: 0,
                 right: 0,
-                height: topPadding + 42,
+                height: topPadding + 72,
                 child: ClipRect(
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(
-                      sigmaX: 4 * scrollStrength,
-                      sigmaY: 4 * scrollStrength,
-                    ),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            Colors.black.withValues(
-                              alpha: 0.13 * scrollStrength,
-                            ),
-                            Colors.transparent,
-                          ],
-                          stops: const [0.0, 0.46, 1.0],
+                  child: ShaderMask(
+                    blendMode: BlendMode.dstIn,
+                    shaderCallback: (bounds) {
+                      return const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Colors.white,
+                          Colors.white,
+                          Colors.transparent,
+                        ],
+                        stops: [0.0, 0.54, 1.0],
+                      ).createShader(bounds);
+                    },
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(
+                        sigmaX: 4 * scrollStrength,
+                        sigmaY: 4 * scrollStrength,
+                      ),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Colors.transparent,
+                              Colors.black.withValues(
+                                alpha: 0.12 * scrollStrength,
+                              ),
+                              Colors.black.withValues(
+                                alpha: 0.05 * scrollStrength,
+                              ),
+                              Colors.transparent,
+                            ],
+                            stops: const [0.0, 0.38, 0.70, 1.0],
+                          ),
                         ),
                       ),
                     ),
