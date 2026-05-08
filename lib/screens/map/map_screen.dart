@@ -1,10 +1,10 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/exhibit.dart';
 import '../../models/tour_provider.dart';
 import '../../models/app_session_provider.dart' as session;
 import '../../core/services/mock_data.dart';
+import '../quiz/quiz_screen.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
@@ -72,6 +72,11 @@ class _MapScreenState extends State<MapScreen>
     );
   }
 
+  void _centerOn(double x, double y) {
+    _transformController.value = Matrix4.identity()
+      ..translateByDouble(-x + 150, -y + 200, 0, 1);
+  }
+
   Future<void> _checkLocationPermission() async {
     if (kIsWeb) return;
     final status = await Permission.locationWhenInUse.status;
@@ -101,19 +106,34 @@ class _MapScreenState extends State<MapScreen>
     final tourProvider = Provider.of<TourProvider>(context);
     final sessionProvider = Provider.of<session.AppSessionProvider>(context);
 
+    final currentExhibitId =
+        tourProvider.currentExhibitId ?? sessionProvider.currentExhibitId;
+    final nextExhibitId =
+        tourProvider.nextExhibitId ?? sessionProvider.nextExhibitId;
     final currentExhibit = exhibits.firstWhere(
-      (e) => e.id == tourProvider.currentExhibitId,
+      (e) => e.id == currentExhibitId,
       orElse: () => exhibits.first,
     );
+    Exhibit? nextExhibit;
+    if (nextExhibitId != null) {
+      for (final exhibit in exhibits) {
+        if (exhibit.id == nextExhibitId) {
+          nextExhibit = exhibit;
+          break;
+        }
+      }
+    }
     final robotX = (currentExhibit.x / 400) * mapWidth;
     final robotY = (currentExhibit.y / 600) * mapHeight;
+    final showRobot = sessionProvider.shouldShowRobotOnMap;
+    final showPath = sessionProvider.shouldShowRobotPath;
 
     if (tourProvider.followMode == FollowModeState.on &&
         _lastFollowMode != FollowModeState.on) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         _transformController.value = Matrix4.identity()
-          ..translate(-robotX + 150, -robotY + 200);
+          ..translateByDouble(-robotX + 150, -robotY + 200, 0, 1);
       });
     }
     _lastFollowMode = tourProvider.followMode;
@@ -156,6 +176,23 @@ class _MapScreenState extends State<MapScreen>
                 ),
                 _FilterChip(label: isArabic ? "مقتنيات" : "Exhibits"),
               ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+            child: _MapStatusPanel(
+              sessionProvider: sessionProvider,
+              tourProvider: tourProvider,
+              currentExhibit: currentExhibit,
+              nextExhibit: nextExhibit,
+              isArabic: isArabic,
+              onRecover: showRobot
+                  ? () {
+                      tourProvider.requestRecovery(context);
+                      _centerOn(robotX, robotY);
+                    }
+                  : null,
             ),
           ),
 
@@ -239,7 +276,7 @@ class _MapScreenState extends State<MapScreen>
                           borderRadius: BorderRadius.circular(22),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(.25),
+                              color: Colors.black.withValues(alpha: .25),
                               blurRadius: 25,
                               offset: const Offset(0, 8),
                             ),
@@ -256,7 +293,7 @@ class _MapScreenState extends State<MapScreen>
                               ),
 
                               // ROUTE TO NEXT STOP - only show if shouldShowRobotPath
-                              if (sessionProvider.shouldShowRobotPath)
+                              if (showPath)
                                 CustomPaint(
                                   size: Size(mapWidth, mapHeight),
                                   painter: RoutePainter(
@@ -289,6 +326,9 @@ class _MapScreenState extends State<MapScreen>
                                 (e) => _buildExhibitMarker(
                                   e,
                                   tourProvider.hasVisited(e.id),
+                                  e.id == currentExhibitId,
+                                  e.id == nextExhibitId,
+                                  isArabic,
                                 ),
                               ),
 
@@ -299,7 +339,7 @@ class _MapScreenState extends State<MapScreen>
                               ),
 
                               // ROBOT - only show if shouldShowRobotOnMap
-                              if (sessionProvider.shouldShowRobotOnMap)
+                              if (showRobot)
                                 _buildRobotMarker(robotX, robotY, l10n),
                             ],
                           ),
@@ -316,7 +356,7 @@ class _MapScreenState extends State<MapScreen>
                   child: Column(
                     children: [
                       // Robot center button - only show if robot is visible
-                      if (sessionProvider.shouldShowRobotOnMap)
+                      if (showRobot)
                         Column(
                           children: [
                             _MapActionBtn(
@@ -334,8 +374,7 @@ class _MapScreenState extends State<MapScreen>
                                     (currentExhibit.x / 400) * mapWidth;
                                 final robotY =
                                     (currentExhibit.y / 600) * mapHeight;
-                                _transformController.value = Matrix4.identity()
-                                  ..translate(-robotX + 150, -robotY + 200);
+                                _centerOn(robotX, robotY);
                               },
                             ),
                             const SizedBox(height: 12),
@@ -344,11 +383,7 @@ class _MapScreenState extends State<MapScreen>
                       _MapActionBtn(
                         icon: Icons.my_location_rounded,
                         onPressed: () {
-                          _transformController.value = Matrix4.identity()
-                            ..translate(
-                              -mapWidth * 0.5 + 150,
-                              -mapHeight * 0.7 + 200,
-                            );
+                          _centerOn(mapWidth * 0.5, mapHeight * 0.7);
                         },
                       ),
                     ],
@@ -370,7 +405,7 @@ class _MapScreenState extends State<MapScreen>
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.25),
+                          color: Colors.black.withValues(alpha: 0.25),
                           blurRadius: 8,
                           offset: const Offset(0, 2),
                         ),
@@ -380,13 +415,25 @@ class _MapScreenState extends State<MapScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Robot legend - only show if robot is visible
-                        if (sessionProvider.shouldShowRobotOnMap) ...[
+                        if (showRobot) ...[
                           _buildLegendItem(
                             AppColors.primaryGold,
                             l10n.horusBot,
                           ),
                           const SizedBox(height: 8),
                         ],
+                        _buildLegendItem(
+                          AppColors.primaryGold,
+                          isArabic ? 'Ø§Ù„Ø­Ø§Ù„ÙŠ' : 'Current',
+                          icon: Icons.place_rounded,
+                        ),
+                        const SizedBox(height: 8),
+                        _buildLegendItem(
+                          AppColors.darkGold,
+                          isArabic ? 'Ø§Ù„ØªØ§Ù„ÙŠ' : 'Next',
+                          icon: Icons.flag_rounded,
+                        ),
+                        const SizedBox(height: 8),
                         _buildLegendItem(Colors.blue, l10n.you),
                         const SizedBox(height: 8),
                         _buildLegendItem(Colors.green, l10n.visited),
@@ -406,38 +453,98 @@ class _MapScreenState extends State<MapScreen>
 
   // MARKERS ------------------------------------------------------
 
-  Widget _buildExhibitMarker(Exhibit e, bool isVisited) {
+  Widget _buildExhibitMarker(
+    Exhibit e,
+    bool isVisited,
+    bool isCurrent,
+    bool isNext,
+    bool isArabic,
+  ) {
     final double x = (e.x / 400) * mapWidth;
     final double y = (e.y / 600) * mapHeight;
+    final markerColor = isCurrent
+        ? AppColors.primaryGold
+        : isNext
+        ? AppColors.darkGold
+        : isVisited
+        ? Colors.green
+        : AppColors.darkBackground;
+    final borderColor = isVisited && !isCurrent && !isNext
+        ? Colors.green
+        : AppColors.primaryGold;
+    final icon = isCurrent
+        ? Icons.place_rounded
+        : isNext
+        ? Icons.flag_rounded
+        : isVisited
+        ? Icons.check_rounded
+        : Icons.museum_outlined;
+    final iconColor = isCurrent || isNext
+        ? AppColors.darkInk
+        : isVisited
+        ? Colors.white
+        : AppColors.primaryGold;
 
     return Positioned(
-      left: x - 20,
-      top: y - 20,
-      child: GestureDetector(
-        onTap: () => _showExhibitPopup(e, isVisited),
-        child: Container(
-          width: 24,
-          height: 24,
-          decoration: BoxDecoration(
-            color: isVisited ? Colors.green : AppColors.darkBackground,
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: isVisited ? Colors.green : AppColors.primaryGold,
-              width: 2,
-            ),
-            boxShadow: [
-              if (!isVisited)
-                BoxShadow(
-                  color: AppColors.primaryGold.withOpacity(0.4),
-                  blurRadius: 15,
-                  spreadRadius: 1,
+      left: x - 24,
+      top: y - 28,
+      child: Tooltip(
+        message: e.getName(isArabic ? 'ar' : 'en'),
+        child: GestureDetector(
+          onTap: () => _showExhibitPopup(e, isVisited),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isCurrent || isNext)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppColors.darkInk.withValues(alpha: 0.86),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: AppColors.primaryGold.withValues(alpha: 0.45),
+                    ),
+                  ),
+                  child: Text(
+                    isCurrent
+                        ? (isArabic ? 'Ø§Ù„Ø¢Ù†' : 'Now')
+                        : (isArabic ? 'Ø§Ù„ØªØ§Ù„ÙŠ' : 'Next'),
+                    style: AppTextStyles.metadata(context).copyWith(
+                      color: AppColors.primaryGold,
+                      fontSize: 9,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                 ),
+              Container(
+                width: isCurrent || isNext ? 32 : 24,
+                height: isCurrent || isNext ? 32 : 24,
+                decoration: BoxDecoration(
+                  color: markerColor,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: borderColor, width: 2),
+                  boxShadow: [
+                    if (!isVisited || isCurrent || isNext)
+                      BoxShadow(
+                        color: AppColors.primaryGold.withValues(
+                          alpha: isCurrent ? 0.55 : 0.35,
+                        ),
+                        blurRadius: isCurrent ? 18 : 12,
+                        spreadRadius: isCurrent ? 2 : 1,
+                      ),
+                  ],
+                ),
+                child: Icon(
+                  icon,
+                  size: isCurrent || isNext ? 17 : 14,
+                  color: iconColor,
+                ),
+              ),
             ],
-          ),
-          child: Icon(
-            Icons.museum_outlined,
-            size: 14,
-            color: isVisited ? Colors.white : AppColors.primaryGold,
           ),
         ),
       ),
@@ -446,20 +553,41 @@ class _MapScreenState extends State<MapScreen>
 
   Widget _buildVisitorMarker(double x, double y) {
     return Positioned(
-      left: x - 10,
-      top: y - 10,
-      child: Container(
-        width: 20,
-        height: 20,
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          shape: BoxShape.circle,
-          border: Border.all(color: Colors.white, width: 3),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.blue.withOpacity(0.4),
-              blurRadius: 10,
-              spreadRadius: 2,
+      left: x - 18,
+      top: y - 18,
+      child: Tooltip(
+        message: 'You',
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: Colors.blue.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+            ),
+            Container(
+              width: 22,
+              height: 22,
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.white, width: 3),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.blue.withValues(alpha: 0.4),
+                    blurRadius: 10,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.person_pin_circle_rounded,
+                color: Colors.white,
+                size: 14,
+              ),
             ),
           ],
         ),
@@ -483,8 +611,8 @@ class _MapScreenState extends State<MapScreen>
                 height: 40 * _pulseAnimation.value,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColors.primaryGold.withOpacity(
-                    (0.3 - (_pulseAnimation.value - 1.0)).clamp(0, 1),
+                  color: AppColors.primaryGold.withValues(
+                    alpha: (0.3 - (_pulseAnimation.value - 1.0)).clamp(0, 1),
                   ),
                 ),
               ),
@@ -498,7 +626,7 @@ class _MapScreenState extends State<MapScreen>
                   border: Border.all(color: AppColors.primaryGold, width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primaryGold.withOpacity(0.6),
+                      color: AppColors.primaryGold.withValues(alpha: 0.6),
                       blurRadius: 12,
                       spreadRadius: 2,
                     ),
@@ -519,13 +647,16 @@ class _MapScreenState extends State<MapScreen>
     );
   }
 
-  Widget _buildLegendItem(Color color, String label) {
+  Widget _buildLegendItem(Color color, String label, {IconData? icon}) {
     return Row(
       children: [
         Container(
-          width: 10,
-          height: 10,
+          width: 14,
+          height: 14,
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          child: icon == null
+              ? null
+              : Icon(icon, color: AppColors.darkInk, size: 10),
         ),
         const SizedBox(width: 10),
         Text(
@@ -551,7 +682,7 @@ class _MapActionBtn extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.darkSurface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: IconButton(
         icon: Icon(icon, color: AppColors.primaryGold, size: 20),
@@ -569,9 +700,9 @@ class _FilterChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.primaryGold.withOpacity(0.1),
+        color: AppColors.primaryGold.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.primaryGold.withOpacity(0.3)),
+        border: Border.all(color: AppColors.primaryGold.withValues(alpha: 0.3)),
       ),
       child: Text(
         label,
@@ -585,6 +716,245 @@ class _FilterChip extends StatelessWidget {
   }
 }
 
+class _MapStatusPanel extends StatelessWidget {
+  final session.AppSessionProvider sessionProvider;
+  final TourProvider tourProvider;
+  final Exhibit currentExhibit;
+  final Exhibit? nextExhibit;
+  final bool isArabic;
+  final VoidCallback? onRecover;
+
+  const _MapStatusPanel({
+    required this.sessionProvider,
+    required this.tourProvider,
+    required this.currentExhibit,
+    required this.nextExhibit,
+    required this.isArabic,
+    required this.onRecover,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final status = _statusCopy();
+    final lang = isArabic ? 'ar' : 'en';
+    final canRecover =
+        onRecover != null &&
+        (sessionProvider.tourLifecycleState ==
+                session.TourLifecycleState.paused ||
+            tourProvider.proximityState == ProximityState.far);
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: AppDecorations.secondaryGlassCard(radius: 18, opacity: 0.72),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: status.color.withValues(alpha: 0.14),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: status.color.withValues(alpha: 0.45),
+                  ),
+                ),
+                child: Icon(status.icon, color: status.color, size: 19),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      status.title,
+                      style: AppTextStyles.bodyPrimary(
+                        context,
+                      ).copyWith(fontWeight: FontWeight.w800),
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      status.subtitle,
+                      style: AppTextStyles.metadata(
+                        context,
+                      ).copyWith(color: AppColors.neutralMedium, height: 1.25),
+                    ),
+                  ],
+                ),
+              ),
+              if (canRecover)
+                _MapActionBtn(
+                  icon: Icons.center_focus_strong_rounded,
+                  onPressed: onRecover!,
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _StatusPill(
+                icon: Icons.place_rounded,
+                label: isArabic ? 'Ø§Ù„Ø­Ø§Ù„ÙŠ' : 'Current',
+                value: currentExhibit.getName(lang),
+              ),
+              if (nextExhibit != null)
+                _StatusPill(
+                  icon: Icons.flag_rounded,
+                  label: isArabic ? 'Ø§Ù„ØªØ§Ù„ÙŠ' : 'Next',
+                  value: nextExhibit!.getName(lang),
+                ),
+              _StatusPill(
+                icon: Icons.check_circle_outline_rounded,
+                label: isArabic ? 'ØªÙ…Øª Ø²ÙŠØ§Ø±ØªÙ‡Ø§' : 'Visited',
+                value: '${tourProvider.visitedExhibitIds.length}',
+              ),
+              _StatusPill(
+                icon: tourProvider.followMode == FollowModeState.on
+                    ? Icons.visibility_rounded
+                    : Icons.visibility_off_rounded,
+                label: isArabic ? 'Ø§Ù„ØªØªØ¨Ø¹' : 'Follow',
+                value: tourProvider.followMode == FollowModeState.on
+                    ? (isArabic ? 'Ù…ÙØ¹Ù„' : 'On')
+                    : (isArabic ? 'Ù…ØªÙˆÙ‚Ù' : 'Off'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  _MapStatusCopy _statusCopy() {
+    switch (sessionProvider.robotConnectionState) {
+      case session.RobotConnectionState.connecting:
+        return _MapStatusCopy(
+          icon: Icons.sync_rounded,
+          color: AppColors.primaryGold,
+          title: isArabic
+              ? 'Ø¬Ø§Ø±ÙŠ Ø§Ù„Ø§ØªØµØ§Ù„ Ø¨Ø­ÙˆØ±ÙˆØ³-Ø¨ÙˆØª'
+              : 'Connecting to Horus-Bot',
+          subtitle: isArabic
+              ? 'Ø³ØªØ¸Ù‡Ø± Ù…ÙˆØ§Ù‚Ø¹ Ø­ÙˆØ±ÙˆØ³ ÙˆØ§Ù„Ù…Ø³Ø§Ø± Ø¹Ù†Ø¯ Ø§ÙƒØªÙ…Ø§Ù„ Ø§Ù„Ø§ØªØµØ§Ù„.'
+              : 'Robot position and route appear once the connection is ready.',
+        );
+      case session.RobotConnectionState.connected:
+        if (sessionProvider.tourLifecycleState ==
+            session.TourLifecycleState.paused) {
+          return _MapStatusCopy(
+            icon: Icons.pause_circle_outline_rounded,
+            color: AppColors.darkGold,
+            title: isArabic
+                ? 'Ø§Ù„Ø¬ÙˆÙ„Ø© Ù…ØªÙˆÙ‚ÙØ© Ù…Ø¤Ù‚ØªØ§'
+                : 'Tour paused',
+            subtitle: isArabic
+                ? 'Ø­Ø§ÙØ¸ Ø¹Ù„Ù‰ Ù…ÙˆÙ‚Ø¹Ùƒ Ø£Ùˆ Ø§Ø³ØªØ¹Ø¯ Ù…Ø±ÙƒØ² Ø­ÙˆØ±ÙˆØ³ Ø¹Ù„Ù‰ Ø§Ù„Ø®Ø±ÙŠØ·Ø©.'
+                : 'Keep your place or recenter on Horus-Bot for recovery.',
+          );
+        }
+        return _MapStatusCopy(
+          icon: Icons.smart_toy_rounded,
+          color: AppColors.primaryGold,
+          title: isArabic
+              ? 'Ø­ÙˆØ±ÙˆØ³-Ø¨ÙˆØª ÙŠÙˆØ¬Ù‡ Ø§Ù„Ø¬ÙˆÙ„Ø©'
+              : 'Horus-Bot is guiding',
+          subtitle: tourProvider.getProximityText(isArabic ? 'ar' : 'en'),
+        );
+      case session.RobotConnectionState.failed:
+        return _MapStatusCopy(
+          icon: Icons.error_outline_rounded,
+          color: AppColors.alertRed,
+          title: isArabic
+              ? 'ÙŠØ­ØªØ§Ø¬ Ø§Ù„Ø§ØªØµØ§Ù„ Ø¥Ù„Ù‰ ØªØ­Ù‚Ù‚'
+              : 'Connection needs attention',
+          subtitle: isArabic
+              ? 'ØªØ¨Ù‚Ù‰ Ø§Ù„Ø®Ø±ÙŠØ·Ø© Ù…ØªØ§Ø­Ø© Ù„Ù„Ø§Ø³ØªÙƒØ´Ø§Ù Ø¨Ø¯ÙˆÙ† ØªØªØ¨Ø¹ Ø­ÙŠ.'
+              : 'The map remains available for exhibit exploration without live tracking.',
+        );
+      case session.RobotConnectionState.disconnected:
+        return _MapStatusCopy(
+          icon: Icons.explore_rounded,
+          color: AppColors.neutralMedium,
+          title: isArabic
+              ? 'Ø§Ø³ØªÙƒØ´Ø§Ù Ø§Ù„Ù…Ø¹Ø±ÙˆØ¶Ø§Øª'
+              : 'Explore the gallery',
+          subtitle: isArabic
+              ? 'Ø§Ù„Ø®Ø±ÙŠØ·Ø© ØªØ¹Ø±Ø¶ Ø§Ù„Ù…Ø¹Ø±ÙˆØ¶Ø§Øª Ø§Ù„Ù…Ø®Ø²Ù†Ø© Ø¨Ø¯ÙˆÙ† Ø§ØªØµØ§Ù„ Ø¨Ø§Ù„Ø±ÙˆØ¨ÙˆØª.'
+              : 'Showing saved exhibit positions. Robot tracking is not connected.',
+        );
+    }
+  }
+}
+
+class _MapStatusCopy {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String subtitle;
+
+  const _MapStatusCopy({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.subtitle,
+  });
+}
+
+class _StatusPill extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _StatusPill({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: AppColors.darkBackground.withValues(alpha: 0.52),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: AppColors.primaryGold.withValues(alpha: 0.16),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: AppColors.primaryGold),
+          const SizedBox(width: 6),
+          Text(
+            '$label: ',
+            style: AppTextStyles.metadata(
+              context,
+            ).copyWith(color: AppColors.neutralMedium, fontSize: 10),
+          ),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 145),
+            child: Text(
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.metadata(context).copyWith(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _ExhibitInfoPopup extends StatelessWidget {
   final Exhibit exhibit;
   final bool isVisited;
@@ -593,6 +963,9 @@ class _ExhibitInfoPopup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final hasQuiz = MockDataService.getAllQuestions().any(
+      (question) => question.exhibitId == exhibit.id,
+    );
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.all(24),
@@ -600,7 +973,9 @@ class _ExhibitInfoPopup extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.darkSurface,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.primaryGold.withOpacity(0.3)),
+          border: Border.all(
+            color: AppColors.primaryGold.withValues(alpha: 0.3),
+          ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -652,14 +1027,6 @@ class _ExhibitInfoPopup extends StatelessWidget {
                     children: [
                       Expanded(
                         child: _PopupBtn(
-                          label: isArabic ? "شرح" : "Explain",
-                          icon: Icons.volume_up,
-                          onTap: () {},
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _PopupBtn(
                           label: isArabic ? "اختبار" : "Quiz",
                           icon: Icons.quiz,
                           onTap: () {
@@ -668,11 +1035,13 @@ class _ExhibitInfoPopup extends StatelessWidget {
                                   context,
                                   listen: false,
                                 );
-                            if (sessionProvider.canTakeQuiz) {
-                              Navigator.pushNamed(
-                                context,
-                                '/quiz',
-                                arguments: exhibit.id,
+                            if (sessionProvider.canTakeQuiz && hasQuiz) {
+                              Navigator.pop(context);
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      QuizScreen(exhibitId: exhibit.id),
+                                ),
                               );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -688,8 +1057,6 @@ class _ExhibitInfoPopup extends StatelessWidget {
                           },
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      _PopupIconBtn(icon: Icons.bookmark_border, onTap: () {}),
                     ],
                   ),
                 ],
@@ -731,33 +1098,13 @@ class _PopupBtn extends StatelessWidget {
   }
 }
 
-class _PopupIconBtn extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  const _PopupIconBtn({required this.icon, required this.onTap});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.darkBackground,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.darkDivider),
-      ),
-      child: IconButton(
-        icon: Icon(icon, color: AppColors.primaryGold, size: 20),
-        onPressed: onTap,
-      ),
-    );
-  }
-}
-
 // ========== PAINTERS ==========
 
 class MapGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final linePaint = Paint()
-      ..color = Colors.white.withOpacity(0.02)
+      ..color = Colors.white.withValues(alpha: 0.02)
       ..strokeWidth = 1;
 
     double gridSize = 50;
@@ -782,7 +1129,7 @@ class RoutePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.primaryGold.withOpacity(0.2)
+      ..color = AppColors.primaryGold.withValues(alpha: 0.2)
       ..strokeWidth = 3
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round;
