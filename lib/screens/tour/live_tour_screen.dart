@@ -309,13 +309,6 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
               ),
               _LiveTourHeader(
                 onMenu: () => AppMenuShell.of(shellContext)?.toggleMenu(),
-                onScanQr: () {
-                  Navigator.pushNamed(
-                    context,
-                    AppRoutes.qrScan,
-                    arguments: QRScanMode.robotConnection,
-                  );
-                },
               ),
             ],
           ),
@@ -500,13 +493,6 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
             ),
             _LiveTourHeader(
               onMenu: () => AppMenuShell.of(shellContext)?.toggleMenu(),
-              onScanQr: () {
-                Navigator.pushNamed(
-                  context,
-                  AppRoutes.qrScan,
-                  arguments: QRScanMode.robotConnection,
-                );
-              },
             ),
           ],
         ),
@@ -534,7 +520,12 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(24, 24, 24, 104),
+              padding: EdgeInsets.fromLTRB(
+                24,
+                MediaQuery.paddingOf(context).top + 88,
+                24,
+                104,
+              ),
               child: Center(
                 child: Container(
                   width: double.infinity,
@@ -634,13 +625,6 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
           ),
           _LiveTourHeader(
             onMenu: () => AppMenuShell.of(shellContext)?.toggleMenu(),
-            onScanQr: () {
-              Navigator.pushNamed(
-                context,
-                AppRoutes.qrScan,
-                arguments: QRScanMode.robotConnection,
-              );
-            },
           ),
         ],
       ),
@@ -1114,8 +1098,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
 
 class _LiveTourHeader extends StatelessWidget {
   final VoidCallback onMenu;
-  final VoidCallback onScanQr;
-  const _LiveTourHeader({required this.onMenu, required this.onScanQr});
+  const _LiveTourHeader({required this.onMenu});
 
   @override
   Widget build(BuildContext context) {
@@ -1158,16 +1141,13 @@ class _LiveTourHeader extends StatelessWidget {
                           onTap: onMenu,
                         ),
                         const Spacer(),
-                        _HeaderCircleButton(
-                          icon: Icons.qr_code_scanner_rounded,
-                          onTap: onScanQr,
-                        ),
+                        const SizedBox(width: 44, height: 44),
                       ],
                     ),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.asset('assets/icons/ankh.png', width: 20, height: 20),
+                        Image.asset('assets/icons/ankh.png', width: 18, height: 18),
                         const SizedBox(width: 8),
                         Text(
                           'HORUS-BOT',
@@ -1175,8 +1155,13 @@ class _LiveTourHeader extends StatelessWidget {
                             context,
                           ).copyWith(
                             color: AppColors.primaryGold,
-                            fontSize: 16,
-                            letterSpacing: 1.2,
+                            fontSize: 17.5,
+                            shadows: [
+                              Shadow(
+                                color: Colors.black.withOpacity(0.70),
+                                blurRadius: 10,
+                              ),
+                            ],
                           ),
                         ),
                       ],
