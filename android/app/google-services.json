@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "227449580108",
+    "project_id": "horus-bot-app",
+    "storage_bucket": "horus-bot-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:227449580108:android:d0549981bf45dcc9ee62e9",
+        "android_client_info": {
+          "package_name": "com.example.museum_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1EHdyjVS3A6wPqNlqNgPIx1G9dRbCezQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

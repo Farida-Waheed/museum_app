@@ -39,6 +39,7 @@ dependencies:
   # 7. Local Notifications (Push notifications, scheduling, channels)
   flutter_local_notifications: ^17.0.0
   timezone: ^0.9.3
+  firebase_core: ^4.7.0
 
 dev_dependencies:
   flutter_test:
