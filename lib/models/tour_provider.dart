@@ -250,13 +250,23 @@ class TourProvider with ChangeNotifier {
     }
   }
 
-  void startTour({BuildContext? context}) {
+  void startTour({
+    BuildContext? context,
+    String? initialExhibitId,
+    String? nextExhibitId,
+  }) {
     if (_tourLifecycleState == TourLifecycleState.active) return;
+    if (initialExhibitId != null) {
+      _currentExhibitId = initialExhibitId;
+      if (!_visitedExhibitIds.contains(initialExhibitId)) {
+        _visitedExhibitIds.add(initialExhibitId);
+      }
+    }
+    if (nextExhibitId != null) {
+      _nextExhibitId = nextExhibitId;
+    }
     setTourLifecycleState(TourLifecycleState.active, context: context);
     setConnectionState(RobotConnectionState.connected);
-    if (_currentExhibitId == null) {
-      // Keep current exhibit logic in the screen if needed.
-    }
   }
 
   void pauseTour({BuildContext? context}) {

@@ -11,11 +11,13 @@ class HomeHeader extends StatelessWidget {
     required this.onMenu,
     required this.onScanRobotQr,
     required this.scrollController,
+    required this.showScanRobotQr,
   });
 
   final VoidCallback onMenu;
   final VoidCallback onScanRobotQr;
   final ScrollController scrollController;
+  final bool showScanRobotQr;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +47,7 @@ class HomeHeader extends StatelessWidget {
               SafeArea(
                 bottom: false,
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 3, 16, 0),
+                  padding: const EdgeInsetsDirectional.fromSTEB(16, 3, 16, 0),
                   child: SizedBox(
                     height: 50,
                     child: Stack(
@@ -59,11 +61,14 @@ class HomeHeader extends StatelessWidget {
                               scrollStrength: scrollStrength,
                             ),
                             const Spacer(),
-                            _HeaderButton(
-                              icon: Icons.qr_code_scanner_rounded,
-                              onTap: onScanRobotQr,
-                              scrollStrength: scrollStrength,
-                            ),
+                            if (showScanRobotQr)
+                              _HeaderButton(
+                                icon: Icons.qr_code_scanner_rounded,
+                                onTap: onScanRobotQr,
+                                scrollStrength: scrollStrength,
+                              )
+                            else
+                              const SizedBox(width: 44, height: 44),
                           ],
                         ),
                         const IgnorePointer(child: _HeaderBrand()),

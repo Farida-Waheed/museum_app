@@ -137,7 +137,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _openRobotPairing(BuildContext context) {
+    final ticketProvider = context.read<TicketProvider>();
     final sessionProvider = context.read<app.AppSessionProvider>();
+    final isReconnect =
+        sessionProvider.robotConnectionState == app.RobotConnectionState.failed;
+    if (!ticketProvider.hasValidRobotTourEligibility && !isReconnect) {
+      Navigator.pushNamed(context, AppRoutes.tickets);
+      return;
+    }
     sessionProvider.startVisiting();
     sessionProvider.startRobotConnection();
     Navigator.pushNamed(
@@ -175,8 +182,13 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    if (snapshot.hasValidMuseumTicket && !snapshot.isRobotConnected) {
+    if (snapshot.hasRobotTourEligibility && !snapshot.isRobotConnected) {
       _openRobotPairing(context);
+      return;
+    }
+
+    if (snapshot.hasRobotTourEligibility && snapshot.isRobotConnected) {
+      Navigator.pushNamed(context, AppRoutes.liveTour);
       return;
     }
 
@@ -209,13 +221,12 @@ class _HomeScreenState extends State<HomeScreen> {
     VoidCallback onTap,
   })
   _statusModel(BuildContext context, HomeSnapshot snapshot, bool isArabic) {
+    final l10n = AppLocalizations.of(context)!;
     if (!snapshot.hasAnyTicket) {
       return (
-        label: isArabic ? 'جاهز للاستكشاف؟' : 'READY TO EXPLORE?',
-        title: isArabic ? 'جاهز للاستكشاف؟' : 'Ready to explore?',
-        subtitle: isArabic
-            ? 'اشتر تذكرتك أو امسح رمز الروبوت عند الوصول.'
-            : 'Buy your ticket or scan your robot QR when you arrive.',
+        label: l10n.homeReadyLabel,
+        title: l10n.homeReadyTitle,
+        subtitle: l10n.homeReadySubtitle,
         icon: Icons.explore_rounded,
         onTap: () => _openTickets(context, snapshot),
       );
@@ -223,11 +234,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (snapshot.robotStatus == HomeRobotStatus.error) {
       return (
-        label: isArabic ? 'فقد الاتصال' : 'CONNECTION LOST',
-        title: isArabic ? 'أعد الاتصال بحورس-بوت' : 'Reconnect to Horus-Bot',
-        subtitle: isArabic
-            ? 'ابق قريبا من الروبوت أو امسح الرمز مرة أخرى.'
-            : 'Stay close to the robot or scan again.',
+        label: l10n.homeConnectionLostLabel,
+        title: l10n.homeReconnectTitle,
+        subtitle: l10n.homeReconnectSubtitle,
         icon: Icons.wifi_off_rounded,
         onTap: () => _openRobotPairing(context),
       );
@@ -235,11 +244,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (snapshot.isTourCompleted) {
       return (
-        label: isArabic ? 'اكتملت الجولة' : 'TOUR COMPLETED',
-        title: isArabic ? 'ملخص الجولة جاهز' : 'Tour completed',
-        subtitle: isArabic
-            ? 'يمكنك مراجعة محطاتك داخل تجربة الجولة.'
-            : 'Summary available inside your tour view.',
+        label: l10n.homeTourCompletedLabel,
+        title: l10n.homeTourCompletedTitle,
+        subtitle: l10n.homeTourCompletedSubtitle,
         icon: Icons.verified_rounded,
         onTap: () => _openTourFlow(context, snapshot),
       );
@@ -247,11 +254,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (snapshot.isTourPaused) {
       return (
-        label: isArabic ? 'الجولة متوقفة' : 'TOUR PAUSED',
-        title: isArabic ? 'استأنف جولتك' : 'Resume your museum tour',
-        subtitle: isArabic
-            ? 'استأنف الجولة عندما تكون جاهزا.'
-            : 'Resume your museum tour when you are ready.',
+        label: l10n.homeTourPausedLabel,
+        title: l10n.homeTourPausedTitle,
+        subtitle: l10n.homeTourPausedSubtitle,
         icon: Icons.pause_circle_outline_rounded,
         onTap: () => _openTourFlow(context, snapshot),
       );
@@ -262,51 +267,50 @@ class _HomeScreenState extends State<HomeScreen> {
       switch (snapshot.robotStatus) {
         case HomeRobotStatus.speaking:
           return (
-            label: isArabic ? 'حورس يتحدث الآن' : 'HORUS IS SPEAKING NOW',
-            title: exhibit ?? (isArabic ? 'المعرض الحالي' : 'Current stop'),
+            label: l10n.homeHorusSpeakingLabel,
+            title: exhibit ?? l10n.currentStop,
             subtitle: exhibit == null
-                ? (isArabic
-                      ? 'استمع إلى الروبوت للحصول على القصة الكاملة.'
-                      : 'Listen to the robot for the full story.')
-                : (isArabic
-                      ? 'المحطة الحالية: $exhibit'
-                      : 'Current stop: $exhibit'),
+                ? l10n.homeListenRobotSubtitle
+                : l10n.homeCurrentStopValue(exhibit),
             icon: Icons.record_voice_over_rounded,
             onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
           );
         case HomeRobotStatus.moving:
           return (
-            label: isArabic ? 'حورس يتحرك' : 'HORUS IS MOVING',
-            title:
-                snapshot.nextStopName ??
-                (isArabic ? 'المحطة التالية' : 'Next stop'),
-            subtitle: isArabic
-                ? 'ابق قريبا من دليلك أثناء الانتقال.'
-                : 'Stay close to your guide while moving.',
+            label: l10n.homeHorusMovingLabel,
+            title: snapshot.nextStopName ?? l10n.nextStopLabel,
+            subtitle: l10n.homeStayCloseSubtitle,
             icon: Icons.route_rounded,
             onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
           );
         default:
           return (
-            label: isArabic ? 'حورس في الانتظار' : 'HORUS IS WAITING',
-            title:
-                exhibit ?? (isArabic ? 'متابعة الجولة' : 'Continue your tour'),
-            subtitle: isArabic
-                ? 'يمكنك طرح سؤال قصير أو متابعة المحطة التالية.'
-                : 'Ask a short question or continue to the next stop.',
+            label: l10n.homeHorusWaitingLabel,
+            title: exhibit ?? l10n.homeContinueTourAction,
+            subtitle: l10n.homeAskOrContinueSubtitle,
             icon: Icons.hourglass_top_rounded,
             onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
           );
       }
     }
 
-    if (snapshot.hasValidMuseumTicket && !snapshot.isRobotConnected) {
+    if (snapshot.hasValidMuseumTicket &&
+        !snapshot.hasRobotTourTicket &&
+        !snapshot.isRobotConnected) {
       return (
-        label: isArabic ? 'تذكرة المتحف جاهزة' : 'MUSEUM TICKET READY',
-        title: isArabic ? 'اتصل بحورس-بوت' : 'Museum ticket ready',
-        subtitle: isArabic
-            ? 'اتصل بحورس-بوت لبدء جولتك الإرشادية.'
-            : 'Connect to Horus-Bot to start your guided tour.',
+        label: l10n.homeMuseumTicketReadyLabel,
+        title: l10n.homeMuseumTicketReadyTitle,
+        subtitle: l10n.startMyTourDescription,
+        icon: Icons.confirmation_number_outlined,
+        onTap: () => Navigator.pushNamed(context, AppRoutes.tickets),
+      );
+    }
+
+    if (snapshot.hasRobotTourEligibility && !snapshot.isRobotConnected) {
+      return (
+        label: l10n.homeMuseumTicketReadyLabel,
+        title: l10n.homeMuseumTicketReadyTitle,
+        subtitle: l10n.homeConnectTourSubtitle,
         icon: Icons.qr_code_scanner_rounded,
         onTap: () => _openRobotPairing(context),
       );
@@ -314,151 +318,136 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (snapshot.isRobotConnected) {
       return (
-        label: isArabic ? 'متصل بحورس-بوت' : 'CONNECTED TO HORUS-BOT',
-        title: isArabic ? 'متصل بحورس-بوت' : 'Connected to Horus-Bot',
-        subtitle: _robotMetaLine(snapshot, isArabic),
+        label: l10n.homeConnectedLabel,
+        title: l10n.homeConnectedTitle,
+        subtitle: _robotMetaLine(snapshot, l10n),
         icon: Icons.smart_toy_outlined,
         onTap: () => _openTourFlow(context, snapshot),
       );
     }
 
     return (
-      label: isArabic ? 'المحطة التالية' : 'NEXT STOP',
-      title:
-          snapshot.nextStopName ??
-          (isArabic ? 'قاعة توت عنخ آمون' : 'Tutankhamun Hall'),
-      subtitle: isArabic
-          ? '${snapshot.estimatedTimeToNextStop ?? 5} دقائق - ${snapshot.nextStopLocation ?? 'القاعة الذهبية'}'
-          : '${snapshot.estimatedTimeToNextStop ?? 5} minutes away - ${snapshot.nextStopLocation ?? 'Golden Hall'}',
+      label: l10n.homeNextStopCaps,
+      title: snapshot.nextStopName ?? l10n.homeTutankhamunHall,
+      subtitle: l10n.homeMinutesAway(
+        snapshot.estimatedTimeToNextStop ?? 5,
+        snapshot.nextStopLocation ?? l10n.homeGoldenHall,
+      ),
       icon: Icons.near_me_rounded,
       onTap: () => _openTourFlow(context, snapshot),
     );
   }
 
-  String _robotMetaLine(HomeSnapshot snapshot, bool isArabic) {
+  String _robotMetaLine(HomeSnapshot snapshot, AppLocalizations l10n) {
     final parts = <String>[];
     if (snapshot.connectedRobotName.isNotEmpty) {
       parts.add(snapshot.connectedRobotName);
     }
     if (snapshot.robotBatteryPercent != null) {
-      parts.add(
-        isArabic
-            ? 'البطارية ${snapshot.robotBatteryPercent}%'
-            : 'Battery ${snapshot.robotBatteryPercent}%',
-      );
+      parts.add(l10n.homeBattery(snapshot.robotBatteryPercent!));
     }
     if (snapshot.lastRobotSyncTime != null) {
-      parts.add(_syncLabel(snapshot.lastRobotSyncTime!, isArabic));
+      parts.add(_syncLabel(snapshot.lastRobotSyncTime!, l10n));
     }
     return parts.join(' · ');
   }
 
-  String _syncLabel(DateTime time, bool isArabic) {
+  String _syncLabel(DateTime time, AppLocalizations l10n) {
     final elapsed = DateTime.now().difference(time);
     if (elapsed.inMinutes < 1) {
-      return isArabic ? 'تمت المزامنة الآن' : 'synced just now';
+      return l10n.homeSyncedNow;
     }
     if (elapsed.inMinutes < 60) {
-      return isArabic
-          ? 'تمت المزامنة قبل ${elapsed.inMinutes} د'
-          : 'synced ${elapsed.inMinutes} min ago';
+      return l10n.homeSyncedMinutesAgo(elapsed.inMinutes);
     }
-    return isArabic
-        ? 'تمت المزامنة قبل ${elapsed.inHours} س'
-        : 'synced ${elapsed.inHours} hr ago';
+    return l10n.homeSyncedHoursAgo(elapsed.inHours);
   }
 
-  String _primaryActionLabel(HomeSnapshot snapshot, bool isArabic) {
+  String _primaryActionLabel(HomeSnapshot snapshot, AppLocalizations l10n) {
     if (snapshot.robotStatus == HomeRobotStatus.error) {
-      return isArabic ? 'إعادة الاتصال' : 'Reconnect';
+      return l10n.homeReconnectAction;
     }
     if (snapshot.isTourPaused) {
-      return isArabic ? 'استئناف الجولة' : 'Resume Tour';
+      return l10n.homeResumeTourAction;
     }
     if (snapshot.hasActiveTour || snapshot.isTourCompleted) {
-      return isArabic ? 'متابعة الجولة' : 'Continue Tour';
+      return l10n.homeContinueTourAction;
     }
-    if (snapshot.hasValidMuseumTicket && !snapshot.isRobotConnected) {
-      return isArabic ? 'مسح QR للروبوت' : 'Scan Robot QR';
+    if (snapshot.hasRobotTourEligibility && !snapshot.isRobotConnected) {
+      return l10n.homeScanRobotQr;
     }
-    return isArabic ? 'ابدأ جولتي' : 'Start My Tour';
+    return l10n.startMyTour;
   }
 
-  String _ticketStatusLine(HomeSnapshot snapshot, bool isArabic) {
+  String _ticketStatusLine(HomeSnapshot snapshot, AppLocalizations l10n) {
     if (!snapshot.hasAnyTicket) {
-      return isArabic ? 'لا توجد تذاكر بعد' : 'No tickets yet';
+      return l10n.homeNoTicketsYet;
     }
     if (snapshot.hasValidMuseumTicket && !snapshot.hasRobotTourTicket) {
-      return isArabic ? 'تذكرة المتحف جاهزة' : 'Museum ticket ready';
+      return l10n.homeMuseumTicketReadyTitle;
     }
     if (snapshot.hasValidMuseumTicket && snapshot.hasRobotTourTicket) {
-      return isArabic
-          ? 'تذكرة المتحف والجولة جاهزتان'
-          : 'Museum and robot tour tickets ready';
+      return l10n.homeMuseumAndRobotTicketsReady;
     }
     if (snapshot.ticketCount == 1) {
-      return isArabic ? 'تذكرة واحدة جاهزة' : '1 ticket ready';
+      return l10n.homeOneTicketReady;
     }
-    return isArabic
-        ? '${snapshot.ticketCount} تذاكر محفوظة'
-        : '${snapshot.ticketCount} tickets saved';
+    return l10n.homeTicketsSaved(snapshot.ticketCount);
   }
 
-  List<HomeStatItem> _tourStats(HomeSnapshot snapshot, bool isArabic) {
+  List<HomeStatItem> _tourStats(HomeSnapshot snapshot, AppLocalizations l10n) {
     final stopsValue = '${snapshot.visitedCount} / ${snapshot.totalExhibits}';
     final nextStop = snapshot.isTourCompleted
-        ? (isArabic ? 'اكتملت' : 'Complete')
+        ? l10n.homeComplete
         : (snapshot.nextStopName ?? snapshot.currentExhibitName ?? '-');
     final minutes = snapshot.estimatedTimeToNextStop;
     return [
       HomeStatItem(
         icon: Icons.account_tree_outlined,
         value: stopsValue,
-        label: isArabic ? 'محطات تمت زيارتها' : 'Stops visited',
+        label: l10n.homeStopsVisited,
       ),
       HomeStatItem(
         icon: Icons.place_outlined,
         value: nextStop,
         label: snapshot.currentExhibitName != null && snapshot.hasActiveTour
-            ? (isArabic ? 'المعرض الحالي' : 'Current stop')
-            : (isArabic ? 'التالي' : 'Next stop'),
+            ? l10n.currentStop
+            : l10n.nextStopLabel,
       ),
       HomeStatItem(
         icon: Icons.schedule_rounded,
         value: snapshot.isTourCompleted
-            ? (isArabic ? 'تم' : 'Done')
+            ? l10n.done
             : (minutes == null
                   ? '${snapshot.tourDurationMinutes}m'
-                  : (isArabic ? '$minutes د' : '$minutes min')),
-        label: isArabic ? 'الوقت المتبقي' : 'Time left',
+                  : '$minutes ${l10n.minutes}'),
+        label: l10n.homeTimeLeft,
       ),
     ];
   }
 
-  String _artifactSectionLabel(HomeSnapshot snapshot, bool isArabic) {
+  String _artifactSectionLabel(HomeSnapshot snapshot, AppLocalizations l10n) {
     if (snapshot.hasActiveTour && snapshot.currentExhibitName != null) {
-      return isArabic ? 'المعرض الحالي' : 'CURRENT EXHIBIT';
+      return l10n.homeCurrentExhibitCaps;
     }
     if ((snapshot.hasActiveTour || snapshot.isTourPaused) &&
         snapshot.nextStopName != null) {
-      return isArabic ? 'المحطة التالية' : 'NEXT STOP';
+      return l10n.homeNextStopCaps;
     }
-    return isArabic ? 'اكتشف المعروضات' : 'DISCOVER ARTIFACTS';
+    return l10n.homeDiscoverArtifactsCaps;
   }
 
   HomeFeaturedArtifact _contextualArtifact(
     HomeSnapshot snapshot,
-    bool isArabic,
+    AppLocalizations l10n,
   ) {
     if (snapshot.hasActiveTour && snapshot.currentExhibitName != null) {
       return HomeFeaturedArtifact(
         id: snapshot.featuredArtifact.id,
         title: snapshot.currentExhibitName!,
-        subtitle: isArabic
-            ? 'حورس يشرح هذه المحطة'
-            : 'Horus is explaining this stop',
+        subtitle: l10n.homeHorusExplainingStop,
         imageAsset: snapshot.featuredArtifact.imageAsset,
-        contextHint: isArabic ? 'تابع القصة' : 'Continue the story',
+        contextHint: l10n.homeContinueStory,
       );
     }
     if ((snapshot.hasActiveTour || snapshot.isTourPaused) &&
@@ -466,67 +455,71 @@ class _HomeScreenState extends State<HomeScreen> {
       return HomeFeaturedArtifact(
         id: snapshot.featuredArtifact.id,
         title: snapshot.nextStopName!,
-        subtitle: isArabic
-            ? 'معاينة قبل وصول حورس'
-            : 'Preview before Horus arrives',
+        subtitle: l10n.homePreviewBeforeHorus,
         imageAsset: snapshot.featuredArtifact.imageAsset,
-        contextHint: isArabic ? 'اضغط للتفاصيل' : 'Tap for details',
+        contextHint: l10n.homeTapForDetails,
       );
     }
     return HomeFeaturedArtifact(
       id: snapshot.featuredArtifact.id,
       title: snapshot.featuredArtifact.title,
-      subtitle: isArabic
-          ? 'القاعة الذهبية - موصى به الآن'
-          : 'Golden Hall - Recommended now',
+      subtitle: l10n.homeGoldenHallRecommended,
       imageAsset: snapshot.featuredArtifact.imageAsset,
       contextHint: snapshot.featuredArtifact.contextHint,
     );
   }
 
-  String _heroSubtitle(HomeSnapshot snapshot, bool isArabic) {
+  String _heroSubtitle(HomeSnapshot snapshot, AppLocalizations l10n) {
     if (snapshot.isLoggedIn) {
-      return isArabic
-          ? 'مرحبا ${snapshot.userName}، اتبع حورس داخل المتحف.'
-          : 'Welcome ${snapshot.userName}, follow Horus through the museum.';
+      return l10n.homeWelcomeUser(snapshot.userName);
     }
-    return isArabic
-        ? 'وضع الضيف - اتبع حورس داخل المتحف.'
-        : 'Guest visit mode - follow Horus through the museum.';
+    return l10n.homeGuestSubtitle;
   }
 
   @override
   Widget build(BuildContext context) {
     final prefs = context.watch<UserPreferencesModel>();
     final isArabic = prefs.language == 'ar';
+    final l10n = AppLocalizations.of(context)!;
     final snapshot = _snapshot(context);
     final status = _statusModel(context, snapshot, isArabic);
     final heroHeight = MediaQuery.sizeOf(context).height * 0.56;
-    final contextualArtifact = _contextualArtifact(snapshot, isArabic);
+    final contextualArtifact = _contextualArtifact(snapshot, l10n);
+    final canShowRobotQr =
+        snapshot.hasRobotTourEligibility ||
+        snapshot.robotStatus == HomeRobotStatus.error;
 
     final quickActions = <HomeQuickActionItem>[
       HomeQuickActionItem(
         icon: Icons.map_outlined,
-        label: isArabic ? 'الخريطة' : 'Map',
-        subtitle: isArabic ? 'عرض المسار' : 'Full map',
+        label: l10n.map,
+        subtitle: l10n.homeFullMap,
         onTap: () => _openMap(context),
       ),
-      HomeQuickActionItem(
-        icon: Icons.qr_code_scanner_rounded,
-        label: isArabic ? 'مسح QR للروبوت' : 'Scan Robot QR',
-        subtitle: isArabic ? 'الاقتران بحورس' : 'Pair with Horus',
-        onTap: () => _openRobotPairing(context),
-      ),
+      if (canShowRobotQr)
+        HomeQuickActionItem(
+          icon: Icons.qr_code_scanner_rounded,
+          label: l10n.homeScanRobotQr,
+          subtitle: l10n.homePairWithHorus,
+          onTap: () => _openRobotPairing(context),
+        )
+      else
+        HomeQuickActionItem(
+          icon: Icons.confirmation_number_outlined,
+          label: l10n.viewTickets,
+          subtitle: l10n.startMyTourDescription,
+          onTap: () => _openTickets(context, snapshot),
+        ),
       HomeQuickActionItem(
         icon: Icons.confirmation_number_outlined,
-        label: isArabic ? 'تذاكري' : 'My Tickets',
-        subtitle: isArabic ? 'رموز الدخول' : 'Stored QR codes',
+        label: l10n.myTickets,
+        subtitle: l10n.homeStoredQrCodes,
         onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
       ),
       HomeQuickActionItem(
         icon: Icons.photo_library_outlined,
-        label: isArabic ? 'المعرض' : 'Gallery',
-        subtitle: isArabic ? 'اكتشف المعروضات' : 'Explore artifacts',
+        label: l10n.gallery,
+        subtitle: l10n.homeExploreArtifacts,
         onTap: () => Navigator.pushNamed(context, AppRoutes.exhibits),
       ),
     ];
@@ -565,10 +558,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             _HeroSection(
                               height: heroHeight,
-                              title: isArabic
-                                  ? 'استكشف مع حورس'
-                                  : 'Explore With Horus',
-                              subtitle: _heroSubtitle(snapshot, isArabic),
+                              title: l10n.homeExploreWithHorus,
+                              subtitle: _heroSubtitle(snapshot, l10n),
                               isArabic: isArabic,
                               scrollController: _scrollController,
                             ),
@@ -598,7 +589,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             horizontal: AppSpacing.screenHorizontal,
                           ),
                           child: HomeStatsRow(
-                            items: _tourStats(snapshot, isArabic),
+                            items: _tourStats(snapshot, l10n),
                           ),
                         ),
                         const SizedBox(height: 24),
@@ -609,28 +600,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: _PrimaryActionCard(
                           isArabic: isArabic,
-                          title: isArabic
-                              ? 'خطط زيارتك للمتحف'
-                              : 'Plan Your Museum Visit',
-                          subtitle: isArabic
-                              ? 'اشتر التذاكر، حضر جولتك، أو ابدأ عند الوصول.'
-                              : 'Buy tickets, prepare your tour, or start when you arrive.',
-                          statusLine: _ticketStatusLine(snapshot, isArabic),
-                          primaryLabel: isArabic
-                              ? 'عرض التذاكر'
-                              : 'View Tickets',
-                          secondaryLabel: _primaryActionLabel(
-                            snapshot,
-                            isArabic,
-                          ),
+                          title: l10n.homePlanVisitTitle,
+                          subtitle: l10n.homePlanVisitSubtitle,
+                          statusLine: _ticketStatusLine(snapshot, l10n),
+                          primaryLabel: l10n.viewTickets,
+                          secondaryLabel: _primaryActionLabel(snapshot, l10n),
                           onPrimary: () => _openTickets(context, snapshot),
                           onSecondary: () => _openTourFlow(context, snapshot),
                         ),
                       ),
                       const SizedBox(height: 24),
-                      _SectionLabel(
-                        label: isArabic ? 'إجراءات سريعة' : 'QUICK ACTIONS',
-                      ),
+                      _SectionLabel(label: l10n.homeQuickActions),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.screenHorizontal,
@@ -639,7 +619,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       const SizedBox(height: 24),
                       _SectionLabel(
-                        label: _artifactSectionLabel(snapshot, isArabic),
+                        label: _artifactSectionLabel(snapshot, l10n),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -652,9 +632,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      _SectionLabel(
-                        label: isArabic ? 'معاينة الخريطة' : 'MAP PREVIEW',
-                      ),
+                      _SectionLabel(label: l10n.mapPreview),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.screenHorizontal,
@@ -662,8 +640,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: HomeMapPreviewCard(
                           data: snapshot.mapPreview,
                           legendHorus: 'Horus',
-                          legendYou: isArabic ? 'أنت' : 'You',
-                          fullViewLabel: isArabic ? 'عرض كامل' : 'Full View',
+                          legendYou: l10n.you,
+                          fullViewLabel: l10n.fullView,
+                          liveLabel: l10n.live,
                           onTap: () => _openMap(context),
                           onFullView: () => _openMap(context),
                         ),
@@ -674,7 +653,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           horizontal: AppSpacing.screenHorizontal,
                         ),
                         child: HomeInfoCard(
-                          title: isArabic ? 'هل تعلم؟' : 'DID YOU KNOW?',
+                          title: l10n.didYouKnow,
                           body: snapshot.didYouKnowText,
                           icon: Icons.auto_awesome_rounded,
                           bodyColor: AppColors.whiteTitle,
@@ -687,7 +666,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             horizontal: AppSpacing.screenHorizontal,
                           ),
                           child: HomeInfoCard(
-                            title: isArabic ? 'تحديث المتحف' : 'MUSEUM UPDATE',
+                            title: l10n.homeMuseumUpdate,
                             body: snapshot.smallUpdateCard!,
                             icon: Icons.campaign_outlined,
                             bodyColor: AppColors.bodyText,
@@ -706,6 +685,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   onMenu: () => AppMenuShell.of(innerContext)?.toggleMenu(),
                   onScanRobotQr: () => _openRobotPairing(innerContext),
                   scrollController: _scrollController,
+                  showScanRobotQr: canShowRobotQr,
                 ),
               ),
               PositionedDirectional(
@@ -830,8 +810,8 @@ class _HeroSection extends StatelessWidget {
                       const SizedBox(height: 10),
                       Align(
                         alignment: isArabic
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
+                            ? AlignmentDirectional.centerEnd
+                            : AlignmentDirectional.centerStart,
                         child: ConstrainedBox(
                           constraints: const BoxConstraints(maxWidth: 360),
                           child: Text(
@@ -871,7 +851,7 @@ class _SectionLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     final isArabic = Directionality.of(context) == TextDirection.rtl;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
+      padding: const EdgeInsetsDirectional.fromSTEB(
         AppSpacing.screenHorizontal,
         0,
         AppSpacing.screenHorizontal,
@@ -1011,7 +991,9 @@ class _TicketStatusPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: isArabic
+          ? AlignmentDirectional.centerEnd
+          : AlignmentDirectional.centerStart,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 2),
         child: Row(

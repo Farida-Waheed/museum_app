@@ -16,7 +16,11 @@ class BottomNav extends StatelessWidget {
     void handleTap(int index) {
       if (index == 0) {
         // Home must reset navigation stack
-        Navigator.pushNamedAndRemoveUntil(context, AppRoutes.mainHome, (route) => false);
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoutes.mainHome,
+          (route) => false,
+        );
         return;
       }
 
@@ -39,7 +43,7 @@ class BottomNav extends StatelessWidget {
           break;
       }
 
-      Navigator.pushNamedAndRemoveUntil(context, route, (r) => false);
+      Navigator.pushReplacementNamed(context, route);
     }
 
     return Container(
@@ -62,20 +66,44 @@ class BottomNav extends StatelessWidget {
             onTap: handleTap,
             type: BottomNavigationBarType.fixed,
             selectedItemColor: AppColors.primaryGold,
-            unselectedItemColor: isDark ? AppColors.darkMutedText : AppColors.mutedText,
+            unselectedItemColor: isDark
+                ? AppColors.darkMutedText
+                : AppColors.mutedText,
             showUnselectedLabels: true,
             selectedFontSize: 11,
             unselectedFontSize: 11,
-            selectedLabelStyle: AppTextStyles.premiumNavLabel(context).copyWith(fontWeight: FontWeight.w600),
+            selectedLabelStyle: AppTextStyles.premiumNavLabel(
+              context,
+            ).copyWith(fontWeight: FontWeight.w600),
             unselectedLabelStyle: AppTextStyles.premiumNavLabel(context),
             elevation: 0,
             backgroundColor: Colors.transparent,
             items: [
-              _buildNavItem(0, Icons.home_outlined, Icons.home_rounded, l10n.home),
+              _buildNavItem(
+                0,
+                Icons.home_outlined,
+                Icons.home_rounded,
+                l10n.home,
+              ),
               _buildNavItem(1, Icons.map_outlined, Icons.map_rounded, l10n.map),
-              _buildNavItem(2, Icons.radio_button_checked_outlined, Icons.radio_button_checked_rounded, l10n.tour),
-              _buildNavItem(3, Icons.confirmation_number_outlined, Icons.confirmation_number_rounded, l10n.tickets),
-              _buildNavItem(4, Icons.person_outline, Icons.person_rounded, l10n.profile),
+              _buildNavItem(
+                2,
+                Icons.radio_button_checked_outlined,
+                Icons.radio_button_checked_rounded,
+                l10n.tour,
+              ),
+              _buildNavItem(
+                3,
+                Icons.confirmation_number_outlined,
+                Icons.confirmation_number_rounded,
+                l10n.tickets,
+              ),
+              _buildNavItem(
+                4,
+                Icons.person_outline,
+                Icons.person_rounded,
+                l10n.profile,
+              ),
             ],
           ),
         ),
@@ -83,7 +111,12 @@ class BottomNav extends StatelessWidget {
     );
   }
 
-  BottomNavigationBarItem _buildNavItem(int index, IconData icon, IconData activeIcon, String label) {
+  BottomNavigationBarItem _buildNavItem(
+    int index,
+    IconData icon,
+    IconData activeIcon,
+    String label,
+  ) {
     return BottomNavigationBarItem(
       icon: Icon(icon, size: 22),
       activeIcon: Column(

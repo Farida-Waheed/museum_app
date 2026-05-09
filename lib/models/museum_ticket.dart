@@ -1,3 +1,5 @@
+import 'ticket_order.dart';
+
 /// Status of a museum ticket
 enum TicketStatus { pending, active, used, expired, cancelled }
 
@@ -14,6 +16,8 @@ class MuseumTicket {
   final String qrCodeValue;
   final TicketStatus status;
   final DateTime purchasedAt;
+  final List<MuseumTicketLineItem> lineItems;
+  final String? orderId;
 
   const MuseumTicket({
     required this.id,
@@ -27,6 +31,8 @@ class MuseumTicket {
     required this.qrCodeValue,
     required this.status,
     required this.purchasedAt,
+    this.lineItems = const [],
+    this.orderId,
   });
 
   /// Create a copy with optional field overrides
@@ -42,6 +48,8 @@ class MuseumTicket {
     String? qrCodeValue,
     TicketStatus? status,
     DateTime? purchasedAt,
+    List<MuseumTicketLineItem>? lineItems,
+    String? orderId,
   }) {
     return MuseumTicket(
       id: id ?? this.id,
@@ -55,6 +63,8 @@ class MuseumTicket {
       qrCodeValue: qrCodeValue ?? this.qrCodeValue,
       status: status ?? this.status,
       purchasedAt: purchasedAt ?? this.purchasedAt,
+      lineItems: lineItems ?? this.lineItems,
+      orderId: orderId ?? this.orderId,
     );
   }
 
@@ -72,6 +82,8 @@ class MuseumTicket {
       'qrCodeValue': qrCodeValue,
       'status': status.name,
       'purchasedAt': purchasedAt.toIso8601String(),
+      'lineItems': lineItems.map((item) => item.toJson()).toList(),
+      'orderId': orderId,
     };
   }
 
@@ -92,6 +104,16 @@ class MuseumTicket {
         orElse: () => TicketStatus.pending,
       ),
       purchasedAt: DateTime.parse(json['purchasedAt'] as String),
+      lineItems: json['lineItems'] == null
+          ? const []
+          : (json['lineItems'] as List)
+                .map(
+                  (item) => MuseumTicketLineItem.fromJson(
+                    item as Map<String, dynamic>,
+                  ),
+                )
+                .toList(),
+      orderId: json['orderId'] as String?,
     );
   }
 }

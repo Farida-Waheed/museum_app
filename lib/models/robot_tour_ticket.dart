@@ -1,4 +1,5 @@
 import 'museum_ticket.dart';
+import 'ticket_order.dart';
 
 /// Robot guided tour ticket model
 class RobotTourTicket {
@@ -13,6 +14,13 @@ class RobotTourTicket {
   final String currency;
   final TicketStatus status;
   final DateTime purchasedAt;
+  final RobotTourType tourType;
+  final StandardTourConfig? standardTourConfig;
+  final PersonalizedTourConfig? personalizedTourConfig;
+  final DateTime? visitDate;
+  final String? timeSlot;
+  final String? museumTicketId;
+  final String? orderId;
 
   // Optional for future extension
   final List<String>? selectedInterests;
@@ -30,6 +38,13 @@ class RobotTourTicket {
     required this.currency,
     required this.status,
     required this.purchasedAt,
+    this.tourType = RobotTourType.standard,
+    this.standardTourConfig,
+    this.personalizedTourConfig,
+    this.visitDate,
+    this.timeSlot,
+    this.museumTicketId,
+    this.orderId,
     this.selectedInterests,
     this.selectedArtifactIds,
   });
@@ -47,6 +62,13 @@ class RobotTourTicket {
     String? currency,
     TicketStatus? status,
     DateTime? purchasedAt,
+    RobotTourType? tourType,
+    StandardTourConfig? standardTourConfig,
+    PersonalizedTourConfig? personalizedTourConfig,
+    DateTime? visitDate,
+    String? timeSlot,
+    String? museumTicketId,
+    String? orderId,
     List<String>? selectedInterests,
     List<String>? selectedArtifactIds,
   }) {
@@ -62,6 +84,14 @@ class RobotTourTicket {
       currency: currency ?? this.currency,
       status: status ?? this.status,
       purchasedAt: purchasedAt ?? this.purchasedAt,
+      tourType: tourType ?? this.tourType,
+      standardTourConfig: standardTourConfig ?? this.standardTourConfig,
+      personalizedTourConfig:
+          personalizedTourConfig ?? this.personalizedTourConfig,
+      visitDate: visitDate ?? this.visitDate,
+      timeSlot: timeSlot ?? this.timeSlot,
+      museumTicketId: museumTicketId ?? this.museumTicketId,
+      orderId: orderId ?? this.orderId,
       selectedInterests: selectedInterests ?? this.selectedInterests,
       selectedArtifactIds: selectedArtifactIds ?? this.selectedArtifactIds,
     );
@@ -81,6 +111,13 @@ class RobotTourTicket {
       'currency': currency,
       'status': status.name,
       'purchasedAt': purchasedAt.toIso8601String(),
+      'tourType': tourType.name,
+      'standardTourConfig': standardTourConfig?.toJson(),
+      'personalizedTourConfig': personalizedTourConfig?.toJson(),
+      'visitDate': visitDate?.toIso8601String(),
+      'timeSlot': timeSlot,
+      'museumTicketId': museumTicketId,
+      'orderId': orderId,
       'selectedInterests': selectedInterests,
       'selectedArtifactIds': selectedArtifactIds,
     };
@@ -103,6 +140,28 @@ class RobotTourTicket {
         orElse: () => TicketStatus.pending,
       ),
       purchasedAt: DateTime.parse(json['purchasedAt'] as String),
+      tourType: json['tourType'] == null
+          ? RobotTourType.standard
+          : RobotTourType.values.firstWhere(
+              (value) => value.name == json['tourType'],
+              orElse: () => RobotTourType.standard,
+            ),
+      standardTourConfig: json['standardTourConfig'] == null
+          ? null
+          : StandardTourConfig.fromJson(
+              json['standardTourConfig'] as Map<String, dynamic>,
+            ),
+      personalizedTourConfig: json['personalizedTourConfig'] == null
+          ? null
+          : PersonalizedTourConfig.fromJson(
+              json['personalizedTourConfig'] as Map<String, dynamic>,
+            ),
+      visitDate: json['visitDate'] == null
+          ? null
+          : DateTime.parse(json['visitDate'] as String),
+      timeSlot: json['timeSlot'] as String?,
+      museumTicketId: json['museumTicketId'] as String?,
+      orderId: json['orderId'] as String?,
       selectedInterests: json['selectedInterests'] != null
           ? List<String>.from(json['selectedInterests'] as List)
           : null,

@@ -601,6 +601,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Connect to Horus Bot to start your live guided tour';
 
   @override
+  String get liveTourReconnectSubtitle =>
+      'Scan the robot QR code again to continue your guided tour.';
+
+  @override
   String get liveTourPausedDesc =>
       'Your tour is currently paused. Resume to continue.';
 
@@ -1455,6 +1459,263 @@ class AppLocalizationsEn extends AppLocalizations {
   String get timeSlot => 'Time Slot';
 
   @override
+  String get ticketsPlanVisitTitle => 'Plan Your Visit';
+
+  @override
+  String get ticketsPlanVisitSubtitle =>
+      'Choose museum entry, add an optional Horus-Bot tour, and save everything to your account.';
+
+  @override
+  String get ticketsAccountRequiredTitle => 'Account required';
+
+  @override
+  String get ticketsAccountRequiredBody =>
+      'Log in or create an account to save tickets, sync with your website account, keep robot photos, and preserve tour progress.';
+
+  @override
+  String get ticketsLoginRequired =>
+      'Log in or create an account before checkout.';
+
+  @override
+  String get ticketsVisitDetails => 'Visit Details';
+
+  @override
+  String get ticketsMuseumEntryTitle => 'Museum Entry';
+
+  @override
+  String get ticketsMuseumEntrySubtitle =>
+      'Select visitor categories and quantities for the museum gate pass.';
+
+  @override
+  String get ticketsRobotTourTitle => 'Horus-Bot Tour';
+
+  @override
+  String get ticketsRobotTourSubtitle =>
+      'Robot tour eligibility is separate from museum entry.';
+
+  @override
+  String get ticketsNoRobotTour => 'No Robot Tour';
+
+  @override
+  String get ticketsNoRobotTourDesc =>
+      'Museum entry only. You can explore at your own pace.';
+
+  @override
+  String get ticketsStandardTour => 'Standard Tour';
+
+  @override
+  String get ticketsStandardTourDesc =>
+      'A ready-made Horus-Bot route for first-time visitors.';
+
+  @override
+  String get ticketsPersonalizedTour => 'Personalized Tour';
+
+  @override
+  String get ticketsPersonalizedTourDesc =>
+      'Customize exhibits, themes, pace, accessibility, and photo spots.';
+
+  @override
+  String get ticketsStandardConfigTitle => 'Standard Tour Setup';
+
+  @override
+  String ticketsDurationValue(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String get ticketsEnglish => 'English';
+
+  @override
+  String get ticketsArabic => 'Arabic';
+
+  @override
+  String get ticketsRecommendedRoute =>
+      'Recommended route: Tutankhamun highlights, royal mummies, ancient tools, and the grand statue atrium.';
+
+  @override
+  String get ticketsPersonalizedSummaryTitle => 'Personalized Tour';
+
+  @override
+  String get ticketsPersonalizedPhase3 =>
+      'Detailed customization comes next. This pass will support exhibit selection, themes, duration, language, accessibility, pace, and photo spot preferences.';
+
+  @override
+  String get ticketsCustomizeTour => 'Customize Tour';
+
+  @override
+  String get ticketsComingNext =>
+      'Personalized tour customization will be completed in Phase 3.';
+
+  @override
+  String get tourCustomizeTitle => 'Build Your Personal Journey';
+
+  @override
+  String get tourCustomizeSubtitle =>
+      'Choose what Horus-Bot should focus on before your museum visit.';
+
+  @override
+  String get tourCustomizeExhibitsTitle => 'Exhibits and artifacts';
+
+  @override
+  String get tourCustomizeExhibitsSubtitle =>
+      'Pick the stops you want Horus-Bot to prioritize.';
+
+  @override
+  String get tourCustomizeThemesTitle => 'Themes and interests';
+
+  @override
+  String get tourCustomizeThemesSubtitle =>
+      'Shape the storytelling style for your guided route.';
+
+  @override
+  String get tourCustomizeAccessibilityTitle => 'Accessibility needs';
+
+  @override
+  String get tourCustomizeAccessibilitySubtitle =>
+      'Tell Horus-Bot how to make the route easier to follow.';
+
+  @override
+  String get tourCustomizeVisitorModeTitle => 'Visitor mode';
+
+  @override
+  String get tourCustomizePaceTitle => 'Pace';
+
+  @override
+  String get tourCustomizePhotoSpotsTitle => 'Photo spots';
+
+  @override
+  String get tourCustomizePhotoSpotsSubtitle =>
+      'Include recommended places for photos during the tour.';
+
+  @override
+  String get tourCustomizeAvoidCrowdsTitle => 'Avoid crowded areas';
+
+  @override
+  String get tourCustomizeAvoidCrowdsSubtitle =>
+      'Prefer quieter paths when the museum route allows it.';
+
+  @override
+  String get tourCustomizeSummaryTitle => 'Personalized tour summary';
+
+  @override
+  String get tourCustomizeSelectedExhibits => 'Selected exhibits';
+
+  @override
+  String get tourCustomizeSelectedThemes => 'Selected themes';
+
+  @override
+  String get tourCustomizeNotSelected => 'Not selected';
+
+  @override
+  String get tourCustomizeSave => 'Save Personalized Tour';
+
+  @override
+  String get tourCustomizeSelectExhibitError =>
+      'Select at least one exhibit or artifact.';
+
+  @override
+  String get tourCustomizeDurationError => 'Choose a tour duration.';
+
+  @override
+  String get tourCustomizeLanguageError => 'Choose a storytelling language.';
+
+  @override
+  String get tourCustomizeVisitorModeError => 'Choose a visitor mode.';
+
+  @override
+  String get tourCustomizePaceError => 'Choose a tour pace.';
+
+  @override
+  String get tourThemeAncientKings => 'Ancient kings';
+
+  @override
+  String get tourThemeDailyLife => 'Daily life';
+
+  @override
+  String get tourThemeMummies => 'Mummies and afterlife';
+
+  @override
+  String get tourThemeSymbols => 'Symbols and mythology';
+
+  @override
+  String get tourThemeArchitecture => 'Architecture';
+
+  @override
+  String get tourThemeHiddenStories => 'Hidden stories';
+
+  @override
+  String get tourThemePhotoHighlights => 'Photo highlights';
+
+  @override
+  String get tourAccessStepFree => 'Step-free route';
+
+  @override
+  String get tourAccessFewerStairs => 'Fewer stairs';
+
+  @override
+  String get tourAccessSeatingBreaks => 'Seating breaks';
+
+  @override
+  String get tourAccessSlowNarration => 'Slower narration';
+
+  @override
+  String get tourAccessHighContrast => 'High-contrast guidance';
+
+  @override
+  String get tourAccessAudioFirst => 'Audio-first guidance';
+
+  @override
+  String get tourVisitorAdults => 'Adults';
+
+  @override
+  String get tourVisitorStudents => 'Students';
+
+  @override
+  String get tourVisitorKidsFamily => 'Kids and family';
+
+  @override
+  String get tourVisitorDisabled => 'Disabled visitors';
+
+  @override
+  String get tourPaceRelaxed => 'Relaxed';
+
+  @override
+  String get tourPaceNormal => 'Normal';
+
+  @override
+  String get tourPaceFast => 'Fast';
+
+  @override
+  String get enabled => 'Enabled';
+
+  @override
+  String get disabled => 'Disabled';
+
+  @override
+  String get ticketsOrderSummaryTitle => 'Order Summary';
+
+  @override
+  String get ticketsMuseumSubtotal => 'Museum subtotal';
+
+  @override
+  String get ticketsRobotSubtotal => 'Robot tour subtotal';
+
+  @override
+  String get ticketsMockCheckoutNote =>
+      'Mock checkout for prototype. Payment and backend sync will be added later.';
+
+  @override
+  String get ticketsCheckout => 'Checkout';
+
+  @override
+  String get ticketsSelectMuseumEntryFirst =>
+      'Select at least one museum entry ticket before checkout.';
+
+  @override
+  String get ticketsPurchaseComplete =>
+      'Purchase complete. Your tickets were saved.';
+
+  @override
   String get ticketId => 'Ticket ID';
 
   @override
@@ -1478,4 +1739,395 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get scanQrOnRobot =>
       'Scan the QR on the physical Horus-Bot robot to connect';
+
+  @override
+  String get homeExploreWithHorus => 'Explore With Horus';
+
+  @override
+  String homeWelcomeUser(Object name) {
+    return 'Welcome $name, follow Horus through the museum.';
+  }
+
+  @override
+  String get homeGuestSubtitle =>
+      'Guest visit mode - follow Horus through the museum.';
+
+  @override
+  String get homeReadyLabel => 'READY TO EXPLORE?';
+
+  @override
+  String get homeReadyTitle => 'Ready to explore?';
+
+  @override
+  String get homeReadySubtitle =>
+      'Buy your ticket or scan your robot QR when you arrive.';
+
+  @override
+  String get homeConnectionLostLabel => 'CONNECTION LOST';
+
+  @override
+  String get homeReconnectTitle => 'Reconnect to Horus-Bot';
+
+  @override
+  String get homeReconnectSubtitle => 'Stay close to the robot or scan again.';
+
+  @override
+  String get homeTourCompletedLabel => 'TOUR COMPLETED';
+
+  @override
+  String get homeTourCompletedTitle => 'Tour completed';
+
+  @override
+  String get homeTourCompletedSubtitle =>
+      'Summary available inside your tour view.';
+
+  @override
+  String get homeTourPausedLabel => 'TOUR PAUSED';
+
+  @override
+  String get homeTourPausedTitle => 'Resume your museum tour';
+
+  @override
+  String get homeTourPausedSubtitle =>
+      'Resume your museum tour when you are ready.';
+
+  @override
+  String get homeHorusSpeakingLabel => 'HORUS IS SPEAKING NOW';
+
+  @override
+  String get homeHorusMovingLabel => 'HORUS IS MOVING';
+
+  @override
+  String get homeHorusWaitingLabel => 'HORUS IS WAITING';
+
+  @override
+  String get homeListenRobotSubtitle =>
+      'Listen to the robot for the full story.';
+
+  @override
+  String homeCurrentStopValue(Object exhibit) {
+    return 'Current stop: $exhibit';
+  }
+
+  @override
+  String get homeStayCloseSubtitle => 'Stay close to your guide while moving.';
+
+  @override
+  String get homeAskOrContinueSubtitle =>
+      'Ask a short question or continue to the next stop.';
+
+  @override
+  String get homeMuseumTicketReadyLabel => 'MUSEUM TICKET READY';
+
+  @override
+  String get homeMuseumTicketReadyTitle => 'Museum ticket ready';
+
+  @override
+  String get homeConnectTourSubtitle =>
+      'Connect to Horus-Bot to start your guided tour.';
+
+  @override
+  String get homeConnectedLabel => 'CONNECTED TO HORUS-BOT';
+
+  @override
+  String get homeConnectedTitle => 'Connected to Horus-Bot';
+
+  @override
+  String get homeNextStopCaps => 'NEXT STOP';
+
+  @override
+  String get homeTutankhamunHall => 'Tutankhamun Hall';
+
+  @override
+  String get homeGoldenHall => 'Golden Hall';
+
+  @override
+  String homeMinutesAway(Object location, Object minutes) {
+    return '$minutes minutes away - $location';
+  }
+
+  @override
+  String homeBattery(Object percent) {
+    return 'Battery $percent%';
+  }
+
+  @override
+  String get homeSyncedNow => 'synced just now';
+
+  @override
+  String homeSyncedMinutesAgo(Object minutes) {
+    return 'synced $minutes min ago';
+  }
+
+  @override
+  String homeSyncedHoursAgo(Object hours) {
+    return 'synced $hours hr ago';
+  }
+
+  @override
+  String get homeReconnectAction => 'Reconnect';
+
+  @override
+  String get homeResumeTourAction => 'Resume Tour';
+
+  @override
+  String get homeContinueTourAction => 'Continue Tour';
+
+  @override
+  String get homeScanRobotQr => 'Scan Robot QR';
+
+  @override
+  String get homeNoTicketsYet => 'No tickets yet';
+
+  @override
+  String get homeMuseumAndRobotTicketsReady =>
+      'Museum and robot tour tickets ready';
+
+  @override
+  String get homeOneTicketReady => '1 ticket ready';
+
+  @override
+  String homeTicketsSaved(Object count) {
+    return '$count tickets saved';
+  }
+
+  @override
+  String get homeComplete => 'Complete';
+
+  @override
+  String get homeStopsVisited => 'Stops visited';
+
+  @override
+  String get homeTimeLeft => 'Time left';
+
+  @override
+  String get homeCurrentExhibitCaps => 'CURRENT EXHIBIT';
+
+  @override
+  String get homeDiscoverArtifactsCaps => 'DISCOVER ARTIFACTS';
+
+  @override
+  String get homeHorusExplainingStop => 'Horus is explaining this stop';
+
+  @override
+  String get homeContinueStory => 'Continue the story';
+
+  @override
+  String get homePreviewBeforeHorus => 'Preview before Horus arrives';
+
+  @override
+  String get homeTapForDetails => 'Tap for details';
+
+  @override
+  String get homeGoldenHallRecommended => 'Golden Hall - Recommended now';
+
+  @override
+  String get homeFullMap => 'Full map';
+
+  @override
+  String get homePairWithHorus => 'Pair with Horus';
+
+  @override
+  String get homeStoredQrCodes => 'Stored QR codes';
+
+  @override
+  String get homeExploreArtifacts => 'Explore artifacts';
+
+  @override
+  String get homePlanVisitTitle => 'Plan Your Museum Visit';
+
+  @override
+  String get homePlanVisitSubtitle =>
+      'Buy tickets, prepare your tour, or start when you arrive.';
+
+  @override
+  String get homeQuickActions => 'QUICK ACTIONS';
+
+  @override
+  String get homeMuseumUpdate => 'MUSEUM UPDATE';
+
+  @override
+  String get liveTourCompletedTitle => 'Tour completed';
+
+  @override
+  String get liveTourCompletedSubtitle =>
+      'You can view your summary and memories.';
+
+  @override
+  String get liveTourPausedTitle => 'Tour paused';
+
+  @override
+  String get liveTourPausedSubtitle =>
+      'Resume when you are ready to continue with Horus-Bot.';
+
+  @override
+  String get liveTourFarTitle => 'You are far from Horus-Bot';
+
+  @override
+  String get liveTourFarSubtitle =>
+      'Use map recovery to return to your guided route.';
+
+  @override
+  String get liveTourMovingTitle => 'Moving to next stop';
+
+  @override
+  String get liveTourMovingSubtitle =>
+      'Horus-Bot is leading you to the next exhibit.';
+
+  @override
+  String get liveTourFinalTitle => 'Final exhibit in your tour';
+
+  @override
+  String get liveTourFinalSubtitle => 'You are at the last guided stop.';
+
+  @override
+  String get liveTourGuidingTitle => 'Horus-Bot is guiding now';
+
+  @override
+  String get liveTourGuidingSubtitle => 'Stay nearby and enjoy the story.';
+
+  @override
+  String get liveTourTranscriptIntro =>
+      'Horus-Bot is narrating this stop. New lines appear here during the tour.';
+
+  @override
+  String liveTourSimWelcome(Object exhibit) {
+    return 'Welcome to the $exhibit.';
+  }
+
+  @override
+  String get liveTourSimSignificance =>
+      'This artifact is extremely significant to our history.';
+
+  @override
+  String get liveTourSimDetails =>
+      'Notice the intricate details on the surface.';
+
+  @override
+  String get liveTourSimDiscovery =>
+      'It was discovered during a major excavation.';
+
+  @override
+  String get liveTourSimMoveCloser =>
+      'Let\'s move closer to observe the craftsmanship.';
+
+  @override
+  String get mapTourCompletedSubtitle =>
+      'Tour completed. Continue exploring exhibits freely.';
+
+  @override
+  String get mapTourPausedSubtitle =>
+      'Tour paused. Return to Horus-Bot to continue.';
+
+  @override
+  String get mapActiveTourSubtitle => 'Follow Horus-Bot to your next stop.';
+
+  @override
+  String get mapRobotReadySubtitle => 'Horus-Bot is ready to guide you.';
+
+  @override
+  String get mapConnectForNavigationSubtitle =>
+      'Connect from Home or Live Tour to start guided navigation.';
+
+  @override
+  String get mapExplorePreviewSubtitle =>
+      'Tap an exhibit to preview its story.';
+
+  @override
+  String get mapReconnectToHorus => 'Reconnect to Horus-Bot';
+
+  @override
+  String get mapConnectToHorus => 'Connect to Horus-Bot';
+
+  @override
+  String get mapFollowingHorus => 'Following Horus-Bot';
+
+  @override
+  String get mapExploreOwnPace => 'Explore at your own pace';
+
+  @override
+  String get mapCurrent => 'Current';
+
+  @override
+  String get mapNext => 'Next';
+
+  @override
+  String get mapNow => 'Now';
+
+  @override
+  String get mapGuide => 'Guide';
+
+  @override
+  String get mapGuideActive => 'Active';
+
+  @override
+  String get mapGuideFree => 'Free';
+
+  @override
+  String get mapCurrentStop => 'Current stop';
+
+  @override
+  String get mapNextStop => 'Next stop';
+
+  @override
+  String get mapVisited => 'Visited';
+
+  @override
+  String get mapExhibit => 'Exhibit';
+
+  @override
+  String get mapTourCompletedTitle => 'Tour completed';
+
+  @override
+  String get mapTourCompletedStatusSubtitle =>
+      'You can continue exploring the museum freely.';
+
+  @override
+  String get mapConnectingTitle => 'Connecting to Horus-Bot';
+
+  @override
+  String get mapConnectingSubtitle =>
+      'Horus-Bot will appear on the map when ready.';
+
+  @override
+  String get mapPausedTitle => 'Tour paused';
+
+  @override
+  String get mapPausedStatusSubtitle =>
+      'Return to Horus-Bot or resume your tour to continue.';
+
+  @override
+  String get mapGuidingTitle => 'Horus-Bot is guiding you';
+
+  @override
+  String get mapGuidingSubtitle => 'Follow Horus to the next stop.';
+
+  @override
+  String get mapReadyTitle => 'Horus-Bot is ready to guide you';
+
+  @override
+  String get mapReadyStatusSubtitle => 'Start your guided tour when ready.';
+
+  @override
+  String get mapNotConnectedTitle => 'Horus-Bot is not connected';
+
+  @override
+  String get mapNotConnectedSubtitle =>
+      'Reconnect when needed, or keep exploring exhibits freely.';
+
+  @override
+  String get mapConnectForTourTitle => 'Connect to Horus-Bot for your tour';
+
+  @override
+  String get mapConnectForTourSubtitle =>
+      'You can also explore exhibits freely from here.';
+
+  @override
+  String get mapExploreExhibitsTitle => 'Explore exhibits';
+
+  @override
+  String get mapViewDetails => 'View Details';
+
+  @override
+  String get mapFindHorusOnMap => 'Find Horus on Map';
 }

@@ -68,7 +68,7 @@ class HomeDemoService {
         horusPosition: const Offset(0.34, 0.42),
         userPosition: const Offset(0.58, 0.66),
         hint: lang == 'ar'
-            ? 'ابدأ جولة لرؤية موقع حورس المباشر.'
+            ? 'ابدأ جولة لرؤية موقع Horus المباشر.'
             : 'Start a tour to see Horus live.',
       );
     }

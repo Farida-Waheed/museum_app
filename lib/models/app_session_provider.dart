@@ -166,6 +166,18 @@ class AppSessionProvider with ChangeNotifier {
   /// Tour is paused
   bool get isTourPaused => _tourLifecycleState == TourLifecycleState.paused;
 
+  bool get isTourCompleted =>
+      _tourLifecycleState == TourLifecycleState.completed;
+
+  bool get isTourReadyToStart =>
+      _tourLifecycleState == TourLifecycleState.readyToStart &&
+      _robotConnectionState == RobotConnectionState.connected;
+
+  bool get hasActiveOrPausedTour =>
+      _robotConnectionState == RobotConnectionState.connected &&
+      (_tourLifecycleState == TourLifecycleState.active ||
+          _tourLifecycleState == TourLifecycleState.paused);
+
   /// Should show robot on map
   /// Only show if connected and in active/paused tour
   bool get shouldShowRobotOnMap =>
@@ -258,11 +270,24 @@ class AppSessionProvider with ChangeNotifier {
 
   void completeRobotConnection() {
     _robotConnectionState = RobotConnectionState.connected;
-    _tourLifecycleState = TourLifecycleState.active;
+    _tourLifecycleState = TourLifecycleState.readyToStart;
     _robotActivityState = RobotActivityState.waiting;
     _followMode = FollowModeState.on;
-    // Generate a new session ID when tour starts
-    _currentTourSessionId = DateTime.now().millisecondsSinceEpoch.toString();
+    notifyListeners();
+  }
+
+  void startActiveTour({
+    required String currentExhibitId,
+    String? nextExhibitId,
+  }) {
+    _appUsageMode = AppUsageMode.visiting;
+    _robotConnectionState = RobotConnectionState.connected;
+    _tourLifecycleState = TourLifecycleState.active;
+    _robotActivityState = RobotActivityState.moving;
+    _followMode = FollowModeState.on;
+    _currentExhibitId = currentExhibitId;
+    _nextExhibitId = nextExhibitId;
+    _currentTourSessionId ??= DateTime.now().millisecondsSinceEpoch.toString();
     notifyListeners();
   }
 
@@ -354,9 +379,8 @@ class AppSessionProvider with ChangeNotifier {
   }
 
   void endTour() {
-    if (_robotConnectionState == RobotConnectionState.connected &&
-        (_tourLifecycleState == TourLifecycleState.active ||
-            _tourLifecycleState == TourLifecycleState.paused)) {
+    if (_tourLifecycleState == TourLifecycleState.active ||
+        _tourLifecycleState == TourLifecycleState.paused) {
       _tourLifecycleState = TourLifecycleState.completed;
       _robotConnectionState = RobotConnectionState.disconnected;
       _followMode = FollowModeState.off;

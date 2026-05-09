@@ -46,6 +46,7 @@ class HomeSnapshot {
     required this.isLoggedIn,
     required this.hasValidMuseumTicket,
     required this.hasRobotTourTicket,
+    required this.hasRobotTourEligibility,
     required this.ticketCount,
     required this.nextTicketQrAvailable,
     required this.isRobotConnected,
@@ -78,6 +79,7 @@ class HomeSnapshot {
 
   final bool hasValidMuseumTicket;
   final bool hasRobotTourTicket;
+  final bool hasRobotTourEligibility;
   final int ticketCount;
   final bool nextTicketQrAvailable;
 

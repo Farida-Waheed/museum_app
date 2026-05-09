@@ -15,6 +15,7 @@ import 'package:flutter/foundation.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
+import '../../models/ticket_provider.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -92,38 +93,26 @@ class _MapScreenState extends State<MapScreen>
 
   String _mapContentSubtitle(
     session.AppSessionProvider sessionProvider,
-    TourProvider tourProvider,
-    bool isArabic,
+    bool hasRobotTourEligibility,
+    AppLocalizations l10n,
   ) {
     if (sessionProvider.tourLifecycleState ==
         session.TourLifecycleState.completed) {
-      return isArabic
-          ? '\u0627\u0643\u062a\u0645\u0644\u062a \u0627\u0644\u062c\u0648\u0644\u0629. \u0648\u0627\u0635\u0644 \u0627\u0633\u062a\u0643\u0634\u0627\u0641 \u0627\u0644\u0645\u0639\u0631\u0648\u0636\u0627\u062a \u0628\u062d\u0631\u064a\u0629.'
-          : 'Tour completed. Continue exploring exhibits freely.';
+      return l10n.mapTourCompletedSubtitle;
     }
     if (sessionProvider.isTourPaused) {
-      return isArabic
-          ? '\u0627\u0644\u062c\u0648\u0644\u0629 \u0645\u062a\u0648\u0642\u0641\u0629 \u0645\u0624\u0642\u062a\u0627. \u0639\u062f \u0625\u0644\u0649 \u062d\u0648\u0631\u0633-\u0628\u0648\u062a \u0644\u0644\u0645\u062a\u0627\u0628\u0639\u0629.'
-          : 'Tour paused. Return to Horus-Bot to continue.';
+      return l10n.mapTourPausedSubtitle;
     }
     if (sessionProvider.isInActiveTour) {
-      return isArabic
-          ? '\u0627\u062a\u0628\u0639 \u062d\u0648\u0631\u0633-\u0628\u0648\u062a \u0625\u0644\u0649 \u0645\u062d\u0637\u062a\u0643 \u0627\u0644\u062a\u0627\u0644\u064a\u0629.'
-          : 'Follow Horus-Bot to your next stop.';
+      return l10n.mapActiveTourSubtitle;
     }
     if (sessionProvider.isRobotConnected) {
-      return isArabic
-          ? '\u062d\u0648\u0631\u0633-\u0628\u0648\u062a \u062c\u0627\u0647\u0632 \u0644\u0625\u0631\u0634\u0627\u062f\u0643.'
-          : 'Horus-Bot is ready to guide you.';
+      return l10n.mapRobotReadySubtitle;
     }
-    if (sessionProvider.hasMuseumEntryTicket) {
-      return isArabic
-          ? '\u0627\u062a\u0635\u0644 \u0628\u062d\u0648\u0631\u0633-\u0628\u0648\u062a \u0644\u0628\u062f\u0621 \u062c\u0648\u0644\u0629 \u0625\u0631\u0634\u0627\u062f\u064a\u0629.'
-          : 'Connect to Horus-Bot for guided navigation.';
+    if (hasRobotTourEligibility) {
+      return l10n.mapConnectForNavigationSubtitle;
     }
-    return isArabic
-        ? '\u0627\u0636\u063a\u0637 \u0639\u0644\u0649 \u0623\u064a \u0645\u0639\u0631\u0648\u0636 \u0644\u0645\u0639\u0627\u064a\u0646\u0629 \u0642\u0635\u062a\u0647.'
-        : 'Tap an exhibit to preview its story.';
+    return l10n.mapExplorePreviewSubtitle;
   }
 
   Exhibit? _findExhibitById(String? exhibitId) {
@@ -136,30 +125,27 @@ class _MapScreenState extends State<MapScreen>
 
   String? _reconnectLabel(
     session.AppSessionProvider sessionProvider,
-    bool isArabic,
+    bool hasRobotTourEligibility,
+    AppLocalizations l10n,
   ) {
+    final hadTourInProgress =
+        sessionProvider.tourLifecycleState ==
+            session.TourLifecycleState.active ||
+        sessionProvider.tourLifecycleState == session.TourLifecycleState.paused;
     if (sessionProvider.tourLifecycleState ==
         session.TourLifecycleState.completed) {
       return null;
     }
     if (sessionProvider.robotConnectionState ==
-        session.RobotConnectionState.failed) {
-      return isArabic
-          ? '\u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u0627\u062a\u0635\u0627\u0644 \u0628\u062d\u0648\u0631\u0633-\u0628\u0648\u062a'
-          : 'Reconnect to Horus-Bot';
+            session.RobotConnectionState.failed &&
+        hadTourInProgress) {
+      return l10n.mapReconnectToHorus;
     }
     if (sessionProvider.robotConnectionState ==
             session.RobotConnectionState.disconnected &&
-        (sessionProvider.hasMuseumEntryTicket ||
-            sessionProvider.tourLifecycleState ==
-                session.TourLifecycleState.active ||
-            sessionProvider.tourLifecycleState ==
-                session.TourLifecycleState.paused ||
-            sessionProvider.tourLifecycleState ==
-                session.TourLifecycleState.readyToStart)) {
-      return isArabic
-          ? '\u0627\u062a\u0635\u0644 \u0628\u062d\u0648\u0631\u0633-\u0628\u0648\u062a'
-          : 'Connect to Horus-Bot';
+        hasRobotTourEligibility &&
+        hadTourInProgress) {
+      return l10n.mapConnectToHorus;
     }
     return null;
   }
@@ -192,10 +178,16 @@ class _MapScreenState extends State<MapScreen>
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final tourProvider = Provider.of<TourProvider>(context);
     final sessionProvider = Provider.of<session.AppSessionProvider>(context);
-    final currentExhibitId =
-        tourProvider.currentExhibitId ?? sessionProvider.currentExhibitId;
-    final nextExhibitId =
-        tourProvider.nextExhibitId ?? sessionProvider.nextExhibitId;
+    final ticketProvider = Provider.of<TicketProvider>(context);
+    final hasRobotTourEligibility = ticketProvider.hasValidRobotTourEligibility;
+    final hasTourContext =
+        sessionProvider.isInActiveTour || sessionProvider.isTourPaused;
+    final currentExhibitId = hasTourContext
+        ? (sessionProvider.currentExhibitId ?? tourProvider.currentExhibitId)
+        : null;
+    final nextExhibitId = hasTourContext
+        ? (sessionProvider.nextExhibitId ?? tourProvider.nextExhibitId)
+        : null;
     final currentExhibit = _findExhibitById(currentExhibitId);
     final nextExhibit = _findExhibitById(nextExhibitId);
     final robotX = currentExhibit == null
@@ -205,15 +197,21 @@ class _MapScreenState extends State<MapScreen>
         ? mapHeight * 0.5
         : (currentExhibit.y / 600) * mapHeight;
     final showRobot =
-        sessionProvider.shouldShowRobotOnMap && currentExhibit != null;
+        sessionProvider.shouldShowRobotOnMap &&
+        hasTourContext &&
+        currentExhibit != null;
     final showPath = sessionProvider.shouldShowRobotPath && showRobot;
     final visitedCount = tourProvider.visitedExhibitIds.length;
     final contentSubtitle = _mapContentSubtitle(
       sessionProvider,
-      tourProvider,
-      isArabic,
+      hasRobotTourEligibility,
+      l10n,
     );
-    final reconnectLabel = _reconnectLabel(sessionProvider, isArabic);
+    final reconnectLabel = _reconnectLabel(
+      sessionProvider,
+      hasRobotTourEligibility,
+      l10n,
+    );
     final showRecoveryCenter =
         showRobot &&
         (sessionProvider.isTourPaused ||
@@ -245,7 +243,7 @@ class _MapScreenState extends State<MapScreen>
               children: [
                 // Map title content, beneath the Horus-Bot header identity.
                 Container(
-                  padding: EdgeInsets.fromLTRB(
+                  padding: EdgeInsetsDirectional.fromSTEB(
                     20,
                     MediaQuery.paddingOf(context).top + 74,
                     20,
@@ -256,15 +254,18 @@ class _MapScreenState extends State<MapScreen>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: isArabic
+                            ? CrossAxisAlignment.end
+                            : CrossAxisAlignment.start,
                         children: [
                           Text(
-                            isArabic
-                                ? "\u062e\u0631\u064a\u0637\u0629 \u0627\u0644\u0645\u062a\u062d\u0641"
-                                : "Museum Map",
+                            l10n.museumMap,
                             style: AppTextStyles.titleMedium(
                               context,
                             ).copyWith(fontSize: 15),
+                            textAlign: isArabic
+                                ? TextAlign.right
+                                : TextAlign.left,
                           ),
                           const SizedBox(height: 4),
                           Text(
@@ -274,22 +275,22 @@ class _MapScreenState extends State<MapScreen>
                             style: AppTextStyles.metadata(
                               context,
                             ).copyWith(color: AppColors.bodyText),
+                            textAlign: isArabic
+                                ? TextAlign.right
+                                : TextAlign.left,
                           ),
                         ],
                       ),
-                      _FilterChip(
-                        label: isArabic
-                            ? "\u0645\u0639\u0631\u0648\u0636\u0627\u062a"
-                            : "Exhibits",
-                      ),
+                      _FilterChip(label: l10n.exhibits),
                     ],
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                  padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 8),
                   child: _MapStatusPanel(
                     sessionProvider: sessionProvider,
                     tourProvider: tourProvider,
+                    hasRobotTourEligibility: hasRobotTourEligibility,
                     currentExhibit: currentExhibit,
                     nextExhibit: nextExhibit,
                     isArabic: isArabic,
@@ -338,12 +339,8 @@ class _MapScreenState extends State<MapScreen>
                                   Text(
                                     tourProvider.followMode ==
                                             FollowModeState.on
-                                        ? (isArabic
-                                              ? '\u0623\u0646\u062a \u062a\u062a\u0627\u0628\u0639 \u062d\u0648\u0631\u0633-\u0628\u0648\u062a'
-                                              : 'Following Horus-Bot')
-                                        : (isArabic
-                                              ? '\u0627\u0633\u062a\u0643\u0634\u0641 \u0628\u0648\u062a\u064a\u0631\u062a\u0643'
-                                              : 'Explore at your own pace'),
+                                        ? l10n.mapFollowingHorus
+                                        : l10n.mapExploreOwnPace,
                                     style: AppTextStyles.bodyPrimary(
                                       context,
                                     ).copyWith(fontWeight: FontWeight.w700),
@@ -430,9 +427,7 @@ class _MapScreenState extends State<MapScreen>
                                       child: Padding(
                                         padding: const EdgeInsets.only(top: 10),
                                         child: Text(
-                                          isArabic
-                                              ? "\u0627\u0644\u0645\u062f\u062e\u0644"
-                                              : "Entrance",
+                                          l10n.entrance,
                                           style: AppTextStyles.metadata(context)
                                               .copyWith(
                                                 fontWeight: FontWeight.bold,
@@ -467,8 +462,8 @@ class _MapScreenState extends State<MapScreen>
                         ),
                       ),
                       // --- MAP ACTIONS (Recenter) ---
-                      Positioned(
-                        right: 16,
+                      PositionedDirectional(
+                        end: 16,
                         top: 16,
                         child: Column(
                           children: [
@@ -495,8 +490,8 @@ class _MapScreenState extends State<MapScreen>
                         ),
                       ),
                       // --- LEGEND FLOATING CARD ---
-                      Positioned(
-                        left: 16,
+                      PositionedDirectional(
+                        start: 16,
                         bottom: 16,
                         child: Container(
                           padding: const EdgeInsets.all(16),
@@ -516,7 +511,9 @@ class _MapScreenState extends State<MapScreen>
                             ],
                           ),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: isArabic
+                                ? CrossAxisAlignment.end
+                                : CrossAxisAlignment.start,
                             children: [
                               // Legend reflects only markers currently visible.
                               if (showRobot) ...[
@@ -529,9 +526,7 @@ class _MapScreenState extends State<MapScreen>
                               if (currentExhibit != null) ...[
                                 _buildLegendItem(
                                   AppColors.primaryGold,
-                                  isArabic
-                                      ? '\u0627\u0644\u062d\u0627\u0644\u064a'
-                                      : 'Current',
+                                  l10n.mapCurrent,
                                   icon: Icons.place_rounded,
                                 ),
                                 const SizedBox(height: 8),
@@ -539,9 +534,7 @@ class _MapScreenState extends State<MapScreen>
                               if (nextExhibit != null) ...[
                                 _buildLegendItem(
                                   AppColors.darkGold,
-                                  isArabic
-                                      ? '\u0627\u0644\u062a\u0627\u0644\u064a'
-                                      : 'Next',
+                                  l10n.mapNext,
                                   icon: Icons.flag_rounded,
                                 ),
                                 const SizedBox(height: 8),
@@ -580,6 +573,7 @@ class _MapScreenState extends State<MapScreen>
                 isCurrent: _previewIsCurrent,
                 isNext: _previewIsNext,
                 isArabic: isArabic,
+                l10n: l10n,
                 onClose: _closePreview,
                 onViewDetails: () {
                   final exhibit = _previewExhibit;
@@ -607,6 +601,7 @@ class _MapScreenState extends State<MapScreen>
     bool isNext,
     bool isArabic,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final double x = (e.x / 400) * mapWidth;
     final double y = (e.y / 600) * mapHeight;
     final markerColor = isCurrent
@@ -661,11 +656,7 @@ class _MapScreenState extends State<MapScreen>
                     ),
                   ),
                   child: Text(
-                    isCurrent
-                        ? (isArabic ? '\u0627\u0644\u0622\u0646' : 'Now')
-                        : (isArabic
-                              ? '\u0627\u0644\u062a\u0627\u0644\u064a'
-                              : 'Next'),
+                    isCurrent ? l10n.mapNow : l10n.mapNext,
                     style: AppTextStyles.metadata(context).copyWith(
                       color: AppColors.primaryGold,
                       fontSize: 9,
@@ -705,11 +696,12 @@ class _MapScreenState extends State<MapScreen>
   }
 
   Widget _buildVisitorMarker(double x, double y) {
+    final l10n = AppLocalizations.of(context)!;
     return Positioned(
       left: x - 18,
       top: y - 18,
       child: Tooltip(
-        message: 'You',
+        message: l10n.you,
         child: Stack(
           alignment: Alignment.center,
           children: [
@@ -872,6 +864,7 @@ class _FilterChip extends StatelessWidget {
 class _MapStatusPanel extends StatelessWidget {
   final session.AppSessionProvider sessionProvider;
   final TourProvider tourProvider;
+  final bool hasRobotTourEligibility;
   final Exhibit? currentExhibit;
   final Exhibit? nextExhibit;
   final bool isArabic;
@@ -882,6 +875,7 @@ class _MapStatusPanel extends StatelessWidget {
   const _MapStatusPanel({
     required this.sessionProvider,
     required this.tourProvider,
+    required this.hasRobotTourEligibility,
     required this.currentExhibit,
     required this.nextExhibit,
     required this.isArabic,
@@ -892,7 +886,8 @@ class _MapStatusPanel extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    final status = _statusCopy();
+    final l10n = AppLocalizations.of(context)!;
+    final status = _statusCopy(l10n);
     final lang = isArabic ? 'ar' : 'en';
     final canRecover = onRecover != null;
     return Container(
@@ -902,6 +897,7 @@ class _MapStatusPanel extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
             children: [
               Container(
                 width: 36,
@@ -918,13 +914,16 @@ class _MapStatusPanel extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: isArabic
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
                   children: [
                     Text(
                       status.title,
                       style: AppTextStyles.bodyPrimary(
                         context,
                       ).copyWith(fontWeight: FontWeight.w800),
+                      textAlign: TextAlign.start,
                     ),
                     const SizedBox(height: 3),
                     Text(
@@ -932,6 +931,7 @@ class _MapStatusPanel extends StatelessWidget {
                       style: AppTextStyles.metadata(
                         context,
                       ).copyWith(color: AppColors.neutralMedium, height: 1.25),
+                      textAlign: TextAlign.start,
                     ),
                   ],
                 ),
@@ -955,36 +955,28 @@ class _MapStatusPanel extends StatelessWidget {
               if (currentExhibit != null)
                 _StatusPill(
                   icon: Icons.place_rounded,
-                  label: isArabic
-                      ? '\u0627\u0644\u062d\u0627\u0644\u064a'
-                      : 'Current',
+                  label: l10n.mapCurrent,
                   value: currentExhibit!.getName(lang),
                 ),
               if (nextExhibit != null)
                 _StatusPill(
                   icon: Icons.flag_rounded,
-                  label: isArabic
-                      ? '\u0627\u0644\u062a\u0627\u0644\u064a'
-                      : 'Next',
+                  label: l10n.mapNext,
                   value: nextExhibit!.getName(lang),
                 ),
               _StatusPill(
                 icon: Icons.check_circle_outline_rounded,
-                label: isArabic
-                    ? '\u062a\u0645\u062a \u0632\u064a\u0627\u0631\u062a\u0647\u0627'
-                    : 'Visited',
+                label: l10n.mapVisited,
                 value: '$visitedCount',
               ),
               _StatusPill(
                 icon: tourProvider.followMode == FollowModeState.on
                     ? Icons.visibility_rounded
                     : Icons.visibility_off_rounded,
-                label: isArabic
-                    ? '\u0627\u0644\u0645\u0631\u0627\u0641\u0642\u0629'
-                    : 'Guide',
+                label: l10n.mapGuide,
                 value: tourProvider.followMode == FollowModeState.on
-                    ? (isArabic ? '\u0646\u0634\u0637\u0629' : 'Active')
-                    : (isArabic ? '\u062d\u0631\u0629' : 'Free'),
+                    ? l10n.mapGuideActive
+                    : l10n.mapGuideFree,
               ),
             ],
           ),
@@ -993,18 +985,14 @@ class _MapStatusPanel extends StatelessWidget {
     );
   }
 
-  _MapStatusCopy _statusCopy() {
+  _MapStatusCopy _statusCopy(AppLocalizations l10n) {
     if (sessionProvider.tourLifecycleState ==
         session.TourLifecycleState.completed) {
       return _MapStatusCopy(
         icon: Icons.verified_rounded,
         color: AppColors.primaryGold,
-        title: isArabic
-            ? '\u0627\u0643\u062a\u0645\u0644\u062a \u0627\u0644\u062c\u0648\u0644\u0629'
-            : 'Tour completed',
-        subtitle: isArabic
-            ? '\u064a\u0645\u0643\u0646\u0643 \u0645\u0648\u0627\u0635\u0644\u0629 \u0627\u0633\u062a\u0643\u0634\u0627\u0641 \u0627\u0644\u0645\u0639\u0631\u0648\u0636\u0627\u062a \u0628\u062d\u0631\u064a\u0629.'
-            : 'You can continue exploring the museum freely.',
+        title: l10n.mapTourCompletedTitle,
+        subtitle: l10n.mapTourCompletedStatusSubtitle,
       );
     }
     switch (sessionProvider.robotConnectionState) {
@@ -1012,12 +1000,8 @@ class _MapStatusPanel extends StatelessWidget {
         return _MapStatusCopy(
           icon: Icons.sync_rounded,
           color: AppColors.primaryGold,
-          title: isArabic
-              ? '\u062c\u0627\u0631\u064a \u0627\u0644\u0627\u062a\u0635\u0627\u0644 \u0628\u062d\u0648\u0631\u0633-\u0628\u0648\u062a'
-              : 'Connecting to Horus-Bot',
-          subtitle: isArabic
-              ? '\u0633\u064a\u0638\u0647\u0631 \u062d\u0648\u0631\u0633-\u0628\u0648\u062a \u0639\u0644\u0649 \u0627\u0644\u062e\u0631\u064a\u0637\u0629 \u0639\u0646\u062f\u0645\u0627 \u064a\u0635\u0628\u062d \u062c\u0627\u0647\u0632\u0627.'
-              : 'Horus-Bot will appear on the map when ready.',
+          title: l10n.mapConnectingTitle,
+          subtitle: l10n.mapConnectingSubtitle,
         );
       case session.RobotConnectionState.connected:
         if (sessionProvider.tourLifecycleState ==
@@ -1025,12 +1009,8 @@ class _MapStatusPanel extends StatelessWidget {
           return _MapStatusCopy(
             icon: Icons.pause_circle_outline_rounded,
             color: AppColors.darkGold,
-            title: isArabic
-                ? '\u0627\u0644\u062c\u0648\u0644\u0629 \u0645\u062a\u0648\u0642\u0641\u0629 \u0645\u0624\u0642\u062a\u0627'
-                : 'Tour paused',
-            subtitle: isArabic
-                ? '\u0639\u062f \u0625\u0644\u0649 \u062d\u0648\u0631\u0633-\u0628\u0648\u062a \u0623\u0648 \u0627\u0633\u062a\u0623\u0646\u0641 \u0627\u0644\u062c\u0648\u0644\u0629 \u0644\u0644\u0645\u062a\u0627\u0628\u0639\u0629.'
-                : 'Return to Horus-Bot or resume your tour to continue.',
+            title: l10n.mapPausedTitle,
+            subtitle: l10n.mapPausedStatusSubtitle,
           );
         }
         if (sessionProvider.tourLifecycleState ==
@@ -1038,63 +1018,41 @@ class _MapStatusPanel extends StatelessWidget {
           return _MapStatusCopy(
             icon: Icons.smart_toy_rounded,
             color: AppColors.primaryGold,
-            title: isArabic
-                ? '\u062d\u0648\u0631\u0633-\u0628\u0648\u062a \u064a\u0631\u0634\u062f\u0643 \u0627\u0644\u0622\u0646'
-                : 'Horus-Bot is guiding you',
-            subtitle: isArabic
-                ? '\u0627\u062a\u0628\u0639 \u062d\u0648\u0631\u0633 \u0625\u0644\u0649 \u0627\u0644\u0645\u062d\u0637\u0629 \u0627\u0644\u062a\u0627\u0644\u064a\u0629.'
-                : 'Follow Horus to the next stop.',
+            title: l10n.mapGuidingTitle,
+            subtitle: l10n.mapGuidingSubtitle,
           );
         }
         return _MapStatusCopy(
           icon: Icons.smart_toy_rounded,
           color: AppColors.primaryGold,
-          title: isArabic
-              ? '\u062d\u0648\u0631\u0633-\u0628\u0648\u062a \u062c\u0627\u0647\u0632 \u0644\u0625\u0631\u0634\u0627\u062f\u0643'
-              : 'Horus-Bot is ready to guide you',
-          subtitle: isArabic
-              ? '\u0627\u0628\u062f\u0623 \u062c\u0648\u0644\u062a\u0643 \u0627\u0644\u0625\u0631\u0634\u0627\u062f\u064a\u0629 \u0639\u0646\u062f\u0645\u0627 \u062a\u0643\u0648\u0646 \u062c\u0627\u0647\u0632\u0627.'
-              : 'Start your guided tour when ready.',
+          title: l10n.mapReadyTitle,
+          subtitle: l10n.mapReadyStatusSubtitle,
         );
       case session.RobotConnectionState.failed:
         return _MapStatusCopy(
           icon: Icons.error_outline_rounded,
           color: AppColors.alertRed,
-          title: isArabic
-              ? '\u062d\u0648\u0631\u0633-\u0628\u0648\u062a \u063a\u064a\u0631 \u0645\u062a\u0635\u0644'
-              : 'Horus-Bot is not connected',
-          subtitle: isArabic
-              ? '\u064a\u0645\u0643\u0646\u0643 \u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u0627\u062a\u0635\u0627\u0644 \u0623\u0648 \u0627\u0633\u062a\u0643\u0634\u0627\u0641 \u0627\u0644\u0645\u0639\u0631\u0648\u0636\u0627\u062a \u0628\u062d\u0631\u064a\u0629.'
-              : 'Reconnect when needed, or keep exploring exhibits freely.',
+          title: l10n.mapNotConnectedTitle,
+          subtitle: l10n.mapNotConnectedSubtitle,
         );
       case session.RobotConnectionState.disconnected:
-        if (sessionProvider.hasMuseumEntryTicket ||
-            sessionProvider.tourLifecycleState ==
-                session.TourLifecycleState.readyToStart ||
-            sessionProvider.tourLifecycleState ==
-                session.TourLifecycleState.active ||
-            sessionProvider.tourLifecycleState ==
-                session.TourLifecycleState.paused) {
+        if (hasRobotTourEligibility &&
+            (sessionProvider.tourLifecycleState ==
+                    session.TourLifecycleState.active ||
+                sessionProvider.tourLifecycleState ==
+                    session.TourLifecycleState.paused)) {
           return _MapStatusCopy(
             icon: Icons.qr_code_scanner_rounded,
             color: AppColors.primaryGold,
-            title: isArabic
-                ? '\u0627\u062a\u0635\u0644 \u0628\u062d\u0648\u0631\u0633-\u0628\u0648\u062a \u0644\u0644\u062c\u0648\u0644\u0629'
-                : 'Connect to Horus-Bot for your tour',
-            subtitle: isArabic
-                ? '\u064a\u0645\u0643\u0646\u0643 \u0623\u064a\u0636\u0627 \u0627\u0633\u062a\u0643\u0634\u0627\u0641 \u0627\u0644\u0645\u0639\u0631\u0648\u0636\u0627\u062a \u0628\u062d\u0631\u064a\u0629 \u0645\u0646 \u0647\u0646\u0627.'
-                : 'You can also explore exhibits freely from here.',
+            title: l10n.mapConnectForTourTitle,
+            subtitle: l10n.mapConnectForTourSubtitle,
           );
         }
         return _MapStatusCopy(
           icon: Icons.explore_rounded,
           color: AppColors.neutralMedium,
-          title: isArabic
-              ? '\u0627\u0633\u062a\u0643\u0634\u0641 \u0627\u0644\u0645\u0639\u0631\u0648\u0636\u0627\u062a'
-              : 'Explore exhibits',
-          subtitle: isArabic
-              ? '\u0627\u0636\u063a\u0637 \u0639\u0644\u0649 \u0623\u064a \u0645\u0639\u0631\u0648\u0636 \u0644\u0645\u0639\u0627\u064a\u0646\u0629 \u0642\u0635\u062a\u0647.'
-              : 'Tap an exhibit to preview its story.',
+          title: l10n.mapExploreExhibitsTitle,
+          subtitle: l10n.mapExplorePreviewSubtitle,
         );
     }
   }
@@ -1221,7 +1179,7 @@ class _MapHomeStyleHeader extends StatelessWidget {
           SafeArea(
             bottom: false,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 3, 16, 0),
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 3, 16, 0),
               child: SizedBox(
                 height: 50,
                 child: Stack(
@@ -1314,6 +1272,7 @@ class _ExhibitPreviewOverlay extends StatelessWidget {
   final bool isCurrent;
   final bool isNext;
   final bool isArabic;
+  final AppLocalizations l10n;
   final VoidCallback onClose;
   final VoidCallback onViewDetails;
   const _ExhibitPreviewOverlay({
@@ -1322,6 +1281,7 @@ class _ExhibitPreviewOverlay extends StatelessWidget {
     required this.isCurrent,
     required this.isNext,
     required this.isArabic,
+    required this.l10n,
     required this.onClose,
     required this.onViewDetails,
   });
@@ -1329,18 +1289,12 @@ class _ExhibitPreviewOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     final lang = isArabic ? 'ar' : 'en';
     final status = isCurrent
-        ? (isArabic
-              ? '\u0627\u0644\u0645\u062d\u0637\u0629 \u0627\u0644\u062d\u0627\u0644\u064a\u0629'
-              : 'Current stop')
+        ? l10n.mapCurrentStop
         : isNext
-        ? (isArabic
-              ? '\u0627\u0644\u0645\u062d\u0637\u0629 \u0627\u0644\u062a\u0627\u0644\u064a\u0629'
-              : 'Next stop')
+        ? l10n.mapNextStop
         : isVisited
-        ? (isArabic
-              ? '\u062a\u0645\u062a \u0632\u064a\u0627\u0631\u062a\u0647'
-              : 'Visited')
-        : (isArabic ? '\u0645\u0639\u0631\u0648\u0636' : 'Exhibit');
+        ? l10n.mapVisited
+        : l10n.mapExhibit;
     return Positioned.fill(
       child: Stack(
         children: [
@@ -1353,7 +1307,7 @@ class _ExhibitPreviewOverlay extends StatelessWidget {
             child: SafeArea(
               top: false,
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 84),
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 84),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(28),
                   child: Container(
@@ -1364,7 +1318,9 @@ class _ExhibitPreviewOverlay extends StatelessWidget {
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: isArabic
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
                       children: [
                         Stack(
                           children: [
@@ -1374,8 +1330,8 @@ class _ExhibitPreviewOverlay extends StatelessWidget {
                               width: double.infinity,
                               fit: BoxFit.cover,
                             ),
-                            Positioned(
-                              right: 10,
+                            PositionedDirectional(
+                              end: 10,
                               top: 10,
                               child: _HeaderCircleButton(
                                 icon: Icons.close_rounded,
@@ -1387,30 +1343,33 @@ class _ExhibitPreviewOverlay extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.all(20),
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: isArabic
+                                ? CrossAxisAlignment.end
+                                : CrossAxisAlignment.start,
                             children: [
                               _PreviewStatusBadge(label: status),
                               const SizedBox(height: 10),
                               Text(
                                 exhibit.getName(lang),
+                                textAlign: TextAlign.start,
                                 style: AppTextStyles.displayArtifactTitle(
                                   context,
                                 ).copyWith(fontSize: 20),
                               ),
                               const SizedBox(height: 6),
                               Text(
-                                isArabic
-                                    ? '\u0627\u0644\u0645\u062a\u062d\u0641 \u0627\u0644\u0645\u0635\u0631\u064a \u0627\u0644\u0643\u0628\u064a\u0631'
-                                    : 'Grand Egyptian Museum',
+                                l10n.grandEgyptianMuseum,
                                 style: AppTextStyles.metadata(
                                   context,
                                 ).copyWith(color: AppColors.primaryGold),
+                                textAlign: TextAlign.start,
                               ),
                               const SizedBox(height: 12),
                               Text(
                                 exhibit.getDescription(lang),
                                 maxLines: 3,
                                 overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.start,
                                 style: AppTextStyles.bodyPrimary(context)
                                     .copyWith(
                                       color: AppColors.bodyText,
@@ -1427,9 +1386,7 @@ class _ExhibitPreviewOverlay extends StatelessWidget {
                                     size: 18,
                                   ),
                                   label: Text(
-                                    isArabic
-                                        ? '\u0639\u0631\u0636 \u0627\u0644\u062a\u0641\u0627\u0635\u064a\u0644'
-                                        : 'View Details',
+                                    l10n.mapViewDetails,
                                     style: AppTextStyles.buttonLabel(context),
                                   ),
                                   style: AppDecorations.primaryButton(),

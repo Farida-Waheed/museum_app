@@ -19,14 +19,21 @@ class HomeController {
     required List<Exhibit> exhibits,
     required String lang,
   }) {
+    final hasSessionTourContext =
+        sessionProvider.isInActiveTour ||
+        sessionProvider.isTourPaused ||
+        sessionProvider.isTourCompleted;
     final currentExhibit = _findExhibit(
       exhibits: exhibits,
-      exhibitId:
-          sessionProvider.currentExhibitId ?? tourProvider.currentExhibitId,
+      exhibitId: hasSessionTourContext
+          ? (sessionProvider.currentExhibitId ?? tourProvider.currentExhibitId)
+          : null,
     );
     final nextExhibit = _findExhibit(
       exhibits: exhibits,
-      exhibitId: sessionProvider.nextExhibitId ?? tourProvider.nextExhibitId,
+      exhibitId: hasSessionTourContext
+          ? (sessionProvider.nextExhibitId ?? tourProvider.nextExhibitId)
+          : null,
     );
 
     final visitedCount = tourProvider.visitedExhibitIds.length;
@@ -36,26 +43,16 @@ class HomeController {
         : (totalExhibits == 0 ? 0.0 : visitedCount / totalExhibits);
 
     final robotStatus = _mapRobotStatus(sessionProvider, tourProvider);
-    final hasActiveTour =
-        sessionProvider.isInActiveTour ||
-        tourProvider.tourLifecycleState == TourLifecycleState.active;
-    final isPaused =
-        sessionProvider.isTourPaused ||
-        tourProvider.tourLifecycleState == TourLifecycleState.paused;
-    final isCompleted =
-        sessionProvider.tourLifecycleState ==
-            app.TourLifecycleState.completed ||
-        tourProvider.tourLifecycleState == TourLifecycleState.completed;
-    final hasValidMuseumTicket =
-        sessionProvider.hasMuseumEntryTicket || ticketProvider.hasMuseumTicket;
-    final hasRobotTourTicket =
-        sessionProvider.hasRobotTourTicket || ticketProvider.hasRobotTourTicket;
+    final hasActiveTour = sessionProvider.isInActiveTour;
+    final isPaused = sessionProvider.isTourPaused;
+    final isCompleted = sessionProvider.isTourCompleted;
+    final hasValidMuseumTicket = ticketProvider.hasValidMuseumEntryEntitlement;
+    final hasRobotTourTicket = ticketProvider.hasValidRobotTourEntitlement;
+    final hasRobotTourEligibility = ticketProvider.hasValidRobotTourEligibility;
     final ticketCount =
         ticketProvider.museumTickets.length +
         ticketProvider.robotTourTickets.length;
-    final connected =
-        sessionProvider.isRobotConnected ||
-        tourProvider.connectionState == RobotConnectionState.connected;
+    final connected = sessionProvider.isRobotConnected;
 
     final featuredArtifact = demoService.getFeaturedArtifact(
       exhibits: exhibits,
@@ -72,10 +69,11 @@ class HomeController {
 
     return HomeSnapshot(
       userName:
-          authProvider.currentUser?.name ?? (lang == 'ar' ? 'ضيف' : 'Guest'),
+          authProvider.currentUser?.name ?? (lang == 'ar' ? 'زائر' : 'Guest'),
       isLoggedIn: authProvider.isLoggedIn,
       hasValidMuseumTicket: hasValidMuseumTicket,
       hasRobotTourTicket: hasRobotTourTicket,
+      hasRobotTourEligibility: hasRobotTourEligibility,
       ticketCount: ticketCount,
       nextTicketQrAvailable: ticketProvider.hasTickets,
       isRobotConnected: connected,
@@ -94,7 +92,9 @@ class HomeController {
       nextStopName: nextExhibit == null
           ? null
           : (lang == 'ar' ? nextExhibit.nameAr : nextExhibit.nameEn),
-      nextStopLocation: lang == 'ar' ? 'القاعة الذهبية' : 'Golden Hall',
+      nextStopLocation: nextExhibit == null
+          ? null
+          : (lang == 'ar' ? 'القاعة الذهبية' : 'Golden Hall'),
       estimatedTimeToNextStop: hasActiveTour
           ? _estimatedMinutes(tourProvider)
           : null,
@@ -106,7 +106,7 @@ class HomeController {
       didYouKnowText: didYouKnowText,
       smallUpdateCard: smallUpdateCard,
       mapPreview: mapPreview,
-      isLiveMapAvailable: connected && hasActiveTour,
+      isLiveMapAvailable: connected && (hasActiveTour || isPaused),
     );
   }
 
@@ -115,11 +115,11 @@ class HomeController {
     required String? exhibitId,
   }) {
     if (exhibits.isEmpty) return null;
-    if (exhibitId == null) return exhibits.first;
+    if (exhibitId == null) return null;
     for (final exhibit in exhibits) {
       if (exhibit.id == exhibitId) return exhibit;
     }
-    return exhibits.first;
+    return null;
   }
 
   int _estimatedMinutes(TourProvider provider) {
@@ -136,12 +136,10 @@ class HomeController {
         app.RobotConnectionState.failed) {
       return HomeRobotStatus.error;
     }
-    if (sessionProvider.isTourPaused ||
-        tourProvider.tourLifecycleState == TourLifecycleState.paused) {
+    if (sessionProvider.isTourPaused) {
       return HomeRobotStatus.paused;
     }
-    if (!sessionProvider.isRobotConnected &&
-        tourProvider.connectionState != RobotConnectionState.connected) {
+    if (!sessionProvider.isRobotConnected) {
       return HomeRobotStatus.disconnected;
     }
 

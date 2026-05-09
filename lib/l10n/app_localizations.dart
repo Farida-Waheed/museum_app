@@ -1226,6 +1226,12 @@ abstract class AppLocalizations {
   /// **'Connect to Horus Bot to start your live guided tour'**
   String get liveTourLockedDesc;
 
+  /// No description provided for @liveTourReconnectSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan the robot QR code again to continue your guided tour.'**
+  String get liveTourReconnectSubtitle;
+
   /// No description provided for @liveTourPausedDesc.
   ///
   /// In en, this message translates to:
@@ -2834,6 +2840,245 @@ abstract class AppLocalizations {
   /// **'Time Slot'**
   String get timeSlot;
 
+  /// No description provided for @ticketsPlanVisitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan Your Visit'**
+  String get ticketsPlanVisitTitle;
+
+  /// No description provided for @ticketsPlanVisitSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose museum entry, add an optional Horus-Bot tour, and save everything to your account.'**
+  String get ticketsPlanVisitSubtitle;
+
+  /// No description provided for @ticketsAccountRequiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account required'**
+  String get ticketsAccountRequiredTitle;
+
+  /// No description provided for @ticketsAccountRequiredBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in or create an account to save tickets, sync with your website account, keep robot photos, and preserve tour progress.'**
+  String get ticketsAccountRequiredBody;
+
+  /// No description provided for @ticketsLoginRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in or create an account before checkout.'**
+  String get ticketsLoginRequired;
+
+  /// No description provided for @ticketsVisitDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit Details'**
+  String get ticketsVisitDetails;
+
+  /// No description provided for @ticketsMuseumEntryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Museum Entry'**
+  String get ticketsMuseumEntryTitle;
+
+  /// No description provided for @ticketsMuseumEntrySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select visitor categories and quantities for the museum gate pass.'**
+  String get ticketsMuseumEntrySubtitle;
+
+  /// No description provided for @ticketsRobotTourTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot Tour'**
+  String get ticketsRobotTourTitle;
+
+  /// No description provided for @ticketsRobotTourSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Robot tour eligibility is separate from museum entry.'**
+  String get ticketsRobotTourSubtitle;
+
+  /// No description provided for @ticketsNoRobotTour.
+  ///
+  /// In en, this message translates to:
+  /// **'No Robot Tour'**
+  String get ticketsNoRobotTour;
+
+  /// No description provided for @ticketsNoRobotTourDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Museum entry only. You can explore at your own pace.'**
+  String get ticketsNoRobotTourDesc;
+
+  /// No description provided for @ticketsStandardTour.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard Tour'**
+  String get ticketsStandardTour;
+
+  /// No description provided for @ticketsStandardTourDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'A ready-made Horus-Bot route for first-time visitors.'**
+  String get ticketsStandardTourDesc;
+
+  /// No description provided for @ticketsPersonalizedTour.
+  ///
+  /// In en, this message translates to:
+  /// **'Personalized Tour'**
+  String get ticketsPersonalizedTour;
+
+  /// No description provided for @ticketsPersonalizedTourDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize exhibits, themes, pace, accessibility, and photo spots.'**
+  String get ticketsPersonalizedTourDesc;
+
+  /// No description provided for @ticketsStandardConfigTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard Tour Setup'**
+  String get ticketsStandardConfigTitle;
+
+  /// No description provided for @ticketsDurationValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String ticketsDurationValue(int minutes);
+
+  /// No description provided for @ticketsEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get ticketsEnglish;
+
+  /// No description provided for @ticketsArabic.
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic'**
+  String get ticketsArabic;
+
+  /// No description provided for @ticketsRecommendedRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended route: Tutankhamun highlights, royal mummies, ancient tools, and the grand statue atrium.'**
+  String get ticketsRecommendedRoute;
+
+  /// No description provided for @ticketsPersonalizedSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Personalized Tour'**
+  String get ticketsPersonalizedSummaryTitle;
+
+  /// No description provided for @ticketsPersonalizedPhase3.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed customization comes next. This pass will support exhibit selection, themes, duration, language, accessibility, pace, and photo spot preferences.'**
+  String get ticketsPersonalizedPhase3;
+
+  /// No description provided for @ticketsCustomizeTour.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize Tour'**
+  String get ticketsCustomizeTour;
+
+  /// No description provided for @ticketsComingNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Personalized tour customization will be completed in Phase 3.'**
+  String get ticketsComingNext;
+
+  String get tourCustomizeTitle;
+  String get tourCustomizeSubtitle;
+  String get tourCustomizeExhibitsTitle;
+  String get tourCustomizeExhibitsSubtitle;
+  String get tourCustomizeThemesTitle;
+  String get tourCustomizeThemesSubtitle;
+  String get tourCustomizeAccessibilityTitle;
+  String get tourCustomizeAccessibilitySubtitle;
+  String get tourCustomizeVisitorModeTitle;
+  String get tourCustomizePaceTitle;
+  String get tourCustomizePhotoSpotsTitle;
+  String get tourCustomizePhotoSpotsSubtitle;
+  String get tourCustomizeAvoidCrowdsTitle;
+  String get tourCustomizeAvoidCrowdsSubtitle;
+  String get tourCustomizeSummaryTitle;
+  String get tourCustomizeSelectedExhibits;
+  String get tourCustomizeSelectedThemes;
+  String get tourCustomizeNotSelected;
+  String get tourCustomizeSave;
+  String get tourCustomizeSelectExhibitError;
+  String get tourCustomizeDurationError;
+  String get tourCustomizeLanguageError;
+  String get tourCustomizeVisitorModeError;
+  String get tourCustomizePaceError;
+  String get tourThemeAncientKings;
+  String get tourThemeDailyLife;
+  String get tourThemeMummies;
+  String get tourThemeSymbols;
+  String get tourThemeArchitecture;
+  String get tourThemeHiddenStories;
+  String get tourThemePhotoHighlights;
+  String get tourAccessStepFree;
+  String get tourAccessFewerStairs;
+  String get tourAccessSeatingBreaks;
+  String get tourAccessSlowNarration;
+  String get tourAccessHighContrast;
+  String get tourAccessAudioFirst;
+  String get tourVisitorAdults;
+  String get tourVisitorStudents;
+  String get tourVisitorKidsFamily;
+  String get tourVisitorDisabled;
+  String get tourPaceRelaxed;
+  String get tourPaceNormal;
+  String get tourPaceFast;
+  String get enabled;
+  String get disabled;
+
+  /// No description provided for @ticketsOrderSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Summary'**
+  String get ticketsOrderSummaryTitle;
+
+  /// No description provided for @ticketsMuseumSubtotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Museum subtotal'**
+  String get ticketsMuseumSubtotal;
+
+  /// No description provided for @ticketsRobotSubtotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Robot tour subtotal'**
+  String get ticketsRobotSubtotal;
+
+  /// No description provided for @ticketsMockCheckoutNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Mock checkout for prototype. Payment and backend sync will be added later.'**
+  String get ticketsMockCheckoutNote;
+
+  /// No description provided for @ticketsCheckout.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout'**
+  String get ticketsCheckout;
+
+  /// No description provided for @ticketsSelectMuseumEntryFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one museum entry ticket before checkout.'**
+  String get ticketsSelectMuseumEntryFirst;
+
+  /// No description provided for @ticketsPurchaseComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase complete. Your tickets were saved.'**
+  String get ticketsPurchaseComplete;
+
   /// No description provided for @ticketId.
   ///
   /// In en, this message translates to:
@@ -2881,6 +3126,702 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scan the QR on the physical Horus-Bot robot to connect'**
   String get scanQrOnRobot;
+
+  /// No description provided for @homeExploreWithHorus.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore With Horus'**
+  String get homeExploreWithHorus;
+
+  /// No description provided for @homeWelcomeUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome {name}, follow Horus through the museum.'**
+  String homeWelcomeUser(Object name);
+
+  /// No description provided for @homeGuestSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest visit mode - follow Horus through the museum.'**
+  String get homeGuestSubtitle;
+
+  /// No description provided for @homeReadyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'READY TO EXPLORE?'**
+  String get homeReadyLabel;
+
+  /// No description provided for @homeReadyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to explore?'**
+  String get homeReadyTitle;
+
+  /// No description provided for @homeReadySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy your ticket or scan your robot QR when you arrive.'**
+  String get homeReadySubtitle;
+
+  /// No description provided for @homeConnectionLostLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'CONNECTION LOST'**
+  String get homeConnectionLostLabel;
+
+  /// No description provided for @homeReconnectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect to Horus-Bot'**
+  String get homeReconnectTitle;
+
+  /// No description provided for @homeReconnectSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay close to the robot or scan again.'**
+  String get homeReconnectSubtitle;
+
+  /// No description provided for @homeTourCompletedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'TOUR COMPLETED'**
+  String get homeTourCompletedLabel;
+
+  /// No description provided for @homeTourCompletedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour completed'**
+  String get homeTourCompletedTitle;
+
+  /// No description provided for @homeTourCompletedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Summary available inside your tour view.'**
+  String get homeTourCompletedSubtitle;
+
+  /// No description provided for @homeTourPausedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'TOUR PAUSED'**
+  String get homeTourPausedLabel;
+
+  /// No description provided for @homeTourPausedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume your museum tour'**
+  String get homeTourPausedTitle;
+
+  /// No description provided for @homeTourPausedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume your museum tour when you are ready.'**
+  String get homeTourPausedSubtitle;
+
+  /// No description provided for @homeHorusSpeakingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'HORUS IS SPEAKING NOW'**
+  String get homeHorusSpeakingLabel;
+
+  /// No description provided for @homeHorusMovingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'HORUS IS MOVING'**
+  String get homeHorusMovingLabel;
+
+  /// No description provided for @homeHorusWaitingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'HORUS IS WAITING'**
+  String get homeHorusWaitingLabel;
+
+  /// No description provided for @homeListenRobotSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen to the robot for the full story.'**
+  String get homeListenRobotSubtitle;
+
+  /// No description provided for @homeCurrentStopValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Current stop: {exhibit}'**
+  String homeCurrentStopValue(Object exhibit);
+
+  /// No description provided for @homeStayCloseSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay close to your guide while moving.'**
+  String get homeStayCloseSubtitle;
+
+  /// No description provided for @homeAskOrContinueSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask a short question or continue to the next stop.'**
+  String get homeAskOrContinueSubtitle;
+
+  /// No description provided for @homeMuseumTicketReadyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'MUSEUM TICKET READY'**
+  String get homeMuseumTicketReadyLabel;
+
+  /// No description provided for @homeMuseumTicketReadyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Museum ticket ready'**
+  String get homeMuseumTicketReadyTitle;
+
+  /// No description provided for @homeConnectTourSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to Horus-Bot to start your guided tour.'**
+  String get homeConnectTourSubtitle;
+
+  /// No description provided for @homeConnectedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'CONNECTED TO HORUS-BOT'**
+  String get homeConnectedLabel;
+
+  /// No description provided for @homeConnectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected to Horus-Bot'**
+  String get homeConnectedTitle;
+
+  /// No description provided for @homeNextStopCaps.
+  ///
+  /// In en, this message translates to:
+  /// **'NEXT STOP'**
+  String get homeNextStopCaps;
+
+  /// No description provided for @homeTutankhamunHall.
+  ///
+  /// In en, this message translates to:
+  /// **'Tutankhamun Hall'**
+  String get homeTutankhamunHall;
+
+  /// No description provided for @homeGoldenHall.
+  ///
+  /// In en, this message translates to:
+  /// **'Golden Hall'**
+  String get homeGoldenHall;
+
+  /// No description provided for @homeMinutesAway.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} minutes away - {location}'**
+  String homeMinutesAway(Object location, Object minutes);
+
+  /// No description provided for @homeBattery.
+  ///
+  /// In en, this message translates to:
+  /// **'Battery {percent}%'**
+  String homeBattery(Object percent);
+
+  /// No description provided for @homeSyncedNow.
+  ///
+  /// In en, this message translates to:
+  /// **'synced just now'**
+  String get homeSyncedNow;
+
+  /// No description provided for @homeSyncedMinutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'synced {minutes} min ago'**
+  String homeSyncedMinutesAgo(Object minutes);
+
+  /// No description provided for @homeSyncedHoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'synced {hours} hr ago'**
+  String homeSyncedHoursAgo(Object hours);
+
+  /// No description provided for @homeReconnectAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect'**
+  String get homeReconnectAction;
+
+  /// No description provided for @homeResumeTourAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume Tour'**
+  String get homeResumeTourAction;
+
+  /// No description provided for @homeContinueTourAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue Tour'**
+  String get homeContinueTourAction;
+
+  /// No description provided for @homeScanRobotQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan Robot QR'**
+  String get homeScanRobotQr;
+
+  /// No description provided for @homeNoTicketsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No tickets yet'**
+  String get homeNoTicketsYet;
+
+  /// No description provided for @homeMuseumAndRobotTicketsReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Museum and robot tour tickets ready'**
+  String get homeMuseumAndRobotTicketsReady;
+
+  /// No description provided for @homeOneTicketReady.
+  ///
+  /// In en, this message translates to:
+  /// **'1 ticket ready'**
+  String get homeOneTicketReady;
+
+  /// No description provided for @homeTicketsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} tickets saved'**
+  String homeTicketsSaved(Object count);
+
+  /// No description provided for @homeComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete'**
+  String get homeComplete;
+
+  /// No description provided for @homeStopsVisited.
+  ///
+  /// In en, this message translates to:
+  /// **'Stops visited'**
+  String get homeStopsVisited;
+
+  /// No description provided for @homeTimeLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Time left'**
+  String get homeTimeLeft;
+
+  /// No description provided for @homeCurrentExhibitCaps.
+  ///
+  /// In en, this message translates to:
+  /// **'CURRENT EXHIBIT'**
+  String get homeCurrentExhibitCaps;
+
+  /// No description provided for @homeDiscoverArtifactsCaps.
+  ///
+  /// In en, this message translates to:
+  /// **'DISCOVER ARTIFACTS'**
+  String get homeDiscoverArtifactsCaps;
+
+  /// No description provided for @homeHorusExplainingStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus is explaining this stop'**
+  String get homeHorusExplainingStop;
+
+  /// No description provided for @homeContinueStory.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue the story'**
+  String get homeContinueStory;
+
+  /// No description provided for @homePreviewBeforeHorus.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview before Horus arrives'**
+  String get homePreviewBeforeHorus;
+
+  /// No description provided for @homeTapForDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap for details'**
+  String get homeTapForDetails;
+
+  /// No description provided for @homeGoldenHallRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Golden Hall - Recommended now'**
+  String get homeGoldenHallRecommended;
+
+  /// No description provided for @homeFullMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Full map'**
+  String get homeFullMap;
+
+  /// No description provided for @homePairWithHorus.
+  ///
+  /// In en, this message translates to:
+  /// **'Pair with Horus'**
+  String get homePairWithHorus;
+
+  /// No description provided for @homeStoredQrCodes.
+  ///
+  /// In en, this message translates to:
+  /// **'Stored QR codes'**
+  String get homeStoredQrCodes;
+
+  /// No description provided for @homeExploreArtifacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore artifacts'**
+  String get homeExploreArtifacts;
+
+  /// No description provided for @homePlanVisitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan Your Museum Visit'**
+  String get homePlanVisitTitle;
+
+  /// No description provided for @homePlanVisitSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy tickets, prepare your tour, or start when you arrive.'**
+  String get homePlanVisitSubtitle;
+
+  /// No description provided for @homeQuickActions.
+  ///
+  /// In en, this message translates to:
+  /// **'QUICK ACTIONS'**
+  String get homeQuickActions;
+
+  /// No description provided for @homeMuseumUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'MUSEUM UPDATE'**
+  String get homeMuseumUpdate;
+
+  /// No description provided for @liveTourCompletedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour completed'**
+  String get liveTourCompletedTitle;
+
+  /// No description provided for @liveTourCompletedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You can view your summary and memories.'**
+  String get liveTourCompletedSubtitle;
+
+  /// No description provided for @liveTourPausedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour paused'**
+  String get liveTourPausedTitle;
+
+  /// No description provided for @liveTourPausedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume when you are ready to continue with Horus-Bot.'**
+  String get liveTourPausedSubtitle;
+
+  /// No description provided for @liveTourFarTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You are far from Horus-Bot'**
+  String get liveTourFarTitle;
+
+  /// No description provided for @liveTourFarSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use map recovery to return to your guided route.'**
+  String get liveTourFarSubtitle;
+
+  /// No description provided for @liveTourMovingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Moving to next stop'**
+  String get liveTourMovingTitle;
+
+  /// No description provided for @liveTourMovingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot is leading you to the next exhibit.'**
+  String get liveTourMovingSubtitle;
+
+  /// No description provided for @liveTourFinalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Final exhibit in your tour'**
+  String get liveTourFinalTitle;
+
+  /// No description provided for @liveTourFinalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You are at the last guided stop.'**
+  String get liveTourFinalSubtitle;
+
+  /// No description provided for @liveTourGuidingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot is guiding now'**
+  String get liveTourGuidingTitle;
+
+  /// No description provided for @liveTourGuidingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay nearby and enjoy the story.'**
+  String get liveTourGuidingSubtitle;
+
+  /// No description provided for @liveTourTranscriptIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot is narrating this stop. New lines appear here during the tour.'**
+  String get liveTourTranscriptIntro;
+
+  /// No description provided for @liveTourSimWelcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to the {exhibit}.'**
+  String liveTourSimWelcome(Object exhibit);
+
+  /// No description provided for @liveTourSimSignificance.
+  ///
+  /// In en, this message translates to:
+  /// **'This artifact is extremely significant to our history.'**
+  String get liveTourSimSignificance;
+
+  /// No description provided for @liveTourSimDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Notice the intricate details on the surface.'**
+  String get liveTourSimDetails;
+
+  /// No description provided for @liveTourSimDiscovery.
+  ///
+  /// In en, this message translates to:
+  /// **'It was discovered during a major excavation.'**
+  String get liveTourSimDiscovery;
+
+  /// No description provided for @liveTourSimMoveCloser.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s move closer to observe the craftsmanship.'**
+  String get liveTourSimMoveCloser;
+
+  /// No description provided for @mapTourCompletedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour completed. Continue exploring exhibits freely.'**
+  String get mapTourCompletedSubtitle;
+
+  /// No description provided for @mapTourPausedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour paused. Return to Horus-Bot to continue.'**
+  String get mapTourPausedSubtitle;
+
+  /// No description provided for @mapActiveTourSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow Horus-Bot to your next stop.'**
+  String get mapActiveTourSubtitle;
+
+  /// No description provided for @mapRobotReadySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot is ready to guide you.'**
+  String get mapRobotReadySubtitle;
+
+  /// No description provided for @mapConnectForNavigationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect from Home or Live Tour to start guided navigation.'**
+  String get mapConnectForNavigationSubtitle;
+
+  /// No description provided for @mapExplorePreviewSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap an exhibit to preview its story.'**
+  String get mapExplorePreviewSubtitle;
+
+  /// No description provided for @mapReconnectToHorus.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect to Horus-Bot'**
+  String get mapReconnectToHorus;
+
+  /// No description provided for @mapConnectToHorus.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to Horus-Bot'**
+  String get mapConnectToHorus;
+
+  /// No description provided for @mapFollowingHorus.
+  ///
+  /// In en, this message translates to:
+  /// **'Following Horus-Bot'**
+  String get mapFollowingHorus;
+
+  /// No description provided for @mapExploreOwnPace.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore at your own pace'**
+  String get mapExploreOwnPace;
+
+  /// No description provided for @mapCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get mapCurrent;
+
+  /// No description provided for @mapNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get mapNext;
+
+  /// No description provided for @mapNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Now'**
+  String get mapNow;
+
+  /// No description provided for @mapGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Guide'**
+  String get mapGuide;
+
+  /// No description provided for @mapGuideActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get mapGuideActive;
+
+  /// No description provided for @mapGuideFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get mapGuideFree;
+
+  /// No description provided for @mapCurrentStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Current stop'**
+  String get mapCurrentStop;
+
+  /// No description provided for @mapNextStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Next stop'**
+  String get mapNextStop;
+
+  /// No description provided for @mapVisited.
+  ///
+  /// In en, this message translates to:
+  /// **'Visited'**
+  String get mapVisited;
+
+  /// No description provided for @mapExhibit.
+  ///
+  /// In en, this message translates to:
+  /// **'Exhibit'**
+  String get mapExhibit;
+
+  /// No description provided for @mapTourCompletedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour completed'**
+  String get mapTourCompletedTitle;
+
+  /// No description provided for @mapTourCompletedStatusSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You can continue exploring the museum freely.'**
+  String get mapTourCompletedStatusSubtitle;
+
+  /// No description provided for @mapConnectingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting to Horus-Bot'**
+  String get mapConnectingTitle;
+
+  /// No description provided for @mapConnectingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot will appear on the map when ready.'**
+  String get mapConnectingSubtitle;
+
+  /// No description provided for @mapPausedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour paused'**
+  String get mapPausedTitle;
+
+  /// No description provided for @mapPausedStatusSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to Horus-Bot or resume your tour to continue.'**
+  String get mapPausedStatusSubtitle;
+
+  /// No description provided for @mapGuidingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot is guiding you'**
+  String get mapGuidingTitle;
+
+  /// No description provided for @mapGuidingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow Horus to the next stop.'**
+  String get mapGuidingSubtitle;
+
+  /// No description provided for @mapReadyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot is ready to guide you'**
+  String get mapReadyTitle;
+
+  /// No description provided for @mapReadyStatusSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start your guided tour when ready.'**
+  String get mapReadyStatusSubtitle;
+
+  /// No description provided for @mapNotConnectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot is not connected'**
+  String get mapNotConnectedTitle;
+
+  /// No description provided for @mapNotConnectedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnect when needed, or keep exploring exhibits freely.'**
+  String get mapNotConnectedSubtitle;
+
+  /// No description provided for @mapConnectForTourTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to Horus-Bot for your tour'**
+  String get mapConnectForTourTitle;
+
+  /// No description provided for @mapConnectForTourSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You can also explore exhibits freely from here.'**
+  String get mapConnectForTourSubtitle;
+
+  /// No description provided for @mapExploreExhibitsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore exhibits'**
+  String get mapExploreExhibitsTitle;
+
+  /// No description provided for @mapViewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details'**
+  String get mapViewDetails;
+
+  /// No description provided for @mapFindHorusOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Find Horus on Map'**
+  String get mapFindHorusOnMap;
 }
 
 class _AppLocalizationsDelegate

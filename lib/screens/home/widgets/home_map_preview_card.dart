@@ -15,6 +15,7 @@ class HomeMapPreviewCard extends StatelessWidget {
     required this.legendHorus,
     required this.legendYou,
     required this.fullViewLabel,
+    required this.liveLabel,
   });
 
   final HomeMapPreviewData data;
@@ -23,6 +24,7 @@ class HomeMapPreviewCard extends StatelessWidget {
   final String legendHorus;
   final String legendYou;
   final String fullViewLabel;
+  final String liveLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +89,7 @@ class HomeMapPreviewCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'LIVE',
+                            liveLabel,
                             style: AppTextStyles.premiumMutedBody(context)
                                 .copyWith(
                                   color: const Color(0xFFFFB5B5),
@@ -134,8 +136,8 @@ class HomeMapPreviewCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                Positioned(
-                  left: 16,
+                PositionedDirectional(
+                  start: 16,
                   bottom: 16,
                   child: Row(
                     textDirection: isArabic
@@ -154,8 +156,8 @@ class HomeMapPreviewCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Positioned(
-                  right: 16,
+                PositionedDirectional(
+                  end: 16,
                   bottom: 14,
                   child: TextButton(
                     onPressed: onFullView,

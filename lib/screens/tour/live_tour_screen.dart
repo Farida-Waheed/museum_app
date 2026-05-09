@@ -18,6 +18,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
+import '../../models/ticket_provider.dart';
 
 class LiveTourScreen extends StatefulWidget {
   const LiveTourScreen({super.key});
@@ -46,16 +47,17 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         context,
         listen: false,
       );
-      if (tourProvider.currentExhibitId == null) {
-        tourProvider.setCurrentExhibit(
-          MockDataService.getAllExhibits().first.id,
+      if (sessionProvider.isInActiveTour &&
+          sessionProvider.currentExhibitId != null &&
+          tourProvider.tourLifecycleState == TourLifecycleState.notStarted) {
+        tourProvider.startTour(
+          context: context,
+          initialExhibitId: sessionProvider.currentExhibitId,
+          nextExhibitId: sessionProvider.nextExhibitId,
         );
       }
-      if (sessionProvider.isInActiveTour &&
-          tourProvider.tourLifecycleState == TourLifecycleState.notStarted) {
-        tourProvider.startTour(context: context);
-      }
       if (sessionProvider.isInActiveTour ||
+          sessionProvider.isTourPaused ||
           tourProvider.tourLifecycleState == TourLifecycleState.active ||
           tourProvider.tourLifecycleState == TourLifecycleState.paused) {
         _startSimulation();
@@ -65,22 +67,28 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
 
   void _startSimulation() {
     final tourProvider = Provider.of<TourProvider>(context, listen: false);
-    final exhibitId = tourProvider.currentExhibitId;
+    final sessionProvider = Provider.of<session.AppSessionProvider>(
+      context,
+      listen: false,
+    );
+    final exhibitId =
+        sessionProvider.currentExhibitId ?? tourProvider.currentExhibitId;
     if (exhibitId == null) return;
 
     final allExhibits = MockDataService.getAllExhibits();
-    final exhibit = allExhibits.firstWhere(
-      (e) => e.id == exhibitId,
-      orElse: () => allExhibits.first,
-    );
+    final exhibitIndex = allExhibits.indexWhere((e) => e.id == exhibitId);
+    if (exhibitIndex < 0) return;
+    final exhibit = allExhibits[exhibitIndex];
+    final l10n = AppLocalizations.of(context)!;
+    final lang = Localizations.localeOf(context).languageCode;
 
     final sentences = [
-      "Welcome to the ${exhibit.nameEn}.",
-      exhibit.descriptionEn,
-      "This artifact is extremely significant to our history.",
-      "Notice the intricate details on the surface.",
-      "It was discovered during a major excavation.",
-      "Let's move closer to observe the craftsmanship.",
+      l10n.liveTourSimWelcome(exhibit.getName(lang)),
+      exhibit.getDescription(lang),
+      l10n.liveTourSimSignificance,
+      l10n.liveTourSimDetails,
+      l10n.liveTourSimDiscovery,
+      l10n.liveTourSimMoveCloser,
     ];
 
     int index = 0;
@@ -89,7 +97,10 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     _simTimer = Timer.periodic(const Duration(seconds: 3), (timer) {
       if (!mounted) return;
       final isProviderPaused =
-          Provider.of<TourProvider>(context, listen: false).tourLifecycleState ==
+          Provider.of<TourProvider>(
+            context,
+            listen: false,
+          ).tourLifecycleState ==
           TourLifecycleState.paused;
       if (_isPaused || isProviderPaused) return;
       if (index >= sentences.length) {
@@ -130,7 +141,10 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       context,
       listen: false,
     );
-    if (tourProvider.tourLifecycleState == TourLifecycleState.paused) {
+    final isPaused =
+        sessionProvider.isTourPaused ||
+        tourProvider.tourLifecycleState == TourLifecycleState.paused;
+    if (isPaused) {
       tourProvider.resumeTour(context: context);
       sessionProvider.resumeTour();
       setState(() => _isPaused = false);
@@ -165,13 +179,27 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
 
   void _skipExhibit() {
     final tourProvider = Provider.of<TourProvider>(context, listen: false);
+    final sessionProvider = Provider.of<session.AppSessionProvider>(
+      context,
+      listen: false,
+    );
     if (tourProvider.tourLifecycleState != TourLifecycleState.active) return;
     final all = MockDataService.getAllExhibits();
-    final currentIdx = all.indexWhere(
-      (e) => e.id == tourProvider.currentExhibitId,
-    );
-    if (currentIdx < all.length - 1) {
-      tourProvider.setCurrentExhibit(all[currentIdx + 1].id);
+    final activeExhibitId =
+        sessionProvider.currentExhibitId ?? tourProvider.currentExhibitId;
+    final currentIdx = all.indexWhere((e) => e.id == activeExhibitId);
+    if (currentIdx >= 0 && currentIdx < all.length - 1) {
+      final nextExhibit = all[currentIdx + 1];
+      final followingExhibit = currentIdx + 2 < all.length
+          ? all[currentIdx + 2]
+          : null;
+      tourProvider.setCurrentExhibit(nextExhibit.id);
+      tourProvider.setNextDestination(
+        followingExhibit?.id,
+        tourProvider.estimatedTimeToNext,
+      );
+      sessionProvider.setCurrentExhibit(nextExhibit.id);
+      sessionProvider.setNextExhibit(followingExhibit?.id);
       setState(() {
         _transcript.clear();
       });
@@ -179,31 +207,65 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     }
   }
 
+  void _startTourFromReadyState() {
+    final allExhibits = MockDataService.getAllExhibits();
+    if (allExhibits.isEmpty) return;
+
+    final currentExhibit = allExhibits.first;
+    final nextExhibit = allExhibits.length > 1 ? allExhibits[1] : null;
+    final tourProvider = Provider.of<TourProvider>(context, listen: false);
+    final sessionProvider = Provider.of<session.AppSessionProvider>(
+      context,
+      listen: false,
+    );
+
+    sessionProvider.startActiveTour(
+      currentExhibitId: currentExhibit.id,
+      nextExhibitId: nextExhibit?.id,
+    );
+    tourProvider.startTour(
+      context: context,
+      initialExhibitId: currentExhibit.id,
+      nextExhibitId: nextExhibit?.id,
+    );
+    setState(() => _isPaused = false);
+    _startSimulation();
+  }
+
   @override
   Widget build(BuildContext context) {
     final tourProvider = Provider.of<TourProvider>(context);
     final sessionProvider = Provider.of<session.AppSessionProvider>(context);
+    final ticketProvider = Provider.of<TicketProvider>(context);
     final l10n = AppLocalizations.of(context)!;
+    final hasValidTourAccess = ticketProvider.hasValidRobotTourEligibility;
 
     final sessionTourState = sessionProvider.tourLifecycleState;
-    final isSessionPaused = sessionTourState == session.TourLifecycleState.paused;
+    final isSessionPaused =
+        sessionTourState == session.TourLifecycleState.paused;
     final isSessionCompleted =
         sessionTourState == session.TourLifecycleState.completed;
-    final isSessionReady =
-        sessionTourState == session.TourLifecycleState.readyToStart;
+    final allExhibits = MockDataService.getAllExhibits();
+    final currentExhibitId =
+        sessionProvider.currentExhibitId ?? tourProvider.currentExhibitId;
+    final currentExhibitIndex = currentExhibitId == null
+        ? -1
+        : allExhibits.indexWhere((e) => e.id == currentExhibitId);
+    final currentExhibit = currentExhibitIndex < 0
+        ? null
+        : allExhibits[currentExhibitIndex];
     final isConnectedNotActive =
+        hasValidTourAccess &&
         sessionProvider.isRobotConnected &&
-        sessionTourState != session.TourLifecycleState.active &&
-        !isSessionPaused &&
+        (!sessionProvider.hasActiveOrPausedTour || currentExhibit == null) &&
         !isSessionCompleted;
     final isTourAccessible =
-        sessionProvider.isInActiveTour ||
-        isSessionCompleted ||
-        (sessionProvider.isRobotConnected &&
-            sessionTourState != session.TourLifecycleState.notStarted) ||
-        isSessionReady;
+        hasValidTourAccess &&
+        ((sessionProvider.hasActiveOrPausedTour && currentExhibit != null) ||
+            (isSessionCompleted && currentExhibit != null) ||
+            isConnectedNotActive);
 
-    if (isSessionPaused) {
+    if (hasValidTourAccess && isSessionPaused && currentExhibit != null) {
       return AppMenuShell(
         title: 'HORUS-BOT',
         subHeader: const RobotStatusBanner(),
@@ -212,14 +274,14 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         hideDefaultAppBar: true,
         floatingActionButton: AskTheGuideButton(
           screen: 'live_tour',
-          currentExhibitId: tourProvider.currentExhibitId,
+          currentExhibitId: currentExhibitId,
           subtle: true,
         ),
         body: _buildLockedState(
           context,
-          title: 'Tour paused',
-          subtitle: 'Resume your guided museum tour.',
-          primaryLabel: 'Resume Tour',
+          title: l10n.liveTourPausedDesc,
+          subtitle: l10n.followAndDiscover,
+          primaryLabel: l10n.resume,
           onPrimaryAction: () {
             sessionProvider.resumeTour();
             tourProvider.resumeTour(context: context);
@@ -231,13 +293,12 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     }
 
     if (!isTourAccessible) {
-      final hasValidTourAccess =
-          sessionProvider.hasMuseumEntryTicket &&
-          sessionProvider.hasRobotTourTicket;
       final bool shouldScanRobotQr =
           hasValidTourAccess &&
-          sessionProvider.robotConnectionState ==
-              session.RobotConnectionState.disconnected;
+          (sessionProvider.robotConnectionState ==
+                  session.RobotConnectionState.disconnected ||
+              sessionProvider.robotConnectionState ==
+                  session.RobotConnectionState.failed);
 
       return AppMenuShell(
         title: 'HORUS-BOT',
@@ -250,12 +311,12 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         body: _buildLockedState(
           context,
           title: shouldScanRobotQr
-              ? 'Connect to Horus-Bot'
+              ? l10n.homeReconnectTitle
               : l10n.liveTourLockedTitle,
           subtitle: shouldScanRobotQr
-              ? 'Scan the robot QR code to start your guided tour.'
-              : 'Get your ticket first, then connect to Horus-Bot at the museum.',
-          primaryLabel: shouldScanRobotQr ? 'Scan Robot QR' : 'Get Tickets',
+              ? l10n.liveTourReconnectSubtitle
+              : l10n.liveTourLockedDesc,
+          primaryLabel: shouldScanRobotQr ? l10n.homeScanRobotQr : l10n.tickets,
           onPrimaryAction: () {
             if (shouldScanRobotQr) {
               Navigator.pushNamed(
@@ -267,7 +328,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
               Navigator.pushNamed(context, AppRoutes.tickets);
             }
           },
-          showSecondaryQrAction: !shouldScanRobotQr,
+          showSecondaryQrAction: false,
         ),
       );
     }
@@ -281,7 +342,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         hideDefaultAppBar: true,
         floatingActionButton: AskTheGuideButton(
           screen: 'live_tour',
-          currentExhibitId: tourProvider.currentExhibitId,
+          currentExhibitId: currentExhibitId,
           subtle: true,
         ),
         body: Builder(
@@ -295,7 +356,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                 ),
               ),
               SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(
+                padding: EdgeInsetsDirectional.fromSTEB(
                   20,
                   MediaQuery.paddingOf(context).top + 92,
                   20,
@@ -303,7 +364,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                 ),
                 child: _buildReadyStateCard(
                   context,
-                  onStartTour: () => tourProvider.startTour(context: context),
+                  onStartTour: _startTourFromReadyState,
                   onGoMap: () => Navigator.pushNamed(context, AppRoutes.map),
                 ),
               ),
@@ -316,21 +377,34 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       );
     }
 
-    final allExhibits = MockDataService.getAllExhibits();
-    final currentExhibit = allExhibits.firstWhere(
-      (e) => e.id == tourProvider.currentExhibitId,
-      orElse: () => allExhibits.first,
-    );
-    final currentIdx = allExhibits.indexWhere((e) => e.id == currentExhibit.id);
+    if (currentExhibit == null) {
+      return AppMenuShell(
+        title: 'HORUS-BOT',
+        subHeader: const RobotStatusBanner(),
+        bottomNavigationBar: const BottomNav(currentIndex: 2),
+        showChatButton: false,
+        hideDefaultAppBar: true,
+        floatingActionButton: AskTheGuideButton(
+          screen: 'live_tour',
+          currentExhibitId: currentExhibitId,
+          subtle: true,
+        ),
+        body: _buildLockedState(
+          context,
+          title: l10n.connectedReady,
+          subtitle: l10n.followAndDiscover,
+          primaryLabel: l10n.startMyTour,
+          onPrimaryAction: _startTourFromReadyState,
+          showSecondaryQrAction: false,
+        ),
+      );
+    }
+    final currentIdx = currentExhibitIndex;
     final nextExhibit = currentIdx < allExhibits.length - 1
         ? allExhibits[currentIdx + 1]
         : null;
-    final isPaused =
-        tourProvider.tourLifecycleState == TourLifecycleState.paused ||
-        isSessionPaused;
-    final isCompleted =
-        tourProvider.tourLifecycleState == TourLifecycleState.completed ||
-        isSessionCompleted;
+    final isPaused = isSessionPaused;
+    final isCompleted = isSessionCompleted;
     final isMoving = tourProvider.robotState == RobotState.moving;
     final isRecovery =
         tourProvider.proximityState == ProximityState.far &&
@@ -349,7 +423,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       hideDefaultAppBar: true,
       floatingActionButton: AskTheGuideButton(
         screen: 'live_tour',
-        currentExhibitId: tourProvider.currentExhibitId,
+        currentExhibitId: currentExhibitId,
         subtle: true,
       ),
       body: Builder(
@@ -357,25 +431,29 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
           children: [
             const Positioned.fill(
               child: DecoratedBox(
-                decoration: BoxDecoration(gradient: AppGradients.screenBackground),
+                decoration: BoxDecoration(
+                  gradient: AppGradients.screenBackground,
+                ),
               ),
             ),
             SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(
+              padding: EdgeInsetsDirectional.fromSTEB(
                 20,
                 MediaQuery.paddingOf(context).top + 92,
                 20,
                 24,
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment:
+                    Directionality.of(context) == TextDirection.rtl
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
                 children: [
                   Text(
                     l10n.liveTour.toUpperCase(),
-                    style: AppTextStyles.displaySectionTitle(context).copyWith(
-                      color: AppColors.softGold,
-                      letterSpacing: 1.4,
-                    ),
+                    style: AppTextStyles.displaySectionTitle(
+                      context,
+                    ).copyWith(color: AppColors.softGold, letterSpacing: 1.4),
                   ),
                   const SizedBox(height: 8),
                   _buildModeStateBanner(
@@ -437,12 +515,12 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                     ),
                     imageAsset: currentExhibit.imageAsset,
                     statusText: isCompleted
-                        ? 'Tour completed. Review your summary.'
+                        ? l10n.visitComplete
                         : isPaused
-                        ? 'Tour paused. Resume when you are ready.'
+                        ? l10n.liveTourPausedDesc
                         : isMoving
-                        ? 'Horus-Bot is moving to the next stop.'
-                        : 'Horus-Bot is currently explaining this exhibit.',
+                        ? l10n.robotMoving
+                        : l10n.robotDescribing,
                     pauseLabel: isPaused ? l10n.resume : l10n.pause,
                     onPauseResume: canPause || canResume ? _togglePause : null,
                     onSkip: canSkip ? _skipExhibit : null,
@@ -476,13 +554,17 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                           context,
                           listen: false,
                         );
-                        final appSession = Provider.of<session.AppSessionProvider>(
-                          context,
-                          listen: false,
-                        );
+                        final appSession =
+                            Provider.of<session.AppSessionProvider>(
+                              context,
+                              listen: false,
+                            );
                         tour.completeTour(context: context);
                         appSession.endTour();
-                        Navigator.pushReplacementNamed(context, AppRoutes.summary);
+                        Navigator.pushReplacementNamed(
+                          context,
+                          AppRoutes.summary,
+                        );
                       },
                       fullWidth: true,
                     )
@@ -501,26 +583,27 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   }
 
   Widget _buildLockedState(
-    BuildContext context,
-  {
+    BuildContext context, {
     required String title,
     required String subtitle,
     required String primaryLabel,
     required VoidCallback onPrimaryAction,
     required bool showSecondaryQrAction,
-  }
-  ) {
+  }) {
+    final l10n = AppLocalizations.of(context)!;
     return Builder(
       builder: (shellContext) => Stack(
         children: [
           const Positioned.fill(
             child: DecoratedBox(
-              decoration: BoxDecoration(gradient: AppGradients.screenBackground),
+              decoration: BoxDecoration(
+                gradient: AppGradients.screenBackground,
+              ),
             ),
           ),
           SafeArea(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(
+              padding: EdgeInsetsDirectional.fromSTEB(
                 24,
                 MediaQuery.paddingOf(context).top + 88,
                 24,
@@ -570,9 +653,10 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                       const SizedBox(height: 10),
                       Text(
                         subtitle,
-                        style: AppTextStyles.bodyPrimary(
-                          context,
-                        ).copyWith(color: AppColors.neutralMedium, height: 1.45),
+                        style: AppTextStyles.bodyPrimary(context).copyWith(
+                          color: AppColors.neutralMedium,
+                          height: 1.45,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 18),
@@ -597,8 +681,8 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                               size: 18,
                               color: AppColors.primaryGold,
                             ),
-                            label: const Text(
-                              'Already have a ticket? Scan Robot QR',
+                            label: Text(
+                              l10n.scanQrOnRobot,
                               style: TextStyle(
                                 color: AppColors.primaryGold,
                                 fontWeight: FontWeight.w600,
@@ -639,6 +723,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     required bool isRecovery,
     required bool isLastStop,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     IconData icon;
     Color color;
     String title;
@@ -647,33 +732,33 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     if (isCompleted) {
       icon = Icons.verified_rounded;
       color = AppColors.primaryGold;
-      title = 'Tour completed';
-      subtitle = 'You can view your summary and memories.';
+      title = l10n.liveTourCompletedTitle;
+      subtitle = l10n.liveTourCompletedSubtitle;
     } else if (isPaused) {
       icon = Icons.pause_circle_outline_rounded;
       color = Colors.orange;
-      title = 'Tour paused';
-      subtitle = 'Resume when you are ready to continue with Horus-Bot.';
+      title = l10n.liveTourPausedTitle;
+      subtitle = l10n.liveTourPausedSubtitle;
     } else if (isRecovery) {
       icon = Icons.my_location_rounded;
       color = Colors.redAccent;
-      title = 'You are far from Horus-Bot';
-      subtitle = 'Use map recovery to return to your guided route.';
+      title = l10n.liveTourFarTitle;
+      subtitle = l10n.liveTourFarSubtitle;
     } else if (isMoving) {
       icon = Icons.route_rounded;
       color = Colors.blue;
-      title = 'Moving to next stop';
-      subtitle = 'Horus-Bot is leading you to the next exhibit.';
+      title = l10n.liveTourMovingTitle;
+      subtitle = l10n.liveTourMovingSubtitle;
     } else if (isLastStop) {
       icon = Icons.flag_circle_rounded;
       color = AppColors.primaryGold;
-      title = 'Final exhibit in your tour';
-      subtitle = 'You are at the last guided stop.';
+      title = l10n.liveTourFinalTitle;
+      subtitle = l10n.liveTourFinalSubtitle;
     } else {
       icon = Icons.record_voice_over_rounded;
       color = Colors.green;
-      title = 'Horus-Bot is guiding now';
-      subtitle = 'Stay nearby and enjoy the story.';
+      title = l10n.liveTourGuidingTitle;
+      subtitle = l10n.liveTourGuidingSubtitle;
     }
 
     return Container(
@@ -681,27 +766,35 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [color.withOpacity(0.2), AppColors.cinematicCard.withOpacity(0.9)],
+          begin: AlignmentDirectional.topStart,
+          end: AlignmentDirectional.bottomEnd,
+          colors: [
+            color.withOpacity(0.2),
+            AppColors.cinematicCard.withOpacity(0.9),
+          ],
         ),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: color.withOpacity(0.32)),
       ),
       child: Row(
+        textDirection: Directionality.of(context),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, color: color, size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  Directionality.of(context) == TextDirection.rtl
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
                   style: AppTextStyles.bodyPrimary(
                     context,
                   ).copyWith(fontWeight: FontWeight.w700),
+                  textAlign: TextAlign.start,
                 ),
                 const SizedBox(height: 3),
                 Text(
@@ -709,6 +802,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                   style: AppTextStyles.metadata(
                     context,
                   ).copyWith(color: AppColors.neutralMedium),
+                  textAlign: TextAlign.start,
                 ),
               ],
             ),
@@ -723,6 +817,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     required VoidCallback onStartTour,
     required VoidCallback onGoMap,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(22),
@@ -732,10 +827,12 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         border: Border.all(color: AppColors.goldBorder(0.2)),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: Directionality.of(context) == TextDirection.rtl
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           Text(
-            'Live Tour',
+            l10n.liveTour,
             style: AppTextStyles.displaySectionTitle(context).copyWith(
               color: AppColors.softGold,
               fontSize: 13,
@@ -744,19 +841,21 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
           ),
           const SizedBox(height: 10),
           Text(
-            'Horus-Bot is ready',
-            style: AppTextStyles.displayArtifactTitle(context).copyWith(fontSize: 24),
+            l10n.connectedReady,
+            style: AppTextStyles.displayArtifactTitle(
+              context,
+            ).copyWith(fontSize: 24),
           ),
           const SizedBox(height: 8),
           Text(
-            'Start your guided tour when you are ready.',
+            l10n.followAndDiscover,
             style: AppTextStyles.bodyPrimary(
               context,
             ).copyWith(color: AppColors.neutralMedium),
           ),
           const SizedBox(height: 18),
           PrimaryButton(
-            label: 'Start Tour',
+            label: l10n.startMyTour,
             onPressed: onStartTour,
             fullWidth: true,
           ),
@@ -772,7 +871,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
-              child: const Text('Go to Map'),
+              child: Text(l10n.map),
             ),
           ),
         ],
@@ -790,6 +889,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     required VoidCallback? onSkip,
     required VoidCallback? onRecover,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
         color: AppColors.cinematicCard,
@@ -805,7 +905,9 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: Directionality.of(context) == TextDirection.rtl
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           SizedBox(
             height: 252,
@@ -835,15 +937,18 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                     ),
                   ),
                 ),
-                Positioned(
-                  left: 16,
-                  right: 16,
+                PositionedDirectional(
+                  start: 16,
+                  end: 16,
                   bottom: 16,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment:
+                        Directionality.of(context) == TextDirection.rtl
+                        ? CrossAxisAlignment.end
+                        : CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'CURRENT EXHIBIT',
+                        l10n.currentStop.toUpperCase(),
                         style: AppTextStyles.metadata(context).copyWith(
                           color: AppColors.softGold,
                           letterSpacing: 1.2,
@@ -866,7 +971,10 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  Directionality.of(context) == TextDirection.rtl
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
               children: [
                 Text(
                   statusText,
@@ -882,12 +990,13 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                 ),
                 const SizedBox(height: 8),
                 Row(
+                  textDirection: Directionality.of(context),
                   children: [
                     Expanded(
                       child: TextButton.icon(
                         onPressed: onSkip,
                         icon: const Icon(Icons.skip_next_rounded, size: 18),
-                        label: const Text('Skip'),
+                        label: Text(l10n.skip),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -895,7 +1004,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                       child: TextButton.icon(
                         onPressed: onRecover,
                         icon: const Icon(Icons.my_location_rounded, size: 18),
-                        label: const Text('Find Horus'),
+                        label: Text(l10n.startNavigation),
                       ),
                     ),
                   ],
@@ -909,6 +1018,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   }
 
   Widget _buildNarrationUpdates(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -917,15 +1027,19 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         border: Border.all(color: Colors.white.withOpacity(0.06)),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: Directionality.of(context) == TextDirection.rtl
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           Text(
-            'Narration Updates',
-            style: AppTextStyles.displaySectionTitle(context).copyWith(fontSize: 13),
+            l10n.liveTranscript,
+            style: AppTextStyles.displaySectionTitle(
+              context,
+            ).copyWith(fontSize: 13),
           ),
           const SizedBox(height: 3),
           Text(
-            'Simulated session updates for prototype preview.',
+            l10n.chatInfoPopup,
             style: AppTextStyles.metadata(
               context,
             ).copyWith(color: AppColors.neutralMedium),
@@ -958,7 +1072,11 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     );
   }
 
-  Widget _buildRecoveryCard(BuildContext context, {required VoidCallback onRecover}) {
+  Widget _buildRecoveryCard(
+    BuildContext context, {
+    required VoidCallback onRecover,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -973,17 +1091,19 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         border: Border.all(color: AppColors.alertRed.withOpacity(0.35)),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: Directionality.of(context) == TextDirection.rtl
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           Text(
-            'Need help finding Horus-Bot?',
+            l10n.connectionLost,
             style: AppTextStyles.bodyPrimary(
               context,
             ).copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 10),
           PrimaryButton(
-            label: 'Find Horus on Map',
+            label: l10n.startNavigation,
             onPressed: onRecover,
             fullWidth: true,
           ),
@@ -998,6 +1118,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     required String imageAsset,
     required String subtitle,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
@@ -1010,14 +1131,14 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Where Horus takes you next',
-            style: AppTextStyles.metadata(context).copyWith(
-              color: AppColors.softGold,
-              fontWeight: FontWeight.w700,
-            ),
+            l10n.nextStopLabel,
+            style: AppTextStyles.metadata(
+              context,
+            ).copyWith(color: AppColors.softGold, fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 10),
           Row(
+            textDirection: Directionality.of(context),
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
@@ -1037,7 +1158,10 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                      Directionality.of(context) == TextDirection.rtl
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
@@ -1063,10 +1187,11 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   }
 
   Widget _buildCompletedActions(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         PrimaryButton(
-          label: 'View Summary',
+          label: l10n.visitSummary,
           onPressed: () => Navigator.pushNamed(context, AppRoutes.summary),
           fullWidth: true,
         ),
@@ -1088,7 +1213,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                 borderRadius: BorderRadius.circular(14),
               ),
             ),
-            child: const Text('Back Home'),
+            child: Text(l10n.home),
           ),
         ),
       ],
@@ -1128,7 +1253,7 @@ class _LiveTourHeader extends StatelessWidget {
           SafeArea(
             bottom: false,
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 3, 16, 0),
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 3, 16, 0),
               child: SizedBox(
                 height: 50,
                 child: Stack(
@@ -1147,22 +1272,25 @@ class _LiveTourHeader extends StatelessWidget {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Image.asset('assets/icons/ankh.png', width: 18, height: 18),
+                        Image.asset(
+                          'assets/icons/ankh.png',
+                          width: 18,
+                          height: 18,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           'HORUS-BOT',
-                          style: AppTextStyles.premiumBrandTitle(
-                            context,
-                          ).copyWith(
-                            color: AppColors.primaryGold,
-                            fontSize: 17.5,
-                            shadows: [
-                              Shadow(
-                                color: Colors.black.withOpacity(0.70),
-                                blurRadius: 10,
+                          style: AppTextStyles.premiumBrandTitle(context)
+                              .copyWith(
+                                color: AppColors.primaryGold,
+                                fontSize: 17.5,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withOpacity(0.70),
+                                    blurRadius: 10,
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
                         ),
                       ],
                     ),

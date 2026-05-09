@@ -60,10 +60,7 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    final buttonText = widget.subtle
-        ? (isArabic ? 'اسأل' : 'Ask')
-        : l10n.askButton;
+    final buttonText = l10n.askButton;
     return AnimatedBuilder(
       animation: _glowCtrl,
       builder: (context, child) {
@@ -117,6 +114,7 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
                   vertical: widget.subtle ? 10 : 12,
                 ),
                 child: Row(
+                  textDirection: Directionality.of(context),
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
