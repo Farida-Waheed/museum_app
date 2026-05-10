@@ -463,6 +463,7 @@ class PurchasedTicketSet {
   final RobotTourTicket? robotTourTicket;
   final PaymentRecord paymentRecord;
   final DateTime purchasedAt;
+  final double totalAmount;
 
   const PurchasedTicketSet({
     required this.id,
@@ -471,6 +472,7 @@ class PurchasedTicketSet {
     required this.robotTourTicket,
     required this.paymentRecord,
     required this.purchasedAt,
+    required this.totalAmount,
   });
 
   Map<String, dynamic> toJson() {
@@ -481,6 +483,7 @@ class PurchasedTicketSet {
       'robotTourTicket': robotTourTicket?.toJson(),
       'paymentRecord': paymentRecord.toJson(),
       'purchasedAt': purchasedAt.toIso8601String(),
+      'totalAmount': totalAmount,
     };
   }
 }

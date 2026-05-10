@@ -287,6 +287,52 @@ class AppLocalizationsEn extends AppLocalizations {
       'Hold your museum entry ticket QR code inside the frame.';
 
   @override
+  String get qrMuseumEntryTitle => 'Museum Entry Scan';
+
+  @override
+  String get qrMuseumEntrySubtitle =>
+      'Scan a Museum Entry QR for the gate. This will not connect to Horus-Bot.';
+
+  @override
+  String get qrRobotPairingTitle => 'Robot Pairing';
+
+  @override
+  String get qrRobotPairingSubtitle =>
+      'Scan the physical Horus-Bot QR when you arrive. Your robot tour pass proves eligibility, but pairing is a separate scan.';
+
+  @override
+  String get qrEntryVerifiedTitle => 'Entry pass verified';
+
+  @override
+  String get qrEntryVerifiedMessage => 'Use this QR at the museum gate.';
+
+  @override
+  String get qrMuseumInvalidMessage => 'This is not a valid Museum Entry QR.';
+
+  @override
+  String get qrRobotTicketRequiredTitle => 'Robot tour ticket required';
+
+  @override
+  String get qrRobotTicketRequiredMessage =>
+      'Please buy a robot tour ticket before pairing with Horus-Bot.';
+
+  @override
+  String get qrRobotConnectedTitle => 'Horus-Bot connected';
+
+  @override
+  String get qrRobotConnectedMessage =>
+      'You are ready to start your guided tour.';
+
+  @override
+  String get qrOpenLiveTour => 'Open Live Tour';
+
+  @override
+  String get qrAlignCode => 'Align the QR code inside the frame';
+
+  @override
+  String get qrReference => 'Ref';
+
+  @override
   String get simulateRobotScan => 'Simulate Robot Scan';
 
   @override
@@ -1537,14 +1583,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ticketsPersonalizedPhase3 =>
-      'Detailed customization comes next. This pass will support exhibit selection, themes, duration, language, accessibility, pace, and photo spot preferences.';
+      'Customize your Horus-Bot experience with exhibits, themes, pacing, accessibility preferences, and storytelling style.';
 
   @override
   String get ticketsCustomizeTour => 'Customize Tour';
 
   @override
   String get ticketsComingNext =>
-      'Personalized tour customization will be completed in Phase 3.';
+      'Open Customize Tour to finish your personalized Horus-Bot plan.';
 
   @override
   String get tourCustomizeTitle => 'Build Your Personal Journey';
@@ -1712,6 +1758,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Select at least one museum entry ticket before checkout.';
 
   @override
+  String get ticketsCompletePersonalizedTourFirst =>
+      'Customize and save your personalized tour before checkout.';
+
+  @override
   String get ticketsPurchaseComplete =>
       'Purchase complete. Your tickets were saved.';
 
@@ -1739,6 +1789,156 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get scanQrOnRobot =>
       'Scan the QR on the physical Horus-Bot robot to connect';
+
+  @override
+  String get myTicketsWalletTitle => 'My Tickets';
+
+  @override
+  String get myTicketsWalletSubtitle =>
+      'Your museum entry passes, robot tour eligibility, and order details are saved here.';
+
+  @override
+  String get myTicketsSignInTitle => 'Sign in to view your tickets';
+
+  @override
+  String get myTicketsSignInBody =>
+      'Your account saves tickets, robot photos, tour progress, and website sync.';
+
+  @override
+  String get myTicketsEmptyTitle => 'No tickets yet';
+
+  @override
+  String get myTicketsEmptyBody =>
+      'Buy your museum entry ticket and optional Horus-Bot tour pass to see them here.';
+
+  @override
+  String get myTicketsBuyTickets => 'Buy Tickets';
+
+  @override
+  String myTicketsOrderCode(String code) {
+    return 'Order #$code';
+  }
+
+  @override
+  String get myTicketsNotAvailable => 'Not available';
+
+  @override
+  String get myTicketsTotalPaid => 'Total paid';
+
+  @override
+  String get myTicketsPurchasedAt => 'Purchased';
+
+  @override
+  String get myTicketsMuseumPassTitle => 'Museum Entry Pass';
+
+  @override
+  String get myTicketsEntryQr => 'Entry QR';
+
+  @override
+  String get myTicketsTotalVisitors => 'Total visitors';
+
+  @override
+  String get myTicketsCategoryBreakdown => 'Category breakdown';
+
+  @override
+  String get myTicketsNoCategoryBreakdown => 'No category breakdown saved.';
+
+  @override
+  String get myTicketsMuseumGateCode => 'Museum gate pass code';
+
+  @override
+  String get myTicketsMuseumQrExplanation =>
+      'This is for the museum gate only.';
+
+  @override
+  String get myTicketsShowEntryQr => 'Show Entry QR';
+
+  @override
+  String get myTicketsUseAtGate => 'Use this at the museum gate.';
+
+  @override
+  String get myTicketsRobotPassTitle => 'Robot Tour Pass';
+
+  @override
+  String get myTicketsRobotPassCode => 'Robot tour pass code';
+
+  @override
+  String get myTicketsRobotPairingSeparate =>
+      'This proves your robot tour eligibility. Robot pairing is a separate scan.';
+
+  @override
+  String get myTicketsPhysicalRobotQrNote =>
+      'Scan the physical Horus-Bot QR when you arrive to pair with the robot.';
+
+  @override
+  String get myTicketsNoPreferencesSaved =>
+      'No personalization details were saved with this pass.';
+
+  @override
+  String get myTicketsPreferencesSummary => 'Preferences summary';
+
+  @override
+  String get myTicketsSelectedExhibitsCount => 'Selected exhibits';
+
+  @override
+  String get myTicketsThemes => 'Themes';
+
+  @override
+  String get myTicketsVisitorMode => 'Visitor mode';
+
+  @override
+  String get myTicketsPace => 'Pace';
+
+  @override
+  String get myTicketsAccessibilityNeeds => 'Accessibility needs';
+
+  @override
+  String get myTicketsPhotoSpots => 'Photo spots';
+
+  @override
+  String get myTicketsAvoidCrowds => 'Avoid crowds';
+
+  @override
+  String get myTicketsRouteSummary => 'Route summary';
+
+  @override
+  String get myTicketsRouteName => 'Route name';
+
+  @override
+  String get myTicketsRouteStops => 'Route stops';
+
+  @override
+  String get myTicketsStandardRouteName => 'Horus-Bot Highlights Route';
+
+  @override
+  String get myTicketsNone => 'None';
+
+  @override
+  String get myTicketsOpenLiveTour => 'Open Live Tour';
+
+  @override
+  String get myTicketsContinueTour => 'Continue Tour';
+
+  @override
+  String get myTicketsViewSummary => 'View Summary';
+
+  @override
+  String get myTicketsUsed => 'Used';
+
+  @override
+  String get myTicketsCancelled => 'Cancelled';
+
+  @override
+  String get pending => 'Pending';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get tourType => 'Tour type';
+
+  @override
+  String get close => 'Close';
 
   @override
   String get homeExploreWithHorus => 'Explore With Horus';

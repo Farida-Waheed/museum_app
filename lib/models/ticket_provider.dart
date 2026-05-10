@@ -36,6 +36,8 @@ class TicketProvider with ChangeNotifier {
   /// Canonical entitlement checks used across Home/Map/Live Tour and ticket flow.
   bool get hasValidMuseumEntryEntitlement => hasMuseumTicket;
   bool get hasValidRobotTourEntitlement => hasRobotTourTicket;
+  bool get hasValidMuseumEntry => hasValidMuseumEntryEntitlement;
+  bool get hasValidRobotTour => hasValidRobotTourEntitlement;
   bool get hasValidRobotTourEligibility =>
       hasValidMuseumEntryEntitlement && hasValidRobotTourEntitlement;
 
@@ -43,7 +45,20 @@ class TicketProvider with ChangeNotifier {
   double get robotTourSubtotal => _currentOrderDraft.robotTourSubtotal;
   double get orderTotal => _currentOrderDraft.total;
   int get draftVisitorCount => _currentOrderDraft.visitorCount;
-  bool get canCheckoutDraft => _currentOrderDraft.hasMuseumEntry;
+  bool get isPersonalizedDraftComplete {
+    if (_currentOrderDraft.robotTourType != RobotTourType.personalized) {
+      return true;
+    }
+
+    final config = _currentOrderDraft.personalizedTourConfig;
+    return config != null &&
+        config.selectedExhibitIds.isNotEmpty &&
+        config.durationMinutes > 0 &&
+        config.languageCode.trim().isNotEmpty;
+  }
+
+  bool get canCheckoutDraft =>
+      _currentOrderDraft.hasMuseumEntry && isPersonalizedDraftComplete;
 
   MuseumTicket? get latestMuseumTicket {
     if (_museumTickets.isEmpty) return null;
@@ -171,6 +186,7 @@ class TicketProvider with ChangeNotifier {
 
     final now = DateTime.now();
     final orderId = 'ORD-${now.millisecondsSinceEpoch}';
+    final draft = _currentOrderDraft;
     final ticketIds = <String>[];
     final museumTicket = _createMuseumTicketFromDraft(
       userId: userId,
@@ -195,7 +211,7 @@ class TicketProvider with ChangeNotifier {
     final payment = PaymentRecord(
       id: 'PAY-${now.millisecondsSinceEpoch}',
       userId: userId,
-      amount: _currentOrderDraft.total,
+      amount: draft.total,
       currency: 'USD',
       label: _paymentLabelForDraft(),
       date: now,
@@ -211,6 +227,7 @@ class TicketProvider with ChangeNotifier {
       robotTourTicket: robotTicket,
       paymentRecord: payment,
       purchasedAt: now,
+      totalAmount: draft.total,
     );
     _purchasedTicketSets.add(purchasedSet);
     resetOrderDraft();
@@ -281,6 +298,7 @@ class TicketProvider with ChangeNotifier {
       timeSlot: _currentOrderDraft.timeSlot,
       museumTicketId: museumTicketId,
       orderId: orderId,
+      qrCodeValue: 'TKT-ROBOT-$orderId',
       selectedInterests: isPersonalized
           ? personalizedConfig.selectedThemes
           : null,
@@ -383,6 +401,7 @@ class TicketProvider with ChangeNotifier {
         timeSlot: timeSlot,
         museumTicketId: museumTicket?.id,
         orderId: orderId,
+        qrCodeValue: 'TKT-ROBOT-$orderId',
       );
       _robotTourTickets.add(robotTicket);
       ticketIds.add(robotTicket.id);
@@ -407,6 +426,7 @@ class TicketProvider with ChangeNotifier {
         robotTourTicket: robotTicket,
         paymentRecord: payment,
         purchasedAt: now,
+        totalAmount: payment.amount,
       ),
     );
 
@@ -483,6 +503,7 @@ class TicketProvider with ChangeNotifier {
       timeSlot: '10:00 AM - 12:00 PM',
       museumTicketId: museumTicket.id,
       orderId: orderId,
+      qrCodeValue: 'TKT-ROBOT-$orderId',
     );
     _robotTourTickets.add(robotTicket);
 
@@ -505,6 +526,7 @@ class TicketProvider with ChangeNotifier {
         robotTourTicket: robotTicket,
         paymentRecord: payment,
         purchasedAt: payment.date,
+        totalAmount: payment.amount,
       ),
     );
 

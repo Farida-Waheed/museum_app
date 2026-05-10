@@ -286,6 +286,51 @@ class AppLocalizationsAr extends AppLocalizations {
       'ضع رمز QR لتذكرة دخول المتحف داخل الإطار.';
 
   @override
+  String get qrMuseumEntryTitle => 'مسح دخول المتحف';
+
+  @override
+  String get qrMuseumEntrySubtitle =>
+      'امسح QR دخول المتحف للبوابة فقط. لن يؤدي ذلك إلى الاتصال بـ Horus-Bot.';
+
+  @override
+  String get qrRobotPairingTitle => 'الاقتران بالروبوت';
+
+  @override
+  String get qrRobotPairingSubtitle =>
+      'امسح رمز QR الفعلي على Horus-Bot عند الوصول. بطاقة جولة الروبوت تثبت الأهلية، لكن الاقتران يتم بمسح منفصل.';
+
+  @override
+  String get qrEntryVerifiedTitle => 'تم التحقق من تذكرة الدخول';
+
+  @override
+  String get qrEntryVerifiedMessage => 'استخدم هذا QR عند بوابة المتحف.';
+
+  @override
+  String get qrMuseumInvalidMessage => 'هذا ليس QR صالحًا لدخول المتحف.';
+
+  @override
+  String get qrRobotTicketRequiredTitle => 'تذكرة جولة الروبوت مطلوبة';
+
+  @override
+  String get qrRobotTicketRequiredMessage =>
+      'يرجى شراء تذكرة جولة الروبوت قبل الاقتران بـ Horus-Bot.';
+
+  @override
+  String get qrRobotConnectedTitle => 'تم الاتصال بـ Horus-Bot';
+
+  @override
+  String get qrRobotConnectedMessage => 'أنت جاهز لبدء جولتك الإرشادية.';
+
+  @override
+  String get qrOpenLiveTour => 'فتح الجولة الحية';
+
+  @override
+  String get qrAlignCode => 'ضع رمز QR داخل الإطار';
+
+  @override
+  String get qrReference => 'المرجع';
+
+  @override
   String get simulateRobotScan => 'محاكاة مسح الروبوت';
 
   @override
@@ -1523,13 +1568,14 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get ticketsPersonalizedPhase3 =>
-      'سيكتمل التخصيص التفصيلي لاحقًا. ستدعم هذه التذكرة اختيار المعروضات، والاهتمامات، والمدة، واللغة، واحتياجات الوصول، والوتيرة، وتفضيلات نقاط التصوير.';
+      'خصّص تجربة Horus-Bot باختيار المعروضات، والموضوعات، والوتيرة، واحتياجات الوصول، وأسلوب السرد.';
 
   @override
   String get ticketsCustomizeTour => 'تخصيص الجولة';
 
   @override
-  String get ticketsComingNext => 'سيتم إكمال تخصيص الجولة في المرحلة الثالثة.';
+  String get ticketsComingNext =>
+      'افتح تخصيص الجولة لإكمال خطة Horus-Bot الشخصية.';
 
   @override
   String get tourCustomizeTitle => 'ابنِ رحلتك الشخصية';
@@ -1696,6 +1742,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'اختر تذكرة دخول واحدة على الأقل قبل إتمام الحجز.';
 
   @override
+  String get ticketsCompletePersonalizedTourFirst =>
+      'خصّص جولتك واحفظها قبل إتمام الحجز.';
+
+  @override
   String get ticketsPurchaseComplete => 'اكتمل الشراء. تم حفظ تذاكرك.';
 
   @override
@@ -1721,6 +1771,156 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get scanQrOnRobot => 'امسح رمز QR الموجود على روبوت حورس-بوت للاتصال';
+
+  @override
+  String get myTicketsWalletTitle => 'تذاكري';
+
+  @override
+  String get myTicketsWalletSubtitle =>
+      'تذاكر دخول المتحف، وأهلية جولة الروبوت، وتفاصيل الطلب محفوظة هنا.';
+
+  @override
+  String get myTicketsSignInTitle => 'سجّل الدخول لعرض تذاكرك';
+
+  @override
+  String get myTicketsSignInBody =>
+      'يحفظ حسابك التذاكر، وصور الروبوت، وتقدم الجولة، والمزامنة مع الموقع.';
+
+  @override
+  String get myTicketsEmptyTitle => 'لا توجد تذاكر بعد';
+
+  @override
+  String get myTicketsEmptyBody =>
+      'اشتر تذكرة دخول المتحف وجولة Horus-Bot الاختيارية لتظهر هنا.';
+
+  @override
+  String get myTicketsBuyTickets => 'شراء التذاكر';
+
+  @override
+  String myTicketsOrderCode(String code) {
+    return 'طلب #$code';
+  }
+
+  @override
+  String get myTicketsNotAvailable => 'غير متاح';
+
+  @override
+  String get myTicketsTotalPaid => 'الإجمالي المدفوع';
+
+  @override
+  String get myTicketsPurchasedAt => 'تاريخ الشراء';
+
+  @override
+  String get myTicketsMuseumPassTitle => 'تذكرة دخول المتحف';
+
+  @override
+  String get myTicketsEntryQr => 'QR الدخول';
+
+  @override
+  String get myTicketsTotalVisitors => 'إجمالي الزوار';
+
+  @override
+  String get myTicketsCategoryBreakdown => 'تفاصيل الفئات';
+
+  @override
+  String get myTicketsNoCategoryBreakdown => 'لا توجد تفاصيل فئات محفوظة.';
+
+  @override
+  String get myTicketsMuseumGateCode => 'رمز بوابة المتحف';
+
+  @override
+  String get myTicketsMuseumQrExplanation =>
+      'هذا الرمز مخصص لبوابة المتحف فقط.';
+
+  @override
+  String get myTicketsShowEntryQr => 'عرض QR الدخول';
+
+  @override
+  String get myTicketsUseAtGate => 'استخدم هذا عند بوابة المتحف.';
+
+  @override
+  String get myTicketsRobotPassTitle => 'بطاقة جولة الروبوت';
+
+  @override
+  String get myTicketsRobotPassCode => 'رمز بطاقة جولة الروبوت';
+
+  @override
+  String get myTicketsRobotPairingSeparate =>
+      'هذا يثبت أهليتك لجولة الروبوت. الاقتران بالروبوت يتم بمسح منفصل.';
+
+  @override
+  String get myTicketsPhysicalRobotQrNote =>
+      'امسح رمز QR الفعلي على Horus-Bot عند الوصول للاقتران بالروبوت.';
+
+  @override
+  String get myTicketsNoPreferencesSaved =>
+      'لا توجد تفاصيل تخصيص محفوظة مع هذه البطاقة.';
+
+  @override
+  String get myTicketsPreferencesSummary => 'ملخص التفضيلات';
+
+  @override
+  String get myTicketsSelectedExhibitsCount => 'المعروضات المختارة';
+
+  @override
+  String get myTicketsThemes => 'الموضوعات';
+
+  @override
+  String get myTicketsVisitorMode => 'نوع الزائر';
+
+  @override
+  String get myTicketsPace => 'الوتيرة';
+
+  @override
+  String get myTicketsAccessibilityNeeds => 'احتياجات الوصول';
+
+  @override
+  String get myTicketsPhotoSpots => 'نقاط التصوير';
+
+  @override
+  String get myTicketsAvoidCrowds => 'تجنب الازدحام';
+
+  @override
+  String get myTicketsRouteSummary => 'ملخص المسار';
+
+  @override
+  String get myTicketsRouteName => 'اسم المسار';
+
+  @override
+  String get myTicketsRouteStops => 'محطات المسار';
+
+  @override
+  String get myTicketsStandardRouteName => 'مسار أبرز معروضات Horus-Bot';
+
+  @override
+  String get myTicketsNone => 'لا يوجد';
+
+  @override
+  String get myTicketsOpenLiveTour => 'فتح الجولة الحية';
+
+  @override
+  String get myTicketsContinueTour => 'متابعة الجولة';
+
+  @override
+  String get myTicketsViewSummary => 'عرض الملخص';
+
+  @override
+  String get myTicketsUsed => 'مستخدمة';
+
+  @override
+  String get myTicketsCancelled => 'ملغاة';
+
+  @override
+  String get pending => 'قيد الانتظار';
+
+  @override
+  String get status => 'الحالة';
+
+  @override
+  String get tourType => 'نوع الجولة';
+
+  @override
+  String get close => 'إغلاق';
 
   @override
   String get homeExploreWithHorus => 'استكشف مع حورس';

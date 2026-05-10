@@ -52,9 +52,15 @@ class _TicketScreenState extends State<TicketScreen> {
       ).showSnackBar(SnackBar(content: Text(l10n.ticketsLoginRequired)));
       return;
     }
-    if (!ticketProvider.canCheckoutDraft) {
+    if (!ticketProvider.currentOrderDraft.hasMuseumEntry) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.ticketsSelectMuseumEntryFirst)),
+      );
+      return;
+    }
+    if (!ticketProvider.isPersonalizedDraftComplete) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.ticketsCompletePersonalizedTourFirst)),
       );
       return;
     }
@@ -331,7 +337,7 @@ class _VisitDetailsCard extends StatelessWidget {
             runSpacing: 8,
             children: timeSlots.map((slot) {
               return _ChoicePill(
-                label: slot,
+                label: _localizedTimeSlot(slot, isArabic),
                 selected: slot == selectedTimeSlot,
                 onTap: () => onTimeSlotChanged(slot),
               );
@@ -622,7 +628,10 @@ class _OrderSummaryCard extends StatelessWidget {
       child: Column(
         children: [
           _SummaryLine(label: l10n.visitDate, value: formattedDate),
-          _SummaryLine(label: l10n.timeSlot, value: draft.timeSlot),
+          _SummaryLine(
+            label: l10n.timeSlot,
+            value: _localizedTimeSlot(draft.timeSlot, isArabic),
+          ),
           _SummaryLine(
             label: l10n.ticketsMuseumSubtotal,
             value: _money(ticketProvider.museumSubtotal),
@@ -1128,3 +1137,8 @@ class _OutlineActionButton extends StatelessWidget {
 }
 
 String _money(double value) => '\$${value.toStringAsFixed(2)}';
+
+String _localizedTimeSlot(String slot, bool isArabic) {
+  if (!isArabic) return slot;
+  return slot.replaceAll('AM', 'ص').replaceAll('PM', 'م');
+}

@@ -620,6 +620,21 @@ abstract class AppLocalizations {
   /// **'Hold your museum entry ticket QR code inside the frame.'**
   String get scanMuseumQrSubtitle;
 
+  String get qrMuseumEntryTitle;
+  String get qrMuseumEntrySubtitle;
+  String get qrRobotPairingTitle;
+  String get qrRobotPairingSubtitle;
+  String get qrEntryVerifiedTitle;
+  String get qrEntryVerifiedMessage;
+  String get qrMuseumInvalidMessage;
+  String get qrRobotTicketRequiredTitle;
+  String get qrRobotTicketRequiredMessage;
+  String get qrRobotConnectedTitle;
+  String get qrRobotConnectedMessage;
+  String get qrOpenLiveTour;
+  String get qrAlignCode;
+  String get qrReference;
+
   /// No description provided for @simulateRobotScan.
   ///
   /// In en, this message translates to:
@@ -2975,7 +2990,7 @@ abstract class AppLocalizations {
   /// No description provided for @ticketsPersonalizedPhase3.
   ///
   /// In en, this message translates to:
-  /// **'Detailed customization comes next. This pass will support exhibit selection, themes, duration, language, accessibility, pace, and photo spot preferences.'**
+  /// **'Customize your Horus-Bot experience with exhibits, themes, pacing, accessibility preferences, and storytelling style.'**
   String get ticketsPersonalizedPhase3;
 
   /// No description provided for @ticketsCustomizeTour.
@@ -2987,7 +3002,7 @@ abstract class AppLocalizations {
   /// No description provided for @ticketsComingNext.
   ///
   /// In en, this message translates to:
-  /// **'Personalized tour customization will be completed in Phase 3.'**
+  /// **'Open Customize Tour to finish your personalized Horus-Bot plan.'**
   String get ticketsComingNext;
 
   String get tourCustomizeTitle;
@@ -3073,6 +3088,8 @@ abstract class AppLocalizations {
   /// **'Select at least one museum entry ticket before checkout.'**
   String get ticketsSelectMuseumEntryFirst;
 
+  String get ticketsCompletePersonalizedTourFirst;
+
   /// No description provided for @ticketsPurchaseComplete.
   ///
   /// In en, this message translates to:
@@ -3126,6 +3143,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Scan the QR on the physical Horus-Bot robot to connect'**
   String get scanQrOnRobot;
+
+  String get myTicketsWalletTitle;
+  String get myTicketsWalletSubtitle;
+  String get myTicketsSignInTitle;
+  String get myTicketsSignInBody;
+  String get myTicketsEmptyTitle;
+  String get myTicketsEmptyBody;
+  String get myTicketsBuyTickets;
+  String myTicketsOrderCode(String code);
+  String get myTicketsNotAvailable;
+  String get myTicketsTotalPaid;
+  String get myTicketsPurchasedAt;
+  String get myTicketsMuseumPassTitle;
+  String get myTicketsEntryQr;
+  String get myTicketsTotalVisitors;
+  String get myTicketsCategoryBreakdown;
+  String get myTicketsNoCategoryBreakdown;
+  String get myTicketsMuseumGateCode;
+  String get myTicketsMuseumQrExplanation;
+  String get myTicketsShowEntryQr;
+  String get myTicketsUseAtGate;
+  String get myTicketsRobotPassTitle;
+  String get myTicketsRobotPassCode;
+  String get myTicketsRobotPairingSeparate;
+  String get myTicketsPhysicalRobotQrNote;
+  String get myTicketsNoPreferencesSaved;
+  String get myTicketsPreferencesSummary;
+  String get myTicketsSelectedExhibitsCount;
+  String get myTicketsThemes;
+  String get myTicketsVisitorMode;
+  String get myTicketsPace;
+  String get myTicketsAccessibilityNeeds;
+  String get myTicketsPhotoSpots;
+  String get myTicketsAvoidCrowds;
+  String get myTicketsRouteSummary;
+  String get myTicketsRouteName;
+  String get myTicketsRouteStops;
+  String get myTicketsStandardRouteName;
+  String get myTicketsNone;
+  String get myTicketsOpenLiveTour;
+  String get myTicketsContinueTour;
+  String get myTicketsViewSummary;
+  String get myTicketsUsed;
+  String get myTicketsCancelled;
+  String get pending;
+  String get status;
+  String get tourType;
+  String get close;
 
   /// No description provided for @homeExploreWithHorus.
   ///

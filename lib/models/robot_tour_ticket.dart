@@ -21,6 +21,7 @@ class RobotTourTicket {
   final String? timeSlot;
   final String? museumTicketId;
   final String? orderId;
+  final String? qrCodeValue;
 
   // Optional for future extension
   final List<String>? selectedInterests;
@@ -45,6 +46,7 @@ class RobotTourTicket {
     this.timeSlot,
     this.museumTicketId,
     this.orderId,
+    this.qrCodeValue,
     this.selectedInterests,
     this.selectedArtifactIds,
   });
@@ -69,6 +71,7 @@ class RobotTourTicket {
     String? timeSlot,
     String? museumTicketId,
     String? orderId,
+    String? qrCodeValue,
     List<String>? selectedInterests,
     List<String>? selectedArtifactIds,
   }) {
@@ -92,6 +95,7 @@ class RobotTourTicket {
       timeSlot: timeSlot ?? this.timeSlot,
       museumTicketId: museumTicketId ?? this.museumTicketId,
       orderId: orderId ?? this.orderId,
+      qrCodeValue: qrCodeValue ?? this.qrCodeValue,
       selectedInterests: selectedInterests ?? this.selectedInterests,
       selectedArtifactIds: selectedArtifactIds ?? this.selectedArtifactIds,
     );
@@ -118,6 +122,7 @@ class RobotTourTicket {
       'timeSlot': timeSlot,
       'museumTicketId': museumTicketId,
       'orderId': orderId,
+      'qrCodeValue': qrCodeValue,
       'selectedInterests': selectedInterests,
       'selectedArtifactIds': selectedArtifactIds,
     };
@@ -162,6 +167,7 @@ class RobotTourTicket {
       timeSlot: json['timeSlot'] as String?,
       museumTicketId: json['museumTicketId'] as String?,
       orderId: json['orderId'] as String?,
+      qrCodeValue: json['qrCodeValue'] as String?,
       selectedInterests: json['selectedInterests'] != null
           ? List<String>.from(json['selectedInterests'] as List)
           : null,

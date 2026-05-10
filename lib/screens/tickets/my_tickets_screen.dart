@@ -1,609 +1,1236 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import 'package:provider/provider.dart';
+
+import '../../app/router.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
-import '../../widgets/app_menu_shell.dart';
-import '../../widgets/bottom_nav.dart';
-
-import '../../models/user_preferences.dart';
+import '../../l10n/app_localizations.dart';
+import '../../models/app_session_provider.dart';
 import '../../models/auth_provider.dart';
-import '../../models/ticket_provider.dart';
 import '../../models/museum_ticket.dart';
 import '../../models/robot_tour_ticket.dart';
-import '../../l10n/app_localizations.dart';
-import '../../app/router.dart';
+import '../../models/ticket_order.dart';
+import '../../models/ticket_provider.dart';
+import '../../models/user_preferences.dart';
+import '../../widgets/app_menu_shell.dart';
+import '../../widgets/bottom_nav.dart';
+import 'qr_scanner_screen.dart';
 
 class MyTicketsScreen extends StatelessWidget {
   const MyTicketsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final prefs = Provider.of<UserPreferencesModel>(context);
-    final authProvider = Provider.of<AuthProvider>(context);
-    final ticketProvider = Provider.of<TicketProvider>(context);
-    final isArabic = prefs.language == 'ar';
-    final theme = Theme.of(context);
+    final prefs = context.watch<UserPreferencesModel>();
+    final authProvider = context.watch<AuthProvider>();
+    final ticketProvider = context.watch<TicketProvider>();
+    final sessionProvider = context.watch<AppSessionProvider>();
     final l10n = AppLocalizations.of(context)!;
-
-    // If not logged in, show login prompt
-    if (!authProvider.isLoggedIn) {
-      return AppMenuShell(
-        title: (l10n.myTickets ?? "My Tickets").toUpperCase(),
-        backgroundColor: AppColors.darkBackground,
-        bottomNavigationBar: const BottomNav(currentIndex: 3),
-        body: _buildLoginRequiredState(context, isArabic, l10n),
-      );
-    }
-
-    final museumTickets = ticketProvider.museumTickets;
-    final robotTourTickets = ticketProvider.robotTourTickets;
+    final isArabic = prefs.language == 'ar';
 
     return AppMenuShell(
-      title: (l10n.myTickets ?? "My Tickets").toUpperCase(),
-      backgroundColor: AppColors.darkBackground,
+      title: 'HORUS-BOT',
+      backgroundColor: AppColors.baseBlack,
       bottomNavigationBar: const BottomNav(currentIndex: 3),
-      body: ticketProvider.hasTickets
-          ? _buildTicketsView(
-              context,
-              museumTickets,
-              robotTourTickets,
-              isArabic,
-              theme,
-              l10n,
-            )
-          : _buildEmptyState(context, isArabic, theme, l10n),
+      body: Directionality(
+        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: AppGradients.screenBackground,
+          ),
+          child: authProvider.isLoggedIn
+              ? _buildWallet(
+                  context,
+                  ticketProvider,
+                  sessionProvider,
+                  l10n,
+                  isArabic,
+                )
+              : _AccountRequiredState(l10n: l10n, isArabic: isArabic),
+        ),
+      ),
     );
   }
 
-  Widget _buildTicketsView(
+  Widget _buildWallet(
     BuildContext context,
-    List<MuseumTicket> museumTickets,
-    List<RobotTourTicket> robotTourTickets,
-    bool isArabic,
-    ThemeData theme,
+    TicketProvider ticketProvider,
+    AppSessionProvider sessionProvider,
     AppLocalizations l10n,
+    bool isArabic,
   ) {
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      children: [
-        // Museum Entry Tickets Section
-        if (museumTickets.isNotEmpty) ...[
-          Text(
-            isArabic ? "تذاكر دخول المتحف" : "Museum Entry Tickets",
-            style: AppTextStyles.displaySectionTitle(context),
-          ),
-          const SizedBox(height: 16),
-          ...museumTickets.map(
-            (ticket) =>
-                _buildMuseumTicketCard(context, ticket, l10n, isArabic, theme),
-          ),
-          const SizedBox(height: 32),
-        ],
+    final orders = ticketProvider.purchasedTicketSets;
+    if (orders.isEmpty) {
+      return _EmptyTicketsState(l10n: l10n, isArabic: isArabic);
+    }
 
-        // Robot Tour Tickets Section
-        if (robotTourTickets.isNotEmpty) ...[
-          Text(
-            isArabic ? "تذاكر جولة حورس-بوت" : "Horus-Bot Tour Tickets",
-            style: AppTextStyles.displaySectionTitle(context),
-          ),
-          const SizedBox(height: 16),
-          ...robotTourTickets.map(
-            (ticket) => _buildRobotTourTicketCard(
-              context,
-              ticket,
-              l10n,
-              isArabic,
-              theme,
+    final sortedOrders = orders.toList()
+      ..sort((a, b) => b.purchasedAt.compareTo(a.purchasedAt));
+
+    return ListView(
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 120),
+      children: [
+        _IntroCard(
+          title: l10n.myTicketsWalletTitle,
+          subtitle: l10n.myTicketsWalletSubtitle,
+          icon: Icons.confirmation_number_outlined,
+          isArabic: isArabic,
+        ),
+        const SizedBox(height: 18),
+        ...sortedOrders.map(
+          (order) => Padding(
+            padding: const EdgeInsetsDirectional.only(bottom: 18),
+            child: _OrderCard(
+              order: order,
+              sessionProvider: sessionProvider,
+              l10n: l10n,
+              isArabic: isArabic,
             ),
           ),
-        ],
+        ),
       ],
     );
   }
+}
 
-  // -------------------------------------------------------
-  // LOGIN REQUIRED STATE
-  // -------------------------------------------------------
-  Widget _buildLoginRequiredState(
-    BuildContext context,
-    bool isArabic,
-    AppLocalizations l10n,
-  ) {
+class _AccountRequiredState extends StatelessWidget {
+  const _AccountRequiredState({required this.l10n, required this.isArabic});
+
+  final AppLocalizations l10n;
+  final bool isArabic;
+
+  @override
+  Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+      child: SingleChildScrollView(
+        padding: const EdgeInsetsDirectional.fromSTEB(24, 24, 24, 120),
+        child: _GlassCard(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: isArabic
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
+            children: [
+              const Icon(
+                Icons.account_circle_outlined,
+                color: AppColors.primaryGold,
+                size: 46,
+              ),
+              const SizedBox(height: 18),
+              Text(
+                l10n.myTicketsSignInTitle,
+                textAlign: TextAlign.start,
+                style: AppTextStyles.displayScreenTitle(
+                  context,
+                ).copyWith(fontSize: 24),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                l10n.myTicketsSignInBody,
+                textAlign: TextAlign.start,
+                style: AppTextStyles.bodyPrimary(
+                  context,
+                ).copyWith(color: AppColors.bodyText, height: 1.45),
+              ),
+              const SizedBox(height: 22),
+              Row(
+                children: [
+                  Expanded(
+                    child: _GoldButton(
+                      label: l10n.login,
+                      onTap: () =>
+                          Navigator.pushNamed(context, AppRoutes.login),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _OutlineButton(
+                      label: l10n.createAccount,
+                      onTap: () =>
+                          Navigator.pushNamed(context, AppRoutes.register),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyTicketsState extends StatelessWidget {
+  const _EmptyTicketsState({required this.l10n, required this.isArabic});
+
+  final AppLocalizations l10n;
+  final bool isArabic;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsetsDirectional.fromSTEB(24, 24, 24, 120),
+        child: _GlassCard(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: isArabic
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
+            children: [
+              const Icon(
+                Icons.wallet_outlined,
+                color: AppColors.primaryGold,
+                size: 46,
+              ),
+              const SizedBox(height: 18),
+              Text(
+                l10n.myTicketsEmptyTitle,
+                textAlign: TextAlign.start,
+                style: AppTextStyles.displayScreenTitle(
+                  context,
+                ).copyWith(fontSize: 24),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                l10n.myTicketsEmptyBody,
+                textAlign: TextAlign.start,
+                style: AppTextStyles.bodyPrimary(
+                  context,
+                ).copyWith(color: AppColors.bodyText, height: 1.45),
+              ),
+              const SizedBox(height: 22),
+              SizedBox(
+                width: double.infinity,
+                child: _GoldButton(
+                  label: l10n.myTicketsBuyTickets,
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.tickets),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _OrderCard extends StatelessWidget {
+  const _OrderCard({
+    required this.order,
+    required this.sessionProvider,
+    required this.l10n,
+    required this.isArabic,
+  });
+
+  final PurchasedTicketSet order;
+  final AppSessionProvider sessionProvider;
+  final AppLocalizations l10n;
+  final bool isArabic;
+
+  @override
+  Widget build(BuildContext context) {
+    final museumTicket = order.museumTicket;
+    final robotTicket = order.robotTourTicket;
+    final date = museumTicket?.visitDate ?? robotTicket?.visitDate;
+    final timeSlot = museumTicket?.timeSlot ?? robotTicket?.timeSlot;
+    final formattedDate = _formatDate(date ?? order.purchasedAt, isArabic);
+
+    return _GlassCard(
+      child: Column(
+        crossAxisAlignment: isArabic
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
+        children: [
+          _OrderHeader(
+            order: order,
+            visitDate: formattedDate,
+            timeSlot: timeSlot == null
+                ? l10n.myTicketsNotAvailable
+                : _localizedTimeSlot(timeSlot, isArabic),
+            l10n: l10n,
+          ),
+          const SizedBox(height: 16),
+          if (museumTicket != null)
+            _MuseumPassCard(
+              ticket: museumTicket,
+              l10n: l10n,
+              isArabic: isArabic,
+            ),
+          if (robotTicket != null) ...[
+            const SizedBox(height: 14),
+            _RobotPassCard(
+              ticket: robotTicket,
+              sessionProvider: sessionProvider,
+              l10n: l10n,
+              isArabic: isArabic,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _OrderHeader extends StatelessWidget {
+  const _OrderHeader({
+    required this.order,
+    required this.visitDate,
+    required this.timeSlot,
+    required this.l10n,
+  });
+
+  final PurchasedTicketSet order;
+  final String visitDate;
+  final String timeSlot;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: Directionality.of(context) == TextDirection.rtl
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
+      children: [
+        Row(
+          textDirection: Directionality.of(context),
           children: [
             const Icon(
-              Icons.account_circle_outlined,
-              size: 48,
+              Icons.receipt_long_rounded,
               color: AppColors.primaryGold,
+              size: 22,
             ),
-            const SizedBox(height: 16),
-            Text(
-              l10n.loginToViewTickets ?? "Log in to view your tickets",
-              style: AppTextStyles.titleLarge(
-                context,
-              ).copyWith(fontSize: 18, color: Colors.white),
-              textAlign: TextAlign.center,
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                l10n.myTicketsOrderCode(_shortCode(order.id)),
+                textAlign: TextAlign.start,
+                style: AppTextStyles.displaySectionTitle(
+                  context,
+                ).copyWith(color: AppColors.softGold),
+              ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.accountRequired ??
-                  "Create an account or log in to save your tickets, payments, and robot tour access.",
-              textAlign: TextAlign.center,
-              style: AppTextStyles.metadata(context).copyWith(fontSize: 13),
-            ),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, AppRoutes.login);
-              },
-              child: Text(l10n.login ?? 'Login'),
-            ),
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, AppRoutes.register);
-              },
-              child: Text(l10n.createAccount ?? 'Create Account'),
+            _StatusPill(label: order.paymentRecord.status),
+          ],
+        ),
+        const SizedBox(height: 12),
+        _InfoGrid(
+          items: [
+            _InfoItem(l10n.visitDate, visitDate),
+            _InfoItem(l10n.timeSlot, timeSlot),
+            _InfoItem(l10n.myTicketsTotalPaid, _money(order.totalAmount)),
+            _InfoItem(
+              l10n.myTicketsPurchasedAt,
+              _formatDate(order.purchasedAt, false),
             ),
           ],
         ),
-      ),
+      ],
     );
   }
+}
 
-  // -------------------------------------------------------
-  // EMPTY STATE
-  // -------------------------------------------------------
-  Widget _buildEmptyState(
-    BuildContext context,
-    bool isArabic,
-    ThemeData theme,
-    AppLocalizations l10n,
-  ) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.confirmation_number_outlined,
-              size: 48,
-              color: AppColors.primaryGold,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              isArabic ? "لا توجد تذاكر بعد" : "No tickets yet",
-              style: AppTextStyles.titleLarge(
-                context,
-              ).copyWith(fontSize: 18, color: Colors.white),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              isArabic
-                  ? "عند شراء تذاكر من شاشة الحجز، ستظهر هنا لعرضها عند الدخول."
-                  : "When you buy tickets from the booking screen, they will appear here for entry.",
-              textAlign: TextAlign.center,
-              style: AppTextStyles.metadata(context).copyWith(fontSize: 13),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+class _MuseumPassCard extends StatelessWidget {
+  const _MuseumPassCard({
+    required this.ticket,
+    required this.l10n,
+    required this.isArabic,
+  });
 
-  // -------------------------------------------------------
-  // MUSEUM TICKET CARD
-  // -------------------------------------------------------
-  Widget _buildMuseumTicketCard(
-    BuildContext context,
-    MuseumTicket ticket,
-    AppLocalizations l10n,
-    bool isArabic,
-    ThemeData theme,
-  ) {
-    final formattedDate = isArabic
-        ? "${ticket.visitDate.day}-${ticket.visitDate.month}-${ticket.visitDate.year}"
-        : "${ticket.visitDate.day}/${ticket.visitDate.month}/${ticket.visitDate.year}";
+  final MuseumTicket ticket;
+  final AppLocalizations l10n;
+  final bool isArabic;
 
-    final bool isActive = ticket.status == TicketStatus.active;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: AppColors.cinematicCard,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: isArabic
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
-          children: [
-            // TOP ROW: icon + title + date
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryGold.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.museum_outlined,
-                    color: AppColors.primaryGold,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: isArabic
-                        ? CrossAxisAlignment.end
-                        : CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        isArabic ? "تذكرة دخول المتحف" : "Museum entry ticket",
-                        style: AppTextStyles.bodyPrimary(context).copyWith(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "${l10n.visitDate}: $formattedDate",
-                        style: AppTextStyles.metadata(
-                          context,
-                        ).copyWith(fontSize: 13),
-                        textAlign: isArabic ? TextAlign.right : TextAlign.left,
-                      ),
-                      Text(
-                        "${l10n.timeSlot}: ${ticket.timeSlot}",
-                        style: AppTextStyles.metadata(
-                          context,
-                        ).copyWith(fontSize: 13),
-                        textAlign: isArabic ? TextAlign.right : TextAlign.left,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-            const Divider(height: 1, color: AppColors.darkDivider),
-
-            const SizedBox(height: 8),
-
-            // MIDDLE: ID + price + status
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: isArabic
-                        ? CrossAxisAlignment.end
-                        : CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        isArabic ? "معرّف التذكرة" : "Ticket ID",
-                        style: AppTextStyles.metadata(
-                          context,
-                        ).copyWith(fontSize: 12),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        ticket.id,
-                        style: AppTextStyles.bodyPrimary(context).copyWith(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.5,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      isArabic ? "السعر" : "Price",
-                      style: AppTextStyles.metadata(
-                        context,
-                      ).copyWith(fontSize: 12),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      "\$${ticket.price.toStringAsFixed(2)}",
-                      style: AppTextStyles.titleMedium(
-                        context,
-                      ).copyWith(fontSize: 14, color: AppColors.primaryGold),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 8),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Status chip
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isActive
-                        ? Colors.green.withOpacity(0.1)
-                        : Colors.white.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        isActive
-                            ? Icons.check_circle_outline
-                            : Icons.history_toggle_off,
-                        size: 16,
-                        color: isActive ? Colors.green : AppColors.helperText,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        isArabic
-                            ? (isActive ? "سارية" : "منتهية")
-                            : (isActive ? "Active" : "Expired"),
-                        style: AppTextStyles.metadata(context).copyWith(
-                          fontSize: 12,
-                          color: isActive ? Colors.green : AppColors.helperText,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // QR code
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.qr_code_2,
-                      size: 28,
-                      color: Colors.white70,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      isArabic ? "إظهار رمز الدخول" : "Show entry code",
-                      style: AppTextStyles.metadata(
-                        context,
-                      ).copyWith(fontSize: 12),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-            Text(
-              isArabic
-                  ? "استخدم هذا الرمز عند بوابة المتحف"
-                  : "Use this QR at the museum entrance",
-              style: AppTextStyles.metadata(
-                context,
-              ).copyWith(fontSize: 12, color: AppColors.helperText),
-              textAlign: isArabic ? TextAlign.right : TextAlign.left,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // -------------------------------------------------------
-  // ROBOT TOUR TICKET CARD
-  // -------------------------------------------------------
-  Widget _buildRobotTourTicketCard(
-    BuildContext context,
-    RobotTourTicket ticket,
-    AppLocalizations l10n,
-    bool isArabic,
-    ThemeData theme,
-  ) {
-    final bool isActive = ticket.status == TicketStatus.active;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: AppColors.cinematicCard,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: isArabic
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
-          children: [
-            // TOP ROW: icon + title
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.smart_toy_outlined,
-                    color: Colors.blue,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: isArabic
-                        ? CrossAxisAlignment.end
-                        : CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        ticket.packageName,
-                        style: AppTextStyles.bodyPrimary(context).copyWith(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "${isArabic ? "المدة" : "Duration"}: ${ticket.durationMinutes} ${isArabic ? "دقيقة" : "minutes"}",
-                        style: AppTextStyles.metadata(
-                          context,
-                        ).copyWith(fontSize: 13),
-                        textAlign: isArabic ? TextAlign.right : TextAlign.left,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 12),
-            const Divider(height: 1, color: AppColors.darkDivider),
-
-            const SizedBox(height: 8),
-
-            // Features
+  @override
+  Widget build(BuildContext context) {
+    final languageCode = isArabic ? 'ar' : 'en';
+    return _PassSurface(
+      icon: Icons.museum_outlined,
+      title: l10n.myTicketsMuseumPassTitle,
+      badge: l10n.myTicketsEntryQr,
+      child: Column(
+        crossAxisAlignment: isArabic
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
+        children: [
+          _InfoGrid(
+            items: [
+              _InfoItem(
+                l10n.visitDate,
+                _formatDate(ticket.visitDate, isArabic),
+              ),
+              _InfoItem(
+                l10n.timeSlot,
+                _localizedTimeSlot(ticket.timeSlot, isArabic),
+              ),
+              _InfoItem(l10n.status, _ticketStatusLabel(l10n, ticket.status)),
+              _InfoItem(l10n.myTicketsTotalVisitors, '${ticket.visitorCount}'),
+            ],
+          ),
+          const SizedBox(height: 14),
+          _SectionLabel(l10n.myTicketsCategoryBreakdown),
+          const SizedBox(height: 8),
+          if (ticket.lineItems.isEmpty)
+            _MutedText(l10n.myTicketsNoCategoryBreakdown)
+          else
             Column(
-              crossAxisAlignment: isArabic
-                  ? CrossAxisAlignment.end
-                  : CrossAxisAlignment.start,
-              children: [
-                Text(
-                  isArabic ? "المميزات المشمولة" : "Included Features",
-                  style: AppTextStyles.metadata(context).copyWith(fontSize: 12),
-                ),
-                const SizedBox(height: 4),
-                Wrap(
-                  spacing: 6,
-                  runSpacing: 4,
-                  children: ticket.includedFeatures.map((feature) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.darkSurface,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        feature,
-                        style: AppTextStyles.metadata(
-                          context,
-                        ).copyWith(fontSize: 11, color: Colors.white70),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ],
+              children: ticket.lineItems
+                  .map(
+                    (item) => _BreakdownLine(
+                      label: item.category.label(languageCode),
+                      value: '${item.quantity}x',
+                    ),
+                  )
+                  .toList(),
             ),
+          const SizedBox(height: 14),
+          _CodeBox(
+            label: l10n.myTicketsMuseumGateCode,
+            code: ticket.qrCodeValue,
+            helper: l10n.myTicketsMuseumQrExplanation,
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: _GoldButton(
+              label: l10n.myTicketsShowEntryQr,
+              icon: Icons.qr_code_2_rounded,
+              onTap: () => _showEntryCodeSheet(context, ticket, l10n, isArabic),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-            const SizedBox(height: 12),
+class _RobotPassCard extends StatelessWidget {
+  const _RobotPassCard({
+    required this.ticket,
+    required this.sessionProvider,
+    required this.l10n,
+    required this.isArabic,
+  });
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Status chip
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+  final RobotTourTicket ticket;
+  final AppSessionProvider sessionProvider;
+  final AppLocalizations l10n;
+  final bool isArabic;
+
+  @override
+  Widget build(BuildContext context) {
+    return _PassSurface(
+      icon: Icons.smart_toy_outlined,
+      title: l10n.myTicketsRobotPassTitle,
+      badge: _tourTypeLabel(l10n, ticket.tourType),
+      child: Column(
+        crossAxisAlignment: isArabic
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
+        children: [
+          _InfoGrid(
+            items: [
+              _InfoItem(l10n.tourType, _tourTypeLabel(l10n, ticket.tourType)),
+              _InfoItem(
+                l10n.duration,
+                l10n.ticketsDurationValue(ticket.durationMinutes),
+              ),
+              _InfoItem(
+                l10n.language,
+                _languageLabel(l10n, ticket.languageCode),
+              ),
+              _InfoItem(l10n.status, _ticketStatusLabel(l10n, ticket.status)),
+            ],
+          ),
+          const SizedBox(height: 14),
+          _CodeBox(
+            label: l10n.myTicketsRobotPassCode,
+            code: ticket.qrCodeValue ?? ticket.id,
+            helper: l10n.myTicketsRobotPairingSeparate,
+          ),
+          const SizedBox(height: 14),
+          _RobotConfigSummary(ticket: ticket, l10n: l10n, isArabic: isArabic),
+          const SizedBox(height: 14),
+          _MutedText(l10n.myTicketsPhysicalRobotQrNote),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: _RobotActionButton(
+              sessionProvider: sessionProvider,
+              l10n: l10n,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RobotConfigSummary extends StatelessWidget {
+  const _RobotConfigSummary({
+    required this.ticket,
+    required this.l10n,
+    required this.isArabic,
+  });
+
+  final RobotTourTicket ticket;
+  final AppLocalizations l10n;
+  final bool isArabic;
+
+  @override
+  Widget build(BuildContext context) {
+    if (ticket.tourType == RobotTourType.personalized) {
+      final config = ticket.personalizedTourConfig;
+      if (config == null) {
+        return _MutedText(l10n.myTicketsNoPreferencesSaved);
+      }
+      return Column(
+        crossAxisAlignment: isArabic
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
+        children: [
+          _SectionLabel(l10n.myTicketsPreferencesSummary),
+          const SizedBox(height: 8),
+          _BreakdownLine(
+            label: l10n.myTicketsSelectedExhibitsCount,
+            value: '${config.selectedExhibitIds.length}',
+          ),
+          _BreakdownLine(
+            label: l10n.myTicketsThemes,
+            value: config.selectedThemes.isEmpty
+                ? l10n.myTicketsNone
+                : config.selectedThemes
+                      .map((id) => _themeLabel(l10n, id))
+                      .join(', '),
+          ),
+          _BreakdownLine(
+            label: l10n.myTicketsVisitorMode,
+            value: _visitorModeLabel(l10n, config.visitorMode),
+          ),
+          _BreakdownLine(
+            label: l10n.myTicketsPace,
+            value: _paceLabel(l10n, config.pace),
+          ),
+          _BreakdownLine(
+            label: l10n.myTicketsAccessibilityNeeds,
+            value: config.accessibilityNeeds.isEmpty
+                ? l10n.myTicketsNone
+                : config.accessibilityNeeds
+                      .map((id) => _accessibilityLabel(l10n, id))
+                      .join(', '),
+          ),
+          _BreakdownLine(
+            label: l10n.myTicketsPhotoSpots,
+            value: config.photoSpotsEnabled ? l10n.enabled : l10n.disabled,
+          ),
+          _BreakdownLine(
+            label: l10n.myTicketsAvoidCrowds,
+            value: config.avoidCrowds ? l10n.enabled : l10n.disabled,
+          ),
+        ],
+      );
+    }
+
+    final config = ticket.standardTourConfig;
+    return Column(
+      crossAxisAlignment: isArabic
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
+      children: [
+        _SectionLabel(l10n.myTicketsRouteSummary),
+        const SizedBox(height: 8),
+        _BreakdownLine(
+          label: l10n.myTicketsRouteName,
+          value: _standardRouteLabel(
+            l10n,
+            config?.routeName ?? ticket.packageName,
+          ),
+        ),
+        _BreakdownLine(
+          label: l10n.myTicketsRouteStops,
+          value:
+              '${config?.routeExhibitIds.length ?? ticket.selectedArtifactIds?.length ?? 0}',
+        ),
+      ],
+    );
+  }
+}
+
+class _RobotActionButton extends StatelessWidget {
+  const _RobotActionButton({required this.sessionProvider, required this.l10n});
+
+  final AppSessionProvider sessionProvider;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final action = _robotActionFor(sessionProvider, l10n);
+    return _GoldButton(
+      label: action.label,
+      icon: action.icon,
+      onTap: () {
+        switch (action.destination) {
+          case _RobotActionDestination.qrScan:
+            Navigator.pushNamed(
+              context,
+              AppRoutes.qrScan,
+              arguments: QRScanMode.robotConnection,
+            );
+            break;
+          case _RobotActionDestination.liveTour:
+            Navigator.pushNamed(context, AppRoutes.liveTour);
+            break;
+          case _RobotActionDestination.summary:
+            Navigator.pushNamed(context, AppRoutes.summary);
+            break;
+          case _RobotActionDestination.none:
+            break;
+        }
+      },
+    );
+  }
+}
+
+class _PassSurface extends StatelessWidget {
+  const _PassSurface({
+    required this.icon,
+    required this.title,
+    required this.badge,
+    required this.child,
+  });
+
+  final IconData icon;
+  final String title;
+  final String badge;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.secondaryGlass(0.30),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.goldBorder(0.14)),
+      ),
+      child: Column(
+        crossAxisAlignment: Directionality.of(context) == TextDirection.rtl
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
+        children: [
+          Row(
+            textDirection: Directionality.of(context),
+            children: [
+              Icon(icon, color: AppColors.primaryGold, size: 22),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  title,
+                  textAlign: TextAlign.start,
+                  style: AppTextStyles.bodyPrimary(
+                    context,
+                  ).copyWith(fontWeight: FontWeight.w800),
+                ),
+              ),
+              _MiniBadge(label: badge),
+            ],
+          ),
+          const SizedBox(height: 14),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _IntroCard extends StatelessWidget {
+  const _IntroCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.isArabic,
+  });
+
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final bool isArabic;
+
+  @override
+  Widget build(BuildContext context) {
+    return _GlassCard(
+      child: Column(
+        crossAxisAlignment: isArabic
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppColors.primaryGold, size: 36),
+          const SizedBox(height: 14),
+          Text(
+            title,
+            textAlign: TextAlign.start,
+            style: AppTextStyles.displayScreenTitle(
+              context,
+            ).copyWith(color: AppColors.primaryGold, fontSize: 24),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            subtitle,
+            textAlign: TextAlign.start,
+            style: AppTextStyles.bodyPrimary(
+              context,
+            ).copyWith(color: AppColors.bodyText, height: 1.45),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoGrid extends StatelessWidget {
+  const _InfoGrid({required this.items});
+
+  final List<_InfoItem> items;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: items
+          .map(
+            (item) => Container(
+              width: 140,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.cardGlass(0.32),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: AppColors.goldBorder(0.10)),
+              ),
+              child: Column(
+                crossAxisAlignment:
+                    Directionality.of(context) == TextDirection.rtl
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.label,
+                    textAlign: TextAlign.start,
+                    style: AppTextStyles.metadata(
+                      context,
+                    ).copyWith(color: AppColors.neutralMedium, fontSize: 11),
                   ),
-                  decoration: BoxDecoration(
-                    color: isActive
-                        ? Colors.green.withOpacity(0.1)
-                        : Colors.white.withOpacity(0.05),
-                    borderRadius: BorderRadius.circular(12),
+                  const SizedBox(height: 4),
+                  Text(
+                    item.value,
+                    textAlign: TextAlign.start,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.bodyPrimary(
+                      context,
+                    ).copyWith(fontWeight: FontWeight.w700, fontSize: 13),
                   ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
+                ],
+              ),
+            ),
+          )
+          .toList(),
+    );
+  }
+}
+
+class _InfoItem {
+  const _InfoItem(this.label, this.value);
+
+  final String label;
+  final String value;
+}
+
+class _CodeBox extends StatelessWidget {
+  const _CodeBox({
+    required this.label,
+    required this.code,
+    required this.helper,
+  });
+
+  final String label;
+  final String code;
+  final String helper;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.baseBlack.withValues(alpha: 0.38),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.goldBorder(0.14)),
+      ),
+      child: Column(
+        crossAxisAlignment: Directionality.of(context) == TextDirection.rtl
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            textAlign: TextAlign.start,
+            style: AppTextStyles.metadata(
+              context,
+            ).copyWith(color: AppColors.softGold),
+          ),
+          const SizedBox(height: 6),
+          SelectableText(
+            code,
+            textAlign: TextAlign.start,
+            style: AppTextStyles.bodyPrimary(
+              context,
+            ).copyWith(fontWeight: FontWeight.w800, letterSpacing: 0),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            helper,
+            textAlign: TextAlign.start,
+            style: AppTextStyles.metadata(
+              context,
+            ).copyWith(color: AppColors.neutralMedium, height: 1.35),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _BreakdownLine extends StatelessWidget {
+  const _BreakdownLine({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        textDirection: Directionality.of(context),
+        children: [
+          Expanded(
+            child: Text(
+              label,
+              textAlign: TextAlign.start,
+              style: AppTextStyles.metadata(
+                context,
+              ).copyWith(color: AppColors.neutralMedium),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Flexible(
+            child: Text(
+              value,
+              textAlign: TextAlign.end,
+              style: AppTextStyles.bodyPrimary(
+                context,
+              ).copyWith(fontWeight: FontWeight.w700, fontSize: 13),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  const _SectionLabel(this.label);
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: Text(
+        label,
+        textAlign: TextAlign.start,
+        style: AppTextStyles.metadata(
+          context,
+        ).copyWith(color: AppColors.softGold, fontWeight: FontWeight.w800),
+      ),
+    );
+  }
+}
+
+class _MutedText extends StatelessWidget {
+  const _MutedText(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      textAlign: TextAlign.start,
+      style: AppTextStyles.metadata(
+        context,
+      ).copyWith(color: AppColors.neutralMedium, height: 1.35),
+    );
+  }
+}
+
+class _StatusPill extends StatelessWidget {
+  const _StatusPill({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return _MiniBadge(label: label.toUpperCase());
+  }
+}
+
+class _MiniBadge extends StatelessWidget {
+  const _MiniBadge({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+      decoration: BoxDecoration(
+        color: AppColors.primaryGold.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: AppColors.goldBorder(0.25)),
+      ),
+      child: Text(
+        label,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: AppTextStyles.metadata(context).copyWith(
+          color: AppColors.primaryGold,
+          fontSize: 10,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
+  }
+}
+
+class _GlassCard extends StatelessWidget {
+  const _GlassCard({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.cardGlass(0.56),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.goldBorder(0.16)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.20),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+}
+
+class _GoldButton extends StatelessWidget {
+  const _GoldButton({required this.label, required this.onTap, this.icon});
+
+  final String label;
+  final VoidCallback onTap;
+  final IconData? icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final child = icon == null
+        ? Text(label, overflow: TextOverflow.ellipsis)
+        : Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 18),
+              const SizedBox(width: 8),
+              Flexible(child: Text(label, overflow: TextOverflow.ellipsis)),
+            ],
+          );
+    return ElevatedButton(
+      onPressed: onTap,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.primaryGold,
+        foregroundColor: AppColors.darkInk,
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      child: DefaultTextStyle.merge(
+        style: AppTextStyles.buttonLabel(context),
+        child: child,
+      ),
+    );
+  }
+}
+
+class _OutlineButton extends StatelessWidget {
+  const _OutlineButton({required this.label, required this.onTap});
+
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      onPressed: onTap,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.primaryGold,
+        side: const BorderSide(color: AppColors.primaryGold),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      child: Text(
+        label,
+        overflow: TextOverflow.ellipsis,
+        style: AppTextStyles.buttonLabel(
+          context,
+        ).copyWith(color: AppColors.primaryGold),
+      ),
+    );
+  }
+}
+
+void _showEntryCodeSheet(
+  BuildContext context,
+  MuseumTicket ticket,
+  AppLocalizations l10n,
+  bool isArabic,
+) {
+  showModalBottomSheet<void>(
+    context: context,
+    backgroundColor: Colors.transparent,
+    builder: (context) {
+      return Directionality(
+        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsetsDirectional.fromSTEB(18, 0, 18, 18),
+            child: _GlassCard(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: isArabic
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    textDirection: Directionality.of(context),
                     children: [
-                      Icon(
-                        isActive
-                            ? Icons.check_circle_outline
-                            : Icons.history_toggle_off,
-                        size: 16,
-                        color: isActive ? Colors.green : AppColors.helperText,
+                      const Icon(
+                        Icons.qr_code_2_rounded,
+                        color: AppColors.primaryGold,
+                        size: 28,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
-                        isArabic
-                            ? (isActive ? "سارية" : "منتهية")
-                            : (isActive ? "Active" : "Expired"),
-                        style: AppTextStyles.metadata(context).copyWith(
-                          fontSize: 12,
-                          color: isActive ? Colors.green : AppColors.helperText,
-                          fontWeight: FontWeight.w500,
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          l10n.myTicketsEntryQr,
+                          textAlign: TextAlign.start,
+                          style: AppTextStyles.displaySectionTitle(context),
                         ),
                       ),
                     ],
                   ),
-                ),
-
-                // Start Tour Setup button
-                if (isActive)
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.pushNamed(context, AppRoutes.tourCustomization);
-                    },
-                    icon: const Icon(Icons.qr_code_scanner, size: 16),
-                    label: Text(
-                      isArabic ? "إعداد الجولة" : "Start Tour Setup",
-                      style: AppTextStyles.buttonLabel(
-                        context,
-                      ).copyWith(fontSize: 12),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+                  const SizedBox(height: 14),
+                  _CodeBox(
+                    label: l10n.myTicketsMuseumGateCode,
+                    code: ticket.qrCodeValue,
+                    helper: l10n.myTicketsUseAtGate,
+                  ),
+                  const SizedBox(height: 18),
+                  SizedBox(
+                    width: double.infinity,
+                    child: _GoldButton(
+                      label: l10n.close,
+                      onTap: () => Navigator.pop(context),
                     ),
                   ),
-              ],
+                ],
+              ),
             ),
-
-            const SizedBox(height: 12),
-            Text(
-              isArabic
-                  ? "امسح رمز QR الموجود على روبوت حورس-بوت للاتصال"
-                  : "Scan the QR on the physical Horus-Bot robot to connect",
-              style: AppTextStyles.metadata(
-                context,
-              ).copyWith(fontSize: 12, color: AppColors.helperText),
-              textAlign: isArabic ? TextAlign.right : TextAlign.left,
-            ),
-          ],
+          ),
         ),
-      ),
+      );
+    },
+  );
+}
+
+_RobotAction _robotActionFor(
+  AppSessionProvider sessionProvider,
+  AppLocalizations l10n,
+) {
+  if (sessionProvider.isTourCompleted) {
+    return _RobotAction(
+      label: l10n.myTicketsViewSummary,
+      icon: Icons.summarize_outlined,
+      destination: _RobotActionDestination.summary,
     );
+  }
+  if (sessionProvider.isInActiveTour || sessionProvider.isTourPaused) {
+    return _RobotAction(
+      label: l10n.myTicketsContinueTour,
+      icon: Icons.play_arrow_rounded,
+      destination: _RobotActionDestination.liveTour,
+    );
+  }
+  if (sessionProvider.isRobotConnected) {
+    return _RobotAction(
+      label: l10n.myTicketsOpenLiveTour,
+      icon: Icons.smart_toy_outlined,
+      destination: _RobotActionDestination.liveTour,
+    );
+  }
+  return _RobotAction(
+    label: l10n.startTourSetup,
+    icon: Icons.qr_code_scanner_rounded,
+    destination: _RobotActionDestination.qrScan,
+  );
+}
+
+class _RobotAction {
+  const _RobotAction({
+    required this.label,
+    required this.icon,
+    required this.destination,
+  });
+
+  final String label;
+  final IconData icon;
+  final _RobotActionDestination destination;
+}
+
+enum _RobotActionDestination { qrScan, liveTour, summary, none }
+
+String _formatDate(DateTime value, bool isArabic) {
+  if (isArabic) {
+    return DateFormat.yMMMd('ar').format(value);
+  }
+  return DateFormat('MMM d, yyyy').format(value);
+}
+
+String _money(double value) => '\$${value.toStringAsFixed(2)}';
+
+String _shortCode(String id) {
+  if (id.length <= 8) return id;
+  return id.substring(id.length - 8);
+}
+
+String _ticketStatusLabel(AppLocalizations l10n, TicketStatus status) {
+  switch (status) {
+    case TicketStatus.pending:
+      return l10n.pending;
+    case TicketStatus.active:
+      return l10n.active;
+    case TicketStatus.used:
+      return l10n.myTicketsUsed;
+    case TicketStatus.expired:
+      return l10n.expired;
+    case TicketStatus.cancelled:
+      return l10n.myTicketsCancelled;
+  }
+}
+
+String _tourTypeLabel(AppLocalizations l10n, RobotTourType tourType) {
+  switch (tourType) {
+    case RobotTourType.none:
+      return l10n.ticketsNoRobotTour;
+    case RobotTourType.standard:
+      return l10n.ticketsStandardTour;
+    case RobotTourType.personalized:
+      return l10n.ticketsPersonalizedTour;
+  }
+}
+
+String _languageLabel(AppLocalizations l10n, String languageCode) {
+  return languageCode == 'ar' ? l10n.ticketsArabic : l10n.ticketsEnglish;
+}
+
+String _localizedTimeSlot(String slot, bool isArabic) {
+  if (!isArabic) return slot;
+  return slot.replaceAll('AM', 'ص').replaceAll('PM', 'م');
+}
+
+String _standardRouteLabel(AppLocalizations l10n, String routeName) {
+  if (routeName == StandardTourConfig.defaultConfig.routeName) {
+    return l10n.myTicketsStandardRouteName;
+  }
+  return routeName;
+}
+
+String _themeLabel(AppLocalizations l10n, String id) {
+  switch (id) {
+    case 'ancient-kings':
+      return l10n.tourThemeAncientKings;
+    case 'daily-life':
+      return l10n.tourThemeDailyLife;
+    case 'mummies':
+      return l10n.tourThemeMummies;
+    case 'symbols':
+      return l10n.tourThemeSymbols;
+    case 'architecture':
+      return l10n.tourThemeArchitecture;
+    case 'hidden-stories':
+      return l10n.tourThemeHiddenStories;
+    case 'photo-highlights':
+      return l10n.tourThemePhotoHighlights;
+  }
+  return id;
+}
+
+String _accessibilityLabel(AppLocalizations l10n, String id) {
+  switch (id) {
+    case 'step-free':
+      return l10n.tourAccessStepFree;
+    case 'fewer-stairs':
+      return l10n.tourAccessFewerStairs;
+    case 'seating-breaks':
+      return l10n.tourAccessSeatingBreaks;
+    case 'slower-narration':
+      return l10n.tourAccessSlowNarration;
+    case 'high-contrast':
+      return l10n.tourAccessHighContrast;
+    case 'audio-first':
+      return l10n.tourAccessAudioFirst;
+  }
+  return id;
+}
+
+String _visitorModeLabel(AppLocalizations l10n, VisitorMode mode) {
+  switch (mode) {
+    case VisitorMode.adult:
+      return l10n.tourVisitorAdults;
+    case VisitorMode.student:
+      return l10n.tourVisitorStudents;
+    case VisitorMode.kidsFamily:
+      return l10n.tourVisitorKidsFamily;
+    case VisitorMode.disabledVisitor:
+      return l10n.tourVisitorDisabled;
+  }
+}
+
+String _paceLabel(AppLocalizations l10n, TourPace pace) {
+  switch (pace) {
+    case TourPace.relaxed:
+      return l10n.tourPaceRelaxed;
+    case TourPace.normal:
+      return l10n.tourPaceNormal;
+    case TourPace.fast:
+      return l10n.tourPaceFast;
   }
 }

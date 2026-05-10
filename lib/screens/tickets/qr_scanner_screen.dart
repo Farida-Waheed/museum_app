@@ -9,8 +9,10 @@ import '../../widgets/dialogs/branded_permission_dialog.dart';
 import '../../l10n/app_localizations.dart';
 import '../../app/router.dart';
 import '../../models/app_session_provider.dart';
+import '../../models/ticket_provider.dart';
 import '../../models/tour_provider.dart' as tour;
-import '../../core/services/mock_data.dart';
+import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
 
 enum QRScanMode { museumTicket, robotConnection }
 
@@ -84,11 +86,11 @@ class _QrScannerScreenState extends State<QrScannerScreen>
   }
 
   bool _isValidRobotQr(String code) {
-    return code.startsWith('ROBOT-HORUS-') || code == 'HORUS-ROBOT-DEMO';
+    return code.startsWith('ROBOT-HORUS-');
   }
 
   bool _isRobotTicketQr(String code) {
-    return code.startsWith('ROBOT-');
+    return code.startsWith('ROBOT-') || code.startsWith('TKT-ROBOT-');
   }
 
   bool _isMuseumTicketQr(String code) {
@@ -96,70 +98,78 @@ class _QrScannerScreenState extends State<QrScannerScreen>
   }
 
   void _handleCancel() {
-    if (widget.mode == QRScanMode.robotConnection) {
-      final sessionProvider = Provider.of<AppSessionProvider>(
-        context,
-        listen: false,
-      );
-      sessionProvider.cancelRobotConnection();
-    }
     Navigator.pop(context);
-  }
-
-  void _simulateRobotScan() {
-    if (_isScanned) return;
-    setState(() => _isScanned = true);
-    _showResultDialog('ROBOT-HORUS-001');
   }
 
   void _showResultDialog(String code) {
     final l10n = AppLocalizations.of(context)!;
     final mode = widget.mode;
-    final bool isValid;
-    final String messageText;
+    final ticketProvider = context.read<TicketProvider>();
+    final sessionProvider = context.read<AppSessionProvider>();
+    final tourProvider = context.read<tour.TourProvider>();
+    final _ScanResult result;
+
     if (mode == QRScanMode.museumTicket) {
       if (_isValidMuseumQr(code)) {
-        isValid = true;
-        messageText = l10n.ticketVerified;
+        result = _ScanResult(
+          isValid: true,
+          title: l10n.qrEntryVerifiedTitle,
+          message: l10n.qrEntryVerifiedMessage,
+          primaryLabel: l10n.done,
+        );
       } else if (_isRobotTicketQr(code)) {
-        isValid = false;
-        messageText = l10n.robotQrInMuseumMode;
+        result = _ScanResult(
+          isValid: false,
+          title: l10n.invalidQr,
+          message: l10n.robotQrInMuseumMode,
+          primaryLabel: l10n.done,
+        );
       } else {
-        isValid = false;
-        messageText = l10n.invalidQr;
-      }
-    } else {
-      if (_isValidRobotQr(code)) {
-        isValid = true;
-        messageText = l10n.connectedReady;
-      } else if (_isMuseumTicketQr(code)) {
-        isValid = false;
-        messageText = l10n.museumTicketInRobotMode;
-      } else {
-        isValid = false;
-        messageText = l10n.notHorusBotQr;
-      }
-    }
-    final sessionProvider = Provider.of<AppSessionProvider>(
-      context,
-      listen: false,
-    );
-    if (!isValid && mode == QRScanMode.robotConnection) {
-      sessionProvider.failRobotConnection();
-    }
-    if (isValid && mode == QRScanMode.robotConnection) {
-      sessionProvider.completeRobotConnection();
-      final tourProvider = Provider.of<tour.TourProvider>(
-        context,
-        listen: false,
-      );
-      if (tourProvider.currentExhibitId == null) {
-        tourProvider.setCurrentExhibit(
-          MockDataService.getAllExhibits().first.id,
+        result = _ScanResult(
+          isValid: false,
+          title: l10n.invalidQr,
+          message: l10n.qrMuseumInvalidMessage,
+          primaryLabel: l10n.done,
         );
       }
-      tourProvider.startTour(context: context);
-      tourProvider.setFollowMode(tour.FollowModeState.on);
+    } else {
+      if (!ticketProvider.hasValidRobotTourEligibility) {
+        result = _ScanResult(
+          isValid: false,
+          title: l10n.qrRobotTicketRequiredTitle,
+          message: l10n.qrRobotTicketRequiredMessage,
+          primaryLabel: l10n.done,
+          shouldMutateConnectionFailure: false,
+        );
+      } else if (_isValidRobotQr(code)) {
+        sessionProvider.completeRobotConnection();
+        tourProvider.setConnectionState(tour.RobotConnectionState.connected);
+        result = _ScanResult(
+          isValid: true,
+          title: l10n.qrRobotConnectedTitle,
+          message: l10n.qrRobotConnectedMessage,
+          primaryLabel: l10n.qrOpenLiveTour,
+          opensLiveTour: true,
+        );
+      } else if (_isMuseumTicketQr(code)) {
+        sessionProvider.failRobotConnection();
+        tourProvider.setConnectionState(tour.RobotConnectionState.disconnected);
+        result = _ScanResult(
+          isValid: false,
+          title: l10n.invalidQr,
+          message: l10n.museumTicketInRobotMode,
+          primaryLabel: l10n.done,
+        );
+      } else {
+        sessionProvider.failRobotConnection();
+        tourProvider.setConnectionState(tour.RobotConnectionState.disconnected);
+        result = _ScanResult(
+          isValid: false,
+          title: l10n.invalidQr,
+          message: l10n.notHorusBotQr,
+          primaryLabel: l10n.done,
+        );
+      }
     }
 
     showGeneralDialog(
@@ -171,17 +181,22 @@ class _QrScannerScreenState extends State<QrScannerScreen>
       pageBuilder: (ctx, anim, secondaryAnim) {
         return Center(
           child: _ResultPopup(
-            isValid: isValid,
-            message: messageText,
+            result: result,
             code: code,
             l10n: l10n,
             onClose: () {
-              if (!isValid && mode == QRScanMode.robotConnection) {
+              if (!result.isValid &&
+                  mode == QRScanMode.robotConnection &&
+                  result.shouldMutateConnectionFailure) {
                 sessionProvider.cancelRobotConnection();
               }
               Navigator.pop(context);
-              if (mode == QRScanMode.robotConnection && isValid) {
+              if (mode == QRScanMode.robotConnection && result.opensLiveTour) {
                 Navigator.pushReplacementNamed(context, AppRoutes.liveTour);
+              } else if (mode == QRScanMode.museumTicket && result.isValid) {
+                Navigator.pop(context);
+              } else if (!result.isValid) {
+                setState(() => _isScanned = false);
               }
             },
             onRetry: () {
@@ -210,162 +225,146 @@ class _QrScannerScreenState extends State<QrScannerScreen>
     final mode = widget.mode;
     final isArabic = l10n.localeName == 'ar';
     final title = mode == QRScanMode.robotConnection
-        ? l10n.connectToHorusBot
-        : l10n.scanMuseumEntryTicket;
+        ? l10n.qrRobotPairingTitle
+        : l10n.qrMuseumEntryTitle;
+    final subtitle = mode == QRScanMode.robotConnection
+        ? l10n.qrRobotPairingSubtitle
+        : l10n.qrMuseumEntrySubtitle;
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          MobileScanner(onDetect: _handleScan),
-          const IgnorePointer(
-            child: QrScannerOverlayWidget(
-              borderColor: Colors.white,
-              borderRadius: 24,
-              borderLength: 40,
-              borderWidth: 4,
-              cutOutSize: 280,
+      body: Directionality(
+        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+        child: Stack(
+          children: [
+            MobileScanner(onDetect: _handleScan),
+            const IgnorePointer(
+              child: QrScannerOverlayWidget(
+                borderColor: AppColors.primaryGold,
+                borderRadius: 24,
+                borderLength: 40,
+                borderWidth: 4,
+                cutOutSize: 280,
+              ),
             ),
-          ),
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 10,
-            left: 16,
-            right: 16,
-            child: Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: Colors.black45,
-                  child: IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white),
-                    onPressed: _handleCancel,
+            PositionedDirectional(
+              top: MediaQuery.of(context).padding.top + 10,
+              start: 16,
+              end: 16,
+              child: Row(
+                textDirection: Directionality.of(context),
+                children: [
+                  CircleAvatar(
+                    backgroundColor: Colors.black54,
+                    child: IconButton(
+                      icon: const Icon(Icons.close, color: Colors.white),
+                      onPressed: _handleCancel,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: AppTextStyles.displaySectionTitle(
+                        context,
+                      ).copyWith(color: Colors.white, fontSize: 19),
+                      textAlign: TextAlign.start,
                     ),
-                    textAlign: TextAlign.start,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Positioned(
-            top: MediaQuery.of(context).padding.top + 56,
-            left: 24,
-            right: 24,
-            child: Text(
-              mode == QRScanMode.robotConnection
-                  ? l10n.scanRobotQrSubtitle
-                  : l10n.scanMuseumQrSubtitle,
-              style: const TextStyle(color: Colors.white70, fontSize: 14),
-              textAlign: TextAlign.center,
+            PositionedDirectional(
+              top: MediaQuery.of(context).padding.top + 60,
+              start: 24,
+              end: 24,
+              child: Text(
+                subtitle,
+                style: AppTextStyles.bodyPrimary(
+                  context,
+                ).copyWith(color: Colors.white70, height: 1.35),
+                textAlign: TextAlign.center,
+              ),
             ),
-          ),
-          Positioned(
-            bottom: 120,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black45,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white10),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.qr_code_2_rounded,
-                          color: Colors.white70,
-                          size: 20,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          l10n.alignQr,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+            PositionedDirectional(
+              bottom: 42,
+              start: 20,
+              end: 20,
+              child: Center(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.goldBorder(0.18)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        textDirection: Directionality.of(context),
+                        children: [
+                          const Icon(
+                            Icons.qr_code_2_rounded,
+                            color: AppColors.primaryGold,
+                            size: 20,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 12),
+                          Flexible(
+                            child: Text(
+                              l10n.qrAlignCode,
+                              style: AppTextStyles.metadata(
+                                context,
+                              ).copyWith(color: Colors.white),
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-          if (widget.mode == QRScanMode.robotConnection)
-            Positioned(
-              bottom: 20,
-              left: 24,
-              right: 24,
-              child: ElevatedButton(
-                onPressed: _simulateRobotScan,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white24,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 14,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                child: Column(
-                  children: [
-                    Text(
-                      l10n.simulateRobotScan,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n.prototypeOnly,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.white70,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class _ResultPopup extends StatelessWidget {
+class _ScanResult {
+  const _ScanResult({
+    required this.isValid,
+    required this.title,
+    required this.message,
+    required this.primaryLabel,
+    this.opensLiveTour = false,
+    this.shouldMutateConnectionFailure = true,
+  });
+
   final bool isValid;
-  final String code;
+  final String title;
   final String message;
+  final String primaryLabel;
+  final bool opensLiveTour;
+  final bool shouldMutateConnectionFailure;
+}
+
+class _ResultPopup extends StatelessWidget {
+  final _ScanResult result;
+  final String code;
   final AppLocalizations l10n;
   final VoidCallback onClose;
   final VoidCallback onRetry;
 
   const _ResultPopup({
-    required this.isValid,
+    required this.result,
     required this.code,
-    required this.message,
     required this.l10n,
     required this.onClose,
     required this.onRetry,
@@ -379,11 +378,12 @@ class _ResultPopup extends StatelessWidget {
         width: MediaQuery.of(context).size.width * 0.8,
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.cinematicCard,
           borderRadius: BorderRadius.circular(32),
+          border: Border.all(color: AppColors.goldBorder(0.18)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.45),
               blurRadius: 40,
               spreadRadius: 10,
             ),
@@ -395,29 +395,41 @@ class _ResultPopup extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: (isValid ? Colors.green : Colors.red).withOpacity(0.1),
+                color: (result.isValid ? Colors.green : Colors.red).withValues(
+                  alpha: 0.12,
+                ),
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                isValid ? Icons.check_circle_rounded : Icons.error_rounded,
-                color: isValid ? Colors.green : Colors.red,
+                result.isValid
+                    ? Icons.check_circle_rounded
+                    : Icons.error_rounded,
+                color: result.isValid ? Colors.green : Colors.red,
                 size: 72,
               ),
             ),
             const SizedBox(height: 24),
             Text(
-              message,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900),
+              result.title,
+              style: AppTextStyles.displaySectionTitle(
+                context,
+              ).copyWith(color: AppColors.primaryGold, fontSize: 22),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             Text(
-              'Ref: $code',
-              style: TextStyle(
-                color: Colors.grey.shade500,
-                fontSize: 13,
-                fontStyle: FontStyle.italic,
-              ),
+              result.message,
+              style: AppTextStyles.bodyPrimary(
+                context,
+              ).copyWith(color: AppColors.bodyText, height: 1.35),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              '${l10n.qrReference}: $code',
+              style: AppTextStyles.metadata(
+                context,
+              ).copyWith(color: AppColors.neutralMedium),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -434,7 +446,9 @@ class _ResultPopup extends StatelessWidget {
                     ),
                     child: Text(
                       l10n.scanAnother,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      style: AppTextStyles.buttonLabel(
+                        context,
+                      ).copyWith(color: AppColors.primaryGold),
                     ),
                   ),
                 ),
@@ -443,8 +457,8 @@ class _ResultPopup extends StatelessWidget {
                   child: ElevatedButton(
                     onPressed: onClose,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black,
-                      foregroundColor: Colors.white,
+                      backgroundColor: AppColors.primaryGold,
+                      foregroundColor: AppColors.darkInk,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       elevation: 0,
                       shape: RoundedRectangleBorder(
@@ -452,8 +466,8 @@ class _ResultPopup extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      l10n.done,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
+                      result.primaryLabel,
+                      style: AppTextStyles.buttonLabel(context),
                     ),
                   ),
                 ),
