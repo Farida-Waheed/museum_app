@@ -94,17 +94,32 @@ class _TicketScreenState extends State<TicketScreen> {
       title: 'HORUS-BOT',
       bottomNavigationBar: const BottomNav(currentIndex: 3),
       backgroundColor: AppColors.baseBlack,
-      body: Directionality(
-        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-        child: authProvider.isLoggedIn
-            ? _buildPurchaseBuilder(
-                context,
-                ticketProvider,
-                authProvider,
-                l10n,
-                isArabic,
-              )
-            : _buildAccountGate(context, l10n, isArabic),
+      hideDefaultAppBar: true,
+      body: Builder(
+        builder: (shellContext) => Directionality(
+          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+          child: Stack(
+            children: [
+              authProvider.isLoggedIn
+                  ? _buildPurchaseBuilder(
+                      context,
+                      ticketProvider,
+                      authProvider,
+                      l10n,
+                      isArabic,
+                    )
+                  : _buildAccountGate(context, l10n, isArabic),
+              PositionedDirectional(
+                top: 0,
+                start: 0,
+                end: 0,
+                child: _TicketsHeader(
+                  onMenu: () => AppMenuShell.of(shellContext)?.toggleMenu(),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -118,7 +133,12 @@ class _TicketScreenState extends State<TicketScreen> {
       decoration: const BoxDecoration(gradient: AppGradients.screenBackground),
       child: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsetsDirectional.fromSTEB(24, 24, 24, 120),
+          padding: EdgeInsetsDirectional.fromSTEB(
+            24,
+            MediaQuery.paddingOf(context).top + 104,
+            24,
+            120,
+          ),
           child: _GlassCard(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -193,7 +213,12 @@ class _TicketScreenState extends State<TicketScreen> {
         children: [
           Expanded(
             child: ListView(
-              padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 120),
+              padding: EdgeInsetsDirectional.fromSTEB(
+                20,
+                MediaQuery.paddingOf(context).top + 92,
+                20,
+                120,
+              ),
               children: [
                 _PageIntroCard(l10n: l10n, isArabic: isArabic),
                 const SizedBox(height: 18),
@@ -250,6 +275,123 @@ class _TicketScreenState extends State<TicketScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _TicketsHeader extends StatelessWidget {
+  const _TicketsHeader({required this.onMenu});
+
+  final VoidCallback onMenu;
+
+  @override
+  Widget build(BuildContext context) {
+    final topPadding = MediaQuery.paddingOf(context).top;
+    return SizedBox(
+      height: topPadding + 86,
+      child: Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          Positioned.fill(
+            child: IgnorePointer(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.30),
+                      Colors.black.withValues(alpha: 0.12),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            bottom: false,
+            child: Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(16, 3, 16, 0),
+              child: SizedBox(
+                height: 50,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Row(
+                      children: [
+                        _TicketsHeaderButton(
+                          icon: Icons.menu_rounded,
+                          onTap: onMenu,
+                        ),
+                        const Spacer(),
+                        const SizedBox(width: 44, height: 44),
+                      ],
+                    ),
+                    const IgnorePointer(child: _TicketsHeaderBrand()),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TicketsHeaderBrand extends StatelessWidget {
+  const _TicketsHeaderBrand();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Image.asset('assets/icons/ankh.png', width: 18, height: 18),
+        const SizedBox(width: 8),
+        Text(
+          'HORUS-BOT',
+          style: AppTextStyles.premiumBrandTitle(context).copyWith(
+            color: AppColors.primaryGold,
+            fontSize: 17.5,
+            shadows: [
+              Shadow(
+                color: Colors.black.withValues(alpha: 0.70),
+                blurRadius: 10,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _TicketsHeaderButton extends StatelessWidget {
+  const _TicketsHeaderButton({required this.icon, required this.onTap});
+
+  final IconData icon;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(24),
+        child: Container(
+          width: 44,
+          height: 44,
+          decoration: BoxDecoration(
+            color: AppColors.cardGlass(0.48),
+            shape: BoxShape.circle,
+            border: Border.all(color: AppColors.goldBorder(0.18)),
+          ),
+          child: Icon(icon, color: AppColors.whiteTitle, size: 22),
+        ),
       ),
     );
   }

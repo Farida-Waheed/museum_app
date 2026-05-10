@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 import 'app/app.dart';
+import 'firebase_options.dart';
 import 'models/user_preferences.dart';
 import 'models/exhibit_provider.dart';
 import 'models/tour_provider.dart';
@@ -16,6 +18,8 @@ import 'core/notifications/notification_trigger_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await initializeDateFormatting('en', null);
   await initializeDateFormatting('ar', null);
