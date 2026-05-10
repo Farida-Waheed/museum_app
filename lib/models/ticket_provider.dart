@@ -4,16 +4,24 @@ import 'robot_tour_ticket.dart';
 import 'tour_package.dart';
 import 'payment_record.dart';
 import 'ticket_order.dart';
+import '../services/ticket_repository.dart';
 
-/// Provider for managing user tickets, draft orders, and mock payments.
+/// Provider for managing user tickets, draft orders, and ticket entitlements.
 class TicketProvider with ChangeNotifier {
-  // Mock data storage (in real app, this would be API calls)
+  final TicketRepository _ticketRepository;
+
   final List<MuseumTicket> _museumTickets = [];
   final List<RobotTourTicket> _robotTourTickets = [];
   final List<PaymentRecord> _payments = [];
   final List<PurchasedTicketSet> _purchasedTicketSets = [];
 
   TicketOrderDraft _currentOrderDraft = TicketOrderDraft.initial();
+  bool _isLoadingTickets = false;
+  bool _isCheckingOut = false;
+  String? _ticketError;
+
+  TicketProvider({TicketRepository? ticketRepository})
+    : _ticketRepository = ticketRepository ?? TicketRepository();
 
   // Getters
   List<MuseumTicket> get museumTickets => List.unmodifiable(_museumTickets);
@@ -25,6 +33,9 @@ class TicketProvider with ChangeNotifier {
   TicketOrderDraft get currentOrderDraft => _currentOrderDraft;
   List<VisitorTicketCategory> get visitorCategories =>
       VisitorTicketCategory.defaults;
+  bool get isLoadingTickets => _isLoadingTickets;
+  bool get isCheckingOut => _isCheckingOut;
+  String? get ticketError => _ticketError;
 
   // Computed getters
   bool get hasMuseumTicket =>
@@ -234,6 +245,124 @@ class TicketProvider with ChangeNotifier {
     return purchasedSet;
   }
 
+  Future<PurchasedTicketSet?> checkoutFromDraft({
+    required String userId,
+  }) async {
+    if (!canCheckoutDraft) return null;
+    if (userId.trim().isEmpty) {
+      _ticketError = 'Please sign in to buy tickets.';
+      notifyListeners();
+      return null;
+    }
+
+    _isCheckingOut = true;
+    _ticketError = null;
+    notifyListeners();
+
+    try {
+      final now = DateTime.now();
+      final orderId = 'ORD-${now.millisecondsSinceEpoch}';
+      final draft = _currentOrderDraft;
+      final museumTicket = _createMuseumTicketFromDraft(
+        userId: userId,
+        orderId: orderId,
+        now: now,
+      );
+      final robotTicket = draft.hasRobotTour
+          ? _createRobotTourTicketFromDraft(
+              userId: userId,
+              orderId: orderId,
+              museumTicketId: museumTicket.id,
+              now: now,
+            )
+          : null;
+
+      final result = await _ticketRepository.checkoutDraft(
+        userId: userId,
+        draft: draft,
+        museumTicket: museumTicket,
+        robotTicket: robotTicket,
+      );
+
+      final savedMuseumTicket = result.museumTicket;
+      final savedRobotTicket = result.robotTourTicket;
+      final ticketIds = [
+        savedMuseumTicket.id,
+        if (savedRobotTicket != null) savedRobotTicket.id,
+      ];
+      final payment = PaymentRecord(
+        id: 'PAY-${now.millisecondsSinceEpoch}',
+        userId: userId,
+        amount: draft.total,
+        currency: 'EGP',
+        label: _paymentLabelForDraft(),
+        date: now,
+        status: 'completed',
+        relatedTicketIds: ticketIds,
+      );
+
+      _upsertMuseumTicket(savedMuseumTicket);
+      if (savedRobotTicket != null) {
+        _upsertRobotTicket(savedRobotTicket);
+      }
+      _payments.add(payment);
+
+      final purchasedSet = PurchasedTicketSet(
+        id: orderId,
+        userId: userId,
+        museumTicket: savedMuseumTicket,
+        robotTourTicket: savedRobotTicket,
+        paymentRecord: payment,
+        purchasedAt: now,
+        totalAmount: draft.total,
+      );
+      _upsertPurchasedTicketSet(purchasedSet);
+      resetOrderDraft();
+      return purchasedSet;
+    } on TicketRepositoryException catch (e) {
+      _ticketError = e.message;
+      notifyListeners();
+      return null;
+    } catch (_) {
+      _ticketError = 'Unable to save your tickets. Please try again.';
+      notifyListeners();
+      return null;
+    } finally {
+      _isCheckingOut = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadUserTickets(String userId) async {
+    if (userId.trim().isEmpty) {
+      _ticketError = 'Please sign in to view tickets.';
+      notifyListeners();
+      return;
+    }
+
+    _isLoadingTickets = true;
+    _ticketError = null;
+    notifyListeners();
+
+    try {
+      final result = await _ticketRepository.loadUserTickets(userId);
+      _museumTickets
+        ..removeWhere((ticket) => ticket.userId == userId)
+        ..addAll(result.museumTickets);
+      _robotTourTickets
+        ..removeWhere((ticket) => ticket.userId == userId)
+        ..addAll(result.robotTourTickets);
+      _rebuildPurchasedSetsForUser(userId);
+    } on TicketRepositoryException catch (e) {
+      _ticketError = e.message;
+    } catch (_) {
+      _ticketError = 'Unable to load tickets. Showing saved tickets if any.';
+    } finally {
+      _isLoadingTickets = false;
+      notifyListeners();
+    }
+  }
+
   MuseumTicket _createMuseumTicketFromDraft({
     required String userId,
     required String orderId,
@@ -247,7 +376,7 @@ class TicketProvider with ChangeNotifier {
       timeSlot: _currentOrderDraft.timeSlot,
       visitorCount: _currentOrderDraft.visitorCount,
       price: _currentOrderDraft.museumSubtotal,
-      currency: 'USD',
+      currency: 'EGP',
       qrCodeValue: 'TKT-MUSEUM-$orderId',
       status: TicketStatus.active,
       purchasedAt: now,
@@ -288,7 +417,7 @@ class TicketProvider with ChangeNotifier {
       languageCode: languageCode,
       includedFeatures: _robotFeaturesForDraft(),
       price: _currentOrderDraft.robotTourSubtotal,
-      currency: 'USD',
+      currency: 'EGP',
       status: TicketStatus.active,
       purchasedAt: now,
       tourType: tourType,
@@ -339,6 +468,130 @@ class TicketProvider with ChangeNotifier {
           'Accessibility-aware pacing',
         ];
     }
+  }
+
+  void _upsertMuseumTicket(MuseumTicket ticket) {
+    final index = _museumTickets.indexWhere((item) => item.id == ticket.id);
+    if (index == -1) {
+      _museumTickets.add(ticket);
+    } else {
+      _museumTickets[index] = ticket;
+    }
+  }
+
+  void _upsertRobotTicket(RobotTourTicket ticket) {
+    final index = _robotTourTickets.indexWhere((item) => item.id == ticket.id);
+    if (index == -1) {
+      _robotTourTickets.add(ticket);
+    } else {
+      _robotTourTickets[index] = ticket;
+    }
+  }
+
+  void _upsertPurchasedTicketSet(PurchasedTicketSet set) {
+    final index = _purchasedTicketSets.indexWhere((item) => item.id == set.id);
+    if (index == -1) {
+      _purchasedTicketSets.add(set);
+    } else {
+      _purchasedTicketSets[index] = set;
+    }
+  }
+
+  void _rebuildPurchasedSetsForUser(String userId) {
+    _purchasedTicketSets.removeWhere((set) => set.userId == userId);
+    _payments.removeWhere((payment) => payment.userId == userId);
+
+    final userMuseumTickets = _museumTickets
+        .where((ticket) => ticket.userId == userId)
+        .toList();
+    final userRobotTickets = _robotTourTickets
+        .where((ticket) => ticket.userId == userId)
+        .toList();
+
+    for (final museumTicket in userMuseumTickets) {
+      final robotTicket = _matchingRobotTicket(museumTicket, userRobotTickets);
+      final payment = _paymentForTickets(userId, museumTicket, robotTicket);
+      _payments.add(payment);
+      _purchasedTicketSets.add(
+        PurchasedTicketSet(
+          id: museumTicket.orderId ?? museumTicket.id,
+          userId: userId,
+          museumTicket: museumTicket,
+          robotTourTicket: robotTicket,
+          paymentRecord: payment,
+          purchasedAt: museumTicket.purchasedAt,
+          totalAmount: payment.amount,
+        ),
+      );
+    }
+
+    final pairedRobotIds = _purchasedTicketSets
+        .map((set) => set.robotTourTicket?.id)
+        .whereType<String>()
+        .toSet();
+    for (final robotTicket in userRobotTickets) {
+      if (pairedRobotIds.contains(robotTicket.id)) continue;
+      final payment = _paymentForTickets(userId, null, robotTicket);
+      _payments.add(payment);
+      _purchasedTicketSets.add(
+        PurchasedTicketSet(
+          id: robotTicket.orderId ?? robotTicket.id,
+          userId: userId,
+          museumTicket: null,
+          robotTourTicket: robotTicket,
+          paymentRecord: payment,
+          purchasedAt: robotTicket.purchasedAt,
+          totalAmount: payment.amount,
+        ),
+      );
+    }
+  }
+
+  RobotTourTicket? _matchingRobotTicket(
+    MuseumTicket museumTicket,
+    List<RobotTourTicket> robotTickets,
+  ) {
+    for (final robotTicket in robotTickets) {
+      if (museumTicket.robotTourTicketId != null &&
+          robotTicket.id == museumTicket.robotTourTicketId) {
+        return robotTicket;
+      }
+      if (robotTicket.museumTicketId == museumTicket.id) {
+        return robotTicket;
+      }
+      if (museumTicket.orderId != null &&
+          robotTicket.orderId == museumTicket.orderId) {
+        return robotTicket;
+      }
+    }
+    return null;
+  }
+
+  PaymentRecord _paymentForTickets(
+    String userId,
+    MuseumTicket? museumTicket,
+    RobotTourTicket? robotTicket,
+  ) {
+    final amount = (museumTicket?.price ?? 0) + (robotTicket?.price ?? 0);
+    final purchasedAt =
+        museumTicket?.purchasedAt ?? robotTicket?.purchasedAt ?? DateTime.now();
+    final ids = [
+      if (museumTicket != null) museumTicket.id,
+      if (robotTicket != null) robotTicket.id,
+    ];
+
+    return PaymentRecord(
+      id: 'PAY-${ids.join('-')}',
+      userId: userId,
+      amount: amount,
+      currency: museumTicket?.currency ?? robotTicket?.currency ?? 'EGP',
+      label: robotTicket == null
+          ? 'Museum Entry Tickets'
+          : 'Museum Entry + ${robotTicket.packageName}',
+      date: purchasedAt,
+      status: 'completed',
+      relatedTicketIds: ids,
+    );
   }
 
   /// Buy a package for a user.

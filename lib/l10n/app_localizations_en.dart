@@ -333,6 +333,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get qrReference => 'Ref';
 
   @override
+  String get qrSignInRequiredTitle => 'Sign in required';
+
+  @override
+  String get qrSignInRequiredMessage =>
+      'Please sign in before pairing with Horus-Bot.';
+
+  @override
+  String get qrRobotNotFoundTitle => 'Robot not found';
+
+  @override
+  String get qrRobotNotFoundMessage =>
+      'This Horus-Bot is not registered. Please ask museum staff for help.';
+
+  @override
+  String get qrRobotUnavailableTitle => 'Horus-Bot unavailable';
+
+  @override
+  String get qrRobotUnavailableMessage =>
+      'Horus-Bot is currently unavailable. Please try another robot or ask museum staff.';
+
+  @override
+  String get qrPairingPermissionDeniedTitle => 'Pairing blocked';
+
+  @override
+  String get qrPairingPermissionDeniedMessage =>
+      'Firestore rules blocked robot pairing. Allow authenticated users to create their own tourSessions and update robot documents only through a controlled pairing rule or backend.';
+
+  @override
+  String get qrPairingNetworkMessage =>
+      'Network error. Please check your connection and scan again.';
+
+  @override
+  String get qrPairingUnknownMessage =>
+      'Robot pairing failed. Please try again.';
+
+  @override
   String get simulateRobotScan => 'Simulate Robot Scan';
 
   @override

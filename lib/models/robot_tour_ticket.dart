@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'museum_ticket.dart';
 import 'ticket_order.dart';
 
@@ -128,6 +130,32 @@ class RobotTourTicket {
     };
   }
 
+  Map<String, dynamic> toFirestore() {
+    return {
+      'id': id,
+      'userId': userId,
+      'museumTicketId': museumTicketId,
+      'museum_ticket_id': museumTicketId,
+      'packageId': packageId,
+      'packageName': packageName,
+      'tour_type': tourType.name,
+      'tour_duration': durationMinutes,
+      'durationMinutes': durationMinutes,
+      'preferred_language': languageCode,
+      'languageCode': languageCode,
+      'includedFeatures': includedFeatures,
+      'price': price,
+      'currency': currency,
+      'status': status.name,
+      'visit_date': visitDate == null ? null : _dateOnly(visitDate!),
+      'visit_time': timeSlot,
+      'qr_value': qrCodeValue,
+      'qrCodeValue': qrCodeValue,
+      'orderId': orderId,
+      'purchased_at': Timestamp.fromDate(purchasedAt),
+    };
+  }
+
   /// Create from JSON
   factory RobotTourTicket.fromJson(Map<String, dynamic> json) {
     return RobotTourTicket(
@@ -174,6 +202,235 @@ class RobotTourTicket {
       selectedArtifactIds: json['selectedArtifactIds'] != null
           ? List<String>.from(json['selectedArtifactIds'] as List)
           : null,
+    );
+  }
+
+  factory RobotTourTicket.fromFirestore(
+    String docId,
+    Map<String, dynamic> json,
+  ) {
+    final tourType = _tourTypeValue(json['tourType'] ?? json['tour_type']);
+    final selectedExhibitIds = _stringList(
+      json['selectedArtifactIds'] ?? json['selected_exhibit_ids'],
+    );
+    final interests = _stringList(
+      json['selectedInterests'] ?? json['interests'],
+    );
+    final accessibility = _stringList(
+      json['accessibilityNeeds'] ?? json['accessibility'],
+    );
+    final duration =
+        _intValue(json['durationMinutes']) ??
+        _intValue(json['tour_duration']) ??
+        90;
+    final language =
+        _stringValue(json['languageCode']) ??
+        _languageCode(_stringValue(json['preferred_language'])) ??
+        'en';
+    final standardConfig = _standardConfigFromFirestore(
+      json,
+      duration,
+      language,
+      selectedExhibitIds,
+    );
+    final personalizedConfig = _personalizedConfigFromFirestore(
+      json,
+      duration,
+      language,
+      selectedExhibitIds,
+      interests,
+      accessibility,
+    );
+
+    return RobotTourTicket(
+      id: _stringValue(json['id']) ?? docId,
+      userId: _stringValue(json['userId']) ?? '',
+      packageId: _stringValue(json['packageId']) ?? tourType.name,
+      packageName:
+          _stringValue(json['packageName']) ??
+          (tourType == RobotTourType.personalized
+              ? 'Personalized Horus-Bot Tour'
+              : 'Standard Horus-Bot Tour'),
+      durationMinutes: duration,
+      languageCode: language,
+      includedFeatures: _stringList(json['includedFeatures']),
+      price:
+          _doubleValue(json['price']) ?? _doubleValue(json['total_price']) ?? 0,
+      currency: _stringValue(json['currency']) ?? 'EGP',
+      status: _statusValue(json['status']),
+      purchasedAt:
+          _dateValue(json['purchasedAt']) ??
+          _dateValue(json['purchased_at']) ??
+          _dateValue(json['created_at']) ??
+          DateTime.now(),
+      tourType: tourType,
+      standardTourConfig: tourType == RobotTourType.standard
+          ? standardConfig
+          : null,
+      personalizedTourConfig: tourType == RobotTourType.personalized
+          ? personalizedConfig
+          : null,
+      visitDate:
+          _dateValue(json['visitDate']) ?? _dateValue(json['visit_date']),
+      timeSlot:
+          _stringValue(json['timeSlot']) ?? _stringValue(json['visit_time']),
+      museumTicketId:
+          _stringValue(json['museumTicketId']) ??
+          _stringValue(json['museum_ticket_id']),
+      orderId: _stringValue(json['orderId']) ?? _stringValue(json['order_id']),
+      qrCodeValue:
+          _stringValue(json['qrCodeValue']) ?? _stringValue(json['qr_value']),
+      selectedInterests: interests,
+      selectedArtifactIds: selectedExhibitIds,
+    );
+  }
+
+  static StandardTourConfig _standardConfigFromFirestore(
+    Map<String, dynamic> json,
+    int duration,
+    String language,
+    List<String> selectedExhibitIds,
+  ) {
+    final rawConfig =
+        json['standardTourConfig'] ?? json['standard_tour_config'];
+    if (rawConfig is Map) {
+      return StandardTourConfig.fromJson(Map<String, dynamic>.from(rawConfig));
+    }
+
+    return StandardTourConfig(
+      durationMinutes: duration,
+      languageCode: language,
+      routeName:
+          _stringValue(json['routeName']) ??
+          _stringValue(json['route_name']) ??
+          StandardTourConfig.defaultConfig.routeName,
+      routeExhibitIds: selectedExhibitIds.isEmpty
+          ? StandardTourConfig.defaultConfig.routeExhibitIds
+          : selectedExhibitIds,
+    );
+  }
+
+  static PersonalizedTourConfig _personalizedConfigFromFirestore(
+    Map<String, dynamic> json,
+    int duration,
+    String language,
+    List<String> selectedExhibitIds,
+    List<String> interests,
+    List<String> accessibility,
+  ) {
+    final rawConfig =
+        json['personalizedTourConfig'] ?? json['personalized_tour_config'];
+    if (rawConfig is Map) {
+      return PersonalizedTourConfig.fromJson(
+        Map<String, dynamic>.from(rawConfig),
+      );
+    }
+
+    return PersonalizedTourConfig(
+      selectedExhibitIds: selectedExhibitIds,
+      selectedThemes: interests,
+      durationMinutes: duration,
+      languageCode: language,
+      accessibilityNeeds: accessibility,
+      visitorMode: _visitorModeValue(
+        json['visitorMode'] ?? json['visitor_mode'],
+      ),
+      pace: _paceValue(json['pace']),
+      photoSpotsEnabled:
+          _boolValue(
+            json['photoSpotsEnabled'] ?? json['photo_spots_enabled'],
+          ) ??
+          true,
+      avoidCrowds:
+          _boolValue(json['avoidCrowds'] ?? json['avoid_crowds']) ?? false,
+    );
+  }
+
+  static String _dateOnly(DateTime value) {
+    final month = value.month.toString().padLeft(2, '0');
+    final day = value.day.toString().padLeft(2, '0');
+    return '${value.year}-$month-$day';
+  }
+
+  static String? _stringValue(Object? value) {
+    if (value is String && value.trim().isNotEmpty) return value;
+    return null;
+  }
+
+  static int? _intValue(Object? value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
+
+  static double? _doubleValue(Object? value) {
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
+  }
+
+  static bool? _boolValue(Object? value) {
+    if (value is bool) return value;
+    if (value is String) return bool.tryParse(value);
+    return null;
+  }
+
+  static DateTime? _dateValue(Object? value) {
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
+    if (value is String) return DateTime.tryParse(value);
+    return null;
+  }
+
+  static List<String> _stringList(Object? value) {
+    if (value is List) {
+      return value.whereType<String>().toList();
+    }
+    return const [];
+  }
+
+  static String? _languageCode(String? value) {
+    if (value == null) return null;
+    switch (value.toLowerCase()) {
+      case 'english':
+        return 'en';
+      case 'arabic':
+        return 'ar';
+      default:
+        return value;
+    }
+  }
+
+  static TicketStatus _statusValue(Object? value) {
+    final status = value?.toString();
+    return TicketStatus.values.firstWhere(
+      (entry) => entry.name == status,
+      orElse: () => TicketStatus.active,
+    );
+  }
+
+  static RobotTourType _tourTypeValue(Object? value) {
+    final type = value?.toString();
+    return RobotTourType.values.firstWhere(
+      (entry) => entry.name == type,
+      orElse: () => RobotTourType.standard,
+    );
+  }
+
+  static VisitorMode _visitorModeValue(Object? value) {
+    final mode = value?.toString();
+    return VisitorMode.values.firstWhere(
+      (entry) => entry.name == mode,
+      orElse: () => VisitorMode.adult,
+    );
+  }
+
+  static TourPace _paceValue(Object? value) {
+    final pace = value?.toString();
+    return TourPace.values.firstWhere(
+      (entry) => entry.name == pace,
+      orElse: () => TourPace.normal,
     );
   }
 }

@@ -331,6 +331,42 @@ class AppLocalizationsAr extends AppLocalizations {
   String get qrReference => 'المرجع';
 
   @override
+  String get qrSignInRequiredTitle => 'تسجيل الدخول مطلوب';
+
+  @override
+  String get qrSignInRequiredMessage =>
+      'يرجى تسجيل الدخول قبل الاقتران بـ Horus-Bot.';
+
+  @override
+  String get qrRobotNotFoundTitle => 'لم يتم العثور على الروبوت';
+
+  @override
+  String get qrRobotNotFoundMessage =>
+      'هذا الروبوت غير مسجل. يرجى طلب المساعدة من فريق المتحف.';
+
+  @override
+  String get qrRobotUnavailableTitle => 'Horus-Bot غير متاح';
+
+  @override
+  String get qrRobotUnavailableMessage =>
+      'Horus-Bot غير متاح حاليًا. يرجى تجربة روبوت آخر أو طلب المساعدة من فريق المتحف.';
+
+  @override
+  String get qrPairingPermissionDeniedTitle => 'تم حظر الاقتران';
+
+  @override
+  String get qrPairingPermissionDeniedMessage =>
+      'قواعد Firestore منعت الاقتران. اسمح للمستخدمين المسجلين بإنشاء tourSessions الخاصة بهم وتحديث مستندات الروبوت من خلال قاعدة اقتران مضبوطة أو من خلال خادم وسيط.';
+
+  @override
+  String get qrPairingNetworkMessage =>
+      'حدث خطأ في الشبكة. تحقق من الاتصال ثم امسح الرمز مرة أخرى.';
+
+  @override
+  String get qrPairingUnknownMessage =>
+      'فشل الاقتران بالروبوت. يرجى المحاولة مرة أخرى.';
+
+  @override
   String get simulateRobotScan => 'محاكاة مسح الروبوت';
 
   @override

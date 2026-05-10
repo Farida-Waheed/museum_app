@@ -5,6 +5,7 @@ import '../../l10n/app_localizations.dart';
 
 import '../../models/tour_provider.dart';
 import '../../models/app_session_provider.dart' as session;
+import '../../models/exhibit.dart';
 import '../../core/services/mock_data.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
@@ -19,6 +20,7 @@ import 'package:flutter/foundation.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 import '../../models/ticket_provider.dart';
+import '../../services/tour_session_repository.dart';
 
 class LiveTourScreen extends StatefulWidget {
   const LiveTourScreen({super.key});
@@ -30,6 +32,7 @@ class LiveTourScreen extends StatefulWidget {
 class _LiveTourScreenState extends State<LiveTourScreen> {
   final List<String> _transcript = [];
   final ScrollController _scrollController = ScrollController();
+  final TourSessionRepository _tourSessionRepository = TourSessionRepository();
   Timer? _simTimer;
   bool _isPaused = false;
 
@@ -135,7 +138,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     tourProvider.setFollowMode(nextMode, context: context);
   }
 
-  void _togglePause() {
+  Future<void> _togglePause() async {
     final tourProvider = Provider.of<TourProvider>(context, listen: false);
     final sessionProvider = Provider.of<session.AppSessionProvider>(
       context,
@@ -145,10 +148,26 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         sessionProvider.isTourPaused ||
         tourProvider.tourLifecycleState == TourLifecycleState.paused;
     if (isPaused) {
+      final sessionId = sessionProvider.activeSessionId;
+      if (sessionId != null) {
+        final ok = await _runTourSessionAction(
+          () => _tourSessionRepository.resumeSession(sessionId),
+        );
+        if (!ok) return;
+      }
+      if (!mounted) return;
       tourProvider.resumeTour(context: context);
       sessionProvider.resumeTour();
       setState(() => _isPaused = false);
     } else {
+      final sessionId = sessionProvider.activeSessionId;
+      if (sessionId != null) {
+        final ok = await _runTourSessionAction(
+          () => _tourSessionRepository.pauseSession(sessionId),
+        );
+        if (!ok) return;
+      }
+      if (!mounted) return;
       tourProvider.pauseTour(context: context);
       sessionProvider.pauseTour();
       setState(() => _isPaused = true);
@@ -177,7 +196,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     }
   }
 
-  void _skipExhibit() {
+  Future<void> _skipExhibit() async {
     final tourProvider = Provider.of<TourProvider>(context, listen: false);
     final sessionProvider = Provider.of<session.AppSessionProvider>(
       context,
@@ -193,6 +212,23 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       final followingExhibit = currentIdx + 2 < all.length
           ? all[currentIdx + 2]
           : null;
+      final sessionId = sessionProvider.activeSessionId;
+      final visited = <String>{
+        ...sessionProvider.visitedExhibitIds,
+        if (activeExhibitId != null) activeExhibitId,
+        nextExhibit.id,
+      }.toList();
+      if (sessionId != null) {
+        final ok = await _runTourSessionAction(
+          () => _tourSessionRepository.updateStop(
+            sessionId: sessionId,
+            currentExhibitId: nextExhibit.id,
+            nextExhibitId: followingExhibit?.id,
+            visitedExhibitIds: visited,
+          ),
+        );
+        if (!ok) return;
+      }
       tourProvider.setCurrentExhibit(nextExhibit.id);
       tourProvider.setNextDestination(
         followingExhibit?.id,
@@ -207,17 +243,41 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     }
   }
 
-  void _startTourFromReadyState() {
+  Future<void> _startTourFromReadyState() async {
     final allExhibits = MockDataService.getAllExhibits();
     if (allExhibits.isEmpty) return;
 
-    final currentExhibit = allExhibits.first;
-    final nextExhibit = allExhibits.length > 1 ? allExhibits[1] : null;
     final tourProvider = Provider.of<TourProvider>(context, listen: false);
     final sessionProvider = Provider.of<session.AppSessionProvider>(
       context,
       listen: false,
     );
+    final routeIds = tourProvider.selectedExhibitIds.isNotEmpty
+        ? tourProvider.selectedExhibitIds
+        : sessionProvider.selectedExhibitIds;
+    final currentExhibitId = routeIds.isNotEmpty
+        ? routeIds.first
+        : sessionProvider.nextExhibitId;
+    final currentExhibit =
+        _findExhibitById(allExhibits, currentExhibitId) ?? allExhibits.first;
+    final nextExhibitId = routeIds.length > 1 ? routeIds[1] : null;
+    final nextExhibit = nextExhibitId == null
+        ? (allExhibits.length > 1 ? allExhibits[1] : null)
+        : _findExhibitById(allExhibits, nextExhibitId);
+
+    final sessionId = sessionProvider.activeSessionId;
+    if (sessionId != null) {
+      final ok = await _runTourSessionAction(
+        () => _tourSessionRepository.startSession(
+          sessionId: sessionId,
+          currentExhibitId: currentExhibit.id,
+          nextExhibitId: nextExhibit?.id,
+          visitedExhibitIds: [currentExhibit.id],
+        ),
+      );
+      if (!ok) return;
+    }
+    if (!mounted) return;
 
     sessionProvider.startActiveTour(
       currentExhibitId: currentExhibit.id,
@@ -230,6 +290,52 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     );
     setState(() => _isPaused = false);
     _startSimulation();
+  }
+
+  Future<bool> _runTourSessionAction(Future<void> Function() action) async {
+    try {
+      await action();
+      return true;
+    } on TourSessionRepositoryException catch (e) {
+      if (!mounted) return false;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.message)));
+      return false;
+    }
+  }
+
+  Future<void> _endTour() async {
+    final tourProvider = Provider.of<TourProvider>(context, listen: false);
+    final sessionProvider = Provider.of<session.AppSessionProvider>(
+      context,
+      listen: false,
+    );
+    final sessionId = sessionProvider.activeSessionId;
+    final robotId =
+        sessionProvider.connectedRobotId ?? tourProvider.connectedRobotId;
+    if (sessionId != null && robotId != null) {
+      final ok = await _runTourSessionAction(
+        () => _tourSessionRepository.completeAndReleaseRobot(
+          sessionId: sessionId,
+          robotId: robotId,
+        ),
+      );
+      if (!ok) return;
+    }
+
+    if (!mounted) return;
+    tourProvider.completeTour(context: context);
+    sessionProvider.endTour();
+    Navigator.pushReplacementNamed(context, AppRoutes.summary);
+  }
+
+  Exhibit? _findExhibitById(List<Exhibit> exhibits, String? exhibitId) {
+    if (exhibitId == null) return null;
+    for (final exhibit in exhibits) {
+      if (exhibit.id == exhibitId) return exhibit;
+    }
+    return null;
   }
 
   @override
@@ -282,11 +388,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
           title: l10n.liveTourPausedDesc,
           subtitle: l10n.followAndDiscover,
           primaryLabel: l10n.resume,
-          onPrimaryAction: () {
-            sessionProvider.resumeTour();
-            tourProvider.resumeTour(context: context);
-            setState(() => _isPaused = false);
-          },
+          onPrimaryAction: () => _togglePause(),
           showSecondaryQrAction: false,
         ),
       );
@@ -364,7 +466,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                 ),
                 child: _buildReadyStateCard(
                   context,
-                  onStartTour: _startTourFromReadyState,
+                  onStartTour: () => _startTourFromReadyState(),
                   onGoMap: () => Navigator.pushNamed(context, AppRoutes.map),
                 ),
               ),
@@ -394,7 +496,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
           title: l10n.connectedReady,
           subtitle: l10n.followAndDiscover,
           primaryLabel: l10n.startMyTour,
-          onPrimaryAction: _startTourFromReadyState,
+          onPrimaryAction: () => _startTourFromReadyState(),
           showSecondaryQrAction: false,
         ),
       );
@@ -522,8 +624,10 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                         ? l10n.robotMoving
                         : l10n.robotDescribing,
                     pauseLabel: isPaused ? l10n.resume : l10n.pause,
-                    onPauseResume: canPause || canResume ? _togglePause : null,
-                    onSkip: canSkip ? _skipExhibit : null,
+                    onPauseResume: canPause || canResume
+                        ? () => _togglePause()
+                        : null,
+                    onSkip: canSkip ? () => _skipExhibit() : null,
                     onRecover: canRecover
                         ? () => tourProvider.requestRecovery(context)
                         : null,
@@ -549,23 +653,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                   else if (!isCompleted)
                     PrimaryButton(
                       label: l10n.endTour,
-                      onPressed: () {
-                        final tour = Provider.of<TourProvider>(
-                          context,
-                          listen: false,
-                        );
-                        final appSession =
-                            Provider.of<session.AppSessionProvider>(
-                              context,
-                              listen: false,
-                            );
-                        tour.completeTour(context: context);
-                        appSession.endTour();
-                        Navigator.pushReplacementNamed(
-                          context,
-                          AppRoutes.summary,
-                        );
-                      },
+                      onPressed: () => _endTour(),
                       fullWidth: true,
                     )
                   else
@@ -1416,38 +1504,6 @@ class _PulsingDotState extends State<_PulsingDot>
         height: 8,
         decoration: BoxDecoration(color: widget.color, shape: BoxShape.circle),
       ),
-    );
-  }
-}
-
-class _ControlButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback? onTap;
-
-  const _ControlButton({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        IconButton.filledTonal(
-          onPressed: onTap,
-          icon: Icon(icon),
-          iconSize: 28,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: AppTextStyles.metadata(
-            context,
-          ).copyWith(fontSize: 12, fontWeight: FontWeight.w500),
-        ),
-      ],
     );
   }
 }

@@ -9,10 +9,11 @@ import '../../widgets/dialogs/branded_permission_dialog.dart';
 import '../../l10n/app_localizations.dart';
 import '../../app/router.dart';
 import '../../models/app_session_provider.dart';
-import '../../models/ticket_provider.dart';
+import '../../models/auth_provider.dart';
 import '../../models/tour_provider.dart' as tour;
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
+import '../../services/robot_pairing_service.dart';
 
 enum QRScanMode { museumTicket, robotConnection }
 
@@ -29,6 +30,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
     with TickerProviderStateMixin {
   bool _isScanned = false;
   late final AnimationController _scanAnim;
+  final RobotPairingService _robotPairingService = RobotPairingService();
 
   @override
   void initState() {
@@ -85,10 +87,6 @@ class _QrScannerScreenState extends State<QrScannerScreen>
     return code.startsWith('TKT-MUSEUM-') || code.startsWith('TKT-ENTRY-');
   }
 
-  bool _isValidRobotQr(String code) {
-    return code.startsWith('ROBOT-HORUS-');
-  }
-
   bool _isRobotTicketQr(String code) {
     return code.startsWith('ROBOT-') || code.startsWith('TKT-ROBOT-');
   }
@@ -101,13 +99,13 @@ class _QrScannerScreenState extends State<QrScannerScreen>
     Navigator.pop(context);
   }
 
-  void _showResultDialog(String code) {
+  Future<void> _showResultDialog(String code) async {
     final l10n = AppLocalizations.of(context)!;
     final mode = widget.mode;
-    final ticketProvider = context.read<TicketProvider>();
+    final authProvider = context.read<AuthProvider>();
     final sessionProvider = context.read<AppSessionProvider>();
     final tourProvider = context.read<tour.TourProvider>();
-    final _ScanResult result;
+    late final _ScanResult result;
 
     if (mode == QRScanMode.museumTicket) {
       if (_isValidMuseumQr(code)) {
@@ -133,42 +131,77 @@ class _QrScannerScreenState extends State<QrScannerScreen>
         );
       }
     } else {
-      if (!ticketProvider.hasValidRobotTourEligibility) {
+      final robotId = _robotPairingService.parseRobotId(code);
+      if (robotId == null) {
+        sessionProvider.failRobotConnection();
+        tourProvider.setConnectionState(tour.RobotConnectionState.disconnected);
         result = _ScanResult(
           isValid: false,
-          title: l10n.qrRobotTicketRequiredTitle,
-          message: l10n.qrRobotTicketRequiredMessage,
+          title: l10n.invalidQr,
+          message: _isMuseumTicketQr(code)
+              ? l10n.museumTicketInRobotMode
+              : l10n.notHorusBotQr,
+          primaryLabel: l10n.done,
+        );
+      } else if (!authProvider.isLoggedIn || authProvider.currentUser == null) {
+        result = _ScanResult(
+          isValid: false,
+          title: l10n.qrSignInRequiredTitle,
+          message: l10n.qrSignInRequiredMessage,
           primaryLabel: l10n.done,
           shouldMutateConnectionFailure: false,
         );
-      } else if (_isValidRobotQr(code)) {
-        sessionProvider.completeRobotConnection();
-        tourProvider.setConnectionState(tour.RobotConnectionState.connected);
-        result = _ScanResult(
-          isValid: true,
-          title: l10n.qrRobotConnectedTitle,
-          message: l10n.qrRobotConnectedMessage,
-          primaryLabel: l10n.qrOpenLiveTour,
-          opensLiveTour: true,
-        );
-      } else if (_isMuseumTicketQr(code)) {
-        sessionProvider.failRobotConnection();
-        tourProvider.setConnectionState(tour.RobotConnectionState.disconnected);
-        result = _ScanResult(
-          isValid: false,
-          title: l10n.invalidQr,
-          message: l10n.museumTicketInRobotMode,
-          primaryLabel: l10n.done,
-        );
       } else {
-        sessionProvider.failRobotConnection();
-        tourProvider.setConnectionState(tour.RobotConnectionState.disconnected);
-        result = _ScanResult(
-          isValid: false,
-          title: l10n.invalidQr,
-          message: l10n.notHorusBotQr,
-          primaryLabel: l10n.done,
-        );
+        try {
+          final pairing = await _robotPairingService.pairRobot(
+            userId: authProvider.currentUser!.id,
+            scannedCode: code,
+          );
+          if (!mounted) return;
+          sessionProvider.completeRobotConnection(
+            robotId: pairing.robotId,
+            sessionId: pairing.sessionId,
+            nextExhibitId: pairing.nextExhibitId,
+            selectedExhibitIds: pairing.selectedExhibitIds,
+          );
+          tourProvider.preparePairedRobotTour(
+            robotId: pairing.robotId,
+            sessionId: pairing.sessionId,
+            selectedExhibitIds: pairing.selectedExhibitIds,
+            nextExhibitId: pairing.nextExhibitId,
+          );
+          result = _ScanResult(
+            isValid: true,
+            title: l10n.qrRobotConnectedTitle,
+            message: l10n.qrRobotConnectedMessage,
+            primaryLabel: l10n.qrOpenLiveTour,
+            opensLiveTour: true,
+          );
+        } on RobotPairingException catch (e) {
+          if (!mounted) return;
+          sessionProvider.failRobotConnection();
+          tourProvider.setConnectionState(
+            tour.RobotConnectionState.disconnected,
+          );
+          result = _ScanResult(
+            isValid: false,
+            title: _pairingErrorTitle(l10n, e.code),
+            message: _pairingErrorMessage(l10n, e.code),
+            primaryLabel: l10n.done,
+          );
+        } catch (_) {
+          if (!mounted) return;
+          sessionProvider.failRobotConnection();
+          tourProvider.setConnectionState(
+            tour.RobotConnectionState.disconnected,
+          );
+          result = _ScanResult(
+            isValid: false,
+            title: l10n.invalidQr,
+            message: l10n.qrPairingUnknownMessage,
+            primaryLabel: l10n.done,
+          );
+        }
       }
     }
 
@@ -217,6 +250,52 @@ class _QrScannerScreenState extends State<QrScannerScreen>
         );
       },
     );
+  }
+
+  String _pairingErrorTitle(
+    AppLocalizations l10n,
+    RobotPairingFailureCode code,
+  ) {
+    switch (code) {
+      case RobotPairingFailureCode.signInRequired:
+        return l10n.qrSignInRequiredTitle;
+      case RobotPairingFailureCode.robotTourTicketRequired:
+        return l10n.qrRobotTicketRequiredTitle;
+      case RobotPairingFailureCode.robotNotFound:
+        return l10n.qrRobotNotFoundTitle;
+      case RobotPairingFailureCode.robotUnavailable:
+        return l10n.qrRobotUnavailableTitle;
+      case RobotPairingFailureCode.permissionDenied:
+        return l10n.qrPairingPermissionDeniedTitle;
+      case RobotPairingFailureCode.invalidQr:
+      case RobotPairingFailureCode.network:
+      case RobotPairingFailureCode.unknown:
+        return l10n.invalidQr;
+    }
+  }
+
+  String _pairingErrorMessage(
+    AppLocalizations l10n,
+    RobotPairingFailureCode code,
+  ) {
+    switch (code) {
+      case RobotPairingFailureCode.signInRequired:
+        return l10n.qrSignInRequiredMessage;
+      case RobotPairingFailureCode.robotTourTicketRequired:
+        return l10n.qrRobotTicketRequiredMessage;
+      case RobotPairingFailureCode.robotNotFound:
+        return l10n.qrRobotNotFoundMessage;
+      case RobotPairingFailureCode.robotUnavailable:
+        return l10n.qrRobotUnavailableMessage;
+      case RobotPairingFailureCode.permissionDenied:
+        return l10n.qrPairingPermissionDeniedMessage;
+      case RobotPairingFailureCode.network:
+        return l10n.qrPairingNetworkMessage;
+      case RobotPairingFailureCode.invalidQr:
+        return l10n.notHorusBotQr;
+      case RobotPairingFailureCode.unknown:
+        return l10n.qrPairingUnknownMessage;
+    }
   }
 
   @override

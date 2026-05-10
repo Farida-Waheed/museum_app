@@ -74,6 +74,14 @@ class VisitorTicketCategory {
     );
   }
 
+  static VisitorTicketCategory? fromId(String id) {
+    final normalized = id.replaceAll('_', '-');
+    for (final category in defaults) {
+      if (category.id == normalized) return category;
+    }
+    return null;
+  }
+
   static const List<VisitorTicketCategory> defaults = [
     VisitorTicketCategory(
       id: 'egyptian-adult',
@@ -230,10 +238,10 @@ class StandardTourConfig {
 
   factory StandardTourConfig.fromJson(Map<String, dynamic> json) {
     return StandardTourConfig(
-      durationMinutes: json['durationMinutes'] as int,
-      languageCode: json['languageCode'] as String,
-      routeName: json['routeName'] as String,
-      routeExhibitIds: List<String>.from(json['routeExhibitIds'] as List),
+      durationMinutes: _intValue(json['durationMinutes']) ?? 90,
+      languageCode: json['languageCode'] as String? ?? 'en',
+      routeName: json['routeName'] as String? ?? defaultConfig.routeName,
+      routeExhibitIds: _stringList(json['routeExhibitIds']),
     );
   }
 
@@ -313,11 +321,11 @@ class PersonalizedTourConfig {
 
   factory PersonalizedTourConfig.fromJson(Map<String, dynamic> json) {
     return PersonalizedTourConfig(
-      selectedExhibitIds: List<String>.from(json['selectedExhibitIds'] as List),
-      selectedThemes: List<String>.from(json['selectedThemes'] as List),
-      durationMinutes: json['durationMinutes'] as int,
-      languageCode: json['languageCode'] as String,
-      accessibilityNeeds: List<String>.from(json['accessibilityNeeds'] as List),
+      selectedExhibitIds: _stringList(json['selectedExhibitIds']),
+      selectedThemes: _stringList(json['selectedThemes']),
+      durationMinutes: _intValue(json['durationMinutes']) ?? 90,
+      languageCode: json['languageCode'] as String? ?? 'en',
+      accessibilityNeeds: _stringList(json['accessibilityNeeds']),
       visitorMode: VisitorMode.values.firstWhere(
         (value) => value.name == json['visitorMode'],
         orElse: () => VisitorMode.adult,
@@ -326,8 +334,8 @@ class PersonalizedTourConfig {
         (value) => value.name == json['pace'],
         orElse: () => TourPace.normal,
       ),
-      photoSpotsEnabled: json['photoSpotsEnabled'] as bool,
-      avoidCrowds: json['avoidCrowds'] as bool,
+      photoSpotsEnabled: json['photoSpotsEnabled'] as bool? ?? true,
+      avoidCrowds: json['avoidCrowds'] as bool? ?? false,
     );
   }
 
@@ -342,6 +350,18 @@ class PersonalizedTourConfig {
     photoSpotsEnabled: true,
     avoidCrowds: false,
   );
+}
+
+int? _intValue(Object? value) {
+  if (value is int) return value;
+  if (value is num) return value.toInt();
+  if (value is String) return int.tryParse(value);
+  return null;
+}
+
+List<String> _stringList(Object? value) {
+  if (value is List) return value.whereType<String>().toList();
+  return const [];
 }
 
 class TicketOrderDraft {

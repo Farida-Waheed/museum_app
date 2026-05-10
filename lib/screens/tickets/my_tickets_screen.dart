@@ -17,8 +17,29 @@ import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
 import 'qr_scanner_screen.dart';
 
-class MyTicketsScreen extends StatelessWidget {
+class MyTicketsScreen extends StatefulWidget {
   const MyTicketsScreen({super.key});
+
+  @override
+  State<MyTicketsScreen> createState() => _MyTicketsScreenState();
+}
+
+class _MyTicketsScreenState extends State<MyTicketsScreen> {
+  String? _loadedUserId;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final authProvider = context.watch<AuthProvider>();
+    final userId = authProvider.currentUser?.id;
+    if (authProvider.isLoggedIn && userId != null && userId != _loadedUserId) {
+      _loadedUserId = userId;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        context.read<TicketProvider>().loadUserTickets(userId);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +82,12 @@ class MyTicketsScreen extends StatelessWidget {
     bool isArabic,
   ) {
     final orders = ticketProvider.purchasedTicketSets;
+    if (ticketProvider.isLoadingTickets && orders.isEmpty) {
+      return const Center(
+        child: CircularProgressIndicator(color: AppColors.primaryGold),
+      );
+    }
+
     if (orders.isEmpty) {
       return _EmptyTicketsState(l10n: l10n, isArabic: isArabic);
     }
@@ -73,7 +100,7 @@ class MyTicketsScreen extends StatelessWidget {
       children: [
         _IntroCard(
           title: l10n.myTicketsWalletTitle,
-          subtitle: l10n.myTicketsWalletSubtitle,
+          subtitle: ticketProvider.ticketError ?? l10n.myTicketsWalletSubtitle,
           icon: Icons.confirmation_number_outlined,
           isArabic: isArabic,
         ),

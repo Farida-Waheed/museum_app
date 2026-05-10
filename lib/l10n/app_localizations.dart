@@ -704,6 +704,66 @@ abstract class AppLocalizations {
   /// **'Ref'**
   String get qrReference;
 
+  /// No description provided for @qrSignInRequiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in required'**
+  String get qrSignInRequiredTitle;
+
+  /// No description provided for @qrSignInRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in before pairing with Horus-Bot.'**
+  String get qrSignInRequiredMessage;
+
+  /// No description provided for @qrRobotNotFoundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Robot not found'**
+  String get qrRobotNotFoundTitle;
+
+  /// No description provided for @qrRobotNotFoundMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This Horus-Bot is not registered. Please ask museum staff for help.'**
+  String get qrRobotNotFoundMessage;
+
+  /// No description provided for @qrRobotUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot unavailable'**
+  String get qrRobotUnavailableTitle;
+
+  /// No description provided for @qrRobotUnavailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot is currently unavailable. Please try another robot or ask museum staff.'**
+  String get qrRobotUnavailableMessage;
+
+  /// No description provided for @qrPairingPermissionDeniedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pairing blocked'**
+  String get qrPairingPermissionDeniedTitle;
+
+  /// No description provided for @qrPairingPermissionDeniedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Firestore rules blocked robot pairing. Allow authenticated users to create their own tourSessions and update robot documents only through a controlled pairing rule or backend.'**
+  String get qrPairingPermissionDeniedMessage;
+
+  /// No description provided for @qrPairingNetworkMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error. Please check your connection and scan again.'**
+  String get qrPairingNetworkMessage;
+
+  /// No description provided for @qrPairingUnknownMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Robot pairing failed. Please try again.'**
+  String get qrPairingUnknownMessage;
+
   /// No description provided for @simulateRobotScan.
   ///
   /// In en, this message translates to:

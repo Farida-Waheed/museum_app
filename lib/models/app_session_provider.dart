@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'quiz.dart';
+import 'tour_session.dart';
 import 'tour_memory.dart';
 import 'tour_preferences.dart';
+import '../services/tour_session_repository.dart';
 
 /// App usage mode - where the user is in their journey
 enum AppUsageMode {
@@ -51,6 +55,12 @@ enum RobotActivityState {
 /// Global app session provider
 /// Single source of truth for user's current state in the app
 class AppSessionProvider with ChangeNotifier {
+  final TourSessionRepository _tourSessionRepository;
+  StreamSubscription<TourSession?>? _tourSessionSubscription;
+
+  AppSessionProvider({TourSessionRepository? tourSessionRepository})
+    : _tourSessionRepository = tourSessionRepository ?? TourSessionRepository();
+
   // App usage mode
   AppUsageMode _appUsageMode = AppUsageMode.planning;
 
@@ -87,6 +97,9 @@ class AppSessionProvider with ChangeNotifier {
 
   // Tour session ID for organizing memories
   String? _currentTourSessionId;
+  String? _connectedRobotId;
+  final List<String> _selectedExhibitIds = [];
+  final List<String> _visitedExhibitIds = [];
 
   // Mock tour stops for demo
   final List<String> mockTourStops = [
@@ -95,7 +108,6 @@ class AppSessionProvider with ChangeNotifier {
     'Ancient Tools Section',
     'Grand Statue Atrium',
   ];
-  final int _currentStopIndex = 0;
 
   // Tour memories
   final List<TourMemory> _tourMemories = [];
@@ -121,6 +133,11 @@ class AppSessionProvider with ChangeNotifier {
   RobotActivityState get robotActivityState => _robotActivityState;
   String? get currentExhibitId => _currentExhibitId;
   String? get nextExhibitId => _nextExhibitId;
+  String? get currentTourSessionId => _currentTourSessionId;
+  String? get activeSessionId => _currentTourSessionId;
+  String? get connectedRobotId => _connectedRobotId;
+  List<String> get selectedExhibitIds => List.unmodifiable(_selectedExhibitIds);
+  List<String> get visitedExhibitIds => List.unmodifiable(_visitedExhibitIds);
   TourPreferences? get tourPreferences => _tourPreferences;
   List<TourMemory> get tourMemories => List.unmodifiable(_tourMemories);
   List<QuizResult> get quizResults => List.unmodifiable(_quizResults);
@@ -268,11 +285,25 @@ class AppSessionProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void completeRobotConnection() {
+  void completeRobotConnection({
+    String? robotId,
+    String? sessionId,
+    String? nextExhibitId,
+    List<String> selectedExhibitIds = const [],
+  }) {
     _robotConnectionState = RobotConnectionState.connected;
     _tourLifecycleState = TourLifecycleState.readyToStart;
     _robotActivityState = RobotActivityState.waiting;
     _followMode = FollowModeState.on;
+    _connectedRobotId = robotId ?? _connectedRobotId;
+    _currentTourSessionId = sessionId ?? _currentTourSessionId;
+    _nextExhibitId = nextExhibitId ?? _nextExhibitId;
+    if (selectedExhibitIds.isNotEmpty) {
+      _selectedExhibitIds
+        ..clear()
+        ..addAll(selectedExhibitIds);
+    }
+    _listenToActiveTourSession();
     notifyListeners();
   }
 
@@ -288,6 +319,9 @@ class AppSessionProvider with ChangeNotifier {
     _currentExhibitId = currentExhibitId;
     _nextExhibitId = nextExhibitId;
     _currentTourSessionId ??= DateTime.now().millisecondsSinceEpoch.toString();
+    if (!_visitedExhibitIds.contains(currentExhibitId)) {
+      _visitedExhibitIds.add(currentExhibitId);
+    }
     notifyListeners();
   }
 
@@ -340,6 +374,9 @@ class AppSessionProvider with ChangeNotifier {
   void setCurrentExhibit(String? exhibitId) {
     if (_currentExhibitId != exhibitId) {
       _currentExhibitId = exhibitId;
+      if (exhibitId != null && !_visitedExhibitIds.contains(exhibitId)) {
+        _visitedExhibitIds.add(exhibitId);
+      }
       notifyListeners();
     }
   }
@@ -385,6 +422,7 @@ class AppSessionProvider with ChangeNotifier {
       _robotConnectionState = RobotConnectionState.disconnected;
       _followMode = FollowModeState.off;
       // Keep session ID so memories can still be accessed
+      _stopTourSessionListener();
       notifyListeners();
     }
   }
@@ -491,10 +529,102 @@ class AppSessionProvider with ChangeNotifier {
     _robotActivityState = RobotActivityState.unavailable;
     _currentExhibitId = null;
     _nextExhibitId = null;
+    _currentTourSessionId = null;
+    _connectedRobotId = null;
+    _selectedExhibitIds.clear();
+    _visitedExhibitIds.clear();
+    _stopTourSessionListener();
     _quizResults.clear();
     _rewardPoints = 0;
     _earnedBadges.clear();
     notifyListeners();
+  }
+
+  void _listenToActiveTourSession() {
+    final sessionId = _currentTourSessionId;
+    if (sessionId == null || sessionId.isEmpty) return;
+    _tourSessionSubscription?.cancel();
+    _tourSessionSubscription = _tourSessionRepository
+        .watchSession(sessionId)
+        .listen((tourSession) {
+          if (tourSession == null) return;
+          _applyTourSession(tourSession);
+        });
+  }
+
+  void _applyTourSession(TourSession session) {
+    _currentTourSessionId = session.sessionId;
+    _connectedRobotId = session.robotId;
+    _currentExhibitId = session.currentExhibitId;
+    _nextExhibitId = session.nextExhibitId;
+    _selectedExhibitIds
+      ..clear()
+      ..addAll(session.selectedExhibitIds);
+    _visitedExhibitIds
+      ..clear()
+      ..addAll(session.visitedExhibitIds);
+    if (session.userDistanceFromRobot != null) {
+      _distanceMeters = session.userDistanceFromRobot!;
+      _proximityState = _distanceMeters < 5
+          ? ProximityState.near
+          : _distanceMeters <= 15
+          ? ProximityState.medium
+          : ProximityState.far;
+    }
+
+    switch (session.status) {
+      case 'active':
+        _tourLifecycleState = TourLifecycleState.active;
+        _robotConnectionState = RobotConnectionState.connected;
+        break;
+      case 'paused':
+        _tourLifecycleState = TourLifecycleState.paused;
+        _robotConnectionState = RobotConnectionState.connected;
+        break;
+      case 'completed':
+        _tourLifecycleState = TourLifecycleState.completed;
+        _robotConnectionState = RobotConnectionState.disconnected;
+        _stopTourSessionListener();
+        break;
+      case 'cancelled':
+        _tourLifecycleState = TourLifecycleState.cancelled;
+        _robotConnectionState = RobotConnectionState.disconnected;
+        _stopTourSessionListener();
+        break;
+      case 'ready':
+      default:
+        _tourLifecycleState = TourLifecycleState.readyToStart;
+        _robotConnectionState = RobotConnectionState.connected;
+        break;
+    }
+
+    switch (session.robotState) {
+      case 'moving':
+        _robotActivityState = RobotActivityState.moving;
+        break;
+      case 'speaking':
+        _robotActivityState = RobotActivityState.explaining;
+        break;
+      case 'error':
+        _robotActivityState = RobotActivityState.unavailable;
+        break;
+      case 'waiting':
+      default:
+        _robotActivityState = RobotActivityState.waiting;
+        break;
+    }
+    notifyListeners();
+  }
+
+  void _stopTourSessionListener() {
+    _tourSessionSubscription?.cancel();
+    _tourSessionSubscription = null;
+  }
+
+  @override
+  void dispose() {
+    _stopTourSessionListener();
+    super.dispose();
   }
 
   // ========================

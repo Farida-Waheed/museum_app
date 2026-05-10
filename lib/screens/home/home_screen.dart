@@ -17,6 +17,7 @@ import '../../models/ticket_provider.dart';
 import '../../models/tour_provider.dart';
 import '../../models/user_preferences.dart';
 import '../../screens/tickets/qr_scanner_screen.dart';
+import '../../services/tour_session_repository.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/ask_the_guide_button.dart';
 import '../../widgets/bottom_nav.dart';
@@ -161,11 +162,27 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _openTourFlow(BuildContext context, HomeSnapshot snapshot) {
+  Future<void> _openTourFlow(
+    BuildContext context,
+    HomeSnapshot snapshot,
+  ) async {
     final sessionProvider = context.read<app.AppSessionProvider>();
     final tourProvider = context.read<TourProvider>();
 
     if (snapshot.isTourPaused) {
+      final sessionId = sessionProvider.activeSessionId;
+      if (sessionId != null) {
+        try {
+          await TourSessionRepository().resumeSession(sessionId);
+        } on TourSessionRepositoryException catch (e) {
+          if (!context.mounted) return;
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(e.message)));
+          return;
+        }
+      }
+      if (!context.mounted) return;
       sessionProvider.resumeTour();
       tourProvider.resumeTour(context: context);
       Navigator.pushNamed(context, AppRoutes.liveTour);

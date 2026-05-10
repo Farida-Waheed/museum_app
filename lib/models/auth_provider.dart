@@ -30,6 +30,7 @@ class AuthProvider extends ChangeNotifier {
   AuthState get authState => _authState;
   AppUser? get currentUser => _currentUser;
   String? get errorMessage => _errorMessage;
+  String? get error => _errorMessage;
 
   bool get isLoggedIn => _authState == AuthState.loggedIn;
   bool get isGuest => _authState == AuthState.guest;
@@ -40,10 +41,10 @@ class AuthProvider extends ChangeNotifier {
   // ACTIONS
   // ========================
 
-  /// Load saved session from disk on app startup
+  /// Load current Firebase Auth session on app startup.
   Future<void> _loadSavedSession() async {
     try {
-      final user = _authService.getCurrentUser();
+      final user = await _authService.restoreCurrentUser();
       if (user != null) {
         _currentUser = user;
         _authState = AuthState.loggedIn;
@@ -53,7 +54,7 @@ class AuthProvider extends ChangeNotifier {
       }
     } catch (e) {
       _authState = AuthState.error;
-      _errorMessage = e.toString();
+      _errorMessage = _messageFromError(e);
     }
     notifyListeners();
   }
@@ -80,7 +81,7 @@ class AuthProvider extends ChangeNotifier {
       return true;
     } catch (e) {
       _authState = AuthState.error;
-      _errorMessage = e.toString();
+      _errorMessage = _messageFromError(e);
       notifyListeners();
       return false;
     }
@@ -110,7 +111,7 @@ class AuthProvider extends ChangeNotifier {
       return true;
     } catch (e) {
       _authState = AuthState.error;
-      _errorMessage = e.toString();
+      _errorMessage = _messageFromError(e);
       notifyListeners();
       return false;
     }
@@ -119,14 +120,14 @@ class AuthProvider extends ChangeNotifier {
   /// Log out current user
   Future<void> logout() async {
     try {
-      await _authService.clearUser();
+      await _authService.logout();
       _currentUser = null;
       _authState = AuthState.loggedOut;
       _errorMessage = null;
       notifyListeners();
     } catch (e) {
       _authState = AuthState.error;
-      _errorMessage = e.toString();
+      _errorMessage = _messageFromError(e);
       notifyListeners();
     }
   }
@@ -137,15 +138,15 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Update user profile (mock for now)
+  /// Update user profile.
   Future<void> updateProfile({String? name, String? phone}) async {
     if (_currentUser == null) return;
 
     try {
-      _currentUser = _currentUser!.copyWith(name: name, phone: phone);
+      _currentUser = await _authService.updateProfile(name: name, phone: phone);
       notifyListeners();
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = _messageFromError(e);
       notifyListeners();
     }
   }
@@ -156,5 +157,10 @@ class AuthProvider extends ChangeNotifier {
     required String password,
   }) async {
     return await login(email: email, password: password);
+  }
+
+  String _messageFromError(Object error) {
+    if (error is AuthServiceException) return error.message;
+    return 'Something went wrong. Please try again.';
   }
 }

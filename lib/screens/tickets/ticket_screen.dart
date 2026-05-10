@@ -41,11 +41,11 @@ class _TicketScreenState extends State<TicketScreen> {
     }
   }
 
-  void _checkout({
+  Future<void> _checkout({
     required AuthProvider authProvider,
     required TicketProvider ticketProvider,
     required AppLocalizations l10n,
-  }) {
+  }) async {
     if (!authProvider.isLoggedIn || authProvider.currentUser == null) {
       ScaffoldMessenger.of(
         context,
@@ -67,12 +67,17 @@ class _TicketScreenState extends State<TicketScreen> {
 
     HapticFeedback.mediumImpact();
     SystemSound.play(SystemSoundType.click);
-    final purchasedSet = ticketProvider.mockCheckoutFromDraft(
+    final purchasedSet = await ticketProvider.checkoutFromDraft(
       userId: authProvider.currentUser!.id,
     );
+    if (!mounted) return;
     if (purchasedSet == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.ticketsSelectMuseumEntryFirst)),
+        SnackBar(
+          content: Text(
+            ticketProvider.ticketError ?? l10n.ticketsSelectMuseumEntryFirst,
+          ),
+        ),
       );
       return;
     }
@@ -846,8 +851,12 @@ class _StickyCheckoutBar extends StatelessWidget {
             SizedBox(
               width: 160,
               child: _GoldButton(
-                label: l10n.ticketsCheckout,
-                onTap: ticketProvider.canCheckoutDraft
+                label: ticketProvider.isCheckingOut
+                    ? '${l10n.ticketsCheckout}...'
+                    : l10n.ticketsCheckout,
+                onTap: ticketProvider.isCheckingOut
+                    ? () {}
+                    : ticketProvider.canCheckoutDraft
                     ? onCheckout
                     : onCheckout,
               ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import '../core/notifications/notification_trigger_service.dart';
 import '../core/notifications/notification_models.dart';
@@ -6,7 +8,9 @@ import '../core/notifications/notification_types.dart';
 import '../app/router.dart';
 import '../widgets/dialogs/branded_permission_dialog.dart';
 import '../models/user_preferences.dart';
+import 'tour_session.dart';
 import 'package:provider/provider.dart';
+import '../services/tour_session_repository.dart';
 
 enum RobotState {
   idle,
@@ -29,9 +33,25 @@ enum FollowModeState { off, on }
 enum ProximityState { near, medium, far }
 
 class TourProvider with ChangeNotifier {
+  final TourSessionRepository _tourSessionRepository;
+  StreamSubscription<TourSession?>? _tourSessionSubscription;
+
+  TourProvider({TourSessionRepository? tourSessionRepository})
+    : _tourSessionRepository =
+          tourSessionRepository ?? TourSessionRepository() {
+    // Don't auto-connect anymore. Connection happens via AppSessionProvider
+    // when user explicitly starts a tour after viewing EntryModeScreen.
+    // Initialize state as disconnected and not started.
+    _connectionState = RobotConnectionState.disconnected;
+    _tourLifecycleState = TourLifecycleState.notStarted;
+  }
+
   String? _currentExhibitId;
+  String? _activeSessionId;
+  String? _connectedRobotId;
   double _progress = 0.0;
   final List<String> _visitedExhibitIds = [];
+  final List<String> _selectedExhibitIds = [];
 
   // Quiz state
   final Map<String, int> _quizScores = {}; // exhibitId -> score
@@ -53,9 +73,12 @@ class TourProvider with ChangeNotifier {
   double _estimatedTimeToNext = 0; // in seconds
 
   String? get currentExhibitId => _currentExhibitId;
+  String? get activeSessionId => _activeSessionId;
+  String? get connectedRobotId => _connectedRobotId;
   String? get nextExhibitId => _nextExhibitId;
   double get progress => _progress;
   List<String> get visitedExhibitIds => _visitedExhibitIds;
+  List<String> get selectedExhibitIds => List.unmodifiable(_selectedExhibitIds);
   RobotState get robotState => _robotState;
   RobotConnectionState get connectionState => _connectionState;
   TourLifecycleState get tourLifecycleState => _tourLifecycleState;
@@ -130,14 +153,6 @@ class TourProvider with ChangeNotifier {
     }
   }
 
-  TourProvider() {
-    // Don't auto-connect anymore. Connection happens via AppSessionProvider
-    // when user explicitly starts a tour after viewing EntryModeScreen.
-    // Initialize state as disconnected and not started.
-    _connectionState = RobotConnectionState.disconnected;
-    _tourLifecycleState = TourLifecycleState.notStarted;
-  }
-
   void setConnectionState(RobotConnectionState state, {BuildContext? context}) {
     _connectionState = state;
     if (state == RobotConnectionState.disconnected) {
@@ -163,6 +178,108 @@ class TourProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void preparePairedRobotTour({
+    required String robotId,
+    required String sessionId,
+    required List<String> selectedExhibitIds,
+    String? nextExhibitId,
+  }) {
+    _connectedRobotId = robotId;
+    _activeSessionId = sessionId;
+    _selectedExhibitIds
+      ..clear()
+      ..addAll(selectedExhibitIds);
+    _nextExhibitId = nextExhibitId;
+    _connectionState = RobotConnectionState.connected;
+    _tourLifecycleState = TourLifecycleState.notStarted;
+    _listenToActiveTourSession();
+    setRobotState(
+      RobotState.waiting,
+      msgEn: 'Horus-Bot is paired and waiting',
+      msgAr: 'Horus-Bot جاهز وينتظر',
+    );
+    notifyListeners();
+  }
+
+  void _listenToActiveTourSession() {
+    final sessionId = _activeSessionId;
+    if (sessionId == null || sessionId.isEmpty) return;
+    _tourSessionSubscription?.cancel();
+    _tourSessionSubscription = _tourSessionRepository
+        .watchSession(sessionId)
+        .listen((tourSession) {
+          if (tourSession == null) return;
+          _applyTourSession(tourSession);
+        });
+  }
+
+  void _applyTourSession(TourSession session) {
+    _activeSessionId = session.sessionId;
+    _connectedRobotId = session.robotId;
+    _currentExhibitId = session.currentExhibitId;
+    _nextExhibitId = session.nextExhibitId;
+    _selectedExhibitIds
+      ..clear()
+      ..addAll(session.selectedExhibitIds);
+    _visitedExhibitIds
+      ..clear()
+      ..addAll(session.visitedExhibitIds);
+    _progress = _selectedExhibitIds.isEmpty
+        ? 0
+        : (_visitedExhibitIds.length / _selectedExhibitIds.length).clamp(
+            0.0,
+            1.0,
+          );
+    if (session.userDistanceFromRobot != null) {
+      updateDistanceMeters(session.userDistanceFromRobot!);
+    }
+
+    _connectionState =
+        session.status == 'completed' || session.status == 'cancelled'
+        ? RobotConnectionState.disconnected
+        : RobotConnectionState.connected;
+    _tourLifecycleState = _tourLifecycleFromSession(session.status);
+    _robotState = _robotStateFromSession(session.robotState);
+    notifyListeners();
+  }
+
+  TourLifecycleState _tourLifecycleFromSession(String status) {
+    switch (status) {
+      case 'active':
+        return TourLifecycleState.active;
+      case 'paused':
+        return TourLifecycleState.paused;
+      case 'completed':
+        _stopTourSessionListener();
+        return TourLifecycleState.completed;
+      case 'cancelled':
+        _stopTourSessionListener();
+        return TourLifecycleState.completed;
+      case 'ready':
+      default:
+        return TourLifecycleState.notStarted;
+    }
+  }
+
+  RobotState _robotStateFromSession(String robotState) {
+    switch (robotState) {
+      case 'moving':
+        return RobotState.moving;
+      case 'speaking':
+        return RobotState.speaking;
+      case 'error':
+        return RobotState.disconnected;
+      case 'waiting':
+      default:
+        return RobotState.waiting;
+    }
+  }
+
+  void _stopTourSessionListener() {
+    _tourSessionSubscription?.cancel();
+    _tourSessionSubscription = null;
+  }
+
   void setTourLifecycleState(
     TourLifecycleState state, {
     BuildContext? context,
@@ -181,7 +298,6 @@ class TourProvider with ChangeNotifier {
             RobotState.moving,
             msgEn: 'Horus is guiding you now',
             msgAr: 'حوروس يوجهك الآن',
-            context: context,
           );
         }
       });
@@ -510,5 +626,11 @@ class TourProvider with ChangeNotifier {
       _pendingQuizzes.add(exhibitId);
       notifyListeners();
     }
+  }
+
+  @override
+  void dispose() {
+    _stopTourSessionListener();
+    super.dispose();
   }
 }
