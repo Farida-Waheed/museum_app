@@ -620,19 +620,88 @@ abstract class AppLocalizations {
   /// **'Hold your museum entry ticket QR code inside the frame.'**
   String get scanMuseumQrSubtitle;
 
+  /// No description provided for @qrMuseumEntryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Museum Entry Scan'**
   String get qrMuseumEntryTitle;
+
+  /// No description provided for @qrMuseumEntrySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan a Museum Entry QR for the gate. This will not connect to Horus-Bot.'**
   String get qrMuseumEntrySubtitle;
+
+  /// No description provided for @qrRobotPairingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Robot Pairing'**
   String get qrRobotPairingTitle;
+
+  /// No description provided for @qrRobotPairingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan the physical Horus-Bot QR when you arrive. Your robot tour pass proves eligibility, but pairing is a separate scan.'**
   String get qrRobotPairingSubtitle;
+
+  /// No description provided for @qrEntryVerifiedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry pass verified'**
   String get qrEntryVerifiedTitle;
+
+  /// No description provided for @qrEntryVerifiedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this QR at the museum gate.'**
   String get qrEntryVerifiedMessage;
+
+  /// No description provided for @qrMuseumInvalidMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This is not a valid Museum Entry QR.'**
   String get qrMuseumInvalidMessage;
+
+  /// No description provided for @qrRobotTicketRequiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Robot tour ticket required'**
   String get qrRobotTicketRequiredTitle;
+
+  /// No description provided for @qrRobotTicketRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please buy a robot tour ticket before pairing with Horus-Bot.'**
   String get qrRobotTicketRequiredMessage;
+
+  /// No description provided for @qrRobotConnectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot connected'**
   String get qrRobotConnectedTitle;
+
+  /// No description provided for @qrRobotConnectedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You are ready to start your guided tour.'**
   String get qrRobotConnectedMessage;
+
+  /// No description provided for @qrOpenLiveTour.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Live Tour'**
   String get qrOpenLiveTour;
+
+  /// No description provided for @qrAlignCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Align the QR code inside the frame'**
   String get qrAlignCode;
+
+  /// No description provided for @qrReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Ref'**
   String get qrReference;
 
   /// No description provided for @simulateRobotScan.
@@ -3005,51 +3074,280 @@ abstract class AppLocalizations {
   /// **'Open Customize Tour to finish your personalized Horus-Bot plan.'**
   String get ticketsComingNext;
 
+  /// No description provided for @tourCustomizeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Build Your Personal Journey'**
   String get tourCustomizeTitle;
+
+  /// No description provided for @tourCustomizeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose what Horus-Bot should focus on before your museum visit.'**
   String get tourCustomizeSubtitle;
+
+  /// No description provided for @tourCustomizeExhibitsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Exhibits and artifacts'**
   String get tourCustomizeExhibitsTitle;
+
+  /// No description provided for @tourCustomizeExhibitsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick the stops you want Horus-Bot to prioritize.'**
   String get tourCustomizeExhibitsSubtitle;
+
+  /// No description provided for @tourCustomizeThemesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Themes and interests'**
   String get tourCustomizeThemesTitle;
+
+  /// No description provided for @tourCustomizeThemesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shape the storytelling style for your guided route.'**
   String get tourCustomizeThemesSubtitle;
+
+  /// No description provided for @tourCustomizeAccessibilityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Accessibility needs'**
   String get tourCustomizeAccessibilityTitle;
+
+  /// No description provided for @tourCustomizeAccessibilitySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell Horus-Bot how to make the route easier to follow.'**
   String get tourCustomizeAccessibilitySubtitle;
+
+  /// No description provided for @tourCustomizeVisitorModeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Visitor mode'**
   String get tourCustomizeVisitorModeTitle;
+
+  /// No description provided for @tourCustomizePaceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace'**
   String get tourCustomizePaceTitle;
+
+  /// No description provided for @tourCustomizePhotoSpotsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo spots'**
   String get tourCustomizePhotoSpotsTitle;
+
+  /// No description provided for @tourCustomizePhotoSpotsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Include recommended places for photos during the tour.'**
   String get tourCustomizePhotoSpotsSubtitle;
+
+  /// No description provided for @tourCustomizeAvoidCrowdsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Avoid crowded areas'**
   String get tourCustomizeAvoidCrowdsTitle;
+
+  /// No description provided for @tourCustomizeAvoidCrowdsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Prefer quieter paths when the museum route allows it.'**
   String get tourCustomizeAvoidCrowdsSubtitle;
+
+  /// No description provided for @tourCustomizeSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Personalized tour summary'**
   String get tourCustomizeSummaryTitle;
+
+  /// No description provided for @tourCustomizeSelectedExhibits.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected exhibits'**
   String get tourCustomizeSelectedExhibits;
+
+  /// No description provided for @tourCustomizeSelectedThemes.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected themes'**
   String get tourCustomizeSelectedThemes;
+
+  /// No description provided for @tourCustomizeNotSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Not selected'**
   String get tourCustomizeNotSelected;
+
+  /// No description provided for @tourCustomizeSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Personalized Tour'**
   String get tourCustomizeSave;
+
+  /// No description provided for @tourCustomizeSelectExhibitError.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one exhibit or artifact.'**
   String get tourCustomizeSelectExhibitError;
+
+  /// No description provided for @tourCustomizeDurationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a tour duration.'**
   String get tourCustomizeDurationError;
+
+  /// No description provided for @tourCustomizeLanguageError.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a storytelling language.'**
   String get tourCustomizeLanguageError;
+
+  /// No description provided for @tourCustomizeVisitorModeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a visitor mode.'**
   String get tourCustomizeVisitorModeError;
+
+  /// No description provided for @tourCustomizePaceError.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a tour pace.'**
   String get tourCustomizePaceError;
+
+  /// No description provided for @tourThemeAncientKings.
+  ///
+  /// In en, this message translates to:
+  /// **'Ancient kings'**
   String get tourThemeAncientKings;
+
+  /// No description provided for @tourThemeDailyLife.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily life'**
   String get tourThemeDailyLife;
+
+  /// No description provided for @tourThemeMummies.
+  ///
+  /// In en, this message translates to:
+  /// **'Mummies and afterlife'**
   String get tourThemeMummies;
+
+  /// No description provided for @tourThemeSymbols.
+  ///
+  /// In en, this message translates to:
+  /// **'Symbols and mythology'**
   String get tourThemeSymbols;
+
+  /// No description provided for @tourThemeArchitecture.
+  ///
+  /// In en, this message translates to:
+  /// **'Architecture'**
   String get tourThemeArchitecture;
+
+  /// No description provided for @tourThemeHiddenStories.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden stories'**
   String get tourThemeHiddenStories;
+
+  /// No description provided for @tourThemePhotoHighlights.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo highlights'**
   String get tourThemePhotoHighlights;
+
+  /// No description provided for @tourAccessStepFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Step-free route'**
   String get tourAccessStepFree;
+
+  /// No description provided for @tourAccessFewerStairs.
+  ///
+  /// In en, this message translates to:
+  /// **'Fewer stairs'**
   String get tourAccessFewerStairs;
+
+  /// No description provided for @tourAccessSeatingBreaks.
+  ///
+  /// In en, this message translates to:
+  /// **'Seating breaks'**
   String get tourAccessSeatingBreaks;
+
+  /// No description provided for @tourAccessSlowNarration.
+  ///
+  /// In en, this message translates to:
+  /// **'Slower narration'**
   String get tourAccessSlowNarration;
+
+  /// No description provided for @tourAccessHighContrast.
+  ///
+  /// In en, this message translates to:
+  /// **'High-contrast guidance'**
   String get tourAccessHighContrast;
+
+  /// No description provided for @tourAccessAudioFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio-first guidance'**
   String get tourAccessAudioFirst;
+
+  /// No description provided for @tourVisitorAdults.
+  ///
+  /// In en, this message translates to:
+  /// **'Adults'**
   String get tourVisitorAdults;
+
+  /// No description provided for @tourVisitorStudents.
+  ///
+  /// In en, this message translates to:
+  /// **'Students'**
   String get tourVisitorStudents;
+
+  /// No description provided for @tourVisitorKidsFamily.
+  ///
+  /// In en, this message translates to:
+  /// **'Kids and family'**
   String get tourVisitorKidsFamily;
+
+  /// No description provided for @tourVisitorDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled visitors'**
   String get tourVisitorDisabled;
+
+  /// No description provided for @tourPaceRelaxed.
+  ///
+  /// In en, this message translates to:
+  /// **'Relaxed'**
   String get tourPaceRelaxed;
+
+  /// No description provided for @tourPaceNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
   String get tourPaceNormal;
+
+  /// No description provided for @tourPaceFast.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast'**
   String get tourPaceFast;
+
+  /// No description provided for @enabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
   String get enabled;
+
+  /// No description provided for @disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
   String get disabled;
 
   /// No description provided for @ticketsOrderSummaryTitle.
@@ -3088,6 +3386,10 @@ abstract class AppLocalizations {
   /// **'Select at least one museum entry ticket before checkout.'**
   String get ticketsSelectMuseumEntryFirst;
 
+  /// No description provided for @ticketsCompletePersonalizedTourFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize and save your personalized tour before checkout.'**
   String get ticketsCompletePersonalizedTourFirst;
 
   /// No description provided for @ticketsPurchaseComplete.
@@ -3144,52 +3446,286 @@ abstract class AppLocalizations {
   /// **'Scan the QR on the physical Horus-Bot robot to connect'**
   String get scanQrOnRobot;
 
+  /// No description provided for @myTicketsWalletTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Tickets'**
   String get myTicketsWalletTitle;
+
+  /// No description provided for @myTicketsWalletSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your museum entry passes, robot tour eligibility, and order details are saved here.'**
   String get myTicketsWalletSubtitle;
+
+  /// No description provided for @myTicketsSignInTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view your tickets'**
   String get myTicketsSignInTitle;
+
+  /// No description provided for @myTicketsSignInBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account saves tickets, robot photos, tour progress, and website sync.'**
   String get myTicketsSignInBody;
+
+  /// No description provided for @myTicketsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No tickets yet'**
   String get myTicketsEmptyTitle;
+
+  /// No description provided for @myTicketsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy your museum entry ticket and optional Horus-Bot tour pass to see them here.'**
   String get myTicketsEmptyBody;
+
+  /// No description provided for @myTicketsBuyTickets.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy Tickets'**
   String get myTicketsBuyTickets;
+
+  /// No description provided for @myTicketsOrderCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Order #{code}'**
   String myTicketsOrderCode(String code);
+
+  /// No description provided for @myTicketsNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available'**
   String get myTicketsNotAvailable;
+
+  /// No description provided for @myTicketsTotalPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Total paid'**
   String get myTicketsTotalPaid;
+
+  /// No description provided for @myTicketsPurchasedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchased'**
   String get myTicketsPurchasedAt;
+
+  /// No description provided for @myTicketsMuseumPassTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Museum Entry Pass'**
   String get myTicketsMuseumPassTitle;
+
+  /// No description provided for @myTicketsEntryQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry QR'**
   String get myTicketsEntryQr;
+
+  /// No description provided for @myTicketsTotalVisitors.
+  ///
+  /// In en, this message translates to:
+  /// **'Total visitors'**
   String get myTicketsTotalVisitors;
+
+  /// No description provided for @myTicketsCategoryBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Category breakdown'**
   String get myTicketsCategoryBreakdown;
+
+  /// No description provided for @myTicketsNoCategoryBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'No category breakdown saved.'**
   String get myTicketsNoCategoryBreakdown;
+
+  /// No description provided for @myTicketsMuseumGateCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Museum gate pass code'**
   String get myTicketsMuseumGateCode;
+
+  /// No description provided for @myTicketsMuseumQrExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'This is for the museum gate only.'**
   String get myTicketsMuseumQrExplanation;
+
+  /// No description provided for @myTicketsShowEntryQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Show Entry QR'**
   String get myTicketsShowEntryQr;
+
+  /// No description provided for @myTicketsUseAtGate.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this at the museum gate.'**
   String get myTicketsUseAtGate;
+
+  /// No description provided for @myTicketsRobotPassTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Robot Tour Pass'**
   String get myTicketsRobotPassTitle;
+
+  /// No description provided for @myTicketsRobotPassCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Robot tour pass code'**
   String get myTicketsRobotPassCode;
+
+  /// No description provided for @myTicketsRobotPairingSeparate.
+  ///
+  /// In en, this message translates to:
+  /// **'This proves your robot tour eligibility. Robot pairing is a separate scan.'**
   String get myTicketsRobotPairingSeparate;
+
+  /// No description provided for @myTicketsPhysicalRobotQrNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan the physical Horus-Bot QR when you arrive to pair with the robot.'**
   String get myTicketsPhysicalRobotQrNote;
+
+  /// No description provided for @myTicketsNoPreferencesSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'No personalization details were saved with this pass.'**
   String get myTicketsNoPreferencesSaved;
+
+  /// No description provided for @myTicketsPreferencesSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences summary'**
   String get myTicketsPreferencesSummary;
+
+  /// No description provided for @myTicketsSelectedExhibitsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected exhibits'**
   String get myTicketsSelectedExhibitsCount;
+
+  /// No description provided for @myTicketsThemes.
+  ///
+  /// In en, this message translates to:
+  /// **'Themes'**
   String get myTicketsThemes;
+
+  /// No description provided for @myTicketsVisitorMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Visitor mode'**
   String get myTicketsVisitorMode;
+
+  /// No description provided for @myTicketsPace.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace'**
   String get myTicketsPace;
+
+  /// No description provided for @myTicketsAccessibilityNeeds.
+  ///
+  /// In en, this message translates to:
+  /// **'Accessibility needs'**
   String get myTicketsAccessibilityNeeds;
+
+  /// No description provided for @myTicketsPhotoSpots.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo spots'**
   String get myTicketsPhotoSpots;
+
+  /// No description provided for @myTicketsAvoidCrowds.
+  ///
+  /// In en, this message translates to:
+  /// **'Avoid crowds'**
   String get myTicketsAvoidCrowds;
+
+  /// No description provided for @myTicketsRouteSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Route summary'**
   String get myTicketsRouteSummary;
+
+  /// No description provided for @myTicketsRouteName.
+  ///
+  /// In en, this message translates to:
+  /// **'Route name'**
   String get myTicketsRouteName;
+
+  /// No description provided for @myTicketsRouteStops.
+  ///
+  /// In en, this message translates to:
+  /// **'Route stops'**
   String get myTicketsRouteStops;
+
+  /// No description provided for @myTicketsStandardRouteName.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot Highlights Route'**
   String get myTicketsStandardRouteName;
+
+  /// No description provided for @myTicketsNone.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
   String get myTicketsNone;
+
+  /// No description provided for @myTicketsOpenLiveTour.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Live Tour'**
   String get myTicketsOpenLiveTour;
+
+  /// No description provided for @myTicketsContinueTour.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue Tour'**
   String get myTicketsContinueTour;
+
+  /// No description provided for @myTicketsViewSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'View Summary'**
   String get myTicketsViewSummary;
+
+  /// No description provided for @myTicketsUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Used'**
   String get myTicketsUsed;
+
+  /// No description provided for @myTicketsCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
   String get myTicketsCancelled;
+
+  /// No description provided for @pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
   String get pending;
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
   String get status;
+
+  /// No description provided for @tourType.
+  ///
+  /// In en, this message translates to:
+  /// **'Tour type'**
   String get tourType;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
   String get close;
 
   /// No description provided for @homeExploreWithHorus.
