@@ -6,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../../models/tour_provider.dart';
 import '../../models/app_session_provider.dart' as session;
 import '../../models/exhibit.dart';
+import '../../models/auth_provider.dart';
 import '../../core/services/mock_data.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
@@ -35,6 +36,8 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   final TourSessionRepository _tourSessionRepository = TourSessionRepository();
   Timer? _simTimer;
   bool _isPaused = false;
+  String? _lastRestoreUid;
+  bool _restoreInFlight = false;
 
   @override
   void initState() {
@@ -50,15 +53,6 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         context,
         listen: false,
       );
-      if (sessionProvider.isInActiveTour &&
-          sessionProvider.currentExhibitId != null &&
-          tourProvider.tourLifecycleState == TourLifecycleState.notStarted) {
-        tourProvider.startTour(
-          context: context,
-          initialExhibitId: sessionProvider.currentExhibitId,
-          nextExhibitId: sessionProvider.nextExhibitId,
-        );
-      }
       if (sessionProvider.isInActiveTour ||
           sessionProvider.isTourPaused ||
           tourProvider.tourLifecycleState == TourLifecycleState.active ||
@@ -156,8 +150,10 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         if (!ok) return;
       }
       if (!mounted) return;
-      tourProvider.resumeTour(context: context);
-      sessionProvider.resumeTour();
+      if (sessionId == null) {
+        tourProvider.resumeTour(context: context);
+        sessionProvider.resumeTour();
+      }
       setState(() => _isPaused = false);
     } else {
       final sessionId = sessionProvider.activeSessionId;
@@ -168,8 +164,10 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         if (!ok) return;
       }
       if (!mounted) return;
-      tourProvider.pauseTour(context: context);
-      sessionProvider.pauseTour();
+      if (sessionId == null) {
+        tourProvider.pauseTour(context: context);
+        sessionProvider.pauseTour();
+      }
       setState(() => _isPaused = true);
     }
   }
@@ -203,14 +201,14 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       listen: false,
     );
     if (tourProvider.tourLifecycleState != TourLifecycleState.active) return;
-    final all = MockDataService.getAllExhibits();
     final activeExhibitId =
         sessionProvider.currentExhibitId ?? tourProvider.currentExhibitId;
-    final currentIdx = all.indexWhere((e) => e.id == activeExhibitId);
-    if (currentIdx >= 0 && currentIdx < all.length - 1) {
-      final nextExhibit = all[currentIdx + 1];
-      final followingExhibit = currentIdx + 2 < all.length
-          ? all[currentIdx + 2]
+    final route = _routeExhibits(tourProvider, sessionProvider);
+    final currentIdx = route.indexWhere((e) => e.id == activeExhibitId);
+    if (currentIdx >= 0 && currentIdx < route.length - 1) {
+      final nextExhibit = route[currentIdx + 1];
+      final followingExhibit = currentIdx + 2 < route.length
+          ? route[currentIdx + 2]
           : null;
       final sessionId = sessionProvider.activeSessionId;
       final visited = <String>{
@@ -229,13 +227,15 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         );
         if (!ok) return;
       }
-      tourProvider.setCurrentExhibit(nextExhibit.id);
-      tourProvider.setNextDestination(
-        followingExhibit?.id,
-        tourProvider.estimatedTimeToNext,
-      );
-      sessionProvider.setCurrentExhibit(nextExhibit.id);
-      sessionProvider.setNextExhibit(followingExhibit?.id);
+      if (sessionId == null) {
+        tourProvider.setCurrentExhibit(nextExhibit.id);
+        tourProvider.setNextDestination(
+          followingExhibit?.id,
+          tourProvider.estimatedTimeToNext,
+        );
+        sessionProvider.setCurrentExhibit(nextExhibit.id);
+        sessionProvider.setNextExhibit(followingExhibit?.id);
+      }
       setState(() {
         _transcript.clear();
       });
@@ -244,26 +244,22 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   }
 
   Future<void> _startTourFromReadyState() async {
-    final allExhibits = MockDataService.getAllExhibits();
-    if (allExhibits.isEmpty) return;
-
     final tourProvider = Provider.of<TourProvider>(context, listen: false);
     final sessionProvider = Provider.of<session.AppSessionProvider>(
       context,
       listen: false,
     );
-    final routeIds = tourProvider.selectedExhibitIds.isNotEmpty
-        ? tourProvider.selectedExhibitIds
-        : sessionProvider.selectedExhibitIds;
-    final currentExhibitId = routeIds.isNotEmpty
-        ? routeIds.first
-        : sessionProvider.nextExhibitId;
-    final currentExhibit =
-        _findExhibitById(allExhibits, currentExhibitId) ?? allExhibits.first;
-    final nextExhibitId = routeIds.length > 1 ? routeIds[1] : null;
-    final nextExhibit = nextExhibitId == null
-        ? (allExhibits.length > 1 ? allExhibits[1] : null)
-        : _findExhibitById(allExhibits, nextExhibitId);
+    final route = _routeExhibits(tourProvider, sessionProvider);
+    if (route.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('This tour route is no longer available.'),
+        ),
+      );
+      return;
+    }
+    final currentExhibit = route.first;
+    final nextExhibit = route.length > 1 ? route[1] : null;
 
     final sessionId = sessionProvider.activeSessionId;
     if (sessionId != null) {
@@ -279,15 +275,17 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     }
     if (!mounted) return;
 
-    sessionProvider.startActiveTour(
-      currentExhibitId: currentExhibit.id,
-      nextExhibitId: nextExhibit?.id,
-    );
-    tourProvider.startTour(
-      context: context,
-      initialExhibitId: currentExhibit.id,
-      nextExhibitId: nextExhibit?.id,
-    );
+    if (sessionId == null) {
+      sessionProvider.startActiveTour(
+        currentExhibitId: currentExhibit.id,
+        nextExhibitId: nextExhibit?.id,
+      );
+      tourProvider.startTour(
+        context: context,
+        initialExhibitId: currentExhibit.id,
+        nextExhibitId: nextExhibit?.id,
+      );
+    }
     setState(() => _isPaused = false);
     _startSimulation();
   }
@@ -325,8 +323,10 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     }
 
     if (!mounted) return;
-    tourProvider.completeTour(context: context);
-    sessionProvider.endTour();
+    if (sessionId == null) {
+      tourProvider.completeTour(context: context);
+      sessionProvider.endTour();
+    }
     Navigator.pushReplacementNamed(context, AppRoutes.summary);
   }
 
@@ -338,13 +338,63 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     return null;
   }
 
+  List<Exhibit> _routeExhibits(
+    TourProvider tourProvider,
+    session.AppSessionProvider sessionProvider,
+  ) {
+    final routeIds = sessionProvider.selectedExhibitIds.isNotEmpty
+        ? sessionProvider.selectedExhibitIds
+        : tourProvider.selectedExhibitIds;
+    if (routeIds.isEmpty) return const [];
+    final exhibits = MockDataService.getAllExhibits();
+    final byId = {for (final exhibit in exhibits) exhibit.id: exhibit};
+    return [
+      for (final id in routeIds)
+        if (byId[id] != null) byId[id]!,
+    ];
+  }
+
+  void _maybeRestoreActiveSession() {
+    final authProvider = context.read<AuthProvider>();
+    final userId = authProvider.currentUser?.id;
+    if (!authProvider.isLoggedIn || userId == null || userId.isEmpty) return;
+    if (_restoreInFlight || _lastRestoreUid == userId) return;
+
+    _restoreInFlight = true;
+    _lastRestoreUid = userId;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final sessionProvider = context.read<session.AppSessionProvider>();
+      final tourProvider = context.read<TourProvider>();
+      try {
+        final restoredSession = await sessionProvider
+            .restoreActiveSessionForUser(userId);
+        if (!mounted) return;
+        if (restoredSession != null) {
+          await tourProvider.restoreActiveSessionForUser(userId);
+        }
+      } on TourSessionRepositoryException catch (e) {
+        _lastRestoreUid = null;
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      } finally {
+        _restoreInFlight = false;
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final tourProvider = Provider.of<TourProvider>(context);
     final sessionProvider = Provider.of<session.AppSessionProvider>(context);
     final ticketProvider = Provider.of<TicketProvider>(context);
     final l10n = AppLocalizations.of(context)!;
-    final hasValidTourAccess = ticketProvider.hasValidRobotTourEligibility;
+    _maybeRestoreActiveSession();
+    final hasFirestoreTourSession = sessionProvider.hasRestorableTourSession;
+    final hasValidTourAccess =
+        hasFirestoreTourSession || ticketProvider.hasValidRobotTourEligibility;
 
     final sessionTourState = sessionProvider.tourLifecycleState;
     final isSessionPaused =
@@ -352,14 +402,18 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     final isSessionCompleted =
         sessionTourState == session.TourLifecycleState.completed;
     final allExhibits = MockDataService.getAllExhibits();
+    final routeExhibits = _routeExhibits(tourProvider, sessionProvider);
+    final displayRoute = hasFirestoreTourSession
+        ? routeExhibits
+        : (routeExhibits.isNotEmpty ? routeExhibits : allExhibits);
     final currentExhibitId =
         sessionProvider.currentExhibitId ?? tourProvider.currentExhibitId;
     final currentExhibitIndex = currentExhibitId == null
         ? -1
-        : allExhibits.indexWhere((e) => e.id == currentExhibitId);
+        : displayRoute.indexWhere((e) => e.id == currentExhibitId);
     final currentExhibit = currentExhibitIndex < 0
         ? null
-        : allExhibits[currentExhibitIndex];
+        : displayRoute[currentExhibitIndex];
     final isConnectedNotActive =
         hasValidTourAccess &&
         sessionProvider.isRobotConnected &&
@@ -502,9 +556,11 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       );
     }
     final currentIdx = currentExhibitIndex;
-    final nextExhibit = currentIdx < allExhibits.length - 1
-        ? allExhibits[currentIdx + 1]
-        : null;
+    final nextExhibit = sessionProvider.nextExhibitId != null
+        ? _findExhibitById(displayRoute, sessionProvider.nextExhibitId)
+        : (currentIdx >= 0 && currentIdx < displayRoute.length - 1
+              ? displayRoute[currentIdx + 1]
+              : null);
     final isPaused = isSessionPaused;
     final isCompleted = isSessionCompleted;
     final isMoving = tourProvider.robotState == RobotState.moving;
@@ -606,7 +662,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                   const SizedBox(height: 16),
                   _TourProgressTimeline(
                     currentIndex: currentIdx,
-                    total: allExhibits.length,
+                    total: displayRoute.length,
                     label: l10n.tourProgress,
                   ),
                   const SizedBox(height: 18),

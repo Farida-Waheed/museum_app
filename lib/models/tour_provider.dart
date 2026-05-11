@@ -49,6 +49,8 @@ class TourProvider with ChangeNotifier {
   String? _currentExhibitId;
   String? _activeSessionId;
   String? _connectedRobotId;
+  String? _restoredUserId;
+  bool _isRestoringSession = false;
   double _progress = 0.0;
   final List<String> _visitedExhibitIds = [];
   final List<String> _selectedExhibitIds = [];
@@ -201,6 +203,30 @@ class TourProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<TourSession?> restoreActiveSessionForUser(String userId) async {
+    if (userId.isEmpty) return null;
+    if (_isRestoringSession) return null;
+    if (_restoredUserId == userId &&
+        _activeSessionId != null &&
+        _tourLifecycleState != TourLifecycleState.completed) {
+      return null;
+    }
+
+    _isRestoringSession = true;
+    try {
+      final session = await _tourSessionRepository.findLatestRestorableSession(
+        userId,
+      );
+      _restoredUserId = userId;
+      if (session == null) return null;
+      _applyTourSession(session);
+      _listenToActiveTourSession();
+      return session;
+    } finally {
+      _isRestoringSession = false;
+    }
+  }
+
   void _listenToActiveTourSession() {
     final sessionId = _activeSessionId;
     if (sessionId == null || sessionId.isEmpty) return;
@@ -285,6 +311,10 @@ class TourProvider with ChangeNotifier {
     BuildContext? context,
   }) {
     _tourLifecycleState = state;
+    if (_activeSessionId != null) {
+      notifyListeners();
+      return;
+    }
     if (state == TourLifecycleState.active) {
       setRobotState(
         RobotState.syncing,
@@ -393,6 +423,7 @@ class TourProvider with ChangeNotifier {
   void resumeTour({BuildContext? context}) {
     if (_tourLifecycleState != TourLifecycleState.paused) return;
     setTourLifecycleState(TourLifecycleState.active, context: context);
+    if (_activeSessionId != null) return;
     setRobotState(
       RobotState.moving,
       msgEn: 'Resuming the tour with Horus-Bot',
@@ -403,6 +434,12 @@ class TourProvider with ChangeNotifier {
 
   void completeTour({BuildContext? context}) {
     setTourLifecycleState(TourLifecycleState.completed, context: context);
+    if (_activeSessionId != null) {
+      _stopTourSessionListener();
+      _connectionState = RobotConnectionState.disconnected;
+      notifyListeners();
+      return;
+    }
     setRobotState(
       RobotState.idle,
       msgEn: 'Tour completed. See the summary below.',

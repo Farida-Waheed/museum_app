@@ -20,6 +20,7 @@ class HomeController {
     required String lang,
   }) {
     final hasSessionTourContext =
+        sessionProvider.isRobotConnected ||
         sessionProvider.isInActiveTour ||
         sessionProvider.isTourPaused ||
         sessionProvider.isTourCompleted;
@@ -36,8 +37,13 @@ class HomeController {
           : null,
     );
 
-    final visitedCount = tourProvider.visitedExhibitIds.length;
-    final totalExhibits = exhibits.length;
+    final visitedCount = sessionProvider.visitedExhibitIds.isNotEmpty
+        ? sessionProvider.visitedExhibitIds.length
+        : tourProvider.visitedExhibitIds.length;
+    final routeCount = sessionProvider.selectedExhibitIds.isNotEmpty
+        ? sessionProvider.selectedExhibitIds.length
+        : tourProvider.selectedExhibitIds.length;
+    final totalExhibits = routeCount > 0 ? routeCount : exhibits.length;
     final rawProgress = tourProvider.progress > 0
         ? tourProvider.progress
         : (totalExhibits == 0 ? 0.0 : visitedCount / totalExhibits);
@@ -77,7 +83,7 @@ class HomeController {
       ticketCount: ticketCount,
       nextTicketQrAvailable: ticketProvider.hasTickets,
       isRobotConnected: connected,
-      connectedRobotId: connected ? 'HORUS-01' : null,
+      connectedRobotId: connected ? sessionProvider.connectedRobotId : null,
       connectedRobotName: 'Horus-Bot',
       robotStatus: robotStatus,
       robotStatusLabel: _robotStatusLabel(lang, robotStatus),

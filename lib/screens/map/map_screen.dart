@@ -15,7 +15,9 @@ import 'package:flutter/foundation.dart';
 import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
+import '../../models/auth_provider.dart';
 import '../../models/ticket_provider.dart';
+import '../../services/tour_session_repository.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -39,6 +41,8 @@ class _MapScreenState extends State<MapScreen>
   // Static map dimensions
   final double mapWidth = 600;
   final double mapHeight = 500;
+  String? _lastRestoreUid;
+  bool _restoreInFlight = false;
   @override
   void initState() {
     super.initState();
@@ -150,6 +154,37 @@ class _MapScreenState extends State<MapScreen>
     return null;
   }
 
+  void _maybeRestoreActiveSession() {
+    final authProvider = context.read<AuthProvider>();
+    final userId = authProvider.currentUser?.id;
+    if (!authProvider.isLoggedIn || userId == null || userId.isEmpty) return;
+    if (_restoreInFlight || _lastRestoreUid == userId) return;
+
+    _restoreInFlight = true;
+    _lastRestoreUid = userId;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final sessionProvider = context.read<session.AppSessionProvider>();
+      final tourProvider = context.read<TourProvider>();
+      try {
+        final restoredSession = await sessionProvider
+            .restoreActiveSessionForUser(userId);
+        if (!mounted) return;
+        if (restoredSession != null) {
+          await tourProvider.restoreActiveSessionForUser(userId);
+        }
+      } on TourSessionRepositoryException catch (e) {
+        _lastRestoreUid = null;
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      } finally {
+        _restoreInFlight = false;
+      }
+    });
+  }
+
   Future<void> _checkLocationPermission() async {
     if (kIsWeb) return;
     final status = await Permission.locationWhenInUse.status;
@@ -176,12 +211,15 @@ class _MapScreenState extends State<MapScreen>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    _maybeRestoreActiveSession();
     final tourProvider = Provider.of<TourProvider>(context);
     final sessionProvider = Provider.of<session.AppSessionProvider>(context);
     final ticketProvider = Provider.of<TicketProvider>(context);
     final hasRobotTourEligibility = ticketProvider.hasValidRobotTourEligibility;
     final hasTourContext =
-        sessionProvider.isInActiveTour || sessionProvider.isTourPaused;
+        sessionProvider.isRobotConnected ||
+        sessionProvider.isInActiveTour ||
+        sessionProvider.isTourPaused;
     final currentExhibitId = hasTourContext
         ? (sessionProvider.currentExhibitId ?? tourProvider.currentExhibitId)
         : null;

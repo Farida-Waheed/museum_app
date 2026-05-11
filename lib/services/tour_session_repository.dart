@@ -16,6 +16,34 @@ class TourSessionRepository {
     });
   }
 
+  Future<TourSession?> findLatestRestorableSession(String userId) async {
+    try {
+      final snapshot = await _firestore
+          .collection('tourSessions')
+          .where('userId', isEqualTo: userId)
+          .get();
+      final sessions =
+          snapshot.docs
+              .map((doc) => TourSession.fromFirestore(doc.id, doc.data()))
+              .where((session) => _isRestorableStatus(session.status))
+              .toList()
+            ..sort((a, b) {
+              final left = a.updatedAt ?? a.startedAt ?? DateTime(0);
+              final right = b.updatedAt ?? b.startedAt ?? DateTime(0);
+              return right.compareTo(left);
+            });
+
+      for (final session in sessions) {
+        if (await _isRobotStillPairedToSession(session)) {
+          return session;
+        }
+      }
+      return null;
+    } on FirebaseException catch (e) {
+      throw TourSessionRepositoryException(_friendlyError(e));
+    }
+  }
+
   Future<void> startSession({
     required String sessionId,
     required String currentExhibitId,
@@ -24,7 +52,7 @@ class TourSessionRepository {
   }) async {
     await _updateSession(sessionId, {
       'status': 'active',
-      'robotState': 'waiting',
+      'robotState': nextExhibitId == null ? 'waiting' : 'moving',
       'currentExhibitId': currentExhibitId,
       'nextExhibitId': nextExhibitId,
       'visitedExhibitIds': visitedExhibitIds,
@@ -96,6 +124,29 @@ class TourSessionRepository {
 
   DocumentReference<Map<String, dynamic>> _robotDoc(String robotId) {
     return _firestore.collection('robots').doc(robotId);
+  }
+
+  bool _isRestorableStatus(String status) {
+    return status == 'ready' || status == 'active' || status == 'paused';
+  }
+
+  Future<bool> _isRobotStillPairedToSession(TourSession session) async {
+    if (session.robotId.isEmpty || session.userId.isEmpty) return false;
+    final snapshot = await _robotDoc(session.robotId).get();
+    final data = snapshot.data();
+    if (!snapshot.exists || data == null) return false;
+    final robotSessionId = _stringValue(data['activeSessionId']);
+    final robotUserId = _stringValue(data['currentUserId']);
+    final robotStatus = _stringValue(data['status']);
+    return robotSessionId == session.sessionId &&
+        robotUserId == session.userId &&
+        robotStatus != 'available' &&
+        robotStatus != 'offline';
+  }
+
+  String? _stringValue(Object? value) {
+    if (value is String && value.trim().isNotEmpty) return value;
+    return null;
   }
 
   String _friendlyError(FirebaseException e) {

@@ -98,6 +98,8 @@ class AppSessionProvider with ChangeNotifier {
   // Tour session ID for organizing memories
   String? _currentTourSessionId;
   String? _connectedRobotId;
+  String? _restoredUserId;
+  bool _isRestoringSession = false;
   final List<String> _selectedExhibitIds = [];
   final List<String> _visitedExhibitIds = [];
 
@@ -189,6 +191,12 @@ class AppSessionProvider with ChangeNotifier {
   bool get isTourReadyToStart =>
       _tourLifecycleState == TourLifecycleState.readyToStart &&
       _robotConnectionState == RobotConnectionState.connected;
+
+  bool get hasRestorableTourSession =>
+      _currentTourSessionId != null &&
+      (_tourLifecycleState == TourLifecycleState.readyToStart ||
+          _tourLifecycleState == TourLifecycleState.active ||
+          _tourLifecycleState == TourLifecycleState.paused);
 
   bool get hasActiveOrPausedTour =>
       _robotConnectionState == RobotConnectionState.connected &&
@@ -305,6 +313,26 @@ class AppSessionProvider with ChangeNotifier {
     }
     _listenToActiveTourSession();
     notifyListeners();
+  }
+
+  Future<TourSession?> restoreActiveSessionForUser(String userId) async {
+    if (userId.isEmpty) return null;
+    if (_isRestoringSession) return null;
+    if (_restoredUserId == userId && hasRestorableTourSession) return null;
+
+    _isRestoringSession = true;
+    try {
+      final session = await _tourSessionRepository.findLatestRestorableSession(
+        userId,
+      );
+      _restoredUserId = userId;
+      if (session == null) return null;
+      _applyTourSession(session);
+      _listenToActiveTourSession();
+      return session;
+    } finally {
+      _isRestoringSession = false;
+    }
   }
 
   void startActiveTour({
@@ -531,6 +559,7 @@ class AppSessionProvider with ChangeNotifier {
     _nextExhibitId = null;
     _currentTourSessionId = null;
     _connectedRobotId = null;
+    _restoredUserId = null;
     _selectedExhibitIds.clear();
     _visitedExhibitIds.clear();
     _stopTourSessionListener();

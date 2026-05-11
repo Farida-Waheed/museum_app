@@ -44,6 +44,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final HomeController _homeController = const HomeController();
   final ScrollController _scrollController = ScrollController();
   late final List<Exhibit> exhibits;
+  String? _lastRestoreUid;
+  bool _restoreInFlight = false;
 
   @override
   void initState() {
@@ -183,8 +185,10 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
       if (!context.mounted) return;
-      sessionProvider.resumeTour();
-      tourProvider.resumeTour(context: context);
+      if (sessionId == null) {
+        sessionProvider.resumeTour();
+        tourProvider.resumeTour(context: context);
+      }
       Navigator.pushNamed(context, AppRoutes.liveTour);
       return;
     }
@@ -215,6 +219,37 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _openMap(BuildContext context) {
     Navigator.pushNamedAndRemoveUntil(context, AppRoutes.map, (route) => false);
+  }
+
+  void _maybeRestoreActiveSession() {
+    final authProvider = context.read<AuthProvider>();
+    final userId = authProvider.currentUser?.id;
+    if (!authProvider.isLoggedIn || userId == null || userId.isEmpty) return;
+    if (_restoreInFlight || _lastRestoreUid == userId) return;
+
+    _restoreInFlight = true;
+    _lastRestoreUid = userId;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final sessionProvider = context.read<app.AppSessionProvider>();
+      final tourProvider = context.read<TourProvider>();
+      try {
+        final restoredSession = await sessionProvider
+            .restoreActiveSessionForUser(userId);
+        if (!mounted) return;
+        if (restoredSession != null) {
+          await tourProvider.restoreActiveSessionForUser(userId);
+        }
+      } on TourSessionRepositoryException catch (e) {
+        _lastRestoreUid = null;
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
+      } finally {
+        _restoreInFlight = false;
+      }
+    });
   }
 
   void _openArtifactDetails(
@@ -498,6 +533,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final prefs = context.watch<UserPreferencesModel>();
     final isArabic = prefs.language == 'ar';
     final l10n = AppLocalizations.of(context)!;
+    _maybeRestoreActiveSession();
     final snapshot = _snapshot(context);
     final status = _statusModel(context, snapshot, isArabic);
     final heroHeight = MediaQuery.sizeOf(context).height * 0.56;

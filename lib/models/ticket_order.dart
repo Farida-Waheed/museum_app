@@ -250,10 +250,10 @@ class StandardTourConfig {
     languageCode: 'en',
     routeName: 'Horus-Bot Highlights Route',
     routeExhibitIds: [
-      'tutankhamun_mask',
-      'royal_mummies',
-      'ancient_tools',
-      'grand_statue',
+      'gem_ramses2_colossus',
+      'gem_ptolemaic_king_colossus',
+      'gem_anubis_chest',
+      'gem_tut_golden_mask',
     ],
   );
 }
