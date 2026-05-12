@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import '../core/constants/colors.dart';
 import '../core/constants/text_styles.dart';
 import '../l10n/app_localizations.dart';
+import '../models/app_session_provider.dart' as session;
+import '../models/tour_provider.dart';
 import '../screens/chat/chat_screen.dart';
+import 'package:provider/provider.dart';
 
-/// Unified floating Ask the Guide component for AI assistant access.
+/// Unified floating Ask Horus component for tour fallback questions.
 /// Used consistently across all relevant screens.
 ///
 /// Features:
@@ -46,6 +49,28 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
   }
 
   void _openChat() {
+    final sessionProvider = context.read<session.AppSessionProvider>();
+    final tourProvider = context.read<TourProvider>();
+    final canAsk =
+        sessionProvider.hasRestorableTourSession ||
+        tourProvider.tourLifecycleState == TourLifecycleState.active ||
+        tourProvider.tourLifecycleState == TourLifecycleState.paused;
+    if (!canAsk) {
+      final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isArabic
+                ? 'يمكنك سؤال حورس أثناء الجولة فقط.'
+                : 'You can ask Horus during an active tour only.',
+          ),
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: AppColors.cinematicElevated,
+        ),
+      );
+      return;
+    }
+
     showDialog(
       context: context,
       barrierColor: Colors.black54,
@@ -60,7 +85,7 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final buttonText = l10n.askButton;
+    final buttonText = l10n.askTheGuide;
     return AnimatedBuilder(
       animation: _glowCtrl,
       builder: (context, child) {
@@ -118,7 +143,7 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      Icons.chat_bubble_outline,
+                      Icons.record_voice_over_outlined,
                       color: AppColors.primaryGold,
                       size: widget.subtle ? 18 : 24,
                     ),

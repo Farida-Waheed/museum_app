@@ -118,14 +118,15 @@ class RobotMqttService extends ChangeNotifier {
     client.onSubscribeFail = (topic) =>
         debugPrint('MQTT subscribe failed: $topic');
     client.pongCallback = () => debugPrint('MQTT ping response received.');
-    client.connectionMessage = MqttConnectMessage()
+    var connectionMessage = MqttConnectMessage()
         .withClientIdentifier(clientId)
         .startClean()
         .withWillQos(MqttQos.atLeastOnce);
 
     if (username.trim().isNotEmpty) {
-      client.authenticateAs(username, password);
+      connectionMessage = connectionMessage.authenticateAs(username, password);
     }
+    client.connectionMessage = connectionMessage;
 
     _client = client;
 

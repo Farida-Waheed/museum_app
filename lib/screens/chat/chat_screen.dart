@@ -745,11 +745,67 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     final isArabic =
         Provider.of<UserPreferencesModel>(context).language == "ar";
     final l10n = AppLocalizations.of(context)!;
+    final sessionProvider = Provider.of<session.AppSessionProvider>(context);
+    final tourProvider = Provider.of<TourProvider>(context);
+    final canAskDuringTour =
+        sessionProvider.hasRestorableTourSession ||
+        tourProvider.tourLifecycleState == TourLifecycleState.active ||
+        tourProvider.tourLifecycleState == TourLifecycleState.paused;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final content = Column(
+    final inactiveContent = Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.record_voice_over_outlined,
+              color: AppColors.primaryGold,
+              size: 48,
+            ),
+            const SizedBox(height: 18),
+            Text(
+              l10n.askTheGuide,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.titleLarge(
+                context,
+              ).copyWith(color: Colors.white),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              isArabic
+                  ? 'يمكنك سؤال حورس أثناء الجولة فقط.'
+                  : 'You can ask Horus during an active tour only.',
+              textAlign: TextAlign.center,
+              style: AppTextStyles.bodyPrimary(
+                context,
+              ).copyWith(color: AppColors.neutralMedium, height: 1.5),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    final content = canAskDuringTour
+        ? Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
+          child: Align(
+            alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft,
+            child: Text(
+              isArabic
+                  ? 'استخدمها عندما لا يستطيع حورس سماعك بوضوح.'
+                  : 'Use this when Horus cannot hear you clearly.',
+              textAlign: isArabic ? TextAlign.right : TextAlign.left,
+              style: AppTextStyles.metadata(
+                context,
+              ).copyWith(color: AppColors.neutralMedium),
+            ),
+          ),
+        ),
         Expanded(
           child: Consumer<ChatProvider>(
             builder: (context, chat, _) {
@@ -908,7 +964,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           ),
         ),
       ],
-    );
+    )
+        : inactiveContent;
 
     final helperItems = isArabic
         ? {
@@ -1054,7 +1111,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: contentWithFloatingHelper,
+        child: canAskDuringTour ? contentWithFloatingHelper : inactiveContent,
       ),
       floatingActionButton: _showScrollBtn
           ? FloatingActionButton.small(

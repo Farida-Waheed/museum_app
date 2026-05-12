@@ -161,13 +161,13 @@ abstract class AppLocalizations {
   /// No description provided for @talkToHorusBot.
   ///
   /// In en, this message translates to:
-  /// **'Ask the Guide'**
+  /// **'Ask Horus'**
   String get talkToHorusBot;
 
   /// No description provided for @askTheGuide.
   ///
   /// In en, this message translates to:
-  /// **'Ask the Guide'**
+  /// **'Ask Horus'**
   String get askTheGuide;
 
   /// No description provided for @guideStatus.
@@ -221,7 +221,7 @@ abstract class AppLocalizations {
   /// No description provided for @chatHeaderSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Ask your museum questions while you follow Horus-Bot.'**
+  /// **'Use this when Horus cannot hear you clearly.'**
   String get chatHeaderSubtitle;
 
   /// No description provided for @micPermissionTitle.
@@ -293,7 +293,7 @@ abstract class AppLocalizations {
   /// No description provided for @askButton.
   ///
   /// In en, this message translates to:
-  /// **'Ask'**
+  /// **'Ask Horus'**
   String get askButton;
 
   /// No description provided for @robotArrivalIn.
@@ -335,7 +335,7 @@ abstract class AppLocalizations {
   /// No description provided for @chatInputHint.
   ///
   /// In en, this message translates to:
-  /// **'Ask the Guide while you follow Horus-Bot.'**
+  /// **'Ask Horus during your live tour.'**
   String get chatInputHint;
 
   /// No description provided for @exploreMuseum.
@@ -2609,7 +2609,7 @@ abstract class AppLocalizations {
   /// No description provided for @chatInfoPopup.
   ///
   /// In en, this message translates to:
-  /// **'You can ask about tickets, events, hours, or exhibits.'**
+  /// **'Voice with Horus is primary. Type here only when the museum is too noisy.'**
   String get chatInfoPopup;
 
   /// No description provided for @supportConversationTitle.

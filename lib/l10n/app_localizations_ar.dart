@@ -41,10 +41,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get horusBot => 'Horus-Bot';
 
   @override
-  String get talkToHorusBot => 'اسأل الدليل';
+  String get talkToHorusBot => 'اسأل حورس';
 
   @override
-  String get askTheGuide => 'اسأل الدليل';
+  String get askTheGuide => 'اسأل حورس';
 
   @override
   String get guideStatus => 'حالة الدليل';
@@ -71,7 +71,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get chatHeaderTitle => 'دليل حورس';
 
   @override
-  String get chatHeaderSubtitle => 'اطرح أسئلتك أثناء متابعتك لحوروس-بوت.';
+  String get chatHeaderSubtitle => 'استخدمها عندما لا يستطيع حورس سماعك بوضوح.';
 
   @override
   String get micPermissionTitle => 'الميكروفون';
@@ -110,7 +110,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get quickHelpTopics => 'مواضيع سريعة';
 
   @override
-  String get askButton => 'اسأل';
+  String get askButton => 'اسأل حورس';
 
   @override
   String robotArrivalIn(Object time) {
@@ -133,7 +133,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get chatLoading => 'حورس يفكر...';
 
   @override
-  String get chatInputHint => 'اسأل الدليل أثناء متابعتك لحوروس-بوت.';
+  String get chatInputHint => 'اسأل حورس أثناء جولتك الحية.';
 
   @override
   String get exploreMuseum => 'استكشف المتحف';
@@ -1333,7 +1333,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get chatInfoPopup =>
-      'يمكنك السؤال عن التذاكر أو الفعاليات أو المواعيد أو المعروضات.';
+      'الصوت مع حورس هو الأساس. اكتب هنا فقط عندما يكون المكان مزدحمًا أو الصوت غير واضح.';
 
   @override
   String get supportConversationTitle => 'محادثة الدعم';

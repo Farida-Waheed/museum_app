@@ -1,21 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/exhibit.dart';
 import '../core/services/mock_data.dart';
 
 class ExhibitProvider with ChangeNotifier {
+  final FirebaseFirestore _firestore;
   List<Exhibit> _exhibits = [];
   final Set<String> _bookmarkedIds = {};
+  bool _isLoading = true;
+  String? _error;
 
-  ExhibitProvider() {
+  ExhibitProvider({FirebaseFirestore? firestore})
+    : _firestore = firestore ?? FirebaseFirestore.instance {
     _loadExhibits();
   }
 
   List<Exhibit> get exhibits => _exhibits;
-  List<Exhibit> get bookmarkedExhibits => _exhibits.where((e) => _bookmarkedIds.contains(e.id)).toList();
+  bool get isLoading => _isLoading;
+  String? get error => _error;
+  List<Exhibit> get bookmarkedExhibits =>
+      _exhibits.where((e) => _bookmarkedIds.contains(e.id)).toList();
 
-  void _loadExhibits() {
-    _exhibits = MockDataService.getAllExhibits();
+  Future<void> _loadExhibits() async {
+    _isLoading = true;
+    _error = null;
     notifyListeners();
+
+    try {
+      final snapshot = await _firestore
+          .collection('exhibits')
+          .where('isActive', isEqualTo: true)
+          .get();
+      final firestoreExhibits = snapshot.docs
+          .map((doc) => Exhibit.fromFirestore(doc.id, doc.data()))
+          .where((exhibit) => exhibit.nameEn.isNotEmpty)
+          .toList();
+      _exhibits = firestoreExhibits.isEmpty
+          ? MockDataService.getAllExhibits()
+          : firestoreExhibits;
+    } on FirebaseException catch (e) {
+      _error = e.code == 'permission-denied'
+          ? 'Firestore rules blocked exhibit access.'
+          : 'Unable to load exhibits.';
+      _exhibits = MockDataService.getAllExhibits();
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   bool isBookmarked(String id) => _bookmarkedIds.contains(id);

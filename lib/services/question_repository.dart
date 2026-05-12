@@ -36,6 +36,7 @@ class QuestionRepository {
       question: question.trim(),
       answer: null,
       source: TourQuestionSource.app,
+      reason: 'voice_noise_fallback',
       language: language.trim().isEmpty ? 'en' : language.trim(),
       status: TourQuestionStatus.pending,
       createdAt: null,
@@ -56,6 +57,26 @@ class QuestionRepository {
       if (!snapshot.exists || data == null) return null;
       return TourQuestion.fromFirestore(snapshot.id, data);
     });
+  }
+
+  Future<List<TourQuestion>> loadSessionQuestions(String sessionId) async {
+    if (sessionId.trim().isEmpty) return const [];
+    try {
+      final snapshot = await _questions
+          .where('sessionId', isEqualTo: sessionId)
+          .get();
+      final questions = snapshot.docs
+          .map((doc) => TourQuestion.fromFirestore(doc.id, doc.data()))
+          .toList()
+        ..sort((a, b) {
+          final left = a.createdAt ?? DateTime(0);
+          final right = b.createdAt ?? DateTime(0);
+          return left.compareTo(right);
+        });
+      return questions;
+    } on FirebaseException catch (e) {
+      throw QuestionRepositoryException(_friendlyError(e));
+    }
   }
 
   String? _nullableString(String? value) {

@@ -41,10 +41,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get horusBot => 'Horus-Bot';
 
   @override
-  String get talkToHorusBot => 'Ask the Guide';
+  String get talkToHorusBot => 'Ask Horus';
 
   @override
-  String get askTheGuide => 'Ask the Guide';
+  String get askTheGuide => 'Ask Horus';
 
   @override
   String get guideStatus => 'Guide Status';
@@ -72,7 +72,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatHeaderSubtitle =>
-      'Ask your museum questions while you follow Horus-Bot.';
+      'Use this when Horus cannot hear you clearly.';
 
   @override
   String get micPermissionTitle => 'Microphone';
@@ -111,7 +111,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quickHelpTopics => 'Quick help topics';
 
   @override
-  String get askButton => 'Ask';
+  String get askButton => 'Ask Horus';
 
   @override
   String robotArrivalIn(Object time) {
@@ -134,7 +134,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatLoading => 'Horus is thinking...';
 
   @override
-  String get chatInputHint => 'Ask the Guide while you follow Horus-Bot.';
+  String get chatInputHint => 'Ask Horus during your live tour.';
 
   @override
   String get exploreMuseum => 'Explore the museum';
@@ -1348,7 +1348,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chatInfoPopup =>
-      'You can ask about tickets, events, hours, or exhibits.';
+      'Voice with Horus is primary. Type here only when the museum is too noisy.';
 
   @override
   String get supportConversationTitle => 'Support Conversation';

@@ -9,6 +9,8 @@ import '../../models/robot_command_ack.dart';
 import '../../models/robot_event.dart';
 import '../../models/app_session_provider.dart' as session;
 import '../../models/exhibit.dart';
+import '../../models/exhibit_provider.dart';
+import '../../models/tour_photo.dart';
 import '../../models/auth_provider.dart';
 import '../../core/services/mock_data.dart';
 import '../../widgets/bottom_nav.dart';
@@ -25,6 +27,7 @@ import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 import '../../models/ticket_provider.dart';
 import '../../services/robot_mqtt_service.dart';
+import '../../services/photo_repository.dart';
 import '../../services/tour_session_repository.dart';
 
 class LiveTourScreen extends StatefulWidget {
@@ -41,6 +44,11 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   Timer? _simTimer;
   StreamSubscription<RobotCommandAck>? _mqttAckSubscription;
   StreamSubscription<RobotEvent>? _mqttEventSubscription;
+  StreamSubscription<List<TourPhoto>>? _photoSubscription;
+  final PhotoRepository _photoRepository = PhotoRepository();
+  final Set<String> _seenPhotoIds = {};
+  List<TourPhoto> _sessionPhotos = const [];
+  String? _photoSessionId;
   bool _isPaused = false;
   String? _lastRestoreUid;
   String? _lastMqttSessionKey;
@@ -129,6 +137,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   void dispose() {
     _mqttAckSubscription?.cancel();
     _mqttEventSubscription?.cancel();
+    _photoSubscription?.cancel();
     _simTimer?.cancel();
     _scrollController.dispose();
     super.dispose();
@@ -238,7 +247,11 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     if (tourProvider.tourLifecycleState != TourLifecycleState.active) return;
     final activeExhibitId =
         sessionProvider.currentExhibitId ?? tourProvider.currentExhibitId;
-    final route = _routeExhibits(tourProvider, sessionProvider);
+    final route = _routeExhibits(
+      tourProvider,
+      sessionProvider,
+      context.read<ExhibitProvider>().exhibits,
+    );
     final currentIdx = route.indexWhere((e) => e.id == activeExhibitId);
     if (currentIdx >= 0 && currentIdx < route.length - 1) {
       final nextExhibit = route[currentIdx + 1];
@@ -306,7 +319,11 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       context,
       listen: false,
     );
-    final route = _routeExhibits(tourProvider, sessionProvider);
+    final route = _routeExhibits(
+      tourProvider,
+      sessionProvider,
+      context.read<ExhibitProvider>().exhibits,
+    );
     if (route.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -509,17 +526,57 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   List<Exhibit> _routeExhibits(
     TourProvider tourProvider,
     session.AppSessionProvider sessionProvider,
+    List<Exhibit> availableExhibits,
   ) {
     final routeIds = sessionProvider.selectedExhibitIds.isNotEmpty
         ? sessionProvider.selectedExhibitIds
         : tourProvider.selectedExhibitIds;
     if (routeIds.isEmpty) return const [];
-    final exhibits = MockDataService.getAllExhibits();
+    final exhibits = availableExhibits.isEmpty
+        ? MockDataService.getAllExhibits()
+        : availableExhibits;
     final byId = {for (final exhibit in exhibits) exhibit.id: exhibit};
     return [
       for (final id in routeIds)
         if (byId[id] != null) byId[id]!,
     ];
+  }
+
+  void _maybeListenToSessionPhotos(String? sessionId) {
+    if (sessionId == null || sessionId.isEmpty || _photoSessionId == sessionId) {
+      return;
+    }
+    _photoSessionId = sessionId;
+    _seenPhotoIds.clear();
+    _sessionPhotos = const [];
+    _photoSubscription?.cancel();
+    _photoSubscription = _photoRepository.watchSessionPhotos(sessionId).listen((
+      photos,
+    ) {
+      if (!mounted) return;
+      final incomingIds = photos.map((photo) => photo.photoId).toSet();
+      final newIds = incomingIds.difference(_seenPhotoIds);
+      final hadPreviousPhotos = _seenPhotoIds.isNotEmpty;
+      _seenPhotoIds
+        ..clear()
+        ..addAll(incomingIds);
+      setState(() => _sessionPhotos = photos);
+
+      if (hadPreviousPhotos && newIds.isNotEmpty) {
+        final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isArabic
+                  ? 'التقط حورس ذكرى جديدة لك.'
+                  : 'Horus captured a new memory for you.',
+            ),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: AppColors.cinematicElevated,
+          ),
+        );
+      }
+    }, onError: (_) {});
   }
 
   void _maybeRestoreActiveSession() {
@@ -570,8 +627,18 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         sessionTourState == session.TourLifecycleState.paused;
     final isSessionCompleted =
         sessionTourState == session.TourLifecycleState.completed;
-    final allExhibits = MockDataService.getAllExhibits();
-    final routeExhibits = _routeExhibits(tourProvider, sessionProvider);
+    final firestoreExhibits = context.watch<ExhibitProvider>().exhibits;
+    final allExhibits = firestoreExhibits.isEmpty
+        ? MockDataService.getAllExhibits()
+        : firestoreExhibits;
+    final routeExhibits = _routeExhibits(
+      tourProvider,
+      sessionProvider,
+      allExhibits,
+    );
+    _maybeListenToSessionPhotos(
+      sessionProvider.activeSessionId ?? tourProvider.activeSessionId,
+    );
     final displayRoute = hasFirestoreTourSession
         ? routeExhibits
         : (routeExhibits.isNotEmpty ? routeExhibits : allExhibits);
@@ -844,6 +911,8 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                     total: displayRoute.length,
                     label: l10n.tourProgress,
                   ),
+                  const SizedBox(height: 14),
+                  _buildMemoryStrip(context, _sessionPhotos),
                   const SizedBox(height: 18),
                   _buildCurrentExhibitHero(
                     context,
@@ -916,6 +985,87 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       return 'MQTT command failed$suffix: ${sessionProvider.lastCommandError}';
     }
     return 'MQTT command $status$suffix';
+  }
+
+  Widget _buildMemoryStrip(BuildContext context, List<TourPhoto> photos) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final latest = photos.isEmpty ? null : photos.first;
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 280),
+      child: Container(
+        key: ValueKey('${photos.length}_${latest?.photoId ?? 'empty'}'),
+        padding: const EdgeInsets.all(14),
+        decoration: AppDecorations.secondaryGlassCard(radius: 18),
+        child: Row(
+          textDirection: Directionality.of(context),
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: latest == null
+                  ? Container(
+                      width: 58,
+                      height: 58,
+                      color: AppColors.cinematicSection,
+                      child: const Icon(
+                        Icons.photo_camera_outlined,
+                        color: AppColors.primaryGold,
+                      ),
+                    )
+                  : Image.network(
+                      latest.thumbnailUrl ?? latest.photoUrl,
+                      width: 58,
+                      height: 58,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        width: 58,
+                        height: 58,
+                        color: AppColors.cinematicSection,
+                        child: const Icon(
+                          Icons.photo_camera_outlined,
+                          color: AppColors.primaryGold,
+                        ),
+                      ),
+                    ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isArabic ? 'ذكريات الجولة' : 'Tour memories',
+                    style: AppTextStyles.titleMedium(
+                      context,
+                    ).copyWith(color: Colors.white, fontSize: 15),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    photos.isEmpty
+                        ? (isArabic
+                              ? 'سيظهر هنا ما يلتقطه حورس أثناء الجولة.'
+                              : 'Photos Horus captures will appear here.')
+                        : (isArabic
+                              ? '${photos.length} صورة التقطها حورس'
+                              : '${photos.length} photos captured by Horus'),
+                    style: AppTextStyles.metadata(
+                      context,
+                    ).copyWith(color: AppColors.neutralMedium),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              tooltip: isArabic ? 'فتح الذكريات' : 'Open memories',
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.memories),
+              icon: const Icon(
+                Icons.chevron_right_rounded,
+                color: AppColors.primaryGold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildLockedState(

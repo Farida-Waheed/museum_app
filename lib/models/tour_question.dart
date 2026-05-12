@@ -13,6 +13,7 @@ class TourQuestion {
   final String question;
   final String? answer;
   final TourQuestionSource source;
+  final String reason;
   final String language;
   final TourQuestionStatus status;
   final DateTime? createdAt;
@@ -27,6 +28,7 @@ class TourQuestion {
     required this.question,
     required this.answer,
     required this.source,
+    required this.reason,
     required this.language,
     required this.status,
     required this.createdAt,
@@ -43,6 +45,7 @@ class TourQuestion {
       'question': question,
       'answer': answer,
       'source': source.name,
+      'reason': reason,
       'language': language,
       'status': status.name,
       'createdAt': FieldValue.serverTimestamp(),
@@ -60,6 +63,7 @@ class TourQuestion {
       question: _stringValue(data['question']) ?? '',
       answer: _stringValue(data['answer']),
       source: _sourceValue(data['source']),
+      reason: _stringValue(data['reason']) ?? 'voice_noise_fallback',
       language: _stringValue(data['language']) ?? 'en',
       status: _statusValue(data['status']),
       createdAt: _dateValue(data['createdAt']),

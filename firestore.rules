@@ -1,0 +1,74 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function ownsExisting() {
+      return signedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    function ownsIncoming() {
+      return signedIn() && request.resource.data.userId == request.auth.uid;
+    }
+
+    match /users/{userId} {
+      allow read, update, delete: if signedIn() && userId == request.auth.uid;
+      allow create: if signedIn() && userId == request.auth.uid;
+    }
+
+    match /museumTickets/{ticketId} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update, delete: if ownsExisting() && ownsIncoming();
+    }
+
+    match /robotTourTickets/{ticketId} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update, delete: if ownsExisting() && ownsIncoming();
+    }
+
+    match /tourSessions/{sessionId} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming();
+      allow update: if ownsExisting() && ownsIncoming();
+      allow delete: if false;
+    }
+
+    match /questions/{questionId} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming()
+        && request.resource.data.source == 'app'
+        && request.resource.data.reason == 'voice_noise_fallback'
+        && request.resource.data.status == 'pending';
+      allow update, delete: if false;
+    }
+
+    match /photos/{photoId} {
+      allow read: if ownsExisting();
+      allow create: if ownsIncoming()
+        && request.resource.data.type == 'robot_capture';
+      allow update, delete: if ownsExisting();
+    }
+
+    match /exhibits/{exhibitId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /robots/{robotId} {
+      allow read: if signedIn();
+      allow update: if signedIn()
+        && resource.data.currentUserId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'activeSessionId', 'currentUserId', 'updatedAt'])
+        && request.resource.data.status == 'available'
+        && request.resource.data.activeSessionId == ''
+        && request.resource.data.currentUserId == '';
+      allow create, delete: if false;
+    }
+  }
+}
