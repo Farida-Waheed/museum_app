@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../models/robot_command.dart';
+import '../models/robot_command_ack.dart';
+import '../models/robot_event.dart';
 import '../models/tour_session.dart';
 
 class TourSessionRepository {
@@ -105,6 +108,74 @@ class TourSessionRepository {
     }
   }
 
+  Future<void> markCommandPending(
+    String sessionId,
+    RobotCommand command,
+  ) async {
+    await _updateSession(sessionId, {
+      'commandStatus': 'pending',
+      'lastCommandId': command.commandId,
+      'lastCommandType': command.type.wireName,
+      'lastCommandError': null,
+      'lastCommandAt': FieldValue.serverTimestamp(),
+      'mqttEnabled': true,
+    });
+  }
+
+  Future<void> markCommandAcked(String sessionId, RobotCommandAck ack) async {
+    final failed = ack.status == 'failed' || ack.status == 'rejected';
+    await _updateSession(sessionId, {
+      'commandStatus': failed ? 'failed' : 'acknowledged',
+      'lastCommandId': ack.commandId,
+      'lastCommandType': ack.commandType,
+      'lastCommandError': failed ? ack.errorCode ?? ack.message : null,
+      'lastAckAt': FieldValue.serverTimestamp(),
+      'robotConnectionState': 'connected',
+    });
+  }
+
+  Future<void> markCommandFailed(
+    String sessionId,
+    String commandId,
+    String error,
+  ) async {
+    final mqttDisabled = error == 'mqtt_disabled';
+    await _updateSession(sessionId, {
+      'commandStatus': 'failed',
+      'lastCommandId': commandId,
+      'lastCommandError': error,
+      'lastAckAt': FieldValue.serverTimestamp(),
+      'mqttEnabled': !mqttDisabled,
+      'robotConnectionState': mqttDisabled ? 'disabled' : 'unknown',
+    });
+  }
+
+  Future<void> recordRobotEvent(String sessionId, RobotEvent event) async {
+    final updates = <String, dynamic>{
+      'lastRobotEvent': event.toJson(),
+      'lastRobotEventAt': FieldValue.serverTimestamp(),
+      'robotConnectionState': 'connected',
+    };
+
+    if (event.type == 'arrived_exhibit') {
+      final currentExhibitId = _stringValue(event.payload['currentExhibitId']);
+      final nextExhibitId = _nullableString(event.payload['nextExhibitId']);
+      final visitedExhibitIds = _stringList(event.payload['visitedExhibitIds']);
+      if (currentExhibitId != null) {
+        updates['currentExhibitId'] = currentExhibitId;
+      }
+      if (event.payload.containsKey('nextExhibitId')) {
+        updates['nextExhibitId'] = nextExhibitId;
+      }
+      if (visitedExhibitIds.isNotEmpty) {
+        updates['visitedExhibitIds'] = visitedExhibitIds;
+      }
+      updates['robotState'] = 'waiting';
+    }
+
+    await _updateSession(sessionId, updates);
+  }
+
   Future<void> _updateSession(
     String sessionId,
     Map<String, dynamic> updates,
@@ -147,6 +218,17 @@ class TourSessionRepository {
   String? _stringValue(Object? value) {
     if (value is String && value.trim().isNotEmpty) return value;
     return null;
+  }
+
+  String? _nullableString(Object? value) {
+    if (value == null) return null;
+    if (value is String) return value.trim().isEmpty ? null : value;
+    return null;
+  }
+
+  List<String> _stringList(Object? value) {
+    if (value is List) return value.whereType<String>().toList();
+    return const [];
   }
 
   String _friendlyError(FirebaseException e) {

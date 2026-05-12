@@ -16,6 +16,16 @@ class TourSession {
   final DateTime? startedAt;
   final DateTime? updatedAt;
   final DateTime? completedAt;
+  final String? commandStatus;
+  final String? lastCommandId;
+  final String? lastCommandType;
+  final String? lastCommandError;
+  final DateTime? lastCommandAt;
+  final DateTime? lastAckAt;
+  final Map<String, dynamic>? lastRobotEvent;
+  final DateTime? lastRobotEventAt;
+  final bool? mqttEnabled;
+  final String? robotConnectionState;
 
   const TourSession({
     required this.sessionId,
@@ -33,6 +43,16 @@ class TourSession {
     required this.startedAt,
     required this.updatedAt,
     required this.completedAt,
+    this.commandStatus,
+    this.lastCommandId,
+    this.lastCommandType,
+    this.lastCommandError,
+    this.lastCommandAt,
+    this.lastAckAt,
+    this.lastRobotEvent,
+    this.lastRobotEventAt,
+    this.mqttEnabled,
+    this.robotConnectionState,
   });
 
   factory TourSession.fromFirestore(String docId, Map<String, dynamic> data) {
@@ -52,7 +72,47 @@ class TourSession {
       startedAt: _dateValue(data['startedAt']),
       updatedAt: _dateValue(data['updatedAt']),
       completedAt: _dateValue(data['completedAt']),
+      commandStatus: _stringValue(data['commandStatus']),
+      lastCommandId: _stringValue(data['lastCommandId']),
+      lastCommandType: _stringValue(data['lastCommandType']),
+      lastCommandError: _stringValue(data['lastCommandError']),
+      lastCommandAt: _dateValue(data['lastCommandAt']),
+      lastAckAt: _dateValue(data['lastAckAt']),
+      lastRobotEvent: _mapValue(data['lastRobotEvent']),
+      lastRobotEventAt: _dateValue(data['lastRobotEventAt']),
+      mqttEnabled: _boolValue(data['mqttEnabled']),
+      robotConnectionState: _stringValue(data['robotConnectionState']),
     );
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'sessionId': sessionId,
+      'userId': userId,
+      'robotId': robotId,
+      'museumTicketId': museumTicketId,
+      'robotTourTicketId': robotTourTicketId,
+      'selectedExhibitIds': selectedExhibitIds,
+      'currentExhibitId': currentExhibitId,
+      'nextExhibitId': nextExhibitId,
+      'visitedExhibitIds': visitedExhibitIds,
+      'status': status,
+      'robotState': robotState,
+      'userDistanceFromRobot': userDistanceFromRobot,
+      'startedAt': _timestampValue(startedAt),
+      'updatedAt': _timestampValue(updatedAt),
+      'completedAt': _timestampValue(completedAt),
+      'commandStatus': commandStatus,
+      'lastCommandId': lastCommandId,
+      'lastCommandType': lastCommandType,
+      'lastCommandError': lastCommandError,
+      'lastCommandAt': _timestampValue(lastCommandAt),
+      'lastAckAt': _timestampValue(lastAckAt),
+      'lastRobotEvent': lastRobotEvent,
+      'lastRobotEventAt': _timestampValue(lastRobotEventAt),
+      'mqttEnabled': mqttEnabled,
+      'robotConnectionState': robotConnectionState,
+    };
   }
 
   static String? _stringValue(Object? value) {
@@ -71,10 +131,27 @@ class TourSession {
     return null;
   }
 
+  static bool? _boolValue(Object? value) {
+    if (value is bool) return value;
+    if (value is String) return bool.tryParse(value);
+    return null;
+  }
+
+  static Map<String, dynamic>? _mapValue(Object? value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return Map<String, dynamic>.from(value);
+    return null;
+  }
+
   static DateTime? _dateValue(Object? value) {
     if (value is Timestamp) return value.toDate();
     if (value is DateTime) return value;
     if (value is String) return DateTime.tryParse(value);
     return null;
+  }
+
+  static Timestamp? _timestampValue(DateTime? value) {
+    if (value == null) return null;
+    return Timestamp.fromDate(value);
   }
 }

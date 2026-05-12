@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 
 import '../../models/tour_provider.dart';
+import '../../models/robot_command.dart';
+import '../../models/robot_command_ack.dart';
+import '../../models/robot_event.dart';
 import '../../models/app_session_provider.dart' as session;
 import '../../models/exhibit.dart';
 import '../../models/auth_provider.dart';
@@ -21,6 +24,7 @@ import 'package:flutter/foundation.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 import '../../models/ticket_provider.dart';
+import '../../services/robot_mqtt_service.dart';
 import '../../services/tour_session_repository.dart';
 
 class LiveTourScreen extends StatefulWidget {
@@ -35,8 +39,11 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   final ScrollController _scrollController = ScrollController();
   final TourSessionRepository _tourSessionRepository = TourSessionRepository();
   Timer? _simTimer;
+  StreamSubscription<RobotCommandAck>? _mqttAckSubscription;
+  StreamSubscription<RobotEvent>? _mqttEventSubscription;
   bool _isPaused = false;
   String? _lastRestoreUid;
+  String? _lastMqttSessionKey;
   bool _restoreInFlight = false;
 
   @override
@@ -48,6 +55,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _listenToMqttUpdates();
       final tourProvider = Provider.of<TourProvider>(context, listen: false);
       final sessionProvider = Provider.of<session.AppSessionProvider>(
         context,
@@ -119,9 +127,34 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
 
   @override
   void dispose() {
+    _mqttAckSubscription?.cancel();
+    _mqttEventSubscription?.cancel();
     _simTimer?.cancel();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _listenToMqttUpdates() {
+    final mqttService = context.read<RobotMqttService>();
+    _mqttAckSubscription ??= mqttService.acks.listen((ack) async {
+      if (ack.sessionId.isEmpty) return;
+      try {
+        await _tourSessionRepository.markCommandAcked(ack.sessionId, ack);
+      } on TourSessionRepositoryException catch (e) {
+        debugPrint('MQTT ack Firestore update failed: ${e.message}');
+      }
+    });
+    _mqttEventSubscription ??= mqttService.events.listen((event) async {
+      if (event.sessionId.isEmpty) return;
+      try {
+        await _tourSessionRepository.recordRobotEvent(
+          event.sessionId,
+          event,
+        );
+      } on TourSessionRepositoryException catch (e) {
+        debugPrint('MQTT event Firestore update failed: ${e.message}');
+      }
+    });
   }
 
   void _toggleMode() {
@@ -155,6 +188,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         sessionProvider.resumeTour();
       }
       setState(() => _isPaused = false);
+      unawaited(_publishRobotCommand(RobotCommandType.resume));
     } else {
       final sessionId = sessionProvider.activeSessionId;
       if (sessionId != null) {
@@ -169,6 +203,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         sessionProvider.pauseTour();
       }
       setState(() => _isPaused = true);
+      unawaited(_publishRobotCommand(RobotCommandType.pause));
     }
   }
 
@@ -217,6 +252,16 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         nextExhibit.id,
       }.toList();
       if (sessionId != null) {
+        final published = await _publishRobotCommand(
+          RobotCommandType.skip,
+          payload: {
+            'fromExhibitId': activeExhibitId,
+            'targetExhibitId': nextExhibit.id,
+            'reason': 'visitor_requested',
+          },
+        );
+        if (published) return;
+
         final ok = await _runTourSessionAction(
           () => _tourSessionRepository.updateStop(
             sessionId: sessionId,
@@ -235,6 +280,18 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         );
         sessionProvider.setCurrentExhibit(nextExhibit.id);
         sessionProvider.setNextExhibit(followingExhibit?.id);
+      }
+      if (sessionId == null) {
+        unawaited(
+          _publishRobotCommand(
+            RobotCommandType.skip,
+            payload: {
+              'fromExhibitId': activeExhibitId,
+              'targetExhibitId': nextExhibit.id,
+              'reason': 'visitor_requested',
+            },
+          ),
+        );
       }
       setState(() {
         _transcript.clear();
@@ -287,6 +344,17 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       );
     }
     setState(() => _isPaused = false);
+    unawaited(
+      _publishRobotCommand(
+        RobotCommandType.startTour,
+        payload: {
+          'routeExhibitIds': route.map((exhibit) => exhibit.id).toList(),
+          'currentExhibitId': currentExhibit.id,
+          'nextExhibitId': nextExhibit?.id,
+          'language': Localizations.localeOf(context).languageCode,
+        },
+      ),
+    );
     _startSimulation();
   }
 
@@ -327,7 +395,107 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       tourProvider.completeTour(context: context);
       sessionProvider.endTour();
     }
+    unawaited(
+      _publishRobotCommand(
+        RobotCommandType.endTour,
+        payload: {'reason': 'visitor_requested', 'releaseRobot': true},
+      ),
+    );
     Navigator.pushReplacementNamed(context, AppRoutes.summary);
+  }
+
+  Future<bool> _publishRobotCommand(
+    RobotCommandType type, {
+    Map<String, dynamic> payload = const <String, dynamic>{},
+  }) async {
+    final sessionProvider = context.read<session.AppSessionProvider>();
+    final tourProvider = context.read<TourProvider>();
+    final authProvider = context.read<AuthProvider>();
+    final mqttService = context.read<RobotMqttService>();
+    final sessionId =
+        sessionProvider.activeSessionId ?? tourProvider.activeSessionId;
+    final robotId =
+        sessionProvider.connectedRobotId ?? tourProvider.connectedRobotId;
+    final userId = authProvider.currentUser?.id;
+
+    if (sessionId == null ||
+        robotId == null ||
+        userId == null ||
+        sessionId.isEmpty ||
+        robotId.isEmpty ||
+        userId.isEmpty) {
+      debugPrint('MQTT command skipped: missing session, robot, or user.');
+      return false;
+    }
+
+    final command = RobotCommand(
+      type: type,
+      sessionId: sessionId,
+      robotId: robotId,
+      userId: userId,
+      payload: payload,
+    );
+
+    try {
+      await _tourSessionRepository.markCommandPending(sessionId, command);
+    } on TourSessionRepositoryException catch (e) {
+      debugPrint('MQTT pending Firestore update failed: ${e.message}');
+    }
+
+    final published = await mqttService.publishCommand(command);
+    if (!published) {
+      final error = mqttService.isEnabled ? 'publish_failed' : 'mqtt_disabled';
+      try {
+        await _tourSessionRepository.markCommandFailed(
+          sessionId,
+          command.commandId,
+          error,
+        );
+      } on TourSessionRepositoryException catch (e) {
+        debugPrint('MQTT failed Firestore update failed: ${e.message}');
+      }
+    }
+    return published;
+  }
+
+  void _maybePrepareMqttSession(
+    session.AppSessionProvider sessionProvider,
+    TourProvider tourProvider,
+  ) {
+    final sessionId =
+        sessionProvider.activeSessionId ?? tourProvider.activeSessionId;
+    final robotId =
+        sessionProvider.connectedRobotId ?? tourProvider.connectedRobotId;
+    if (sessionId == null ||
+        robotId == null ||
+        sessionId.isEmpty ||
+        robotId.isEmpty) {
+      return;
+    }
+
+    final key = '$robotId::$sessionId';
+    if (_lastMqttSessionKey == key) return;
+    _lastMqttSessionKey = key;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      unawaited(
+        context.read<RobotMqttService>().connectForSession(
+          robotId: robotId,
+          sessionId: sessionId,
+        ),
+      );
+    });
+  }
+
+  void _findRobot() {
+    unawaited(
+      _publishRobotCommand(
+        RobotCommandType.findRobot,
+        payload: {'mode': 'beacon', 'includeLocation': true},
+      ),
+    );
+    context.read<TourProvider>().requestRecovery(context);
   }
 
   Exhibit? _findExhibitById(List<Exhibit> exhibits, String? exhibitId) {
@@ -392,6 +560,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     final ticketProvider = Provider.of<TicketProvider>(context);
     final l10n = AppLocalizations.of(context)!;
     _maybeRestoreActiveSession();
+    _maybePrepareMqttSession(sessionProvider, tourProvider);
     final hasFirestoreTourSession = sessionProvider.hasRestorableTourSession;
     final hasValidTourAccess =
         hasFirestoreTourSession || ticketProvider.hasValidRobotTourEligibility;
@@ -572,6 +741,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     final canResume = !isCompleted && isPaused;
     final canSkip = !isCompleted && !isPaused && !isLastStop;
     final canRecover = !isCompleted;
+    final commandStatusText = _commandStatusText(sessionProvider);
 
     return AppMenuShell(
       title: 'HORUS-BOT',
@@ -659,6 +829,15 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                       context,
                     ).copyWith(color: AppColors.neutralMedium),
                   ),
+                  if (commandStatusText != null) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                      commandStatusText,
+                      style: AppTextStyles.metadata(
+                        context,
+                      ).copyWith(color: AppColors.neutralMedium),
+                    ),
+                  ],
                   const SizedBox(height: 16),
                   _TourProgressTimeline(
                     currentIndex: currentIdx,
@@ -685,7 +864,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                         : null,
                     onSkip: canSkip ? () => _skipExhibit() : null,
                     onRecover: canRecover
-                        ? () => tourProvider.requestRecovery(context)
+                        ? () => _findRobot()
                         : null,
                   ),
                   const SizedBox(height: 18),
@@ -694,7 +873,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                   if (isRecovery && !isCompleted)
                     _buildRecoveryCard(
                       context,
-                      onRecover: () => tourProvider.requestRecovery(context),
+                      onRecover: () => _findRobot(),
                     ),
                   if (isRecovery && !isCompleted) const SizedBox(height: 16),
                   if (nextExhibit != null)
@@ -724,6 +903,19 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         ),
       ),
     );
+  }
+
+  String? _commandStatusText(session.AppSessionProvider sessionProvider) {
+    final status = sessionProvider.commandStatus;
+    if (status == null || status.isEmpty) return null;
+    final commandType = sessionProvider.lastCommandType;
+    final suffix = commandType == null || commandType.isEmpty
+        ? ''
+        : ' ($commandType)';
+    if (status == 'failed' && sessionProvider.lastCommandError != null) {
+      return 'MQTT command failed$suffix: ${sessionProvider.lastCommandError}';
+    }
+    return 'MQTT command $status$suffix';
   }
 
   Widget _buildLockedState(

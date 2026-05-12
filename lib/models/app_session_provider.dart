@@ -102,6 +102,12 @@ class AppSessionProvider with ChangeNotifier {
   bool _isRestoringSession = false;
   final List<String> _selectedExhibitIds = [];
   final List<String> _visitedExhibitIds = [];
+  String? _commandStatus;
+  String? _lastCommandId;
+  String? _lastCommandType;
+  String? _lastCommandError;
+  DateTime? _lastRobotEventAt;
+  String? _robotCloudConnectionState;
 
   // Mock tour stops for demo
   final List<String> mockTourStops = [
@@ -140,6 +146,12 @@ class AppSessionProvider with ChangeNotifier {
   String? get connectedRobotId => _connectedRobotId;
   List<String> get selectedExhibitIds => List.unmodifiable(_selectedExhibitIds);
   List<String> get visitedExhibitIds => List.unmodifiable(_visitedExhibitIds);
+  String? get commandStatus => _commandStatus;
+  String? get lastCommandId => _lastCommandId;
+  String? get lastCommandType => _lastCommandType;
+  String? get lastCommandError => _lastCommandError;
+  DateTime? get lastRobotEventAt => _lastRobotEventAt;
+  String? get robotCloudConnectionState => _robotCloudConnectionState;
   TourPreferences? get tourPreferences => _tourPreferences;
   List<TourMemory> get tourMemories => List.unmodifiable(_tourMemories);
   List<QuizResult> get quizResults => List.unmodifiable(_quizResults);
@@ -562,6 +574,12 @@ class AppSessionProvider with ChangeNotifier {
     _restoredUserId = null;
     _selectedExhibitIds.clear();
     _visitedExhibitIds.clear();
+    _commandStatus = null;
+    _lastCommandId = null;
+    _lastCommandType = null;
+    _lastCommandError = null;
+    _lastRobotEventAt = null;
+    _robotCloudConnectionState = null;
     _stopTourSessionListener();
     _quizResults.clear();
     _rewardPoints = 0;
@@ -592,6 +610,12 @@ class AppSessionProvider with ChangeNotifier {
     _visitedExhibitIds
       ..clear()
       ..addAll(session.visitedExhibitIds);
+    _commandStatus = session.commandStatus;
+    _lastCommandId = session.lastCommandId;
+    _lastCommandType = session.lastCommandType;
+    _lastCommandError = session.lastCommandError;
+    _lastRobotEventAt = session.lastRobotEventAt;
+    _robotCloudConnectionState = session.robotConnectionState;
     if (session.userDistanceFromRobot != null) {
       _distanceMeters = session.userDistanceFromRobot!;
       _proximityState = _distanceMeters < 5

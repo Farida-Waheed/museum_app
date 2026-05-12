@@ -13,6 +13,7 @@ import 'models/app_session_provider.dart' as session;
 import 'models/auth_provider.dart';
 import 'models/ticket_provider.dart';
 import 'services/auth_service.dart';
+import 'services/robot_mqtt_service.dart';
 import 'core/notifications/notification_service.dart';
 import 'core/notifications/notification_trigger_service.dart';
 
@@ -67,6 +68,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => session.AppSessionProvider()),
         ChangeNotifierProvider(create: (_) => TourProvider()),
         ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => RobotMqttService()),
       ],
       child: const MuseumApp(),
     ),
