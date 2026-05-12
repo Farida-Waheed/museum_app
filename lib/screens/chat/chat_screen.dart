@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,6 +6,10 @@ import 'package:provider/provider.dart';
 import '../../models/user_preferences.dart';
 import '../../models/chat_message.dart';
 import '../../models/chat_provider.dart';
+import '../../models/app_session_provider.dart' as session;
+import '../../models/auth_provider.dart';
+import '../../models/tour_provider.dart';
+import '../../models/tour_question.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/dialogs/premium_dialog.dart';
 import '../../core/constants/colors.dart';
@@ -16,6 +20,7 @@ import '../../services/museum_knowledge_service.dart';
 import '../../services/support_request_service.dart';
 import '../../models/support_message.dart';
 import '../../services/chat_context_builder.dart';
+import '../../services/question_repository.dart';
 
 // ======================= Chat Screen ==========================
 class ChatScreen extends StatefulWidget {
@@ -346,7 +351,9 @@ class ChatBubble extends StatelessWidget {
                 bottomLeft: Radius.circular(isUser ? 20 : 6),
                 bottomRight: Radius.circular(isUser ? 6 : 20),
               ),
-              border: Border.all(color: AppColors.primaryGold.withOpacity(0.16)),
+              border: Border.all(
+                color: AppColors.primaryGold.withOpacity(0.16),
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.08),
@@ -364,8 +371,9 @@ class ChatBubble extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
       child: Row(
-        mainAxisAlignment:
-            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isUser
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: isUser
             ? [Flexible(child: bubble), const SizedBox(width: 8), avatar]
@@ -456,8 +464,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   late final ConversationMemoryService _conversationMemory;
   late final ChatAiService _assistantService;
   late final SupportRequestService _supportService;
+  late final QuestionRepository _questionRepository;
 
   late final StreamSubscription _supportSubscription;
+  final List<StreamSubscription<TourQuestion?>> _questionSubscriptions = [];
+  final Set<String> _answeredQuestionIds = {};
 
   @override
   void initState() {
@@ -470,6 +481,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       memory: _conversationMemory,
     );
     _supportService = SupportRequestService();
+    _questionRepository = QuestionRepository();
     _scroll.addListener(_scrollChecker);
     _controller.addListener(() {
       final ok = _controller.text.trim().isNotEmpty;
@@ -612,6 +624,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       return;
     }
 
+    unawaited(_sendSessionQuestionToFirestore(trimmed));
+
     final contextData = ChatContextBuilder.build(
       context,
       screen: widget.screen,
@@ -641,9 +655,86 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     _addMessage(botMsg);
   }
 
+  Future<void> _sendSessionQuestionToFirestore(String question) async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final sessionProvider = Provider.of<session.AppSessionProvider>(
+      context,
+      listen: false,
+    );
+    final tourProvider = Provider.of<TourProvider>(context, listen: false);
+    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+
+    final userId = authProvider.currentUser?.id;
+    final sessionId =
+        sessionProvider.activeSessionId ?? tourProvider.activeSessionId;
+    final hasQuestionSession =
+        sessionProvider.hasRestorableTourSession ||
+        (tourProvider.activeSessionId != null &&
+            tourProvider.tourLifecycleState != TourLifecycleState.completed);
+    if (!authProvider.isLoggedIn ||
+        userId == null ||
+        sessionId == null ||
+        !hasQuestionSession) {
+      return;
+    }
+
+    try {
+      final createdQuestion = await _questionRepository.createAppQuestion(
+        userId: userId,
+        sessionId: sessionId,
+        robotId:
+            sessionProvider.connectedRobotId ?? tourProvider.connectedRobotId,
+        exhibitId:
+            widget.currentExhibitId ??
+            sessionProvider.currentExhibitId ??
+            tourProvider.currentExhibitId,
+        question: question,
+        language: prefs.language,
+      );
+      _listenForQuestionAnswer(createdQuestion.questionId);
+    } on QuestionRepositoryException catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message),
+          backgroundColor: AppColors.alertRed,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  void _listenForQuestionAnswer(String questionId) {
+    final subscription = _questionRepository.watchQuestion(questionId).listen((
+      question,
+    ) {
+      if (!mounted || question == null) return;
+      final answer = question.answer?.trim();
+      if (question.status != TourQuestionStatus.answered ||
+          answer == null ||
+          answer.isEmpty ||
+          _answeredQuestionIds.contains(question.questionId)) {
+        return;
+      }
+      _answeredQuestionIds.add(question.questionId);
+      _addMessage(
+        ChatMessageModel.text(
+          id: question.questionId,
+          isUser: false,
+          timestamp: question.answeredAt ?? DateTime.now(),
+          text: answer,
+        ),
+      );
+    });
+    _questionSubscriptions.add(subscription);
+  }
+
   @override
   void dispose() {
     _supportSubscription.cancel();
+    for (final subscription in _questionSubscriptions) {
+      subscription.cancel();
+    }
     _controller.dispose();
     _scroll.dispose();
     super.dispose();
@@ -775,9 +866,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         size: 20,
                         color: AppColors.primaryGold,
                       ),
-                      onPressed: () => setState(
-                        () => _showHelperPanel = !_showHelperPanel,
-                      ),
+                      onPressed: () =>
+                          setState(() => _showHelperPanel = !_showHelperPanel),
                     ),
                     const SizedBox(width: 4),
                     Text(
@@ -806,7 +896,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   ),
                   onPressed: () => _requestHumanSupport(),
                   style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 12,
+                    ),
                     foregroundColor: AppColors.primaryGold,
                   ),
                 ),
@@ -851,10 +944,10 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           CompositedTransformFollower(
             link: _infoLink,
             showWhenUnlinked: false,
-            targetAnchor: isArabic
-                ? Alignment.topRight
-                : Alignment.topLeft,
-            followerAnchor: isArabic ? Alignment.bottomRight : Alignment.bottomLeft,
+            targetAnchor: isArabic ? Alignment.topRight : Alignment.topLeft,
+            followerAnchor: isArabic
+                ? Alignment.bottomRight
+                : Alignment.bottomLeft,
             offset: const Offset(0, -12),
             child: Material(
               color: Colors.transparent,
