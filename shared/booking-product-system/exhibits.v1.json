@@ -1,0 +1,3261 @@
+{
+  "version": "1.0.0",
+  "schema": "booking_product_system.exhibits.v1",
+  "firestore_collection": "exhibits",
+  "document_id_rule": "Use each exhibit.id exactly as the Firestore document ID.",
+  "narration_script_key": "en",
+  "app_ui_languages": [
+    "en",
+    "ar"
+  ],
+  "robot_narration_languages": {
+    "current_source_language": "en",
+    "planned_supported_languages": [
+      "en",
+      "ar",
+      "arz",
+      "fr",
+      "es",
+      "it",
+      "de",
+      "zh",
+      "ko"
+    ]
+  },
+  "standard_route_ids": [
+    "artifact_001",
+    "artifact_005",
+    "artifact_002",
+    "artifact_006",
+    "artifact_018",
+    "artifact_030"
+  ],
+  "exhibits": [
+    {
+      "id": "artifact_001",
+      "title_en": "Colossal Statue of Ramesses II",
+      "title_ar": null,
+      "alternative_names": [
+        "Ramesses the Great",
+        "Colossus of Ramesses II"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "19th Dynasty",
+      "date_display": "c. 1279–1213 BCE",
+      "ruler": {
+        "pharaoh": "Ramesses II",
+        "queen": null,
+        "associated_pharaoh": null
+      },
+      "associated_deity": null,
+      "material": "Granite",
+      "locations": {
+        "original": "Temple of Ptah, ancient Memphis, Egypt",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Memphis",
+          "Grand Egyptian Museum",
+          "Temple of Ptah"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_001_colossal_statue_of_ramesses_ii.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Colossal Statue of Ramesses II",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "The Colossal Statue of Ramesses II is one of the most famous royal statues from ancient Egypt.",
+        "historical_background": "The Colossal Statue of Ramesses II is one of the most famous royal statues from ancient Egypt. It was created during the reign of Ramesses II, one of Egypt’s most powerful and longest-ruling pharaohs of the New Kingdom. The statue originally stood in Memphis, the ancient capital of Egypt and an important political and religious center dedicated to the god Ptah. Built on a monumental scale, the statue reflected the strength, authority, and divine status of the king. Ramesses II ruled for more than sixty years and became known for his military campaigns, massive building projects, and the widespread placement of his colossal images across Egypt.",
+        "historical_significance": "The statue represents the peak of royal monument construction during the New Kingdom. It demonstrates how art was used as political propaganda in ancient Egypt, where colossal sculptures communicated stability, military strength, and divine kingship. The monument also reflects the architectural ambition of Ramesses II’s reign, a period considered one of the most prosperous and influential in Egyptian history.",
+        "symbolism": [
+          "The colossal size symbolized royal power and divine authority.",
+          "The idealized facial features represented eternal youth and perfection.",
+          "Its placement in Memphis reinforced Ramesses II’s political dominance.",
+          "The statue connected the pharaoh to the gods and emphasized his role as protector of Egypt."
+        ],
+        "important_facts": [
+          "Ramesses II ruled Egypt for approximately 66 years.",
+          "The statue originally measured around 12 meters in height.",
+          "Memphis was one of the most important cities in ancient Egypt.",
+          "Ramesses II built more monuments and statues than almost any other Egyptian ruler.",
+          "The statue became one of the iconic masterpieces transferred to the Grand Egyptian Museum."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "Before you stands a giant carved more than three thousand years ago — the mighty Ramesses II, often remembered as Ramesses the Great. Imagine arriving at the ancient city of Memphis during the height of the Egyptian Empire. This enormous statue towered over temples and crowds, sending a clear message to everyone who entered: the pharaoh was powerful, eternal, and chosen by the gods. Every detail was carefully carved to glorify the king. His calm face showed control and divine confidence, while the massive scale reminded people that the ruler of Egypt stood above ordinary men. Even after centuries of earthquakes, floods, and the fall of kingdoms, the statue survived as a symbol of one of the greatest eras in Egyptian history."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": 1,
+      "themes": [
+        "royal_power",
+        "religion_ritual",
+        "monuments_sculpture"
+      ],
+      "tags": [
+        "new-kingdom",
+        "19th-dynasty",
+        "granite",
+        "ramesses-ii",
+        "memphis",
+        "grand-egyptian-museum",
+        "temple-of-ptah",
+        "royal_power",
+        "religion_ritual",
+        "monuments_sculpture"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 7,
+      "search_terms": [
+        "Colossal Statue of Ramesses II",
+        "New Kingdom",
+        "19th Dynasty",
+        "Ramesses II",
+        "Ramesses the Great",
+        "Colossus of Ramesses II"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_001",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_002",
+      "title_en": "Colossus of a Ptolemaic King",
+      "title_ar": null,
+      "alternative_names": [
+        "Colossal Statue of a Ptolemaic Ruler",
+        "Ptolemaic Royal Colossus"
+      ],
+      "historical_period": "Ptolemaic Period",
+      "dynasty": "Ptolemaic Dynasty",
+      "date_display": "c. 305–30 BCE",
+      "ruler": {
+        "pharaoh": "Unknown Ptolemaic King",
+        "queen": null,
+        "associated_pharaoh": null
+      },
+      "associated_deity": null,
+      "material": "Granite",
+      "locations": {
+        "original": "Possibly Alexandria or a major temple complex in Lower Egypt",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Alexandria",
+          "Grand Egyptian Museum",
+          "Ptolemaic Egypt"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_002_colossus_of_ptolemaic_king.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Colossus of a Ptolemaic King",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "The Colossus of a Ptolemaic King belongs to the period when Egypt was ruled by the Ptolemaic Dynasty, a Greek royal family founded after the conquest of Egypt by Alexander the Great.",
+        "historical_background": "The Colossus of a Ptolemaic King belongs to the period when Egypt was ruled by the Ptolemaic Dynasty, a Greek royal family founded after the conquest of Egypt by Alexander the Great. The rulers of this dynasty adopted Egyptian royal traditions in order to strengthen their authority and gain acceptance among the Egyptian population. Although the kings were of Macedonian Greek origin, they often presented themselves in statues and temples as traditional Egyptian pharaohs. This colossal sculpture reflects the blending of Greek and Egyptian political identity during one of the final great eras of ancient Egyptian civilization.",
+        "historical_significance": "The statue reflects the political strategy of the Ptolemaic rulers, who combined Greek heritage with ancient Egyptian traditions to maintain power. It also demonstrates the lasting influence of Egyptian artistic conventions even during periods of foreign rule. The monument stands as evidence of Egypt’s cultural complexity during the Hellenistic age and the final centuries before Egypt became part of the Roman Empire.",
+        "symbolism": [
+          "The colossal scale symbolized royal and divine power.",
+          "The Egyptian artistic style reinforced legitimacy as a pharaoh.",
+          "The fusion of Greek and Egyptian traditions reflected cultural integration.",
+          "The statue represented continuity with Egypt’s ancient royal past."
+        ],
+        "important_facts": [
+          "The Ptolemaic Dynasty ruled Egypt for nearly 300 years.",
+          "The dynasty began after the death of Alexander the Great.",
+          "Ptolemaic rulers often adopted Egyptian royal imagery and religious traditions.",
+          "Cleopatra VII was the final ruler of the Ptolemaic Dynasty.",
+          "Large royal statues were commonly placed in temples and ceremonial spaces."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "This towering statue represents a ruler from the final dynasties of ancient Egypt — a king who ruled a land where two worlds met. After Alexander the Great conquered Egypt, Greek rulers known as the Ptolemies took control of the kingdom. Yet instead of abandoning Egyptian traditions, they embraced them. Standing before this massive sculpture, ancient visitors would have seen not a foreign conqueror, but a pharaoh in the style of the old kings of Egypt. The statue was designed to send a powerful message: the ruler was chosen to continue the legacy of the pharaohs. Its immense scale projected strength, stability, and divine authority during a time when Egypt stood at the crossroads of African, Egyptian, and Greek cultures."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": 3,
+      "themes": [
+        "royal_power",
+        "ptolemaic_egypt",
+        "religion_ritual",
+        "monuments_sculpture"
+      ],
+      "tags": [
+        "ptolemaic-period",
+        "ptolemaic-dynasty",
+        "granite",
+        "unknown-ptolemaic-king",
+        "alexandria",
+        "grand-egyptian-museum",
+        "ptolemaic-egypt",
+        "royal_power",
+        "ptolemaic_egypt",
+        "religion_ritual",
+        "monuments_sculpture"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 7,
+      "search_terms": [
+        "Colossus of a Ptolemaic King",
+        "Ptolemaic Period",
+        "Ptolemaic Dynasty",
+        "Unknown Ptolemaic King",
+        "Colossal Statue of a Ptolemaic Ruler",
+        "Ptolemaic Royal Colossus"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_002",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_003",
+      "title_en": "Colossus of a Ptolemaic Queen",
+      "title_ar": null,
+      "alternative_names": [
+        "Colossal Statue of a Ptolemaic Queen",
+        "Ptolemaic Royal Female Colossus"
+      ],
+      "historical_period": "Ptolemaic Period",
+      "dynasty": "Ptolemaic Dynasty",
+      "date_display": "c. 305–30 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": "Unknown Ptolemaic Queen",
+        "associated_pharaoh": null
+      },
+      "associated_deity": null,
+      "material": "Granite",
+      "locations": {
+        "original": "Possibly Alexandria or a major temple complex in Egypt",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Alexandria",
+          "Grand Egyptian Museum",
+          "Ptolemaic Egypt"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_003_colossus_of_ptolemaic_queen.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Colossus of a Ptolemaic Queen",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "The Colossus of a Ptolemaic Queen was created during the Ptolemaic Period, when Egypt was ruled by descendants of Alexander the Great.",
+        "historical_background": "The Colossus of a Ptolemaic Queen was created during the Ptolemaic Period, when Egypt was ruled by descendants of Alexander the Great. Queens of the Ptolemaic Dynasty held exceptional political and religious importance, often appearing beside kings in temples and monumental sculptures. Although the dynasty was of Greek origin, royal women were represented according to ancient Egyptian artistic traditions. Through statues like this one, Ptolemaic queens presented themselves as divine protectors of Egypt and heirs to the legacy of earlier Egyptian queens and goddesses.",
+        "historical_significance": "The statue demonstrates how Ptolemaic rulers adopted Egyptian religious and artistic traditions to strengthen their rule. It also highlights the prominent status of royal women during the Hellenistic period in Egypt. The monument reflects the cultural fusion that defined the final centuries of ancient Egyptian civilization before the Roman conquest.",
+        "symbolism": [
+          "The colossal form symbolized divine and royal authority.",
+          "The traditional Egyptian style reinforced legitimacy and continuity.",
+          "The queen’s image connected her with goddesses such as Isis.",
+          "The monument represented stability during a culturally mixed era."
+        ],
+        "important_facts": [
+          "Ptolemaic queens often played major political and religious roles.",
+          "Royal women in the Ptolemaic Dynasty were frequently associated with Egyptian goddesses.",
+          "The Ptolemaic Period blended Greek and Egyptian artistic traditions.",
+          "Monumental statues were used to reinforce royal legitimacy.",
+          "Cleopatra VII became the most famous queen of the dynasty."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "This enormous statue once stood as a symbol of royal authority in an Egypt shaped by both Greek and Egyptian worlds. The queen represented here was not simply a royal wife — she was part of a dynasty that understood the power of image, tradition, and religion. To the people of ancient Egypt, her colossal form linked her to powerful goddesses such as Isis and Hathor. The carefully carved features, traditional royal pose, and monumental scale were designed to inspire awe among temple visitors and citizens alike. In an age of political change and foreign rule, statues like this reminded Egypt that its ancient traditions and sacred symbols still endured."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "ptolemaic_egypt",
+        "religion_ritual",
+        "monuments_sculpture"
+      ],
+      "tags": [
+        "ptolemaic-period",
+        "ptolemaic-dynasty",
+        "granite",
+        "unknown-ptolemaic-queen",
+        "alexandria",
+        "grand-egyptian-museum",
+        "ptolemaic-egypt",
+        "royal_power",
+        "ptolemaic_egypt",
+        "religion_ritual",
+        "monuments_sculpture"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Colossus of a Ptolemaic Queen",
+        "Ptolemaic Period",
+        "Ptolemaic Dynasty",
+        "Unknown Ptolemaic Queen",
+        "Colossal Statue of a Ptolemaic Queen",
+        "Ptolemaic Royal Female Colossus"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_003",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_004",
+      "title_en": "Column of King Merenptah",
+      "title_ar": null,
+      "alternative_names": [
+        "Column of Pharaoh Merenptah",
+        "Merenptah Royal Column"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "19th Dynasty",
+      "date_display": "c. 1213–1203 BCE",
+      "ruler": {
+        "pharaoh": "Merenptah",
+        "queen": null,
+        "associated_pharaoh": null
+      },
+      "associated_deity": null,
+      "material": "Stone",
+      "locations": {
+        "original": "Ancient Memphis, Egypt",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Memphis",
+          "Grand Egyptian Museum",
+          "New Kingdom Egypt"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_004_column_of_king_merenptah.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Column of King Merenptah",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "This column was created during the reign of King Merenptah, the son and successor of Ramesses II.",
+        "historical_background": "This column was created during the reign of King Merenptah, the son and successor of Ramesses II. Merenptah inherited one of the most powerful empires in Egyptian history during the late New Kingdom. Architectural columns like this were essential elements of Egyptian temples and royal buildings, supporting massive stone structures while also serving as surfaces for inscriptions and decoration. Royal columns frequently carried the king’s names and titles, reinforcing his authority and connection to the gods within sacred spaces.",
+        "historical_significance": "The column represents the monumental architectural traditions of the New Kingdom, a period when Egypt reached the height of its imperial power. It also reflects the continuation of royal building programs after the reign of Ramesses II. Surviving architectural fragments such as this provide valuable insight into the scale, design, and symbolism of ancient Egyptian temples and ceremonial spaces.",
+        "symbolism": [
+          "Columns symbolized strength and permanence.",
+          "Royal inscriptions reinforced the king’s divine authority.",
+          "Temple architecture reflected cosmic order and harmony.",
+          "The monument connected the pharaoh to the gods worshipped in the temple."
+        ],
+        "important_facts": [
+          "Merenptah was the son of Ramesses II.",
+          "He ruled during the later years of the New Kingdom.",
+          "Ancient Egyptian columns often contained royal inscriptions and decorative carvings.",
+          "Columns played both structural and ceremonial roles in temples.",
+          "Memphis remained an important political and religious center during Merenptah’s reign."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "At first glance, this may seem like a simple architectural element, but in ancient Egypt, even a column carried royal power. This column once stood inside a grand structure built during the reign of King Merenptah, son of the legendary Ramesses the Great. Imagine walking through a temple hall lined with towering columns covered in royal names and sacred symbols. Sunlight would have filtered between them, illuminating carvings that reminded every visitor of the king’s divine authority. To ancient Egyptians, architecture was more than construction — it was a statement of order, stability, and eternal rule. This column is one surviving fragment of that monumental world."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "religion_ritual",
+        "monuments_sculpture"
+      ],
+      "tags": [
+        "new-kingdom",
+        "19th-dynasty",
+        "stone",
+        "merenptah",
+        "memphis",
+        "grand-egyptian-museum",
+        "new-kingdom-egypt",
+        "royal_power",
+        "religion_ritual",
+        "monuments_sculpture"
+      ],
+      "photo_spot": false,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Column of King Merenptah",
+        "New Kingdom",
+        "19th Dynasty",
+        "Merenptah",
+        "Column of Pharaoh Merenptah",
+        "Merenptah Royal Column"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_004",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_005",
+      "title_en": "Seated Statue of Senwosret I",
+      "title_ar": null,
+      "alternative_names": [
+        "Seated Statue of Senusret I",
+        "Enthroned Statue of Senwosret I"
+      ],
+      "historical_period": "Middle Kingdom",
+      "dynasty": "12th Dynasty",
+      "date_display": "c. 1971–1926 BCE",
+      "ruler": {
+        "pharaoh": "Senwosret I",
+        "queen": null,
+        "associated_pharaoh": null
+      },
+      "associated_deity": null,
+      "material": "Limestone",
+      "locations": {
+        "original": "Temple complex at Lisht, Egypt",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Lisht",
+          "Grand Egyptian Museum",
+          "Middle Kingdom Egypt"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_005_seated_statue_of_senwosret_i.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Seated Statue of Senwosret I",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "The Seated Statue of Senwosret I was created during the Middle Kingdom, a period often considered one of the great classical ages of ancient Egyptian civilization.",
+        "historical_background": "The Seated Statue of Senwosret I was created during the Middle Kingdom, a period often considered one of the great classical ages of ancient Egyptian civilization. Senwosret I was one of the most important rulers of the 12th Dynasty and played a major role in strengthening Egypt’s political stability, religious influence, and architectural development. Royal seated statues were commonly placed inside temples and ceremonial spaces to present the king as an eternal ruler who maintained order and harmony throughout the kingdom.",
+        "historical_significance": "The statue reflects the artistic and political achievements of the Middle Kingdom, a time marked by centralized authority, cultural growth, and major architectural projects. It demonstrates how royal sculpture was used to communicate stability, sacred kingship, and continuity. The work also highlights the refined artistic style that became characteristic of Middle Kingdom royal portraiture.",
+        "symbolism": [
+          "The seated pose symbolized stability and eternal authority.",
+          "The throne represented legitimate kingship over Egypt.",
+          "The idealized features reflected divine perfection and eternal youth.",
+          "The statue reinforced the pharaoh’s role as protector of cosmic order."
+        ],
+        "important_facts": [
+          "Senwosret I was one of the strongest rulers of the Middle Kingdom.",
+          "He expanded temple construction throughout Egypt.",
+          "The Middle Kingdom is often called a classical period of Egyptian culture.",
+          "Royal seated statues were designed to preserve the king’s presence for eternity.",
+          "Lisht became an important royal and religious center during the 12th Dynasty."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "Seated calmly upon his throne, Senwosret I appears timeless — a king carved not only to rule Egypt in life, but to rule forever in memory. More than four thousand years ago, visitors entering his temples would have stood before statues like this one in silence and awe. The pharaoh’s posture was deliberate: composed, balanced, and unshaken. In ancient Egyptian belief, the king was responsible for maintaining ma’at — the sacred order of the universe. Every detail of the sculpture, from the throne to the expression on his face, reflected control, wisdom, and divine authority. Though centuries have passed, the statue still carries the quiet power of one of the Middle Kingdom’s greatest rulers."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": 2,
+      "themes": [
+        "royal_power",
+        "religion_ritual",
+        "monuments_sculpture",
+        "family_highlights"
+      ],
+      "tags": [
+        "middle-kingdom",
+        "12th-dynasty",
+        "limestone",
+        "senwosret-i",
+        "lisht",
+        "grand-egyptian-museum",
+        "middle-kingdom-egypt",
+        "royal_power",
+        "religion_ritual",
+        "monuments_sculpture",
+        "family_highlights"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 7,
+      "search_terms": [
+        "Seated Statue of Senwosret I",
+        "Middle Kingdom",
+        "12th Dynasty",
+        "Senwosret I",
+        "Seated Statue of Senusret I",
+        "Enthroned Statue of Senwosret I"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_005",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_006",
+      "title_en": "Anubis on a Chest",
+      "title_ar": null,
+      "alternative_names": [
+        "Shrine of Anubis",
+        "Anubis Shrine from the Tomb of Tutankhamun"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1332–1323 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": "Tutankhamun"
+      },
+      "associated_deity": null,
+      "material": "Wood, gold leaf, plaster, and linen",
+      "locations": {
+        "original": "Tomb of Tutankhamun, Valley of the Kings, Thebes",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Valley of the Kings",
+          "Thebes",
+          "Tomb of Tutankhamun",
+          "Grand Egyptian Museum"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_006_anubis_on_a_chest.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Anubis on a Chest",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "This famous funerary object was discovered inside the tomb of Tutankhamun by archaeologist Howard Carter in 1922.",
+        "historical_background": "This famous funerary object was discovered inside the tomb of Tutankhamun by archaeologist Howard Carter in 1922. It features the god Anubis in the form of a black jackal lying protectively on top of a shrine-like chest. In ancient Egyptian religion, Anubis was the god of mummification, embalming, and the protection of the dead. Objects connected to Anubis were commonly placed inside royal tombs to guard the deceased king during his journey into the afterlife. The artifact reflects the strong belief Egyptians held in resurrection, divine protection, and eternal life.",
+        "historical_significance": "The artifact provides important insight into ancient Egyptian funerary beliefs and royal burial practices during the New Kingdom. It demonstrates the central role of religion in preparing the dead for the afterlife and highlights the artistic craftsmanship achieved during Tutankhamun’s reign. The discovery of this object helped the modern world better understand the spiritual symbolism and protective rituals associated with royal tombs.",
+        "symbolism": [
+          "Anubis symbolized protection of the dead and safe passage into the afterlife.",
+          "The black color represented rebirth, fertility, and resurrection.",
+          "The chest beneath Anubis symbolized sacred funerary protection.",
+          "The jackal form reflected the animal associated with cemeteries and burial grounds."
+        ],
+        "important_facts": [
+          "The artifact was discovered in Tutankhamun’s tomb in 1922.",
+          "Anubis was one of the most important funerary gods in ancient Egypt.",
+          "The object was found near the treasury chamber of the tomb.",
+          "The black jackal figure was carefully wrapped in linen when discovered.",
+          "Tutankhamun’s tomb remains one of the most complete royal tomb discoveries in history."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "Hidden for more than three thousand years inside the tomb of Tutankhamun, this mysterious figure once stood guard over the treasures of a young king. The black jackal resting silently above the chest is Anubis — the ancient god of embalming and protector of the dead. To the ancient Egyptians, death was not the end, but the beginning of a dangerous journey into eternity. Anubis guided souls through the underworld and watched over sacred tombs against danger and disturbance. Imagine entering the dark burial chamber by torchlight and seeing these golden eyes staring back from the shadows. For the Egyptians, this was not merely a statue. It was a divine guardian protecting the king for all eternity."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": 4,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "monuments_sculpture",
+        "family_highlights"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "wood-gold-leaf-plaster-and-linen",
+        "tutankhamun",
+        "valley-of-the-kings",
+        "thebes",
+        "tomb-of-tutankhamun",
+        "grand-egyptian-museum",
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "monuments_sculpture",
+        "family_highlights"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 7,
+      "search_terms": [
+        "Anubis on a Chest",
+        "New Kingdom",
+        "18th Dynasty",
+        "Tutankhamun",
+        "Shrine of Anubis",
+        "Anubis Shrine from the Tomb of Tutankhamun"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_006",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_007",
+      "title_en": "Canopic Chest of Tutankhamun",
+      "title_ar": null,
+      "alternative_names": [
+        "Tutankhamun Canopic Shrine",
+        "Canopic Shrine of King Tutankhamun"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1332–1323 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": "Tutankhamun"
+      },
+      "associated_deity": null,
+      "material": "Calcite, gold, wood, and glass inlay",
+      "locations": {
+        "original": "Tomb of Tutankhamun, Valley of the Kings, Thebes",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Valley of the Kings",
+          "Thebes",
+          "Tomb of Tutankhamun",
+          "Grand Egyptian Museum"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_007_canopic_chest_of_tutankhamun.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Canopic Chest of Tutankhamun",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "The Canopic Chest of Tutankhamun was created to store the king’s mummified internal organs after the embalming process.",
+        "historical_background": "The Canopic Chest of Tutankhamun was created to store the king’s mummified internal organs after the embalming process. In ancient Egyptian burial traditions, organs such as the liver, lungs, stomach, and intestines were carefully preserved because they were believed to be necessary for rebirth in the afterlife. The chest was placed inside Tutankhamun’s tomb and protected by elaborate shrines and divine figures. Its craftsmanship reflects the extraordinary wealth, religious devotion, and artistic skill of the royal workshops of the 18th Dynasty.",
+        "historical_significance": "The canopic chest provides valuable insight into ancient Egyptian funerary practices and beliefs about resurrection and eternal life. It demonstrates the advanced embalming traditions of the New Kingdom and the importance of religious symbolism in royal burials. The artifact also reflects the exceptional artistry and craftsmanship achieved during the reign of Tutankhamun.",
+        "symbolism": [
+          "The chest symbolized protection and rebirth in the afterlife.",
+          "Preserved organs represented the completeness of the king’s body for eternity.",
+          "Protective goddesses carved on the shrine symbolized divine guardianship.",
+          "The luxurious materials reflected royal status and sacred importance."
+        ],
+        "important_facts": [
+          "The chest was discovered in Tutankhamun’s tomb in 1922 by Howard Carter.",
+          "It contained containers for the king’s embalmed internal organs.",
+          "Canopic preservation was an essential part of Egyptian mummification rituals.",
+          "The artifact was protected inside a large gilded shrine.",
+          "Tutankhamun’s burial treasures remain among the most important archaeological discoveries in history."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "Deep within the burial chambers of Tutankhamun rested one of the most sacred objects of the young king’s tomb — the canopic chest that guarded his preserved organs for eternity. To the ancient Egyptians, survival after death required more than a preserved body. Every essential part of the king had to be protected through magic, ritual, and divine care. The chest was treated almost like a sacred sanctuary. Surrounded by protective goddesses and sealed within layers of shrines, it represented the Egyptians’ determination to defeat death itself. More than three thousand years later, this object still carries the silence and mystery of the royal tomb where it once stood untouched."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "calcite-gold-wood-and-glass-inlay",
+        "tutankhamun",
+        "valley-of-the-kings",
+        "thebes",
+        "tomb-of-tutankhamun",
+        "grand-egyptian-museum",
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Canopic Chest of Tutankhamun",
+        "New Kingdom",
+        "18th Dynasty",
+        "Tutankhamun",
+        "Tutankhamun Canopic Shrine",
+        "Canopic Shrine of King Tutankhamun"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_007",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_008",
+      "title_en": "Canopic Coffinette of Tutankhamun",
+      "title_ar": null,
+      "alternative_names": [
+        "Tutankhamun Canopic Coffinette",
+        "Miniature Canopic Coffin of Tutankhamun"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1332–1323 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": "Tutankhamun"
+      },
+      "associated_deity": null,
+      "material": "Gold, wood, glass, and semi-precious stone inlay",
+      "locations": {
+        "original": "Tomb of Tutankhamun, Valley of the Kings, Thebes",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Valley of the Kings",
+          "Thebes",
+          "Tomb of Tutankhamun",
+          "Grand Egyptian Museum"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_008_canopic_coffinette_of_tutankhamun.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Canopic Coffinette of Tutankhamun",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "The Canopic Coffinettes of Tutankhamun were small coffin-shaped containers created to hold the king’s preserved internal organs after mummification.",
+        "historical_background": "The Canopic Coffinettes of Tutankhamun were small coffin-shaped containers created to hold the king’s preserved internal organs after mummification. Ancient Egyptian embalmers removed and carefully protected specific organs because they believed the body needed to remain complete for rebirth in the afterlife. Each coffinette was placed inside the king’s canopic chest and crafted with extraordinary detail, reflecting both religious importance and royal status. The coffinettes were made in the image of Tutankhamun himself, transforming even the preserved organs into sacred royal entities protected for eternity.",
+        "historical_significance": "The canopic coffinettes provide important evidence of ancient Egyptian funerary beliefs and the advanced mummification practices of the New Kingdom. They demonstrate the deep religious significance attached to bodily preservation and the extraordinary artistic skill of royal craftsmen during Tutankhamun’s reign. The objects also help modern historians understand the complexity of royal burial rituals and concepts of eternal life in ancient Egypt.",
+        "symbolism": [
+          "The coffin shape symbolized rebirth and eternal protection.",
+          "The king’s likeness reinforced the sacred identity of the preserved organs.",
+          "Gold represented divine flesh and eternal existence.",
+          "The coffinettes reflected the belief that every part of the body was necessary in the afterlife."
+        ],
+        "important_facts": [
+          "The coffinettes were discovered inside Tutankhamun’s tomb in 1922.",
+          "Each coffinette held one of the king’s embalmed internal organs.",
+          "They were stored inside the larger canopic chest.",
+          "Gold was widely associated with the gods and immortality in ancient Egypt.",
+          "Tutankhamun’s funerary treasures are among the finest surviving examples of New Kingdom craftsmanship."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "These miniature golden coffins once held parts of a king prepared for eternal life. Though small in size, the canopic coffinettes carried enormous spiritual importance in ancient Egypt. To the Egyptians, death was a journey that demanded perfect preparation. Every organ removed during mummification had to be protected with magic, ritual, and divine care. Crafted in the likeness of Tutankhamun, each coffinette became a symbolic extension of the young pharaoh himself. Hidden for centuries inside the sealed tomb, these delicate objects reveal the extraordinary lengths ancient Egyptians went to in their attempt to conquer death and secure immortality."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "gold-wood-glass-and-semi-precious-stone-inlay",
+        "tutankhamun",
+        "valley-of-the-kings",
+        "thebes",
+        "tomb-of-tutankhamun",
+        "grand-egyptian-museum",
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Canopic Coffinette of Tutankhamun",
+        "New Kingdom",
+        "18th Dynasty",
+        "Tutankhamun",
+        "Tutankhamun Canopic Coffinette",
+        "Miniature Canopic Coffin of Tutankhamun"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_008",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_009",
+      "title_en": "Canopic Coffinette of Tutankhamun – Isis",
+      "title_ar": null,
+      "alternative_names": [
+        "Tutankhamun Canopic Coffinette of Isis",
+        "Canopic Coffinette Protected by Isis"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1332–1323 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": "Tutankhamun"
+      },
+      "associated_deity": null,
+      "material": "Gold, wood, glass, and semi-precious stone inlay",
+      "locations": {
+        "original": "Tomb of Tutankhamun, Valley of the Kings, Thebes",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Valley of the Kings",
+          "Thebes",
+          "Tomb of Tutankhamun",
+          "Grand Egyptian Museum"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": null,
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Canopic Coffinette of Tutankhamun – Isis",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "This canopic coffinette was one of the sacred containers created to preserve the internal organs of Tutankhamun during the mummification process.",
+        "historical_background": "This canopic coffinette was one of the sacred containers created to preserve the internal organs of Tutankhamun during the mummification process. It was associated with the goddess Isis, one of the most important deities in ancient Egyptian religion. Isis was considered the divine protector of kings, motherhood, healing, and resurrection. In Egyptian funerary belief, each preserved organ was placed under the protection of specific gods and goddesses to ensure the king’s rebirth and safe passage into the afterlife.",
+        "historical_significance": "The coffinette highlights the deep connection between religion, kingship, and funerary ritual in ancient Egypt. It provides valuable insight into the spiritual role of protective deities during mummification and burial ceremonies. The artifact also reflects the artistic sophistication and religious symbolism that characterized Tutankhamun’s funerary treasures.",
+        "symbolism": [
+          "Isis symbolized protection, healing, and resurrection.",
+          "Gold represented divine eternity and the flesh of the gods.",
+          "The coffinette shape symbolized rebirth and preservation.",
+          "The object reflected the sacred preparation required for the afterlife."
+        ],
+        "important_facts": [
+          "The coffinette was discovered inside Tutankhamun’s tomb in 1922.",
+          "It formed part of the king’s canopic burial equipment.",
+          "Isis was one of the most revered goddesses in ancient Egypt.",
+          "Canopic coffinettes were designed to protect embalmed organs for eternity.",
+          "The artifact demonstrates the extraordinary craftsmanship of New Kingdom royal workshops."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "More than three thousand years ago, ancient Egyptian priests prepared the young king Tutankhamun for eternity. Hidden deep within his tomb was this small but sacred golden coffinette, protected by the powerful goddess Isis. To the Egyptians, Isis was more than a goddess — she was the divine mother, healer, and guardian of resurrection itself. Her magic was believed to protect the dead king from danger in the underworld and guide him toward eternal life. Though delicate in size, this object carried immense spiritual meaning. Every detail, every layer of gold, and every sacred symbol reflected the Egyptian belief that immortality could be achieved through divine protection and ritual perfection."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "gold-wood-glass-and-semi-precious-stone-inlay",
+        "tutankhamun",
+        "valley-of-the-kings",
+        "thebes",
+        "tomb-of-tutankhamun",
+        "grand-egyptian-museum",
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Canopic Coffinette of Tutankhamun – Isis",
+        "New Kingdom",
+        "18th Dynasty",
+        "Tutankhamun",
+        "Tutankhamun Canopic Coffinette of Isis",
+        "Canopic Coffinette Protected by Isis"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_009",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_010",
+      "title_en": "Canopic Coffinette of Tutankhamun – Selket",
+      "title_ar": null,
+      "alternative_names": [
+        "Tutankhamun Canopic Coffinette of Selket",
+        "Canopic Coffinette Protected by Selket"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1332–1323 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": "Tutankhamun"
+      },
+      "associated_deity": null,
+      "material": "Gold, wood, glass, and semi-precious stone inlay",
+      "locations": {
+        "original": "Tomb of Tutankhamun, Valley of the Kings, Thebes",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Valley of the Kings",
+          "Thebes",
+          "Tomb of Tutankhamun",
+          "Grand Egyptian Museum"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": null,
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Canopic Coffinette of Tutankhamun – Selket",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "This canopic coffinette belonged to the funerary equipment of Tutankhamun and was designed to preserve one of the king’s embalmed internal organs during his journey to the afterlife.",
+        "historical_background": "This canopic coffinette belonged to the funerary equipment of Tutankhamun and was designed to preserve one of the king’s embalmed internal organs during his journey to the afterlife. The coffinette was associated with the goddess Selket, also known as Serqet, a protective deity linked to healing, magic, and safeguarding the dead. In ancient Egyptian funerary traditions, divine protection played a central role in ensuring successful rebirth after death. Each canopic container was placed under the guardianship of specific deities who defended the king against spiritual danger in the underworld.",
+        "historical_significance": "The coffinette provides insight into ancient Egyptian concepts of death, protection, and resurrection. It highlights the role of protective deities in royal funerary rituals and reflects the highly developed spiritual traditions of the New Kingdom. The artifact also stands as an example of the exceptional craftsmanship and symbolism present in Tutankhamun’s burial treasures.",
+        "symbolism": [
+          "Selket symbolized magical protection and healing.",
+          "The coffinette represented preservation and rebirth.",
+          "Gold symbolized immortality and divine existence.",
+          "The sacred container reflected the Egyptians’ belief in eternal life."
+        ],
+        "important_facts": [
+          "The coffinette was discovered in Tutankhamun’s tomb in 1922.",
+          "Selket was associated with protection against danger and venom.",
+          "Canopic coffinettes held the king’s preserved internal organs.",
+          "The object formed part of Tutankhamun’s elaborate funerary equipment.",
+          "The artifact demonstrates the religious importance of divine guardianship in Egyptian burial practices."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "Inside the hidden chambers of Tutankhamun’s tomb rested sacred objects created not for the world of the living, but for eternity. This golden coffinette was entrusted to the protection of Selket, the scorpion goddess feared and respected for her magical power. To the ancient Egyptians, the afterlife was filled with dangers that threatened the soul of the deceased king. Selket’s role was to stand guard, using her divine protection to shield Tutankhamun on his journey through the underworld. Though small enough to fit within a larger canopic chest, the coffinette carried enormous spiritual significance. It reflects a civilization that believed survival after death depended upon ritual, magic, and the protection of powerful gods."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "gold-wood-glass-and-semi-precious-stone-inlay",
+        "tutankhamun",
+        "valley-of-the-kings",
+        "thebes",
+        "tomb-of-tutankhamun",
+        "grand-egyptian-museum",
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Canopic Coffinette of Tutankhamun – Selket",
+        "New Kingdom",
+        "18th Dynasty",
+        "Tutankhamun",
+        "Tutankhamun Canopic Coffinette of Selket",
+        "Canopic Coffinette Protected by Selket"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_010",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_011",
+      "title_en": "Canopic Coffinette of Tutankhamun – Neith",
+      "title_ar": null,
+      "alternative_names": [
+        "Tutankhamun Canopic Coffinette of Neith",
+        "Canopic Coffinette Protected by Neith"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1332–1323 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": "Tutankhamun"
+      },
+      "associated_deity": null,
+      "material": "Gold, wood, glass, and semi-precious stone inlay",
+      "locations": {
+        "original": "Tomb of Tutankhamun, Valley of the Kings, Thebes",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Valley of the Kings",
+          "Thebes",
+          "Tomb of Tutankhamun",
+          "Grand Egyptian Museum"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": null,
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Canopic Coffinette of Tutankhamun – Neith",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "This canopic coffinette was created as part of the funerary equipment of King Tutankhamun during the 18th Dynasty of the New Kingdom.",
+        "historical_background": "This canopic coffinette was created as part of the funerary equipment of King Tutankhamun during the 18th Dynasty of the New Kingdom. It was associated with the goddess Neith, one of the oldest and most powerful deities in ancient Egyptian religion. Neith was linked to war, protection, wisdom, and creation, and she played an important role in funerary traditions as a guardian of the deceased. Ancient Egyptians believed that preserving the king’s organs and placing them under divine protection was essential for achieving rebirth and eternal life in the afterworld.",
+        "historical_significance": "The artifact highlights the central role of religion and divine protection in ancient Egyptian funerary beliefs. It demonstrates the advanced craftsmanship and symbolic richness of royal burial equipment during the New Kingdom. The coffinette also provides historians with valuable evidence about the relationship between protective deities, mummification practices, and concepts of eternal life in ancient Egypt.",
+        "symbolism": [
+          "Neith symbolized protection, wisdom, and divine guardianship.",
+          "The coffinette represented preservation for eternal rebirth.",
+          "Gold symbolized immortality and divine perfection.",
+          "The object reflected the sacred rituals of mummification and afterlife preparation."
+        ],
+        "important_facts": [
+          "The coffinette was discovered in Tutankhamun’s tomb in 1922.",
+          "Neith was one of the most ancient goddesses in Egyptian mythology.",
+          "The coffinette formed part of the king’s canopic burial equipment.",
+          "Canopic coffinettes protected embalmed organs during the afterlife journey.",
+          "Tutankhamun’s funerary treasures provide major insight into New Kingdom burial practices."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "Within the hidden treasures of Tutankhamun’s tomb rested this sacred golden coffinette, watched over by the ancient goddess Neith. Revered as both a warrior and protector, Neith was believed to guard the king against the dangers of the underworld. To the ancient Egyptians, death was not an ending but a transformation that required careful preparation and divine support. Every preserved organ, every sacred ritual, and every protective deity played a role in ensuring the king’s rebirth. Though small in size, this coffinette carried the weight of eternity. It reflects a civilization that devoted extraordinary skill, wealth, and spiritual belief to conquering death itself."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "gold-wood-glass-and-semi-precious-stone-inlay",
+        "tutankhamun",
+        "valley-of-the-kings",
+        "thebes",
+        "tomb-of-tutankhamun",
+        "grand-egyptian-museum",
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Canopic Coffinette of Tutankhamun – Neith",
+        "New Kingdom",
+        "18th Dynasty",
+        "Tutankhamun",
+        "Tutankhamun Canopic Coffinette of Neith",
+        "Canopic Coffinette Protected by Neith"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_011",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_012",
+      "title_en": "Canopic Shrine on a Sledge",
+      "title_ar": null,
+      "alternative_names": [
+        "Tutankhamun Canopic Shrine",
+        "Canopic Shrine Mounted on a Sledge"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1332–1323 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": "Tutankhamun"
+      },
+      "associated_deity": null,
+      "material": "Wood, gold leaf, plaster, and glass inlay",
+      "locations": {
+        "original": "Tomb of Tutankhamun, Valley of the Kings, Thebes",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Valley of the Kings",
+          "Thebes",
+          "Tomb of Tutankhamun",
+          "Grand Egyptian Museum"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_012_canopic_shrine_on_a_sledge.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Canopic Shrine on a Sledge",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "The Canopic Shrine on a Sledge was one of the most sacred funerary objects placed inside the tomb of Tutankhamun.",
+        "historical_background": "The Canopic Shrine on a Sledge was one of the most sacred funerary objects placed inside the tomb of Tutankhamun. It was designed to protect the king’s canopic chest, which contained his preserved internal organs after mummification. The shrine stood upon a ceremonial sledge, a symbolic platform often used in religious processions and funerary rituals. Decorated with protective deities and covered in gold, the shrine reflected the Egyptians’ belief that divine protection was essential for the king’s successful journey into the afterlife.",
+        "historical_significance": "The artifact provides important evidence about royal burial customs and religious beliefs during the New Kingdom. It demonstrates the Egyptians’ advanced craftsmanship, spiritual symbolism, and complex funerary traditions. The shrine also highlights the extraordinary care devoted to protecting the king’s body and soul for eternal life.",
+        "symbolism": [
+          "The shrine symbolized divine protection and sacred preservation.",
+          "The sledge represented ritual movement and funerary ceremonies.",
+          "Gold symbolized immortality and the eternal nature of the gods.",
+          "Protective deities on the shrine guarded the king in the afterlife."
+        ],
+        "important_facts": [
+          "The shrine was discovered in Tutankhamun’s tomb in 1922.",
+          "It protected the king’s canopic chest and preserved organs.",
+          "The shrine was decorated with figures of protective goddesses.",
+          "Ceremonial sledges were commonly associated with religious rituals in ancient Egypt.",
+          "The object is considered one of the masterpieces of Tutankhamun’s funerary treasures."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "Hidden deep within the burial chambers of Tutankhamun stood a golden shrine unlike any ordinary container. Resting upon a ceremonial sledge, this sacred structure protected the young king’s canopic chest — one of the most important elements of his preparation for eternity. To the ancient Egyptians, the afterlife was a dangerous journey filled with spiritual threats. Every layer of protection mattered. The shrine was covered with sacred symbols and guarded by powerful goddesses whose outstretched arms defended the king forever. Even the sledge beneath it carried meaning, reminding ancient viewers of the ritual processions that accompanied royal burials. More than three thousand years later, the shrine still reflects the mystery, wealth, and spiritual devotion surrounding the burial of Tutankhamun."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "wood-gold-leaf-plaster-and-glass-inlay",
+        "tutankhamun",
+        "valley-of-the-kings",
+        "thebes",
+        "tomb-of-tutankhamun",
+        "grand-egyptian-museum",
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Canopic Shrine on a Sledge",
+        "New Kingdom",
+        "18th Dynasty",
+        "Tutankhamun",
+        "Tutankhamun Canopic Shrine",
+        "Canopic Shrine Mounted on a Sledge"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_012",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_013",
+      "title_en": "Cow Head",
+      "title_ar": null,
+      "alternative_names": [
+        "Head of the Sacred Cow",
+        "Cow Head of Hathor"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1550–1292 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": null
+      },
+      "associated_deity": null,
+      "material": "Wood covered with gold leaf and plaster",
+      "locations": {
+        "original": "Possibly from a royal or temple context in Thebes, Egypt",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Thebes",
+          "Grand Egyptian Museum",
+          "New Kingdom Egypt"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_013_cow_head.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Cow Head",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "The Cow Head is associated with Hathor, one of the most beloved goddesses in ancient Egyptian religion.",
+        "historical_background": "The Cow Head is associated with Hathor, one of the most beloved goddesses in ancient Egyptian religion. Hathor was commonly represented in the form of a cow or a woman with cow horns and was linked to motherhood, music, joy, protection, and the afterlife. Sacred cow imagery played an important role in temple rituals and funerary beliefs. During the New Kingdom, representations of Hathor frequently appeared in royal tombs and religious spaces to symbolize divine care and rebirth.",
+        "historical_significance": "The Cow Head highlights the importance of religious symbolism and divine imagery in ancient Egyptian culture. It demonstrates how gods and goddesses were represented through sacred animals and reflects the spiritual beliefs surrounding protection, rebirth, and the afterlife. The object also provides insight into the artistic and ceremonial traditions of the New Kingdom.",
+        "symbolism": [
+          "The cow represented Hathor, goddess of motherhood and protection.",
+          "Gold symbolized divinity and eternal existence.",
+          "The calm facial features reflected nurturing and sacred care.",
+          "The artifact symbolized rebirth and guidance into the afterlife."
+        ],
+        "important_facts": [
+          "Hathor was one of the most widely worshipped goddesses in ancient Egypt.",
+          "She was closely connected to music, joy, motherhood, and the afterlife.",
+          "Cow imagery appeared frequently in temples and royal tombs.",
+          "Sacred animal symbolism was central to Egyptian religion.",
+          "The artifact reflects the refined decorative arts of the New Kingdom."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "To the ancient Egyptians, the cow was far more than an ordinary animal. It was the sacred form of Hathor — goddess of love, music, motherhood, and protection. This beautifully crafted cow head once stood as a symbol of divine comfort and care. Imagine entering a temple illuminated by torchlight, where golden surfaces reflected the glow of sacred rituals. The calm expression of the cow was meant to reassure worshippers and remind them of Hathor’s protective presence. In funerary beliefs, she welcomed the dead into the afterlife and offered nourishment to the soul. Though centuries have passed, this sacred image still carries the gentle power of one of Egypt’s most enduring goddesses."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "family_highlights"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "wood-covered-with-gold-leaf-and-plaster",
+        "thebes",
+        "grand-egyptian-museum",
+        "new-kingdom-egypt",
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "family_highlights"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Cow Head",
+        "New Kingdom",
+        "18th Dynasty",
+        "Head of the Sacred Cow",
+        "Cow Head of Hathor"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_013",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_014",
+      "title_en": "Duck Head Earrings",
+      "title_ar": null,
+      "alternative_names": [
+        "Duck-Shaped Earrings",
+        "Waterfowl Head Earrings"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1550–1292 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": null
+      },
+      "associated_deity": null,
+      "material": "Gold and semi-precious stone inlay",
+      "locations": {
+        "original": "Ancient Egypt",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Grand Egyptian Museum",
+          "New Kingdom Egypt",
+          "Nile Valley"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_014_duck_head_earrings.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Duck Head Earrings",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "These elegant earrings were crafted during the New Kingdom, a period known for artistic refinement, wealth, and luxury in ancient Egypt.",
+        "historical_background": "These elegant earrings were crafted during the New Kingdom, a period known for artistic refinement, wealth, and luxury in ancient Egypt. Jewelry held great importance in Egyptian society and was worn not only for beauty, but also for status, religious symbolism, and protection. Animal-inspired designs were especially popular because Egyptians believed animals carried symbolic meanings connected to nature, fertility, and divine power. Ducks and waterfowl frequently appeared in Egyptian art due to the close relationship between the Nile River and daily life.",
+        "historical_significance": "The earrings provide insight into the luxury arts and daily life of ancient Egypt during the New Kingdom. They demonstrate the exceptional skill of Egyptian goldsmiths and highlight the cultural importance of jewelry as both adornment and symbolic expression. The artifact also reflects the Egyptians’ deep connection to nature and the environment surrounding the Nile.",
+        "symbolism": [
+          "Ducks symbolized life connected to the Nile and natural abundance.",
+          "Gold represented wealth, divinity, and eternal beauty.",
+          "Animal-inspired jewelry reflected harmony between humans and nature.",
+          "Jewelry served both decorative and protective purposes in Egyptian society."
+        ],
+        "important_facts": [
+          "Jewelry was widely worn by both men and women in ancient Egypt.",
+          "The New Kingdom was a golden age of luxury craftsmanship.",
+          "Animal motifs were common in Egyptian decorative arts.",
+          "Gold was highly valued because it did not tarnish and symbolized eternity.",
+          "The Nile River strongly influenced Egyptian art and symbolism."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "More than three thousand years ago, these delicate golden earrings may have belonged to a noblewoman, a royal figure, or perhaps even someone connected to the palace itself. Shaped like duck heads, they reflect the Egyptian fascination with nature and the life-giving Nile River. To the ancient Egyptians, water birds symbolized abundance, renewal, and the rhythm of life along the riverbanks. Imagine the earrings catching sunlight during a festival or religious ceremony, their polished gold shining against colorful linen garments. Though small in size, objects like these reveal the elegance, craftsmanship, and artistic imagination that filled the world of ancient Egypt."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "treasures_craftsmanship",
+        "family_highlights"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "gold-and-semi-precious-stone-inlay",
+        "grand-egyptian-museum",
+        "new-kingdom-egypt",
+        "nile-valley",
+        "royal_power",
+        "treasures_craftsmanship",
+        "family_highlights"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Duck Head Earrings",
+        "New Kingdom",
+        "18th Dynasty",
+        "Duck-Shaped Earrings",
+        "Waterfowl Head Earrings"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_014",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_015",
+      "title_en": "Fancy Perfume Vase",
+      "title_ar": null,
+      "alternative_names": [
+        "Decorated Perfume Vessel",
+        "Luxury Perfume Vase"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1550–1292 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": null
+      },
+      "associated_deity": null,
+      "material": "Alabaster, glass, or decorated ceramic",
+      "locations": {
+        "original": "Ancient Egypt",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Grand Egyptian Museum",
+          "New Kingdom Egypt",
+          "Nile Valley"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_015_fancy_perfume_vase.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Fancy Perfume Vase",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "Perfume and scented oils played an important role in ancient Egyptian daily life, religion, and royal ceremonies.",
+        "historical_background": "Perfume and scented oils played an important role in ancient Egyptian daily life, religion, and royal ceremonies. Elegant perfume vases such as this one were used to store precious oils, fragrances, and cosmetics made from flowers, herbs, and exotic imported materials. During the New Kingdom, Egypt became wealthier through trade and military expansion, allowing luxury goods and refined artistic objects to flourish. Perfume containers were often carefully designed to reflect wealth, beauty, and high social status.",
+        "historical_significance": "The vase demonstrates the sophistication of ancient Egyptian luxury culture and cosmetic traditions. It reflects the importance of trade, beauty, and ritual in Egyptian society and highlights the craftsmanship involved in producing decorative containers for elite use. The artifact also provides insight into the role of perfumes and scented oils in both religious and everyday life.",
+        "symbolism": [
+          "Perfume symbolized purity, luxury, and divine favor.",
+          "Beautiful vessels reflected wealth and social status.",
+          "Fragrance was associated with sacred rituals and temple ceremonies.",
+          "The container represented refinement and artistic craftsmanship."
+        ],
+        "important_facts": [
+          "Ancient Egyptians used perfumes in religious rituals and personal care.",
+          "Fragrances were made from flowers, oils, resins, and imported materials.",
+          "Luxury perfume containers were common in elite and royal households.",
+          "Perfume was strongly associated with purity and sacredness.",
+          "The New Kingdom was a major period of artistic and luxury production."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "In ancient Egypt, fragrance was more than luxury — it was part of religion, beauty, and royal life itself. This elegant perfume vase once held precious oils and scents carefully prepared from flowers, herbs, and rare ingredients gathered from across Egypt and distant lands. Imagine servants opening the vessel inside a royal palace or temple, releasing rich perfumes into the warm desert air. To the Egyptians, pleasant scents were associated with purity, divinity, and even immortality. Perfume accompanied ceremonies, festivals, and daily rituals. Though the fragrance disappeared thousands of years ago, the vase itself remains as a silent reminder of the elegance and refinement of ancient Egyptian civilization."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "family_highlights"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "alabaster-glass-or-decorated-ceramic",
+        "grand-egyptian-museum",
+        "new-kingdom-egypt",
+        "nile-valley",
+        "royal_power",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "family_highlights"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Fancy Perfume Vase",
+        "New Kingdom",
+        "18th Dynasty",
+        "Decorated Perfume Vessel",
+        "Luxury Perfume Vase"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_015",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_016",
+      "title_en": "Festival Earrings",
+      "title_ar": null,
+      "alternative_names": [
+        "Ceremonial Earrings",
+        "Festival Jewelry Earrings"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1550–1292 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": null
+      },
+      "associated_deity": null,
+      "material": "Gold with semi-precious stone and glass inlay",
+      "locations": {
+        "original": "Ancient Egypt",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Thebes",
+          "Grand Egyptian Museum",
+          "New Kingdom Egypt"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_016_festival_earrings.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Festival Earrings",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "Jewelry in ancient Egypt was closely connected to beauty, religion, celebration, and social status.",
+        "historical_background": "Jewelry in ancient Egypt was closely connected to beauty, religion, celebration, and social status. Earrings such as these were likely worn during festivals, ceremonies, or elite gatherings during the New Kingdom, a period known for wealth and artistic excellence. Egyptian festivals were major public and religious events filled with music, offerings, processions, and elaborate clothing. Decorative jewelry played an important role in expressing both elegance and spiritual symbolism during these celebrations.",
+        "historical_significance": "The earrings reflect the artistic sophistication and ceremonial culture of ancient Egypt during the New Kingdom. They provide insight into elite fashion, religious celebrations, and the importance of decorative arts in Egyptian society. The artifact also demonstrates the advanced metalworking and jewelry-making skills achieved by Egyptian craftsmen.",
+        "symbolism": [
+          "Gold symbolized eternity, divinity, and prestige.",
+          "Jewelry reflected beauty, celebration, and social identity.",
+          "Festival adornments represented joy and religious devotion.",
+          "Decorative elements often carried protective symbolic meanings."
+        ],
+        "important_facts": [
+          "Festivals were central events in ancient Egyptian religious life.",
+          "Jewelry was commonly worn by both elite men and women.",
+          "The New Kingdom was famous for luxury arts and gold craftsmanship.",
+          "Gold jewelry was associated with the gods because it did not tarnish.",
+          "Temple celebrations often included music, dancing, and public ceremonies."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "Imagine the streets of ancient Thebes alive with music, incense, and celebration. During great festivals, nobles and members of the royal court dressed in fine linen and shimmering jewelry like these festival earrings. As sunlight reflected from polished gold, the jewelry became part of the spectacle itself. To the ancient Egyptians, adornment was not only about beauty — it was also connected to joy, protection, and divine blessing. Earrings like these may have accompanied religious ceremonies, temple processions, or royal feasts where the sounds of drums and singing filled the air. Though the celebrations ended thousands of years ago, these delicate objects still preserve a glimpse of Egypt’s vibrant ceremonial world."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "gold-with-semi-precious-stone-and-glass-inlay",
+        "thebes",
+        "grand-egyptian-museum",
+        "new-kingdom-egypt",
+        "royal_power",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Festival Earrings",
+        "New Kingdom",
+        "18th Dynasty",
+        "Ceremonial Earrings",
+        "Festival Jewelry Earrings"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_016",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_017",
+      "title_en": "Floral Hair Box",
+      "title_ar": null,
+      "alternative_names": [
+        "Decorated Cosmetic Hair Box",
+        "Floral Cosmetic Container"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1550–1292 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": null
+      },
+      "associated_deity": null,
+      "material": "Wood, ivory, paint, and decorative inlay",
+      "locations": {
+        "original": "Ancient Egypt",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Grand Egyptian Museum",
+          "New Kingdom Egypt",
+          "Nile Valley"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_017_floral_hair_box.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Floral Hair Box",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "Personal grooming and cosmetics were highly valued in ancient Egyptian society, especially among the elite.",
+        "historical_background": "Personal grooming and cosmetics were highly valued in ancient Egyptian society, especially among the elite. Decorative boxes such as this floral hair box were used to store wigs, hair accessories, perfumes, cosmetics, or jewelry. During the New Kingdom, Egyptian decorative arts became increasingly refined, with floral patterns inspired by lotus flowers, papyrus plants, and garden imagery appearing frequently in luxury objects. These designs reflected both beauty and symbolic connections to rebirth and nature.",
+        "historical_significance": "The floral hair box provides insight into the personal life, fashion, and artistic tastes of ancient Egyptian elite society. It demonstrates the advanced decorative techniques and craftsmanship of the New Kingdom while also reflecting the cultural importance of beauty, symbolism, and personal care in Egyptian civilization.",
+        "symbolism": [
+          "Floral patterns symbolized beauty, rebirth, and renewal.",
+          "Luxury cosmetic items reflected wealth and high social status.",
+          "Decorative storage boxes represented elegance and refinement.",
+          "Lotus-inspired designs were associated with creation and regeneration."
+        ],
+        "important_facts": [
+          "Cosmetics and personal grooming were important in ancient Egyptian culture.",
+          "Wigs were commonly worn by both elite men and women.",
+          "The lotus flower was a major symbol of rebirth in Egyptian art.",
+          "Decorative boxes often stored perfumes, jewelry, or cosmetic tools.",
+          "The New Kingdom was known for highly refined luxury craftsmanship."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "This beautifully decorated box once belonged to a world of elegance, perfume, and royal fashion. Inside it may have rested carefully styled wigs, scented oils, combs, or precious ornaments worn during ceremonies and celebrations. The floral decorations covering the surface were more than simple decoration — to the ancient Egyptians, flowers symbolized renewal, life, and beauty. Imagine the box placed within a richly furnished chamber, surrounded by mirrors, jewelry, and fine linen garments. Though thousands of years have passed, the delicate craftsmanship still preserves a glimpse into the refined daily life of ancient Egypt’s elite society."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "treasures_craftsmanship"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "wood-ivory-paint-and-decorative-inlay",
+        "grand-egyptian-museum",
+        "new-kingdom-egypt",
+        "nile-valley",
+        "royal_power",
+        "treasures_craftsmanship"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Floral Hair Box",
+        "New Kingdom",
+        "18th Dynasty",
+        "Decorated Cosmetic Hair Box",
+        "Floral Cosmetic Container"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_017",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_018",
+      "title_en": "Golden Throne of Tutankhamun",
+      "title_ar": null,
+      "alternative_names": [
+        "Tutankhamun Golden Chair",
+        "Golden Royal Throne of King Tutankhamun"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1332–1323 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": "Tutankhamun"
+      },
+      "associated_deity": null,
+      "material": "Wood covered with gold leaf, silver, glass, and semi-precious stone inlay",
+      "locations": {
+        "original": "Tomb of Tutankhamun, Valley of the Kings, Thebes",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Valley of the Kings",
+          "Thebes",
+          "Tomb of Tutankhamun",
+          "Grand Egyptian Museum"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_018_golden_throne_of_tutankhamun.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Golden Throne of Tutankhamun",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "The Golden Throne of Tutankhamun is one of the most famous masterpieces discovered inside the young king’s tomb in 1922 by Howard Carter.",
+        "historical_background": "The Golden Throne of Tutankhamun is one of the most famous masterpieces discovered inside the young king’s tomb in 1922 by Howard Carter. Created during the 18th Dynasty of the New Kingdom, the throne reflects the extraordinary craftsmanship of royal Egyptian workshops. The chair is richly decorated with gold and detailed scenes showing Tutankhamun with his queen Ankhesenamun. It was both a royal object of authority and a symbol of divine kingship, luxury, and ceremonial power.",
+        "historical_significance": "The Golden Throne provides valuable insight into royal life, artistic traditions, and ceremonial symbolism during the New Kingdom. It reflects the exceptional skill of Egyptian craftsmen and preserves rare imagery of intimacy within the royal family. The artifact also became one of the defining discoveries that shaped modern understanding of Tutankhamun and ancient Egyptian civilization.",
+        "symbolism": [
+          "Gold symbolized eternity and the divine nature of kingship.",
+          "The throne represented royal authority and sacred leadership.",
+          "The royal scene symbolized harmony between the king and queen.",
+          "Protective symbols on the throne reflected divine guardianship."
+        ],
+        "important_facts": [
+          "The throne was discovered inside Tutankhamun’s tomb in 1922.",
+          "It contains one of the most famous royal family scenes in Egyptian art.",
+          "Tutankhamun became pharaoh at a very young age.",
+          "The throne combines artistic beauty with political symbolism.",
+          "It is considered one of the masterpieces of New Kingdom craftsmanship."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "More than three thousand years ago, this magnificent throne belonged to the boy king Tutankhamun. Covered in gold and glowing with intricate decoration, it once stood within the royal world of ancient Egypt’s palace and court. One of its most remarkable scenes shows the young king seated peacefully while Queen Ankhesenamun stands before him in a moment of rare intimacy and calm. Unlike the powerful military images often seen in royal art, this throne reveals a softer and more personal side of Egyptian royalty. When Howard Carter uncovered the tomb in 1922, the throne emerged from the darkness almost untouched, its gold surfaces still shining after centuries of silence. Today, it remains one of the greatest symbols of the beauty, wealth, and mystery surrounding Tutankhamun’s reign."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": 5,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "family_highlights"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "wood-covered-with-gold-leaf-silver-glass-and-semi-precious-stone-inlay",
+        "tutankhamun",
+        "valley-of-the-kings",
+        "thebes",
+        "tomb-of-tutankhamun",
+        "grand-egyptian-museum",
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "family_highlights"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 7,
+      "search_terms": [
+        "Golden Throne of Tutankhamun",
+        "New Kingdom",
+        "18th Dynasty",
+        "Tutankhamun",
+        "Tutankhamun Golden Chair",
+        "Golden Royal Throne of King Tutankhamun"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_018",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_019",
+      "title_en": "Guardian Statue of Tutankhamun",
+      "title_ar": null,
+      "alternative_names": [
+        "Guardian Figure of Tutankhamun",
+        "Protective Statue from the Tomb of Tutankhamun"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1332–1323 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": "Tutankhamun"
+      },
+      "associated_deity": null,
+      "material": "Wood covered with black resin, gold leaf, and inlaid details",
+      "locations": {
+        "original": "Tomb of Tutankhamun, Valley of the Kings, Thebes",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Valley of the Kings",
+          "Thebes",
+          "Tomb of Tutankhamun",
+          "Grand Egyptian Museum"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_019_guardian_statue_of_tutankhamun.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Guardian Statue of Tutankhamun",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "The Guardian Statues of Tutankhamun were discovered standing near the entrance to the burial chamber inside the king’s tomb.",
+        "historical_background": "The Guardian Statues of Tutankhamun were discovered standing near the entrance to the burial chamber inside the king’s tomb. These life-sized statues represented the pharaoh in sacred form and served as spiritual protectors guarding the royal tomb against danger and disturbance. Ancient Egyptians believed that statues could act as living representations of divine power and could magically protect the deceased king during his journey into the afterlife. The figures were created with exceptional craftsmanship and carried strong religious symbolism connected to resurrection and eternal kingship.",
+        "historical_significance": "The guardian statues provide important evidence about Egyptian funerary beliefs, sacred protection rituals, and concepts of eternal kingship during the New Kingdom. They demonstrate the spiritual role of royal sculpture within tomb architecture and reflect the extraordinary artistic quality of Tutankhamun’s burial treasures. The statues also contribute to modern understanding of how ancient Egyptians viewed death, magic, and the afterlife.",
+        "symbolism": [
+          "The statues symbolized divine protection of the king.",
+          "The black color represented rebirth, fertility, and resurrection.",
+          "Gold details symbolized sacred and eternal kingship.",
+          "The guardian figures marked the transition into the afterlife."
+        ],
+        "important_facts": [
+          "The statues were discovered inside Tutankhamun’s tomb in 1922.",
+          "They stood near the entrance to the burial chamber.",
+          "Ancient Egyptians believed statues could hold spiritual power.",
+          "The black resin coating carried strong symbolic meaning linked to rebirth.",
+          "The statues are among the most iconic objects from Tutankhamun’s tomb."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "When Howard Carter first opened the sealed burial chamber of Tutankhamun, two dark guardian statues stood silently before him, watching over the entrance like eternal sentinels. For more than three thousand years, these sacred figures protected the resting place of the young king. Their black surfaces symbolized rebirth and resurrection, while their golden details reflected divine power. To the ancient Egyptians, these were not merely sculptures — they were magical guardians filled with spiritual purpose. Standing in silence beside the burial chamber, they marked the boundary between the world of the living and the eternal realm of the dead. Even today, the statues preserve the mystery and sacred atmosphere of Tutankhamun’s tomb."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "monuments_sculpture"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "wood-covered-with-black-resin-gold-leaf-and-inlaid-details",
+        "tutankhamun",
+        "valley-of-the-kings",
+        "thebes",
+        "tomb-of-tutankhamun",
+        "grand-egyptian-museum",
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "monuments_sculpture"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Guardian Statue of Tutankhamun",
+        "New Kingdom",
+        "18th Dynasty",
+        "Tutankhamun",
+        "Guardian Figure of Tutankhamun",
+        "Protective Statue from the Tomb of Tutankhamun"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_019",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_020",
+      "title_en": "Guardian Statue of Tutankhamun – Nemes Headcloth",
+      "title_ar": null,
+      "alternative_names": [
+        "Guardian Figure of Tutankhamun with Nemes",
+        "Tutankhamun Guardian Statue Wearing the Nemes"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1332–1323 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": "Tutankhamun"
+      },
+      "associated_deity": null,
+      "material": "Wood covered with black resin, gold leaf, and inlaid details",
+      "locations": {
+        "original": "Tomb of Tutankhamun, Valley of the Kings, Thebes",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Valley of the Kings",
+          "Thebes",
+          "Tomb of Tutankhamun",
+          "Grand Egyptian Museum"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_020_guardian_statue_of_tutankhamun_nemes_headcloth.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Guardian Statue of Tutankhamun – Nemes Headcloth",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "This guardian statue was one of the sacred figures discovered near the entrance to Tutankhamun’s burial chamber.",
+        "historical_background": "This guardian statue was one of the sacred figures discovered near the entrance to Tutankhamun’s burial chamber. The statue portrays the young king wearing the royal nemes headcloth, one of the most recognizable symbols of Egyptian kingship. Guardian statues were created to spiritually protect the tomb and assist the king during his journey through the afterlife. In ancient Egyptian belief, royal statues possessed magical and divine power, allowing them to act as eternal protectors of the deceased pharaoh.",
+        "historical_significance": "The statue highlights the religious importance of royal imagery and sacred protection in ancient Egyptian funerary traditions. It provides insight into the symbolism of kingship, resurrection, and divine authority during the New Kingdom. The artifact also remains one of the most visually recognizable examples of the spiritual atmosphere surrounding Tutankhamun’s burial treasures.",
+        "symbolism": [
+          "The nemes headcloth symbolized royal authority and sacred kingship.",
+          "The black color represented rebirth and regeneration.",
+          "Gold details symbolized divinity and eternal life.",
+          "The guardian figure protected the king’s soul in the afterlife."
+        ],
+        "important_facts": [
+          "The statue was discovered inside Tutankhamun’s tomb in 1922.",
+          "The nemes headcloth became one of the defining symbols of Egyptian pharaohs.",
+          "Guardian statues were positioned near the burial chamber entrance.",
+          "Ancient Egyptians believed statues could carry magical protective power.",
+          "The artifact reflects the extraordinary craftsmanship of New Kingdom royal workshops."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "Standing silently in the darkness of Tutankhamun’s tomb for more than three thousand years, this guardian statue watched over the young king’s eternal resting place. The pharaoh wears the famous nemes headcloth — a royal symbol worn by Egypt’s rulers to represent authority and divine kingship. To the ancient Egyptians, this figure was far more than carved wood and gold. It was a sacred guardian filled with spiritual purpose, protecting the king from danger in the afterlife. The black surface symbolized rebirth and resurrection, while the gold details reflected the eternal nature of the gods themselves. Encountering this statue inside the sealed tomb would have felt like standing face to face with the eternal power of ancient Egypt."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "monuments_sculpture"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "wood-covered-with-black-resin-gold-leaf-and-inlaid-details",
+        "tutankhamun",
+        "valley-of-the-kings",
+        "thebes",
+        "tomb-of-tutankhamun",
+        "grand-egyptian-museum",
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "monuments_sculpture"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Guardian Statue of Tutankhamun – Nemes Headcloth",
+        "New Kingdom",
+        "18th Dynasty",
+        "Tutankhamun",
+        "Guardian Figure of Tutankhamun with Nemes",
+        "Tutankhamun Guardian Statue Wearing the Nemes"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_020",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_021",
+      "title_en": "Ivory Jewellery Box",
+      "title_ar": null,
+      "alternative_names": [
+        "Ivory Jewelry Chest",
+        "Decorated Ivory Cosmetic Box"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1550–1292 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": null
+      },
+      "associated_deity": null,
+      "material": "Ivory, wood, and decorative inlay",
+      "locations": {
+        "original": "Ancient Egypt",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Grand Egyptian Museum",
+          "New Kingdom Egypt",
+          "Nile Valley"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_021_ivory_jewellery_box.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Ivory Jewellery Box",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "Jewellery boxes in ancient Egypt were luxury objects designed to store valuable personal items such as necklaces, earrings, rings, cosmetics, and perfumes.",
+        "historical_background": "Jewellery boxes in ancient Egypt were luxury objects designed to store valuable personal items such as necklaces, earrings, rings, cosmetics, and perfumes. Ivory was considered an expensive and prestigious material, often associated with wealth and elite status. During the New Kingdom, Egyptian artisans became highly skilled in decorative arts, creating elegant containers adorned with carvings, painted details, and symbolic designs inspired by nature and religion.",
+        "historical_significance": "The ivory jewellery box provides insight into the daily life, luxury culture, and artistic sophistication of ancient Egyptian elite society. It reflects the importance of personal adornment and decorative craftsmanship during the New Kingdom and demonstrates the Egyptians’ ability to combine beauty with practical design.",
+        "symbolism": [
+          "Ivory symbolized luxury, prestige, and elite status.",
+          "Decorative storage reflected refinement and personal identity.",
+          "Jewellery represented beauty, protection, and social importance.",
+          "Elegant craftsmanship demonstrated wealth and artistic achievement."
+        ],
+        "important_facts": [
+          "Ivory was a highly valued material in ancient Egypt.",
+          "Jewellery boxes stored cosmetics, ornaments, and personal treasures.",
+          "The New Kingdom was known for advanced decorative craftsmanship.",
+          "Luxury objects were common in elite and royal households.",
+          "Egyptian decorative arts often included floral and symbolic motifs."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "Thousands of years ago, this delicate ivory box may have rested inside the private chambers of an Egyptian noble or royal family member. Within it were perhaps treasured jewels, perfumes, and precious ornaments carefully chosen for ceremonies, celebrations, and daily life. The smooth ivory surface and fine craftsmanship reflected both luxury and artistic refinement. To the ancient Egyptians, beauty and elegance were closely connected to status, identity, and even spirituality. Imagine opening the lid and finding gold jewelry shining in the light of oil lamps inside a richly decorated palace room. Though the treasures it once held may be gone, the box itself still preserves the quiet sophistication of ancient Egyptian life."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "ivory-wood-and-decorative-inlay",
+        "grand-egyptian-museum",
+        "new-kingdom-egypt",
+        "nile-valley",
+        "royal_power",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Ivory Jewellery Box",
+        "New Kingdom",
+        "18th Dynasty",
+        "Ivory Jewelry Chest",
+        "Decorated Ivory Cosmetic Box"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_021",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_022",
+      "title_en": "Lion-Shaped Perfume Jar",
+      "title_ar": null,
+      "alternative_names": [
+        "Perfume Vessel in the Shape of a Lion",
+        "Lion Perfume Container"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1550–1292 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": null
+      },
+      "associated_deity": null,
+      "material": "Alabaster, faience, or decorated ceramic",
+      "locations": {
+        "original": "Ancient Egypt",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Grand Egyptian Museum",
+          "New Kingdom Egypt",
+          "Nile Valley"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": null,
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Lion-Shaped Perfume Jar",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "Perfume jars were important luxury items in ancient Egypt, used to store scented oils, perfumes, and cosmetic substances made from flowers, herbs, and rare imported ingredients.",
+        "historical_background": "Perfume jars were important luxury items in ancient Egypt, used to store scented oils, perfumes, and cosmetic substances made from flowers, herbs, and rare imported ingredients. Animal-shaped containers became especially popular during the New Kingdom, when Egyptian decorative arts reached a high level of creativity and refinement. The lion held strong symbolic meaning in Egyptian culture, representing strength, royal authority, protection, and solar power. Combining perfume with animal symbolism created objects that were both functional and spiritually meaningful.",
+        "historical_significance": "The perfume jar highlights the creativity and symbolic richness of Egyptian decorative arts during the New Kingdom. It demonstrates how practical objects were transformed into artistic and spiritual expressions through animal symbolism and refined craftsmanship. The artifact also provides insight into Egyptian luxury culture, cosmetic traditions, and the cultural importance of perfumes in daily and ceremonial life.",
+        "symbolism": [
+          "The lion symbolized strength, protection, and royal authority.",
+          "Perfume represented purity, beauty, and sacred ritual.",
+          "Animal-shaped vessels reflected the Egyptians’ connection to symbolic imagery.",
+          "Luxury containers demonstrated wealth and artistic sophistication."
+        ],
+        "important_facts": [
+          "Perfumes were widely used in religious rituals and personal grooming.",
+          "The lion was an important symbol in Egyptian royal and religious art.",
+          "Animal-shaped decorative objects became popular during the New Kingdom.",
+          "Perfume ingredients included flowers, oils, resins, and imported materials.",
+          "Luxury cosmetic containers were common in elite households."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "This elegant perfume jar combines two worlds treasured by the ancient Egyptians — luxury and power. Shaped like a lion, the vessel once held precious oils and fragrances used in royal courts, temples, and private ceremonies. To the Egyptians, the lion was a symbol of strength, protection, and kingship. Even small everyday objects could carry sacred meaning. Imagine servants carefully opening the jar inside a palace chamber, releasing rich perfumes into the warm air while sunlight reflected from painted walls and golden decorations. Though the fragrance vanished thousands of years ago, the jar itself still preserves the imagination, artistry, and symbolism of ancient Egyptian civilization."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "family_highlights"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "alabaster-faience-or-decorated-ceramic",
+        "grand-egyptian-museum",
+        "new-kingdom-egypt",
+        "nile-valley",
+        "royal_power",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "family_highlights"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Lion-Shaped Perfume Jar",
+        "New Kingdom",
+        "18th Dynasty",
+        "Perfume Vessel in the Shape of a Lion",
+        "Lion Perfume Container"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_022",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_023",
+      "title_en": "Lion’s Headrest",
+      "title_ar": null,
+      "alternative_names": [
+        "Lion-Shaped Headrest",
+        "Royal Lion Headrest"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1550–1292 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": null
+      },
+      "associated_deity": null,
+      "material": "Wood, ivory, or gilded material",
+      "locations": {
+        "original": "Ancient Egypt",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Grand Egyptian Museum",
+          "New Kingdom Egypt",
+          "Nile Valley"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_023_lions_headrest.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Lion’s Headrest",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "Headrests were commonly used in ancient Egypt instead of soft pillows.",
+        "historical_background": "Headrests were commonly used in ancient Egypt instead of soft pillows. Designed to support the head during sleep, they were believed to provide both physical comfort and spiritual protection. Lion-shaped headrests were especially significant because the lion symbolized strength, guardianship, and royal authority. During the New Kingdom, luxury headrests were often placed in royal tombs and elite burials to protect the deceased during eternal rest and rebirth in the afterlife.",
+        "historical_significance": "The lion’s headrest provides insight into ancient Egyptian daily life, sleeping practices, and spiritual beliefs. It demonstrates how ordinary functional objects were transformed into symbolic works of art connected to protection and rebirth. The artifact also reflects the importance of animal symbolism and luxury craftsmanship during the New Kingdom.",
+        "symbolism": [
+          "The lion symbolized strength, protection, and royal authority.",
+          "Headrests represented support and safeguarding during sleep and the afterlife.",
+          "The elevated design protected hairstyles and ceremonial wigs.",
+          "The object reflected beliefs about protection during vulnerable states such as sleep and death."
+        ],
+        "important_facts": [
+          "Ancient Egyptians commonly used headrests instead of pillows.",
+          "Headrests were placed in tombs as funerary objects.",
+          "The lion was widely associated with protection and kingship.",
+          "Luxury headrests were often made for royalty and elite individuals.",
+          "The New Kingdom produced highly decorative and symbolic household objects."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "To the ancient Egyptians, even sleep carried sacred meaning. This lion-shaped headrest once supported the head of its owner during rest, while also serving as a symbol of protection and strength. Unlike modern pillows, Egyptian headrests were carefully crafted from wood, ivory, or precious materials and often decorated with powerful symbolic imagery. The lion, respected as a guardian and symbol of royal power, was believed to watch over the sleeper and defend against evil forces during the vulnerable hours of the night. Imagine this object resting beside fine linens inside a royal chamber or hidden among the treasures of a tomb, prepared to guard its owner for eternity."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "religion_ritual",
+        "family_highlights"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "wood-ivory-or-gilded-material",
+        "grand-egyptian-museum",
+        "new-kingdom-egypt",
+        "nile-valley",
+        "royal_power",
+        "afterlife_burial",
+        "religion_ritual",
+        "family_highlights"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Lion’s Headrest",
+        "New Kingdom",
+        "18th Dynasty",
+        "Lion-Shaped Headrest",
+        "Royal Lion Headrest"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_023",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_024",
+      "title_en": "Lotus Cup of Tutankhamun",
+      "title_ar": null,
+      "alternative_names": [
+        "Tutankhamun Alabaster Cup",
+        "Wishing Cup of Tutankhamun"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1332–1323 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": "Tutankhamun"
+      },
+      "associated_deity": null,
+      "material": "Calcite (Egyptian alabaster)",
+      "locations": {
+        "original": "Tomb of Tutankhamun, Valley of the Kings, Thebes",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Valley of the Kings",
+          "Thebes",
+          "Tomb of Tutankhamun",
+          "Grand Egyptian Museum"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_024_lotus_cup_of_tutankhamun.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Lotus Cup of Tutankhamun",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "The Lotus Cup of Tutankhamun is one of the most elegant objects discovered inside the king’s tomb in 1922.",
+        "historical_background": "The Lotus Cup of Tutankhamun is one of the most elegant objects discovered inside the king’s tomb in 1922. Carved from translucent Egyptian alabaster, the cup was shaped in the form of a blooming lotus flower, a sacred symbol deeply connected to rebirth, creation, and the rising sun in ancient Egyptian belief. The handles of the cup were decorated with symbols of life and eternity, reflecting the strong religious meaning attached to royal objects placed within the tomb.",
+        "historical_significance": "The Lotus Cup demonstrates the artistic sophistication and symbolic richness of New Kingdom royal craftsmanship. It provides important insight into Egyptian beliefs about rebirth, eternity, and sacred symbolism. The artifact also remains one of the most iconic examples of the elegance and spiritual depth found within Tutankhamun’s tomb treasures.",
+        "symbolism": [
+          "The lotus flower symbolized rebirth and creation.",
+          "The cup represented renewal and eternal life.",
+          "The translucent alabaster reflected purity and sacred beauty.",
+          "Decorative symbols on the handles represented life and eternity."
+        ],
+        "important_facts": [
+          "The cup was discovered inside Tutankhamun’s tomb in 1922.",
+          "It is carved from Egyptian alabaster, also known as calcite.",
+          "The lotus was one of the most important symbols in Egyptian religion.",
+          "The object is sometimes called the ‘Wishing Cup’ because of its inscription.",
+          "The cup is considered one of the masterpieces of Tutankhamun’s treasures."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "Delicate, luminous, and beautifully carved, the Lotus Cup of Tutankhamun appears almost fragile despite surviving more than three thousand years beneath the sands of Egypt. The cup was shaped like an opening lotus flower — a sacred plant that the ancient Egyptians believed emerged each morning with the rising sun. To them, the lotus symbolized rebirth, renewal, and eternal life. Imagine this elegant vessel standing among the treasures of the young king’s tomb, glowing softly in the light of oil lamps. More than a luxury object, the cup carried a spiritual message: just as the lotus flower reopened each dawn, the king too would rise again in the afterlife."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "calcite-egyptian-alabaster",
+        "tutankhamun",
+        "valley-of-the-kings",
+        "thebes",
+        "tomb-of-tutankhamun",
+        "grand-egyptian-museum",
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Lotus Cup of Tutankhamun",
+        "New Kingdom",
+        "18th Dynasty",
+        "Tutankhamun",
+        "Tutankhamun Alabaster Cup",
+        "Wishing Cup of Tutankhamun"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_024",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_025",
+      "title_en": "Model of Tutankhamun on a Funerary Bed",
+      "title_ar": null,
+      "alternative_names": [
+        "Tutankhamun on a Ritual Bed",
+        "Funerary Bed Model of Tutankhamun"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1332–1323 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": "Tutankhamun"
+      },
+      "associated_deity": null,
+      "material": "Wood, gold leaf, plaster, and paint",
+      "locations": {
+        "original": "Tomb of Tutankhamun, Valley of the Kings, Thebes",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Valley of the Kings",
+          "Thebes",
+          "Tomb of Tutankhamun",
+          "Grand Egyptian Museum"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_025_model_of_tutankhamun_on_a_funerary_bed.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Model of Tutankhamun on a Funerary Bed",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "This funerary model was created as part of the burial equipment placed inside the tomb of Tutankhamun.",
+        "historical_background": "This funerary model was created as part of the burial equipment placed inside the tomb of Tutankhamun. Funerary beds played an important role in ancient Egyptian burial rituals and were associated with rebirth, resurrection, and transformation in the afterlife. Models and ritual objects placed in royal tombs were believed to magically assist and protect the deceased king during his journey beyond death. The figure of Tutankhamun resting upon the funerary bed reflects the Egyptian belief that death was a temporary state before spiritual renewal and eternal rebirth.",
+        "historical_significance": "The model provides valuable evidence about ancient Egyptian funerary rituals and beliefs concerning death and rebirth. It demonstrates the symbolic importance of ritual objects placed within royal tombs and highlights the craftsmanship and religious sophistication of New Kingdom burial traditions. The artifact also contributes to modern understanding of the spiritual preparation surrounding Tutankhamun’s burial.",
+        "symbolism": [
+          "The funerary bed symbolized rebirth and transformation.",
+          "The resting king represented preparation for eternal life.",
+          "Gold details symbolized divinity and immortality.",
+          "The model reflected sacred burial rituals and resurrection beliefs."
+        ],
+        "important_facts": [
+          "The model was discovered inside Tutankhamun’s tomb in 1922.",
+          "Funerary beds were commonly associated with rebirth in Egyptian religion.",
+          "Royal tombs contained ritual objects intended to aid the king in the afterlife.",
+          "Tutankhamun’s burial treasures provide major insight into New Kingdom funerary practices.",
+          "The artifact reflects the Egyptians’ deep spiritual focus on resurrection and eternity."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "Inside the silent chambers of Tutankhamun’s tomb rested this remarkable funerary model — the young king lying upon a sacred bed prepared for eternity. To the ancient Egyptians, death was not an ending but a passage into another existence. Funerary beds symbolized the moment of transformation between the mortal world and eternal rebirth. Imagine priests performing sacred rituals around objects like this, reciting prayers meant to awaken the king in the afterlife. Every detail carried meaning: the resting figure, the sacred bed, and the careful craftsmanship all reflected the Egyptians’ determination to guide their ruler safely into immortality. More than three thousand years later, the model still preserves the spiritual mystery surrounding the burial of Tutankhamun."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "wood-gold-leaf-plaster-and-paint",
+        "tutankhamun",
+        "valley-of-the-kings",
+        "thebes",
+        "tomb-of-tutankhamun",
+        "grand-egyptian-museum",
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Model of Tutankhamun on a Funerary Bed",
+        "New Kingdom",
+        "18th Dynasty",
+        "Tutankhamun",
+        "Tutankhamun on a Ritual Bed",
+        "Funerary Bed Model of Tutankhamun"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_025",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_026",
+      "title_en": "Ostrich Hunt Fan",
+      "title_ar": null,
+      "alternative_names": [
+        "Fan from the Ostrich Hunt",
+        "Tutankhamun Ostrich Feather Fan"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1332–1323 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": "Tutankhamun"
+      },
+      "associated_deity": null,
+      "material": "Gold, wood, ostrich feathers, and decorative inlay",
+      "locations": {
+        "original": "Tomb of Tutankhamun, Valley of the Kings, Thebes",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Valley of the Kings",
+          "Thebes",
+          "Tomb of Tutankhamun",
+          "Grand Egyptian Museum"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_026_ostrich_hunt_fan.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Ostrich Hunt Fan",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "The Ostrich Hunt Fan was one of the luxurious objects discovered inside the tomb of Tutankhamun in 1922.",
+        "historical_background": "The Ostrich Hunt Fan was one of the luxurious objects discovered inside the tomb of Tutankhamun in 1922. Fans made with ostrich feathers were prestigious royal items used in ceremonies, processions, and palace life. This fan is especially important because inscriptions on it describe Tutankhamun participating in an ostrich hunt in the desert. Hunting scenes were closely connected to royal power, skill, and control over nature. Ostrich feathers themselves were also linked to elegance, status, and symbolic meanings associated with truth and divine order.",
+        "historical_significance": "The Ostrich Hunt Fan provides valuable insight into royal life, ceremonial traditions, and elite luxury during the New Kingdom. It reflects the artistic sophistication of Tutankhamun’s burial treasures while also revealing aspects of royal hunting culture and symbolic kingship. The artifact remains one of the most elegant examples of ceremonial objects from ancient Egypt.",
+        "symbolism": [
+          "Ostrich feathers symbolized prestige, elegance, and ceremonial status.",
+          "Royal hunting scenes represented strength and authority.",
+          "Gold reflected divine kingship and eternal power.",
+          "The fan symbolized comfort, luxury, and royal privilege."
+        ],
+        "important_facts": [
+          "The fan was discovered inside Tutankhamun’s tomb in 1922.",
+          "It originally contained ostrich feathers attached to the frame.",
+          "The inscriptions describe Tutankhamun participating in an ostrich hunt.",
+          "Royal fans were important ceremonial objects in ancient Egypt.",
+          "Hunting symbolism was associated with royal control and power."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "More than three thousand years ago, servants may have carried this magnificent fan beside the young king Tutankhamun as he traveled through palace halls or ceremonial processions. Once decorated with large ostrich feathers, the fan was both practical and deeply symbolic. Its inscriptions tell of a royal ostrich hunt — an activity that demonstrated the pharaoh’s strength, courage, and mastery over the wild desert landscape. Imagine the movement of the feathers in the hot Egyptian air, the shine of gold under the sunlight, and the sounds of royal ceremonies surrounding the king. Though the delicate feathers faded with time, the fan itself still preserves the elegance and prestige of Egypt’s royal court."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "family_highlights"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "gold-wood-ostrich-feathers-and-decorative-inlay",
+        "tutankhamun",
+        "valley-of-the-kings",
+        "thebes",
+        "tomb-of-tutankhamun",
+        "grand-egyptian-museum",
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "family_highlights"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Ostrich Hunt Fan",
+        "New Kingdom",
+        "18th Dynasty",
+        "Tutankhamun",
+        "Fan from the Ostrich Hunt",
+        "Tutankhamun Ostrich Feather Fan"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_026",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_027",
+      "title_en": "Outer Coffin of Tutankhamun",
+      "title_ar": null,
+      "alternative_names": [
+        "Outer Anthropoid Coffin of Tutankhamun",
+        "Tutankhamun Outer Wooden Coffin"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1332–1323 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": "Tutankhamun"
+      },
+      "associated_deity": null,
+      "material": "Wood covered with gold leaf, glass, and semi-precious stone inlay",
+      "locations": {
+        "original": "Tomb of Tutankhamun, Valley of the Kings, Thebes",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Valley of the Kings",
+          "Thebes",
+          "Tomb of Tutankhamun",
+          "Grand Egyptian Museum"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_027_outer_coffin_of_tutankhamun.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Outer Coffin of Tutankhamun",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "The Outer Coffin of Tutankhamun formed part of the nested coffin system that protected the mummy of the young king inside his tomb.",
+        "historical_background": "The Outer Coffin of Tutankhamun formed part of the nested coffin system that protected the mummy of the young king inside his tomb. Ancient Egyptian royal burials often used multiple coffins placed one inside another, surrounded by shrines and protective layers. The outer coffin was richly decorated with sacred symbols, inscriptions, and divine imagery intended to guard the pharaoh during his journey into the afterlife. The object reflects the advanced craftsmanship and strong religious beliefs of the New Kingdom.",
+        "historical_significance": "The Outer Coffin of Tutankhamun provides major insight into royal burial traditions, religious beliefs, and artistic achievement during the New Kingdom. It demonstrates the Egyptians’ complex funerary practices and their belief in resurrection and eternal life. The artifact also stands as one of the finest examples of royal funerary craftsmanship from ancient Egypt.",
+        "symbolism": [
+          "Gold symbolized immortality and the divine nature of the pharaoh.",
+          "The anthropoid shape represented the king’s eternal form.",
+          "Protective inscriptions guarded the king during the afterlife journey.",
+          "Sacred imagery symbolized rebirth and resurrection."
+        ],
+        "important_facts": [
+          "The coffin was discovered inside Tutankhamun’s tomb in 1922.",
+          "It was part of a series of nested coffins protecting the mummy.",
+          "Royal coffins often carried religious texts and protective symbols.",
+          "The outer coffin surrounded additional inner coffins, including a solid gold coffin.",
+          "Tutankhamun’s burial treasures remain among the most famous archaeological discoveries in history."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "Deep within the sealed burial chamber of Tutankhamun rested this magnificent outer coffin — one of the protective layers guarding the young king for eternity. Covered in gold and sacred decoration, the coffin transformed the deceased pharaoh into a divine being prepared for rebirth. To the ancient Egyptians, burial was not simply about preserving the body, but about ensuring the soul’s survival forever. Every symbol carved upon the coffin carried magical meaning, offering protection against danger in the underworld. Imagine the moment the coffin was revealed after more than three thousand years of darkness, its golden surfaces still glowing beneath the torchlight of archaeologists entering the tomb for the first time."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "wood-covered-with-gold-leaf-glass-and-semi-precious-stone-inlay",
+        "tutankhamun",
+        "valley-of-the-kings",
+        "thebes",
+        "tomb-of-tutankhamun",
+        "grand-egyptian-museum",
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Outer Coffin of Tutankhamun",
+        "New Kingdom",
+        "18th Dynasty",
+        "Tutankhamun",
+        "Outer Anthropoid Coffin of Tutankhamun",
+        "Tutankhamun Outer Wooden Coffin"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_027",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_028",
+      "title_en": "Ritual Carrying Box",
+      "title_ar": null,
+      "alternative_names": [
+        "Ceremonial Carrying Chest",
+        "Sacred Processional Box"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1550–1292 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": null
+      },
+      "associated_deity": null,
+      "material": "Wood, gold leaf, paint, and decorative inlay",
+      "locations": {
+        "original": "Ancient Egypt",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Grand Egyptian Museum",
+          "New Kingdom Egypt",
+          "Temple Complexes of Ancient Egypt"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_028_ritual_carrying_box.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Ritual Carrying Box",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "Ritual carrying boxes were used in ancient Egypt to transport sacred objects, ceremonial equipment, offerings, or religious items during temple rituals and processions.",
+        "historical_background": "Ritual carrying boxes were used in ancient Egypt to transport sacred objects, ceremonial equipment, offerings, or religious items during temple rituals and processions. During the New Kingdom, Egyptian religious ceremonies became increasingly elaborate, involving priests, musicians, sacred statues, and richly decorated ceremonial objects. Boxes such as this were carefully crafted not only for practical use but also to reflect the sacred importance of the items carried within them.",
+        "historical_significance": "The ritual carrying box provides insight into temple ceremonies, religious processions, and sacred practices in ancient Egypt. It demonstrates how ceremonial objects were designed with both artistic beauty and spiritual meaning. The artifact also reflects the importance of ritual performance in maintaining religious order during the New Kingdom.",
+        "symbolism": [
+          "The box symbolized protection of sacred and ceremonial objects.",
+          "Gold decoration represented divine presence and holiness.",
+          "Processional use reflected connection between temples and the gods.",
+          "Sacred containers emphasized ritual purity and spiritual importance."
+        ],
+        "important_facts": [
+          "Religious processions were major events in ancient Egyptian temple life.",
+          "Sacred objects were often hidden inside ceremonial containers.",
+          "Priests played central roles in maintaining temple rituals.",
+          "The New Kingdom was a peak period for temple construction and ceremonial art.",
+          "Decorative ritual objects combined practical use with religious symbolism."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "In the grand temples of ancient Egypt, ceremonies moved through sacred halls accompanied by music, incense, and the glow of gold. This ritual carrying box may once have been lifted by priests during a religious procession, transporting sacred objects hidden from public view. To the Egyptians, rituals connected the world of humans with the world of the gods, and every object involved carried spiritual meaning. Decorated with elegant craftsmanship and symbolic imagery, the box was far more than a container — it became part of the ceremony itself. Imagine it moving slowly through temple corridors while chants echoed against towering stone columns and incense filled the air."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "monuments_sculpture"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "wood-gold-leaf-paint-and-decorative-inlay",
+        "grand-egyptian-museum",
+        "new-kingdom-egypt",
+        "temple-complexes-of-ancient-egypt",
+        "royal_power",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "monuments_sculpture"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Ritual Carrying Box",
+        "New Kingdom",
+        "18th Dynasty",
+        "Ceremonial Carrying Chest",
+        "Sacred Processional Box"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_028",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_029",
+      "title_en": "Royal Diadem of Tutankhamun",
+      "title_ar": null,
+      "alternative_names": [
+        "Tutankhamun Royal Headband",
+        "Golden Diadem of Tutankhamun"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1332–1323 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": "Tutankhamun"
+      },
+      "associated_deity": null,
+      "material": "Gold, glass, carnelian, lapis lazuli, and semi-precious stone inlay",
+      "locations": {
+        "original": "Tomb of Tutankhamun, Valley of the Kings, Thebes",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Valley of the Kings",
+          "Thebes",
+          "Tomb of Tutankhamun",
+          "Grand Egyptian Museum"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_029_royal_diadem_of_tutankhamun.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Royal Diadem of Tutankhamun",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "The Royal Diadem of Tutankhamun was one of the precious royal ornaments discovered inside the young king’s tomb in 1922.",
+        "historical_background": "The Royal Diadem of Tutankhamun was one of the precious royal ornaments discovered inside the young king’s tomb in 1922. Diadems were ceremonial headpieces worn by Egyptian royalty as symbols of kingship, divine authority, and protection. This finely crafted object featured sacred royal imagery, including the cobra and vulture, protective symbols associated with Upper and Lower Egypt. Royal jewelry during the New Kingdom combined artistic beauty with deep religious and political symbolism.",
+        "historical_significance": "The Royal Diadem of Tutankhamun provides valuable insight into the symbolism of kingship, royal identity, and ceremonial dress during the New Kingdom. It demonstrates the exceptional skill of Egyptian jewelers and highlights the connection between political authority and religious belief in ancient Egypt. The artifact also remains one of the most iconic examples of royal jewelry from Tutankhamun’s tomb.",
+        "symbolism": [
+          "The cobra symbolized royal protection and divine authority.",
+          "The vulture represented guardianship over Upper Egypt.",
+          "Gold symbolized immortality and the flesh of the gods.",
+          "The diadem reflected unity between Upper and Lower Egypt."
+        ],
+        "important_facts": [
+          "The diadem was discovered inside Tutankhamun’s tomb in 1922.",
+          "Royal headpieces were important symbols of Egyptian kingship.",
+          "The cobra and vulture were protective emblems of the Egyptian crown.",
+          "Jewelry in royal burials carried both decorative and magical functions.",
+          "Tutankhamun’s treasures remain among the greatest archaeological discoveries in history."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "This delicate golden diadem once rested upon the head of the boy king Tutankhamun, transforming him from a mortal ruler into a living symbol of divine kingship. Decorated with sacred symbols and brilliant inlaid stones, the headpiece reflected both royal power and spiritual protection. At the front stood the cobra and vulture — guardians of Upper and Lower Egypt — watching over the king and defending him against danger. Imagine the diadem shining beneath the sunlight during royal ceremonies or glowing softly in the darkness of the sealed tomb where it remained hidden for more than three thousand years. Though small in size, the object carried the full weight of Egyptian kingship and sacred tradition."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": null,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "gold-glass-carnelian-lapis-lazuli-and-semi-precious-stone-inlay",
+        "tutankhamun",
+        "valley-of-the-kings",
+        "thebes",
+        "tomb-of-tutankhamun",
+        "grand-egyptian-museum",
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 4,
+      "search_terms": [
+        "Royal Diadem of Tutankhamun",
+        "New Kingdom",
+        "18th Dynasty",
+        "Tutankhamun",
+        "Tutankhamun Royal Headband",
+        "Golden Diadem of Tutankhamun"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_029",
+        "prepared_for_collection": "exhibits"
+      }
+    },
+    {
+      "id": "artifact_030",
+      "title_en": "Golden Burial Mask of Tutankhamun",
+      "title_ar": null,
+      "alternative_names": [
+        "Funerary Mask of Tutankhamun",
+        "Golden Mask of King Tutankhamun"
+      ],
+      "historical_period": "New Kingdom",
+      "dynasty": "18th Dynasty",
+      "date_display": "c. 1332–1323 BCE",
+      "ruler": {
+        "pharaoh": null,
+        "queen": null,
+        "associated_pharaoh": "Tutankhamun"
+      },
+      "associated_deity": null,
+      "material": "Gold, lapis lazuli, quartz, obsidian, glass, and semi-precious stone inlay",
+      "locations": {
+        "original": "Tomb of Tutankhamun, Valley of the Kings, Thebes",
+        "current": "Grand Egyptian Museum (GEM), Giza, Egypt",
+        "associated": [
+          "Valley of the Kings",
+          "Thebes",
+          "Tomb of Tutankhamun",
+          "Grand Egyptian Museum"
+        ],
+        "gallery": null,
+        "floor": null,
+        "map": {
+          "x": null,
+          "y": null
+        }
+      },
+      "media": {
+        "image_asset": "assets/artifacts/artifact_030_golden_burial_mask_of_tutankhamun.jpg",
+        "image_url": null,
+        "storage_path": null,
+        "alt_en": "Golden Burial Mask of Tutankhamun",
+        "alt_ar": null
+      },
+      "content_en": {
+        "summary": "The Golden Burial Mask of Tutankhamun is one of the most famous artifacts of ancient Egypt and one of the greatest archaeological discoveries in history.",
+        "historical_background": "The Golden Burial Mask of Tutankhamun is one of the most famous artifacts of ancient Egypt and one of the greatest archaeological discoveries in history. The mask was placed directly over the mummy of the young king inside the innermost coffin of his tomb. Created during the 18th Dynasty of the New Kingdom, it was designed to preserve the king’s identity and transform him into a divine being in the afterlife. The mask combines extraordinary craftsmanship with deep religious symbolism connected to immortality, resurrection, and sacred kingship.",
+        "historical_significance": "The Golden Burial Mask of Tutankhamun represents the peak of ancient Egyptian funerary art and royal craftsmanship during the New Kingdom. It provides extraordinary insight into Egyptian beliefs about death, resurrection, and divine kingship. The mask also became one of the most recognizable archaeological objects in the world, shaping modern fascination with ancient Egypt and the discovery of Tutankhamun’s tomb.",
+        "symbolism": [
+          "Gold symbolized immortality and the flesh of the gods.",
+          "The nemes headcloth represented sacred kingship.",
+          "The cobra and vulture symbolized protection over Upper and Lower Egypt.",
+          "The funerary mask preserved the king’s identity for eternity."
+        ],
+        "important_facts": [
+          "The mask was discovered inside Tutankhamun’s tomb in 1922.",
+          "It covered the head and shoulders of the king’s mummy.",
+          "The mask weighs more than 10 kilograms of gold.",
+          "Tutankhamun became pharaoh at a very young age.",
+          "The artifact became an international symbol of ancient Egyptian civilization."
+        ]
+      },
+      "content_ar": null,
+      "narration": {
+        "default_language": "en",
+        "scripts": {
+          "en": "For more than three thousand years, this face remained hidden in complete darkness beneath the sands of Egypt. When Howard Carter finally uncovered Tutankhamun’s tomb in 1922, the golden burial mask emerged as one of the most breathtaking treasures ever discovered. Crafted from solid gold and inlaid with brilliant stones, the mask transformed the young king into an eternal divine figure. The calm expression, royal beard, and striped nemes headcloth reflected the image of a perfect pharaoh prepared for immortality. At the forehead stood the cobra and vulture — sacred protectors of Egypt’s two lands. To the ancient Egyptians, the mask was not simply decoration. It was magical protection, ensuring that the king’s soul would recognize his body and live forever in the afterlife."
+        },
+        "robot_language_scope": "Robot narration language is independent from app and website UI language. App and website UI are English/Arabic only; robot narration can later translate or narrate in English, Arabic, Egyptian Arabic, French, Spanish, Italian, German, Chinese, Korean, and other supported languages.",
+        "translation_status": {
+          "en": "source",
+          "ar": "pending"
+        }
+      },
+      "is_active": true,
+      "route_order": 6,
+      "themes": [
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "family_highlights"
+      ],
+      "tags": [
+        "new-kingdom",
+        "18th-dynasty",
+        "gold-lapis-lazuli-quartz-obsidian-glass-and-semi-precious-stone-inlay",
+        "tutankhamun",
+        "valley-of-the-kings",
+        "thebes",
+        "tomb-of-tutankhamun",
+        "grand-egyptian-museum",
+        "royal_power",
+        "afterlife_burial",
+        "treasures_craftsmanship",
+        "religion_ritual",
+        "family_highlights"
+      ],
+      "photo_spot": true,
+      "recommended_duration_min": 7,
+      "search_terms": [
+        "Golden Burial Mask of Tutankhamun",
+        "New Kingdom",
+        "18th Dynasty",
+        "Tutankhamun",
+        "Funerary Mask of Tutankhamun",
+        "Golden Mask of King Tutankhamun"
+      ],
+      "source": {
+        "source_file": "TourGuideRag_V02.txt",
+        "source_id": "artifact_030",
+        "prepared_for_collection": "exhibits"
+      }
+    }
+  ]
+}
