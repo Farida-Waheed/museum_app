@@ -166,40 +166,83 @@ class TicketRepository {
     required String museumTicketId,
     required String robotTourTicketId,
   }) async {
-    _verifiedUid(userId);
+    final uid = _verifiedUid(userId);
 
     try {
+      final bookingDoc = await _bookingDocForCancellation(bookingId, uid);
+      final booking = bookingDoc.data()!;
+      final resolvedBookingId =
+          _stringValue(booking['booking_id']) ?? bookingDoc.id;
+      final resolvedMuseumTicketId =
+          _stringValue(booking['museum_ticket_id']) ?? museumTicketId;
+      final resolvedRobotTicketId =
+          _stringValue(booking['robot_tour_ticket_id']) ?? robotTourTicketId;
+      final bookingRef = bookingDoc.reference;
+      final museumRef = _museumTickets.doc(resolvedMuseumTicketId);
+      final robotRef = _robotTourTickets.doc(resolvedRobotTicketId);
+
       final update = {
         'status': TicketStatus.cancelled.name,
         'updated_at': FieldValue.serverTimestamp(),
         'cancelled_at': FieldValue.serverTimestamp(),
       };
       final batch = _firestore.batch();
-      batch.set(_bookings.doc(bookingId), update, SetOptions(merge: true));
-      batch.set(
-        _museumTickets.doc(museumTicketId),
-        update,
-        SetOptions(merge: true),
-      );
-      batch.set(
-        _robotTourTickets.doc(robotTourTicketId),
-        update,
-        SetOptions(merge: true),
-      );
+      batch.update(bookingRef, update);
+      batch.update(museumRef, update);
+      batch.update(robotRef, update);
       await _commitBatch(
         batch,
         _TicketFirestoreOperation(
           label: 'cancel booking ticket set',
           paths: [
-            'bookings/$bookingId',
-            'museumTickets/$museumTicketId',
-            'robotTourTickets/$robotTourTicketId',
+            bookingRef.path,
+            museumRef.path,
+            robotRef.path,
           ],
+          details: 'requestedBookingId=$bookingId; '
+              'resolvedBookingId=$resolvedBookingId; userId=$uid',
         ),
       );
     } on FirebaseException catch (e) {
       throw TicketRepositoryException(_friendlyFirestoreError(e));
     }
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> _bookingDocForCancellation(
+    String bookingId,
+    String uid,
+  ) async {
+    final matchingBookings = await _getQuery(
+      _bookings
+          .where('booking_id', isEqualTo: bookingId)
+          .where('userId', isEqualTo: uid),
+      _TicketFirestoreOperation(
+        label: 'resolve booking document id before cancellation',
+        paths: [
+          'bookings where booking_id == $bookingId and userId == auth uid',
+        ],
+      ),
+    );
+    if (matchingBookings.docs.isNotEmpty) {
+      return matchingBookings.docs.first;
+    }
+
+    final directRef = _bookings.doc(bookingId);
+    final directDoc = await _getDoc(
+      directRef,
+      _TicketFirestoreOperation(
+        label: 'read booking before cancellation',
+        paths: [directRef.path],
+      ),
+    );
+    if (directDoc.exists && directDoc.data() != null) {
+      return directDoc;
+    }
+
+    throw TicketRepositoryException(
+      'Unable to cancel this booking. Booking document was not found: '
+      'bookings/$bookingId.',
+    );
   }
 
   Future<TicketLoadResult> _loadLegacyTickets(String uid) async {
@@ -573,13 +616,18 @@ class TicketRepository {
 class _TicketFirestoreOperation {
   final String label;
   final List<String> paths;
+  final String? details;
 
   const _TicketFirestoreOperation({
     required this.label,
     required this.paths,
+    this.details,
   });
 
-  String describe() => 'operation: $label; paths: ${paths.join(', ')}';
+  String describe() {
+    final suffix = details == null ? '' : '; $details';
+    return 'operation: $label; paths: ${paths.join(', ')}$suffix';
+  }
 }
 
 class TicketCheckoutResult {

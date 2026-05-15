@@ -382,9 +382,11 @@ class TicketProvider with ChangeNotifier {
       notifyListeners();
       return true;
     } on TicketRepositoryException catch (e) {
+      debugPrint('Ticket cancellation failed: ${e.message}');
       _ticketError = e.message;
-    } catch (_) {
-      _ticketError = 'Unable to cancel this booking. Please try again.';
+    } catch (e) {
+      debugPrint('Ticket cancellation failed unexpectedly: $e');
+      _ticketError = 'Unable to cancel this booking. Please try again. $e';
     }
     notifyListeners();
     return false;
