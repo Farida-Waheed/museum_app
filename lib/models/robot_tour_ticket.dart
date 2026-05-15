@@ -123,6 +123,8 @@ class RobotTourTicket {
       'includedFeatures': includedFeatures,
       'price': price,
       'currency': currency,
+      'payment_method': 'cash',
+      'payment_status': 'pay_at_counter',
       'status': status.name,
       'purchasedAt': purchasedAt.toIso8601String(),
       'tourType': tourType.name,

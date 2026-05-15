@@ -1884,7 +1884,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get myTicketsMuseumQrExplanation =>
-      'Museum Entry QR is for entering the museum.';
+      'Museum Entry QR is used at the museum gate.';
 
   @override
   String get myTicketsShowEntryQr => 'Show Entry QR';
@@ -1900,11 +1900,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get myTicketsRobotPairingSeparate =>
-      'Robot pairing happens later by scanning the physical robot QR.';
+      'Robot pairing happens later inside the mobile app by scanning the physical robot QR.';
 
   @override
   String get myTicketsPhysicalRobotQrNote =>
-      'Scan the physical Horus-Bot QR when you arrive to pair with the robot.';
+      'Your robot tour ticket will be ready in the app. Pairing happens at the museum by scanning the physical robot QR.';
 
   @override
   String get myTicketsNoPreferencesSaved =>

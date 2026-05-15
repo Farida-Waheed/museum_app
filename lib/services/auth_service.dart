@@ -223,7 +223,8 @@ class AuthService {
         'full_name': data['full_name'] ?? firebaseUser.displayName,
         'phone_number': data['phone_number'] ?? firebaseUser.phoneNumber,
         'nationality': data['nationality'],
-        'preferred_language': _normalizedLanguage(data['preferred_language']) ?? 'english',
+        'preferred_language':
+            _normalizedLanguage(data['preferred_language']) ?? 'english',
         'avatar_url': data['avatar_url'] ?? firebaseUser.photoURL,
         'accessibility_defaults':
             data['accessibility_defaults'] ?? <String, dynamic>{},
@@ -232,7 +233,13 @@ class AuthService {
         'last_seen_at': FieldValue.serverTimestamp(),
         'updated_at': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
-      return AppUser.fromFirestore(data, fallbackUid: firebaseUser.uid);
+      return AppUser.fromFirestore(
+        {
+          ...data,
+          'uid': firebaseUser.uid,
+        },
+        fallbackUid: firebaseUser.uid,
+      );
     }
 
     final user = AppUser(

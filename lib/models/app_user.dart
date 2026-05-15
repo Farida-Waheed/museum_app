@@ -111,10 +111,7 @@ class AppUser {
     Map<String, dynamic> json, {
     required String fallbackUid,
   }) {
-    final id =
-        _stringValue(json['uid']) ??
-        _stringValue(json['user_id']) ??
-        fallbackUid;
+    final id = _stringValue(json['uid']) ?? fallbackUid;
     final email = _stringValue(json['email']) ?? '';
     final name =
         _stringValue(json['display_name']) ??

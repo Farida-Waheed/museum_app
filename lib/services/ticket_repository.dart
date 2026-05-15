@@ -340,8 +340,9 @@ class TicketRepository {
     RobotTourTicket ticket,
     TicketOrderDraft draft,
   ) {
-    final personalized =
-        ticket.personalizedTourConfig ?? draft.personalizedTourConfig;
+    final personalized = ticket.tourType == RobotTourType.personalized
+        ? ticket.personalizedTourConfig ?? draft.personalizedTourConfig
+        : null;
     return {
       'tourTicketId': ticket.id,
       'userId': ticket.userId,
@@ -352,7 +353,9 @@ class TicketRepository {
       'visit_date': ticket.visitDate == null
           ? null
           : _dateOnly(ticket.visitDate!),
-      'visit_time': ticket.timeSlot == null ? null : _slotStart(ticket.timeSlot!),
+      'visit_time': ticket.timeSlot == null
+          ? null
+          : _slotStart(ticket.timeSlot!),
       'tour_duration_min': ticket.durationMinutes,
       'preferred_language': _normalizedLanguage(ticket.languageCode),
       'pace': personalized?.pace.name ?? TourPace.normal.name,
@@ -370,6 +373,8 @@ class TicketRepository {
       'notes': null,
       'total_price': draft.robotTourSubtotal,
       'currency': 'EGP',
+      'payment_method': 'cash',
+      'payment_status': 'pay_at_counter',
       'status': TicketStatus.active.name,
       'paired_robot_id': null,
       'session_id': null,

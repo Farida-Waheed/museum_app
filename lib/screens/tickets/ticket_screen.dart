@@ -65,6 +65,12 @@ class _TicketScreenState extends State<TicketScreen> {
       return;
     }
 
+    final confirmed = await _confirmCashPayment(
+      context: context,
+      total: ticketProvider.orderTotal,
+    );
+    if (!confirmed) return;
+
     HapticFeedback.mediumImpact();
     SystemSound.play(SystemSoundType.click);
     final purchasedSet = await ticketProvider.checkoutFromDraft(
@@ -85,6 +91,41 @@ class _TicketScreenState extends State<TicketScreen> {
       context,
     ).showSnackBar(SnackBar(content: Text(l10n.ticketsPurchaseComplete)));
     Navigator.pushReplacementNamed(context, AppRoutes.myTickets);
+  }
+
+  Future<bool> _confirmCashPayment({
+    required BuildContext context,
+    required double total,
+  }) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColors.cinematicCard,
+          title: const Text('Cash payment at counter'),
+          content: Text(
+            'Cash only for now. Your booking will be saved with '
+            'payment_method: cash and payment_status: pay_at_counter. '
+            'Total due at the museum counter: ${_money(total)}.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: const Text('Review'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryGold,
+                foregroundColor: AppColors.darkInk,
+              ),
+              child: const Text('Confirm booking'),
+            ),
+          ],
+        );
+      },
+    );
+    return result ?? false;
   }
 
   @override
@@ -664,6 +705,7 @@ class _StandardTourConfigCard extends StatelessWidget {
     final config =
         ticketProvider.currentOrderDraft.standardTourConfig ??
         StandardTourConfig.defaultConfig;
+    final officialDuration = StandardTourConfig.defaultConfig.durationMinutes;
     return _SectionCard(
       title: l10n.ticketsStandardConfigTitle,
       isArabic: isArabic,
@@ -674,13 +716,11 @@ class _StandardTourConfigCard extends StatelessWidget {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: [45, 60, 90].map((duration) {
+            children: [officialDuration].map((duration) {
               return _ChoicePill(
                 label: l10n.ticketsDurationValue(duration),
                 selected: config.durationMinutes == duration,
-                onTap: () => ticketProvider.updateStandardTourConfig(
-                  config.copyWith(durationMinutes: duration),
-                ),
+                onTap: () {},
               );
             }).toList(),
           ),
@@ -701,6 +741,13 @@ class _StandardTourConfigCard extends StatelessWidget {
                 selected: config.languageCode == 'arabic',
                 onTap: () => ticketProvider.updateStandardTourConfig(
                   config.copyWith(languageCode: 'arabic'),
+                ),
+              ),
+              _ChoicePill(
+                label: 'Egyptian Arabic',
+                selected: config.languageCode == 'egyptian_arabic',
+                onTap: () => ticketProvider.updateStandardTourConfig(
+                  config.copyWith(languageCode: 'egyptian_arabic'),
                 ),
               ),
             ],

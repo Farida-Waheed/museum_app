@@ -160,11 +160,13 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                     const SizedBox(height: 18),
                     _SingleChoiceSection<String>(
                       title: l10n.language,
-                      options: const ['english', 'arabic'],
+                      options: const [
+                        'english',
+                        'arabic',
+                        'egyptian_arabic',
+                      ],
                       selected: _languageCode,
-                      labelFor: (value) => value == 'arabic'
-                          ? l10n.ticketsArabic
-                          : l10n.ticketsEnglish,
+                      labelFor: (value) => _languageLabel(l10n, value),
                       onSelected: (value) =>
                           setState(() => _languageCode = value),
                       isArabic: isArabic,
@@ -295,6 +297,17 @@ String _paceLabel(AppLocalizations l10n, TourPace pace) {
       return l10n.tourPaceNormal;
     case TourPace.fast:
       return l10n.tourPaceFast;
+  }
+}
+
+String _languageLabel(AppLocalizations l10n, String languageCode) {
+  switch (languageCode.toLowerCase().replaceAll('-', '_')) {
+    case 'arabic':
+      return l10n.ticketsArabic;
+    case 'egyptian_arabic':
+      return 'Egyptian Arabic';
+    default:
+      return l10n.ticketsEnglish;
   }
 }
 
@@ -660,9 +673,7 @@ class _SummaryCard extends StatelessWidget {
             label: l10n.language,
             value: languageCode == null
                 ? l10n.tourCustomizeNotSelected
-                : languageCode == 'arabic'
-                ? l10n.ticketsArabic
-                : l10n.ticketsEnglish,
+                : _languageLabel(l10n, languageCode!),
           ),
           _SummaryLine(
             label: l10n.tourCustomizeVisitorModeTitle,

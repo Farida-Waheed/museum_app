@@ -167,8 +167,11 @@ class TicketProvider with ChangeNotifier {
     _currentOrderDraft = _currentOrderDraft.copyWith(
       robotTourType: tourType,
       standardTourConfig: tourType == RobotTourType.standard
-          ? _currentOrderDraft.standardTourConfig ??
-                StandardTourConfig.defaultConfig
+          ? StandardTourConfig.defaultConfig.copyWith(
+              languageCode:
+                  _currentOrderDraft.standardTourConfig?.languageCode ??
+                  StandardTourConfig.defaultConfig.languageCode,
+            )
           : _currentOrderDraft.standardTourConfig,
       personalizedTourConfig: tourType == RobotTourType.personalized
           ? _currentOrderDraft.personalizedTourConfig ??
@@ -180,7 +183,9 @@ class TicketProvider with ChangeNotifier {
 
   void updateStandardTourConfig(StandardTourConfig config) {
     _currentOrderDraft = _currentOrderDraft.copyWith(
-      standardTourConfig: config,
+      standardTourConfig: config.copyWith(
+        durationMinutes: StandardTourConfig.defaultConfig.durationMinutes,
+      ),
       robotTourType: RobotTourType.standard,
     );
     notifyListeners();
