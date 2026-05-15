@@ -89,7 +89,7 @@ class VisitorTicketCategory {
       ageGroup: VisitorAgeGroup.adult,
       labelEn: 'Egyptian Adult',
       labelAr: '\u0645\u0635\u0631\u064a \u0628\u0627\u0644\u063a',
-      price: 5,
+      price: 60,
       currency: 'EGP',
     ),
     VisitorTicketCategory(
@@ -98,7 +98,7 @@ class VisitorTicketCategory {
       ageGroup: VisitorAgeGroup.student,
       labelEn: 'Egyptian Student',
       labelAr: '\u0637\u0627\u0644\u0628 \u0645\u0635\u0631\u064a',
-      price: 3,
+      price: 30,
       currency: 'EGP',
       eligibilityNoteEn: 'Student ID required.',
       eligibilityNoteAr:
@@ -110,7 +110,7 @@ class VisitorTicketCategory {
       ageGroup: VisitorAgeGroup.child,
       labelEn: 'Egyptian Child',
       labelAr: '\u0637\u0641\u0644 \u0645\u0635\u0631\u064a',
-      price: 2,
+      price: 20,
       currency: 'EGP',
       eligibilityNoteEn: 'Child age verification may be required.',
       eligibilityNoteAr:
@@ -122,7 +122,7 @@ class VisitorTicketCategory {
       ageGroup: VisitorAgeGroup.adult,
       labelEn: 'Foreigner Adult',
       labelAr: '\u0623\u062c\u0646\u0628\u064a \u0628\u0627\u0644\u063a',
-      price: 20,
+      price: 500,
       currency: 'EGP',
     ),
     VisitorTicketCategory(
@@ -131,7 +131,7 @@ class VisitorTicketCategory {
       ageGroup: VisitorAgeGroup.student,
       labelEn: 'Foreigner Student',
       labelAr: '\u0637\u0627\u0644\u0628 \u0623\u062c\u0646\u0628\u064a',
-      price: 12,
+      price: 250,
       currency: 'EGP',
       eligibilityNoteEn: 'Student ID required.',
       eligibilityNoteAr:
@@ -143,7 +143,7 @@ class VisitorTicketCategory {
       ageGroup: VisitorAgeGroup.child,
       labelEn: 'Foreigner Child',
       labelAr: '\u0637\u0641\u0644 \u0623\u062c\u0646\u0628\u064a',
-      price: 8,
+      price: 250,
       currency: 'EGP',
       eligibilityNoteEn: 'Child age verification may be required.',
       eligibilityNoteAr:
@@ -238,16 +238,16 @@ class StandardTourConfig {
 
   factory StandardTourConfig.fromJson(Map<String, dynamic> json) {
     return StandardTourConfig(
-      durationMinutes: _intValue(json['durationMinutes']) ?? 90,
-      languageCode: json['languageCode'] as String? ?? 'en',
+      durationMinutes: _intValue(json['durationMinutes']) ?? 45,
+      languageCode: _normalizeLanguage(json['languageCode']) ?? 'english',
       routeName: json['routeName'] as String? ?? defaultConfig.routeName,
       routeExhibitIds: _stringList(json['routeExhibitIds']),
     );
   }
 
   static const StandardTourConfig defaultConfig = StandardTourConfig(
-    durationMinutes: 90,
-    languageCode: 'en',
+    durationMinutes: 45,
+    languageCode: 'english',
     routeName: 'Horus-Bot Highlights Route',
     routeExhibitIds: [
       'gem_ramses2_colossus',
@@ -323,8 +323,8 @@ class PersonalizedTourConfig {
     return PersonalizedTourConfig(
       selectedExhibitIds: _stringList(json['selectedExhibitIds']),
       selectedThemes: _stringList(json['selectedThemes']),
-      durationMinutes: _intValue(json['durationMinutes']) ?? 90,
-      languageCode: json['languageCode'] as String? ?? 'en',
+      durationMinutes: _intValue(json['durationMinutes']) ?? 45,
+      languageCode: _normalizeLanguage(json['languageCode']) ?? 'english',
       accessibilityNeeds: _stringList(json['accessibilityNeeds']),
       visitorMode: VisitorMode.values.firstWhere(
         (value) => value.name == json['visitorMode'],
@@ -334,7 +334,7 @@ class PersonalizedTourConfig {
         (value) => value.name == json['pace'],
         orElse: () => TourPace.normal,
       ),
-      photoSpotsEnabled: json['photoSpotsEnabled'] as bool? ?? true,
+      photoSpotsEnabled: json['photoSpotsEnabled'] as bool? ?? false,
       avoidCrowds: json['avoidCrowds'] as bool? ?? false,
     );
   }
@@ -342,12 +342,12 @@ class PersonalizedTourConfig {
   static const PersonalizedTourConfig defaultConfig = PersonalizedTourConfig(
     selectedExhibitIds: [],
     selectedThemes: [],
-    durationMinutes: 90,
-    languageCode: 'en',
+    durationMinutes: 45,
+    languageCode: 'english',
     accessibilityNeeds: [],
     visitorMode: VisitorMode.adult,
     pace: TourPace.normal,
-    photoSpotsEnabled: true,
+    photoSpotsEnabled: false,
     avoidCrowds: false,
   );
 }
@@ -362,6 +362,23 @@ int? _intValue(Object? value) {
 List<String> _stringList(Object? value) {
   if (value is List) return value.whereType<String>().toList();
   return const [];
+}
+
+String? _normalizeLanguage(Object? value) {
+  final raw = value?.toString().trim();
+  if (raw == null || raw.isEmpty) return null;
+  switch (raw.toLowerCase().replaceAll('-', '_')) {
+    case 'en':
+    case 'english':
+      return 'english';
+    case 'ar':
+    case 'arabic':
+      return 'arabic';
+    case 'egyptian_arabic':
+      return 'egyptian_arabic';
+    default:
+      return raw.toLowerCase().replaceAll('-', '_');
+  }
 }
 
 class TicketOrderDraft {
@@ -396,9 +413,9 @@ class TicketOrderDraft {
       case RobotTourType.none:
         return 0;
       case RobotTourType.standard:
-        return 35;
+        return 150;
       case RobotTourType.personalized:
-        return 50;
+        return 300;
     }
   }
 
@@ -449,7 +466,7 @@ class TicketOrderDraft {
           .toList(),
       robotTourType: RobotTourType.values.firstWhere(
         (value) => value.name == json['robotTourType'],
-        orElse: () => RobotTourType.none,
+        orElse: () => RobotTourType.standard,
       ),
       standardTourConfig: json['standardTourConfig'] == null
           ? null
@@ -467,9 +484,9 @@ class TicketOrderDraft {
   static TicketOrderDraft initial() {
     return TicketOrderDraft(
       visitDate: DateTime.now(),
-      timeSlot: '10:00 AM - 12:00 PM',
+      timeSlot: '11:00',
       museumLineItems: const [],
-      robotTourType: RobotTourType.none,
+      robotTourType: RobotTourType.standard,
       standardTourConfig: StandardTourConfig.defaultConfig,
       personalizedTourConfig: PersonalizedTourConfig.defaultConfig,
     );

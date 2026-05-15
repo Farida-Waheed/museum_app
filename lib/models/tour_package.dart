@@ -59,7 +59,7 @@ class TourPackage {
       name: 'Museum Entry Only',
       subtitle: 'Access to museum exhibits',
       durationMinutes: 0, // Not applicable
-      price: 20.0,
+      price: 60.0,
       currency: 'EGP',
       includedFeatures: [
         'Museum entry access',
@@ -76,8 +76,8 @@ class TourPackage {
       id: 'robot-tour-only',
       name: 'Horus-Bot Guided Tour',
       subtitle: 'Interactive robot-guided experience',
-      durationMinutes: 90,
-      price: 35.0,
+      durationMinutes: 45,
+      price: 150.0,
       currency: 'EGP',
       includedFeatures: [
         'Personal robot guide',
@@ -96,8 +96,8 @@ class TourPackage {
       id: 'complete-bundle',
       name: 'Complete Experience Bundle',
       subtitle: 'Museum entry + robot guided tour',
-      durationMinutes: 90,
-      price: 45.0,
+      durationMinutes: 45,
+      price: 210.0,
       currency: 'EGP',
       includedFeatures: [
         'Museum entry access',

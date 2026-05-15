@@ -63,7 +63,7 @@ class AuthService {
     required String email,
     required String password,
     String? phone,
-    String preferredLanguage = 'en',
+    String preferredLanguage = 'english',
   }) async {
     try {
       final trimmedName = name.trim();
@@ -223,7 +223,7 @@ class AuthService {
         'full_name': data['full_name'] ?? firebaseUser.displayName,
         'phone_number': data['phone_number'] ?? firebaseUser.phoneNumber,
         'nationality': data['nationality'],
-        'preferred_language': data['preferred_language'] ?? 'en',
+        'preferred_language': _normalizedLanguage(data['preferred_language']) ?? 'english',
         'avatar_url': data['avatar_url'] ?? firebaseUser.photoURL,
         'accessibility_defaults':
             data['accessibility_defaults'] ?? <String, dynamic>{},
@@ -240,7 +240,7 @@ class AuthService {
       name: firebaseUser.displayName ?? _nameFromEmail(firebaseUser.email),
       email: firebaseUser.email ?? '',
       phone: firebaseUser.phoneNumber,
-      preferredLanguage: 'en',
+      preferredLanguage: 'english',
       createdAt: DateTime.now(),
       avatarUrl: firebaseUser.photoURL,
     );
@@ -260,6 +260,23 @@ class AuthService {
     return localPart == null || localPart.isEmpty
         ? 'Museum Visitor'
         : localPart;
+  }
+
+  String? _normalizedLanguage(Object? value) {
+    final raw = value?.toString().trim();
+    if (raw == null || raw.isEmpty) return null;
+    switch (raw.toLowerCase().replaceAll('-', '_')) {
+      case 'en':
+      case 'english':
+        return 'english';
+      case 'ar':
+      case 'arabic':
+        return 'arabic';
+      case 'egyptian_arabic':
+        return 'egyptian_arabic';
+      default:
+        return raw.toLowerCase().replaceAll('-', '_');
+    }
   }
 
   String _friendlyAuthError(FirebaseAuthException e) {

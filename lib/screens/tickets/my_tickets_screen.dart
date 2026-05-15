@@ -1215,10 +1215,28 @@ String _tourTypeLabel(AppLocalizations l10n, RobotTourType tourType) {
 }
 
 String _languageLabel(AppLocalizations l10n, String languageCode) {
-  return languageCode == 'ar' ? l10n.ticketsArabic : l10n.ticketsEnglish;
+  switch (languageCode.toLowerCase().replaceAll('-', '_')) {
+    case 'ar':
+    case 'arabic':
+      return l10n.ticketsArabic;
+    case 'egyptian_arabic':
+      return 'Egyptian Arabic';
+    default:
+      return l10n.ticketsEnglish;
+  }
 }
 
 String _localizedTimeSlot(String slot, bool isArabic) {
+  switch (slot) {
+    case '09:00':
+      return '09:00 - 11:00';
+    case '11:00':
+      return '11:00 - 13:00';
+    case '13:00':
+      return '13:00 - 15:00';
+    case '15:00':
+      return '15:00 - 17:00';
+  }
   if (!isArabic) return slot;
   return slot.replaceAll('AM', 'ص').replaceAll('PM', 'م');
 }

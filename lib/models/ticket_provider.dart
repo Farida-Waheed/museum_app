@@ -69,7 +69,9 @@ class TicketProvider with ChangeNotifier {
   }
 
   bool get canCheckoutDraft =>
-      _currentOrderDraft.hasMuseumEntry && isPersonalizedDraftComplete;
+      _currentOrderDraft.hasMuseumEntry &&
+      _currentOrderDraft.hasRobotTour &&
+      isPersonalizedDraftComplete;
 
   MuseumTicket? get latestMuseumTicket {
     if (_museumTickets.isEmpty) return null;
@@ -391,7 +393,7 @@ class TicketProvider with ChangeNotifier {
     return MuseumTicket(
       id: 'MT-${now.millisecondsSinceEpoch}',
       userId: userId,
-      museumName: 'Egyptian Museum',
+      museumName: 'The Egyptian Museum',
       visitDate: _currentOrderDraft.visitDate,
       timeSlot: _currentOrderDraft.timeSlot,
       visitorCount: _currentOrderDraft.visitorCount,
@@ -638,7 +640,7 @@ class TicketProvider with ChangeNotifier {
       museumTicket = MuseumTicket(
         id: 'MT-${now.millisecondsSinceEpoch}',
         userId: userId,
-        museumName: 'Egyptian Museum',
+        museumName: 'The Egyptian Museum',
         visitDate: visitDate,
         timeSlot: timeSlot,
         visitorCount: visitorCount,
@@ -661,7 +663,7 @@ class TicketProvider with ChangeNotifier {
         packageId: package.id,
         packageName: package.name,
         durationMinutes: package.durationMinutes,
-        languageCode: 'en',
+        languageCode: 'english',
         includedFeatures: package.includedFeatures,
         price: package.includesMuseumEntry ? 0 : package.price,
         currency: package.currency,
@@ -670,7 +672,7 @@ class TicketProvider with ChangeNotifier {
         tourType: RobotTourType.standard,
         standardTourConfig: StandardTourConfig(
           durationMinutes: package.durationMinutes,
-          languageCode: 'en',
+          languageCode: 'english',
           routeName: package.name,
           routeExhibitIds: StandardTourConfig.defaultConfig.routeExhibitIds,
         ),
@@ -730,11 +732,11 @@ class TicketProvider with ChangeNotifier {
     final museumTicket = MuseumTicket(
       id: 'MT-MOCK-001',
       userId: userId,
-      museumName: 'Egyptian Museum',
+      museumName: 'The Egyptian Museum',
       visitDate: tomorrow,
-      timeSlot: '10:00 AM - 12:00 PM',
+      timeSlot: '11:00',
       visitorCount: 2,
-      price: 40.0,
+      price: 1000.0,
       currency: 'EGP',
       qrCodeValue: 'TKT-MUSEUM-MT-MOCK-001',
       status: TicketStatus.active,
@@ -747,11 +749,11 @@ class TicketProvider with ChangeNotifier {
             ageGroup: VisitorAgeGroup.adult,
             labelEn: 'Foreigner Adult',
             labelAr: 'أجنبي بالغ',
-            price: 20,
+            price: 500,
             currency: 'EGP',
           ),
           quantity: 2,
-          unitPrice: 20,
+          unitPrice: 500,
         ),
       ],
       orderId: orderId,
@@ -764,20 +766,20 @@ class TicketProvider with ChangeNotifier {
       packageId: 'standard',
       packageName: 'Standard Horus-Bot Tour',
       durationMinutes: 90,
-      languageCode: 'en',
+      languageCode: 'english',
       includedFeatures: const [
         'Personal robot guide',
         'Interactive storytelling',
         'Photo opportunities',
       ],
-      price: 35.0,
+      price: 150.0,
       currency: 'EGP',
       status: TicketStatus.active,
       purchasedAt: now.subtract(const Duration(hours: 1)),
       tourType: RobotTourType.standard,
       standardTourConfig: StandardTourConfig.defaultConfig,
       visitDate: tomorrow,
-      timeSlot: '10:00 AM - 12:00 PM',
+      timeSlot: '11:00',
       museumTicketId: museumTicket.id,
       orderId: orderId,
       qrCodeValue: 'TKT-ROBOT-$orderId',
@@ -787,7 +789,7 @@ class TicketProvider with ChangeNotifier {
     final payment = PaymentRecord(
       id: 'PAY-MOCK-001',
       userId: userId,
-      amount: 75.0,
+      amount: 1150.0,
       currency: 'EGP',
       label: 'Complete Experience Bundle',
       date: now.subtract(const Duration(hours: 2)),

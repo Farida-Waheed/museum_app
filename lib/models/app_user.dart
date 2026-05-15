@@ -96,7 +96,7 @@ class AppUser {
       email: json['email'] as String,
       phone: json['phone'] as String?,
       nationality: json['nationality'] as String?,
-      preferredLanguage: json['preferredLanguage'] as String? ?? 'en',
+      preferredLanguage: _normalizedLanguage(json['preferredLanguage']) ?? 'english',
       avatarUrl: json['avatarUrl'] as String?,
       visitCount: json['visitCount'] as int? ?? 0,
       createdAt: DateTime.parse(json['createdAt'] as String),
@@ -127,7 +127,8 @@ class AppUser {
       email: email,
       phone: _stringValue(json['phone_number']),
       nationality: _stringValue(json['nationality']),
-      preferredLanguage: _stringValue(json['preferred_language']) ?? 'en',
+      preferredLanguage:
+          _normalizedLanguage(json['preferred_language']) ?? 'english',
       avatarUrl: _stringValue(json['avatar_url']),
       visitCount: _intValue(json['visit_count']),
       createdAt: _dateValue(json['created_at']) ?? DateTime.now(),
@@ -156,6 +157,23 @@ class AppUser {
   static String _nameFromEmail(String email) {
     final localPart = email.split('@').first.trim();
     return localPart.isEmpty ? 'Museum Visitor' : localPart;
+  }
+
+  static String? _normalizedLanguage(Object? value) {
+    final raw = value?.toString().trim();
+    if (raw == null || raw.isEmpty) return null;
+    switch (raw.toLowerCase().replaceAll('-', '_')) {
+      case 'en':
+      case 'english':
+        return 'english';
+      case 'ar':
+      case 'arabic':
+        return 'arabic';
+      case 'egyptian_arabic':
+        return 'egyptian_arabic';
+      default:
+        return raw.toLowerCase().replaceAll('-', '_');
+    }
   }
 
   @override

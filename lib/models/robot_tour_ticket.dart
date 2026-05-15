@@ -239,11 +239,13 @@ class RobotTourTicket {
         _intValue(json['durationMinutes']) ??
         _intValue(json['tour_duration_min']) ??
         _intValue(json['tour_duration']) ??
-        90;
+        45;
     final language =
-        _stringValue(json['languageCode']) ??
-        _languageCode(_stringValue(json['preferred_language'])) ??
-        'en';
+        _languageCode(
+          _stringValue(json['languageCode']) ??
+              _stringValue(json['preferred_language']),
+        ) ??
+        'english';
     final standardConfig = _standardConfigFromFirestore(
       json,
       duration,
@@ -267,8 +269,6 @@ class RobotTourTicket {
           _stringValue(json['packageName']) ??
           (tourType == RobotTourType.personalized
               ? 'Personalized Horus-Bot Tour'
-              : tourType == RobotTourType.none
-              ? 'No Horus-Bot Tour'
               : 'Standard Horus-Bot Tour'),
       durationMinutes: duration,
       languageCode: language,
@@ -366,7 +366,7 @@ class RobotTourTicket {
                 json['photo_spots_enabled'] ??
                 json['photo_spots'],
           ) ??
-          true,
+          false,
       avoidCrowds:
           _boolValue(json['avoidCrowds'] ?? json['avoid_crowds']) ?? false,
     );
@@ -418,13 +418,17 @@ class RobotTourTicket {
 
   static String? _languageCode(String? value) {
     if (value == null) return null;
-    switch (value.toLowerCase()) {
+    switch (value.toLowerCase().replaceAll('-', '_')) {
+      case 'en':
       case 'english':
-        return 'en';
+        return 'english';
+      case 'ar':
       case 'arabic':
-        return 'ar';
+        return 'arabic';
+      case 'egyptian_arabic':
+        return 'egyptian_arabic';
       default:
-        return value;
+        return value.toLowerCase().replaceAll('-', '_');
     }
   }
 

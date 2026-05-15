@@ -179,7 +179,7 @@ class MuseumTicket {
       museumName:
           _stringValue(json['museumName']) ??
           _stringValue(json['museum_name']) ??
-          'Egyptian Museum',
+          'The Egyptian Museum',
       visitDate:
           _dateValue(json['visitDate']) ??
           _dateValue(json['visit_date']) ??

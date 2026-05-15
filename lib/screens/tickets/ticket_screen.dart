@@ -23,10 +23,10 @@ class TicketScreen extends StatefulWidget {
 
 class _TicketScreenState extends State<TicketScreen> {
   static const List<String> _timeSlots = [
-    '09:00 AM - 11:00 AM',
-    '10:00 AM - 12:00 PM',
-    '12:00 PM - 02:00 PM',
-    '02:00 PM - 04:00 PM',
+    '09:00',
+    '11:00',
+    '13:00',
+    '15:00',
   ];
 
   Future<void> _selectDate(TicketProvider ticketProvider) async {
@@ -267,6 +267,8 @@ class _TicketScreenState extends State<TicketScreen> {
                   formattedDate: formattedDate,
                   isArabic: isArabic,
                 ),
+                const SizedBox(height: 18),
+                _PaymentNoticeCard(isArabic: isArabic),
               ],
             ),
           ),
@@ -625,13 +627,6 @@ class _RobotTourCard extends StatelessWidget {
       child: Column(
         children: [
           _TourOptionTile(
-            title: l10n.ticketsNoRobotTour,
-            subtitle: l10n.ticketsNoRobotTourDesc,
-            icon: Icons.explore_outlined,
-            selected: selected == RobotTourType.none,
-            onTap: () => ticketProvider.selectRobotTourType(RobotTourType.none),
-          ),
-          _TourOptionTile(
             title: l10n.ticketsStandardTour,
             subtitle: l10n.ticketsStandardTourDesc,
             icon: Icons.route_rounded,
@@ -679,7 +674,7 @@ class _StandardTourConfigCard extends StatelessWidget {
           Wrap(
             spacing: 8,
             runSpacing: 8,
-            children: [60, 90, 120].map((duration) {
+            children: [45, 60, 90].map((duration) {
               return _ChoicePill(
                 label: l10n.ticketsDurationValue(duration),
                 selected: config.durationMinutes == duration,
@@ -696,16 +691,16 @@ class _StandardTourConfigCard extends StatelessWidget {
             children: [
               _ChoicePill(
                 label: l10n.ticketsEnglish,
-                selected: config.languageCode == 'en',
+                selected: config.languageCode == 'english',
                 onTap: () => ticketProvider.updateStandardTourConfig(
-                  config.copyWith(languageCode: 'en'),
+                  config.copyWith(languageCode: 'english'),
                 ),
               ),
               _ChoicePill(
                 label: l10n.ticketsArabic,
-                selected: config.languageCode == 'ar',
+                selected: config.languageCode == 'arabic',
                 onTap: () => ticketProvider.updateStandardTourConfig(
-                  config.copyWith(languageCode: 'ar'),
+                  config.copyWith(languageCode: 'arabic'),
                 ),
               ),
             ],
@@ -792,6 +787,39 @@ class _OrderSummaryCard extends StatelessWidget {
             label: l10n.totalLabel,
             value: _money(ticketProvider.orderTotal),
             emphasized: true,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PaymentNoticeCard extends StatelessWidget {
+  const _PaymentNoticeCard({required this.isArabic});
+
+  final bool isArabic;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SectionCard(
+      title: isArabic ? 'الدفع' : 'Payment',
+      subtitle: isArabic
+          ? 'الحجز متاح نقداً فقط حالياً. ستدفع عند شباك المتحف.'
+          : 'Cash only for now. You will pay at the museum counter.',
+      isArabic: isArabic,
+      child: Row(
+        textDirection: Directionality.of(context),
+        children: [
+          const Icon(Icons.payments_outlined, color: AppColors.primaryGold),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'payment_method: cash | payment_status: pay_at_counter',
+              textAlign: TextAlign.start,
+              style: AppTextStyles.metadata(
+                context,
+              ).copyWith(color: AppColors.bodyText),
+            ),
           ),
         ],
       ),
@@ -1279,6 +1307,16 @@ class _OutlineActionButton extends StatelessWidget {
 String _money(double value) => '${value.toStringAsFixed(2)} EGP';
 
 String _localizedTimeSlot(String slot, bool isArabic) {
+  switch (slot) {
+    case '09:00':
+      return '09:00 - 11:00';
+    case '11:00':
+      return '11:00 - 13:00';
+    case '13:00':
+      return '13:00 - 15:00';
+    case '15:00':
+      return '15:00 - 17:00';
+  }
   if (!isArabic) return slot;
   return slot.replaceAll('AM', 'ص').replaceAll('PM', 'م');
 }

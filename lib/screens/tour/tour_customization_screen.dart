@@ -160,9 +160,9 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                     const SizedBox(height: 18),
                     _SingleChoiceSection<String>(
                       title: l10n.language,
-                      options: const ['en', 'ar'],
+                      options: const ['english', 'arabic'],
                       selected: _languageCode,
-                      labelFor: (value) => value == 'ar'
+                      labelFor: (value) => value == 'arabic'
                           ? l10n.ticketsArabic
                           : l10n.ticketsEnglish,
                       onSelected: (value) =>
@@ -660,7 +660,7 @@ class _SummaryCard extends StatelessWidget {
             label: l10n.language,
             value: languageCode == null
                 ? l10n.tourCustomizeNotSelected
-                : languageCode == 'ar'
+                : languageCode == 'arabic'
                 ? l10n.ticketsArabic
                 : l10n.ticketsEnglish,
           ),

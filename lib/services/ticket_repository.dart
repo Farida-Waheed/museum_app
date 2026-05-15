@@ -208,7 +208,7 @@ class TicketRepository {
     return MuseumTicket(
       id: museumTicketId,
       userId: uid,
-      museumName: 'Egyptian Museum',
+      museumName: 'The Egyptian Museum',
       visitDate: draft.visitDate,
       timeSlot: draft.timeSlot,
       visitorCount: draft.visitorCount,
@@ -238,9 +238,7 @@ class TicketRepository {
     final personalizedConfig =
         draft.personalizedTourConfig ?? PersonalizedTourConfig.defaultConfig;
     final isPersonalized = tourType == RobotTourType.personalized;
-    final duration = tourType == RobotTourType.none
-        ? 0
-        : isPersonalized
+    final duration = isPersonalized
         ? personalizedConfig.durationMinutes
         : standardConfig.durationMinutes;
     final languageCode = isPersonalized
@@ -253,8 +251,6 @@ class TicketRepository {
       packageId: tourType.name,
       packageName: isPersonalized
           ? 'Personalized Horus-Bot Tour'
-          : tourType == RobotTourType.none
-          ? 'No Horus-Bot Tour'
           : 'Standard Horus-Bot Tour',
       durationMinutes: duration,
       languageCode: languageCode,
@@ -278,8 +274,6 @@ class TicketRepository {
           : const [],
       selectedArtifactIds: isPersonalized
           ? personalizedConfig.selectedExhibitIds
-          : tourType == RobotTourType.standard
-          ? standardConfig.routeExhibitIds
           : const [],
     );
   }
@@ -297,9 +291,9 @@ class TicketRepository {
       'userId': uid,
       'museum_ticket_id': museumTicketId,
       'robot_tour_ticket_id': robotTicketId,
-      'museum_name': 'Egyptian Museum',
+      'museum_name': 'The Egyptian Museum',
       'visit_date': _dateOnly(draft.visitDate),
-      'visit_time': draft.timeSlot,
+      'visit_time': _slotStart(draft.timeSlot),
       'visitor_count': draft.visitorCount,
       'ticket_types': _ticketTypesFromLineItems(draft.museumLineItems),
       'museum_entry_total': draft.museumSubtotal,
@@ -327,7 +321,7 @@ class TicketRepository {
       'robot_tour_ticket_id': ticket.robotTourTicketId,
       'museum_name': ticket.museumName,
       'visit_date': _dateOnly(ticket.visitDate),
-      'visit_time': ticket.timeSlot,
+      'visit_time': _slotStart(ticket.timeSlot),
       'ticket_types': _ticketTypesFromLineItems(ticket.lineItems),
       'total_tickets': ticket.visitorCount,
       'total_price': draft.museumSubtotal,
@@ -348,8 +342,6 @@ class TicketRepository {
   ) {
     final personalized =
         ticket.personalizedTourConfig ?? draft.personalizedTourConfig;
-    final standard = ticket.standardTourConfig ?? draft.standardTourConfig;
-
     return {
       'tourTicketId': ticket.id,
       'userId': ticket.userId,
@@ -360,9 +352,9 @@ class TicketRepository {
       'visit_date': ticket.visitDate == null
           ? null
           : _dateOnly(ticket.visitDate!),
-      'visit_time': ticket.timeSlot,
+      'visit_time': ticket.timeSlot == null ? null : _slotStart(ticket.timeSlot!),
       'tour_duration_min': ticket.durationMinutes,
-      'preferred_language': _languageName(ticket.languageCode),
+      'preferred_language': _normalizedLanguage(ticket.languageCode),
       'pace': personalized?.pace.name ?? TourPace.normal.name,
       'interests':
           personalized?.selectedThemes ??
@@ -370,12 +362,11 @@ class TicketRepository {
           const <String>[],
       'selected_exhibits':
           personalized?.selectedExhibitIds ??
-          standard?.routeExhibitIds ??
           ticket.selectedArtifactIds ??
           const <String>[],
       'accessibility': personalized?.accessibilityNeeds ?? const <String>[],
       'kids_mode': personalized?.visitorMode == VisitorMode.kidsFamily,
-      'photo_spots': personalized?.photoSpotsEnabled ?? true,
+      'photo_spots': personalized?.photoSpotsEnabled ?? false,
       'notes': null,
       'total_price': draft.robotTourSubtotal,
       'currency': 'EGP',
@@ -425,8 +416,40 @@ class TicketRepository {
     }
   }
 
-  String _languageName(String languageCode) {
-    return languageCode == 'ar' ? 'Arabic' : 'English';
+  String _normalizedLanguage(String languageCode) {
+    switch (languageCode.trim().toLowerCase().replaceAll('-', '_')) {
+      case 'en':
+      case 'english':
+        return 'english';
+      case 'ar':
+      case 'arabic':
+        return 'arabic';
+      case 'egyptian_arabic':
+        return 'egyptian_arabic';
+      default:
+        return languageCode.trim().toLowerCase().replaceAll('-', '_');
+    }
+  }
+
+  String _slotStart(String slot) {
+    final trimmed = slot.trim();
+    if (trimmed.contains(' - ')) {
+      return _toTwentyFourHourStart(trimmed.split(' - ').first);
+    }
+    return _toTwentyFourHourStart(trimmed);
+  }
+
+  String _toTwentyFourHourStart(String raw) {
+    final value = raw.trim();
+    final match = RegExp(r'^(\d{1,2}):(\d{2})\s*(AM|PM)$', caseSensitive: false)
+        .firstMatch(value);
+    if (match == null) return value;
+    var hour = int.parse(match.group(1)!);
+    final minute = match.group(2)!;
+    final period = match.group(3)!.toUpperCase();
+    if (period == 'PM' && hour != 12) hour += 12;
+    if (period == 'AM' && hour == 12) hour = 0;
+    return '${hour.toString().padLeft(2, '0')}:$minute';
   }
 
   String _dateOnly(DateTime value) {
