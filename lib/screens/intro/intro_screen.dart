@@ -41,7 +41,7 @@ class _IntroScreenState extends State<IntroScreen>
     );
 
     _animController.forward();
-    
+
     // Start timer after the first frame is built to ensure context is available
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _startTimer();
@@ -150,14 +150,8 @@ class _IntroScreenState extends State<IntroScreen>
                       RichText(
                         text: TextSpan(
                           children: [
-                            TextSpan(
-                              text: 'المتاحف\n',
-                              style: smallTitleStyle,
-                            ),
-                            TextSpan(
-                              text: 'المصرية',
-                              style: mainTitleStyle,
-                            ),
+                            TextSpan(text: 'المتاحف\n', style: smallTitleStyle),
+                            TextSpan(text: 'المصرية', style: mainTitleStyle),
                           ],
                         ),
                         textAlign: TextAlign.start,
@@ -167,14 +161,8 @@ class _IntroScreenState extends State<IntroScreen>
                       RichText(
                         text: TextSpan(
                           children: [
-                            TextSpan(
-                              text: 'The ',
-                              style: smallTitleStyle,
-                            ),
-                            TextSpan(
-                              text: 'Egyptian\n',
-                              style: mainTitleStyle,
-                            ),
+                            TextSpan(text: 'The ', style: smallTitleStyle),
+                            TextSpan(text: 'Egyptian\n', style: mainTitleStyle),
                             TextSpan(
                               text: 'Museums',
                               style: secondaryTitleStyle,

@@ -14,6 +14,58 @@ service cloud.firestore {
       return signedIn() && request.resource.data.userId == request.auth.uid;
     }
 
+    function activeOwnedMuseumTicket(ticketId) {
+      return signedIn()
+        && ticketId is string
+        && exists(/databases/$(database)/documents/museumTickets/$(ticketId))
+        && get(/databases/$(database)/documents/museumTickets/$(ticketId)).data.userId == request.auth.uid
+        && get(/databases/$(database)/documents/museumTickets/$(ticketId)).data.status == 'active';
+    }
+
+    function activeOwnedRobotTourTicket(ticketId) {
+      return signedIn()
+        && ticketId is string
+        && exists(/databases/$(database)/documents/robotTourTickets/$(ticketId))
+        && get(/databases/$(database)/documents/robotTourTickets/$(ticketId)).data.userId == request.auth.uid
+        && get(/databases/$(database)/documents/robotTourTickets/$(ticketId)).data.status == 'active';
+    }
+
+    function validTourSessionCreate() {
+      return ownsIncoming()
+        && request.resource.data.sessionId is string
+        && request.resource.data.robotId is string
+        && request.resource.data.museumTicketId is string
+        && request.resource.data.robotTourTicketId is string
+        && activeOwnedMuseumTicket(request.resource.data.museumTicketId)
+        && activeOwnedRobotTourTicket(request.resource.data.robotTourTicketId)
+        && request.resource.data.status in ['ready', 'active', 'paused'];
+    }
+
+    function validRobotPair(robotId) {
+      return signedIn()
+        && resource.data.status == 'available'
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'activeSessionId', 'currentUserId', 'updatedAt'])
+        && request.resource.data.status == 'paired'
+        && request.resource.data.activeSessionId is string
+        && request.resource.data.activeSessionId != ''
+        && request.resource.data.currentUserId == request.auth.uid
+        && existsAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.activeSessionId))
+        && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.activeSessionId)).data.userId == request.auth.uid
+        && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.activeSessionId)).data.robotId == robotId;
+    }
+
+    function validRobotRelease() {
+      return signedIn()
+        && resource.data.status == 'paired'
+        && resource.data.currentUserId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'activeSessionId', 'currentUserId', 'updatedAt'])
+        && request.resource.data.status == 'available'
+        && request.resource.data.activeSessionId == ''
+        && request.resource.data.currentUserId == '';
+    }
+
     match /users/{userId} {
       allow read, update, delete: if signedIn() && userId == request.auth.uid;
       allow create: if signedIn() && userId == request.auth.uid;
@@ -33,7 +85,9 @@ service cloud.firestore {
 
     match /tourSessions/{sessionId} {
       allow read: if ownsExisting();
-      allow create: if ownsIncoming();
+      // Prototype client pairing rule. Production should move pairing to a
+      // Cloud Function/server endpoint so robot assignment is authoritative.
+      allow create: if validTourSessionCreate();
       allow update: if ownsExisting() && ownsIncoming();
       allow delete: if false;
     }
@@ -61,13 +115,7 @@ service cloud.firestore {
 
     match /robots/{robotId} {
       allow read: if signedIn();
-      allow update: if signedIn()
-        && resource.data.currentUserId == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['status', 'activeSessionId', 'currentUserId', 'updatedAt'])
-        && request.resource.data.status == 'available'
-        && request.resource.data.activeSessionId == ''
-        && request.resource.data.currentUserId == '';
+      allow update: if validRobotPair(robotId) || validRobotRelease();
       allow create, delete: if false;
     }
   }

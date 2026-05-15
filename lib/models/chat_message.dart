@@ -1,4 +1,4 @@
-/// A simple chat message model used by the Horus chatbot.
+/// A simple message model used by Ask Horus tour fallback.
 ///
 /// This is intentionally lightweight and optimized for the demo, and is used
 /// across both the ChatScreen UI and the ChatProvider state.

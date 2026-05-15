@@ -57,11 +57,17 @@ class MuseumApp extends StatelessWidget {
 
           // 3. Accessibility (Font Scaling)
           builder: (context, child) {
+            final textDirection = prefs.language == 'ar'
+                ? TextDirection.rtl
+                : TextDirection.ltr;
             return MediaQuery(
               data: MediaQuery.of(
                 context,
               ).copyWith(textScaler: TextScaler.linear(prefs.fontScale)),
-              child: child!,
+              child: Directionality(
+                textDirection: textDirection,
+                child: child!,
+              ),
             );
           },
 

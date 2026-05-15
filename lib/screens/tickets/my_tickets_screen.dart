@@ -53,7 +53,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
     return AppMenuShell(
       title: 'HORUS-BOT',
       backgroundColor: AppColors.baseBlack,
-      bottomNavigationBar: const BottomNav(currentIndex: 3),
+      bottomNavigationBar: const BottomNav(currentIndex: 2),
       body: Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
         child: Container(
@@ -529,7 +529,7 @@ class _RobotConfigSummary extends StatelessWidget {
                 ? l10n.myTicketsNone
                 : config.selectedThemes
                       .map((id) => _themeLabel(l10n, id))
-                      .join(', '),
+                      .join(' • '),
           ),
           _BreakdownLine(
             label: l10n.myTicketsVisitorMode,
@@ -545,7 +545,7 @@ class _RobotConfigSummary extends StatelessWidget {
                 ? l10n.myTicketsNone
                 : config.accessibilityNeeds
                       .map((id) => _accessibilityLabel(l10n, id))
-                      .join(', '),
+                      .join(' • '),
           ),
           _BreakdownLine(
             label: l10n.myTicketsPhotoSpots,

@@ -126,9 +126,15 @@ class UserPreferencesModel extends ChangeNotifier {
   }
 
   Future<void> setThemeMode(String value) async {
-    _themeMode = value;
+    final normalized = value == 'light' || value == 'dark' || value == 'system'
+        ? value
+        : 'system';
+    if (_themeMode == normalized) {
+      return;
+    }
+    _themeMode = normalized;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_kThemeMode, value);
+    await prefs.setString(_kThemeMode, normalized);
     notifyListeners();
   }
 

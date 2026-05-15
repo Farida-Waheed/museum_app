@@ -33,13 +33,13 @@ class PrimaryButton extends StatelessWidget {
           const SizedBox(
             width: 18,
             height: 18,
-            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: Colors.white,
+            ),
           )
         else ...[
-          if (icon != null) ...[
-            Icon(icon, size: 20),
-            const SizedBox(width: 8),
-          ],
+          if (icon != null) ...[Icon(icon, size: 20), const SizedBox(width: 8)],
           Text(label, style: AppTextStyles.buttonLabel(context)),
         ],
       ],
@@ -48,8 +48,12 @@ class PrimaryButton extends StatelessWidget {
     final buttonStyle = ElevatedButton.styleFrom(
       backgroundColor: color ?? AppColors.primaryGold,
       foregroundColor: AppColors.darkInk,
-      minimumSize: fullWidth ? const Size(double.infinity, AppSizes.buttonHeight) : const Size(0, AppSizes.buttonHeight),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSizes.radiusMd)),
+      minimumSize: fullWidth
+          ? const Size(double.infinity, AppSizes.buttonHeight)
+          : const Size(0, AppSizes.buttonHeight),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+      ),
       elevation: 0,
     );
 

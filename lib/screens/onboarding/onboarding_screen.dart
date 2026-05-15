@@ -62,20 +62,14 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     final glassSurfaceDecoration = BoxDecoration(
       color: AppColors.cardGlass(0.58),
       borderRadius: BorderRadius.circular(20),
-      border: Border.all(
-        color: AppColors.goldBorder(0.22),
-        width: 1,
-      ),
+      border: Border.all(color: AppColors.goldBorder(0.22), width: 1),
       boxShadow: [
         BoxShadow(
           color: Colors.black.withValues(alpha: 0.32),
           blurRadius: 16,
           offset: const Offset(0, 8),
         ),
-        BoxShadow(
-          color: AppColors.softGlow(0.06),
-          blurRadius: 18,
-        ),
+        BoxShadow(color: AppColors.softGlow(0.06), blurRadius: 18),
       ],
     );
 
@@ -84,7 +78,10 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       foregroundColor: AppColors.darkInk,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: AppColors.softGold.withValues(alpha: 0.92), width: 1),
+        side: BorderSide(
+          color: AppColors.softGold.withValues(alpha: 0.92),
+          width: 1,
+        ),
       ),
       elevation: 0,
       shadowColor: Colors.transparent,
@@ -214,8 +211,12 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                       ],
                                       gradient: RadialGradient(
                                         colors: [
-                                          AppColors.primaryGold.withValues(alpha: 0.10),
-                                          AppColors.primaryGold.withValues(alpha: 0.0),
+                                          AppColors.primaryGold.withValues(
+                                            alpha: 0.10,
+                                          ),
+                                          AppColors.primaryGold.withValues(
+                                            alpha: 0.0,
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -225,7 +226,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                         child: Stack(
                                           alignment: Alignment.center,
                                           children: [
-                                            if (pages[index]['useShadow'] == true)
+                                            if (pages[index]['useShadow'] ==
+                                                true)
                                               Transform.translate(
                                                 offset: const Offset(0, 2),
                                                 child: Image.asset(
@@ -244,9 +246,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                             Image.asset(
                                               pages[index]['iconPath']!,
                                               width:
-                                                  pages[index]['iconSize'] ?? 82.0,
+                                                  pages[index]['iconSize'] ??
+                                                  82.0,
                                               height:
-                                                  pages[index]['iconSize'] ?? 82.0,
+                                                  pages[index]['iconSize'] ??
+                                                  82.0,
                                               fit: BoxFit.contain,
                                             ),
                                           ],
@@ -281,9 +285,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                   child: Text(
                                     pages[index]['desc']!,
                                     textAlign: TextAlign.center,
-                                    style: AppTextStyles.premiumMutedBody(context)
-                                        .copyWith(
-                                          color: AppColors.bodyText.withValues(alpha: 0.76),
+                                    style:
+                                        AppTextStyles.premiumMutedBody(
+                                          context,
+                                        ).copyWith(
+                                          color: AppColors.bodyText.withValues(
+                                            alpha: 0.76,
+                                          ),
                                           fontSize: 14,
                                           height: 1.46,
                                           letterSpacing: isArabic ? 0 : 0.15,
@@ -306,14 +314,17 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                               final active = _currentPage == index;
                               return AnimatedContainer(
                                 duration: const Duration(milliseconds: 400),
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 5),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 5,
+                                ),
                                 width: active ? 26 : 8,
                                 height: 7,
                                 decoration: BoxDecoration(
                                   color: active
                                       ? AppColors.primaryGold
-                                      : AppColors.mutedText.withValues(alpha: 0.38),
+                                      : AppColors.mutedText.withValues(
+                                          alpha: 0.38,
+                                        ),
                                   borderRadius: BorderRadius.circular(10),
                                   boxShadow: [
                                     if (active)
@@ -350,12 +361,15 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                 style: primaryCtaButtonStyle,
                                 child: Text(
                                   l10n.startExploring,
-                                  style: AppTextStyles.premiumButtonLabel(context).copyWith(
-                                    fontSize: 15,
-                                    color: AppColors.darkInk,
-                                    fontWeight: FontWeight.w600,
-                                    letterSpacing: isArabic ? 0 : 0.3,
-                                  ),
+                                  style:
+                                      AppTextStyles.premiumButtonLabel(
+                                        context,
+                                      ).copyWith(
+                                        fontSize: 15,
+                                        color: AppColors.darkInk,
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: isArabic ? 0 : 0.3,
+                                      ),
                                 ),
                               ),
                             ),
@@ -377,7 +391,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         });
                       },
                       offset: const Offset(0, 48),
-                      color: AppColors.cinematicElevated.withValues(alpha: 0.96),
+                      color: AppColors.cinematicElevated.withValues(
+                        alpha: 0.96,
+                      ),
                       elevation: 8,
                       constraints: const BoxConstraints(minWidth: 160),
                       shape: RoundedRectangleBorder(
@@ -468,11 +484,12 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                             const SizedBox(width: 8),
                             Text(
                               l10n.language,
-                              style: AppTextStyles.premiumMutedBody(context).copyWith(
-                                color: AppColors.whiteTitle,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                              ),
+                              style: AppTextStyles.premiumMutedBody(context)
+                                  .copyWith(
+                                    color: AppColors.whiteTitle,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                  ),
                             ),
                           ],
                         ),

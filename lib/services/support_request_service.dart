@@ -11,7 +11,8 @@ import '../models/support_request.dart';
 /// This is intentionally built with a clean interface so a backend can be
 /// plugged in later without altering the chat or UI layer.
 class SupportRequestService {
-  static final SupportRequestService _instance = SupportRequestService._internal();
+  static final SupportRequestService _instance =
+      SupportRequestService._internal();
 
   factory SupportRequestService() => _instance;
 
@@ -54,10 +55,7 @@ class SupportRequestService {
     }
   }
 
-  void addHumanReply({
-    required String requestId,
-    required String replyText,
-  }) {
+  void addHumanReply({required String requestId, required String replyText}) {
     final request = getRequest(requestId);
     if (request == null) return;
     final message = SupportMessage(
@@ -70,6 +68,7 @@ class SupportRequestService {
     request.status = SupportRequestStatus.inProgress;
     _replyController.add(message);
   }
+
   void markResolved(String requestId) {
     final request = getRequest(requestId);
     if (request == null) return;

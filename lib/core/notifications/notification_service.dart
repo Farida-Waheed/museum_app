@@ -310,7 +310,10 @@ class NotificationService {
   String _encodePayload(NotificationPayload payload) {
     final json = payload.toJson();
     return json.entries
-        .map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+        .map(
+          (e) =>
+              '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}',
+        )
         .join('&');
   }
 

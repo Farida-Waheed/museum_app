@@ -105,16 +105,20 @@ class _ExhibitListTile extends StatelessWidget {
                   children: [
                     Text(
                       exhibit.getName(prefs.language),
-                      style: AppTextStyles.displayArtifactTitle(context).copyWith(
-                        fontSize: 16,
-                      ),
+                      style: AppTextStyles.displayArtifactTitle(
+                        context,
+                      ).copyWith(fontSize: 16),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        const Icon(Icons.location_on_outlined, size: 12, color: AppColors.helperText),
+                        const Icon(
+                          Icons.location_on_outlined,
+                          size: 12,
+                          color: AppColors.helperText,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           l10n.mainGallery,
@@ -126,7 +130,12 @@ class _ExhibitListTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Icon(isArabic ? Icons.chevron_left_rounded : Icons.chevron_right_rounded, color: Colors.white24),
+              Icon(
+                isArabic
+                    ? Icons.chevron_left_rounded
+                    : Icons.chevron_right_rounded,
+                color: Colors.white24,
+              ),
             ],
           ),
         ),

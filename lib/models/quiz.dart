@@ -28,8 +28,10 @@ class QuizQuestion {
   // Helpers to get localized text
   String getQuestion(String lang) => lang == 'ar' ? questionAr : questionEn;
   List<String> getOptions(String lang) => lang == 'ar' ? optionsAr : optionsEn;
-  String getExplanation(String lang) => lang == 'ar' ? explanationAr : explanationEn;
-  String getExhibitName(String lang) => lang == 'ar' ? exhibitNameAr : exhibitNameEn;
+  String getExplanation(String lang) =>
+      lang == 'ar' ? explanationAr : explanationEn;
+  String getExhibitName(String lang) =>
+      lang == 'ar' ? exhibitNameAr : exhibitNameEn;
 
   QuizQuestion copyWith({
     String? id,

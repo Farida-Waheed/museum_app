@@ -20,6 +20,7 @@ import '../screens/support/support_conversation_screen.dart';
 import '../screens/support/support_inbox_screen.dart';
 
 import '../screens/tickets/ticket_screen.dart';
+import '../screens/tickets/tickets_tab_screen.dart';
 import '../screens/tickets/my_tickets_screen.dart';
 import '../screens/profile/profile_screen.dart';
 import '../screens/tickets/qr_scanner_screen.dart';
@@ -66,6 +67,7 @@ class AppRoutes {
   static const String accessibility = '/accessibility';
   static const String notificationSettings = '/notification_settings';
   static const String projectInfo = '/project_info';
+  static const String team = '/team';
   static const String feedback = '/feedback';
 
   static const String profile = '/profile';
@@ -106,7 +108,7 @@ class AppRoutes {
       summary: (context) => const VisitSummaryScreen(),
       tourCustomization: (context) => const TourCustomizationScreen(),
 
-      tickets: (context) => const TicketScreen(),
+      tickets: (context) => const TicketsTabScreen(),
       myTickets: (context) => const MyTicketsScreen(),
       qrScan: (context) {
         final args = ModalRoute.of(context)?.settings.arguments;
@@ -122,6 +124,7 @@ class AppRoutes {
         final targetSection = args is String ? args : null;
         return ProjectInfoScreen(targetSection: targetSection);
       },
+      team: (context) => const ProjectInfoScreen(targetSection: 'team'),
       feedback: (context) => const FeedbackScreen(),
 
       profile: (context) => const ProfileScreen(),

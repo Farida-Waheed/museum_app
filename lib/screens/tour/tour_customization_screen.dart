@@ -109,7 +109,7 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
 
     return AppMenuShell(
       title: 'HORUS-BOT',
-      bottomNavigationBar: const BottomNav(currentIndex: 3),
+      bottomNavigationBar: const BottomNav(currentIndex: 2),
       backgroundColor: AppColors.baseBlack,
       body: Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
@@ -249,7 +249,9 @@ class _OptionItem {
 }
 
 String _safeLocalizedText(String localizedValue, String fallbackValue) {
-  final looksCorrupted = RegExp(r'[ØÙÂâ]').hasMatch(localizedValue);
+  final looksCorrupted = RegExp(
+    r'[\u00D8\u00D9\u00C2\u00E2]',
+  ).hasMatch(localizedValue);
   return looksCorrupted ? fallbackValue : localizedValue;
 }
 

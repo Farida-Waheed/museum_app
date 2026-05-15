@@ -4,8 +4,12 @@ import '../../core/constants/colors.dart';
 
 ThemeData getLightTheme(String languageCode) {
   final bool isArabic = languageCode == 'ar';
-  final String? bodyFont = isArabic ? GoogleFonts.notoSansArabic().fontFamily : GoogleFonts.inter().fontFamily;
-  final String? headingFont = isArabic ? GoogleFonts.amiri().fontFamily : GoogleFonts.cinzel().fontFamily;
+  final String? bodyFont = isArabic
+      ? GoogleFonts.notoSansArabic().fontFamily
+      : GoogleFonts.inter().fontFamily;
+  final String? headingFont = isArabic
+      ? GoogleFonts.amiri().fontFamily
+      : GoogleFonts.cinzel().fontFamily;
 
   return ThemeData(
     useMaterial3: true,
@@ -70,11 +74,23 @@ ThemeData getLightTheme(String languageCode) {
         fontWeight: FontWeight.w600,
         color: AppColors.darkInk,
       ),
-      bodyLarge: TextStyle(fontFamily: bodyFont, fontSize: 14, color: AppColors.darkInk, height: 1.5),
-      bodySmall: TextStyle(fontFamily: bodyFont, fontSize: 12, color: AppColors.mutedText),
+      bodyLarge: TextStyle(
+        fontFamily: bodyFont,
+        fontSize: 14,
+        color: AppColors.darkInk,
+        height: 1.5,
+      ),
+      bodySmall: TextStyle(
+        fontFamily: bodyFont,
+        fontSize: 12,
+        color: AppColors.mutedText,
+      ),
     ),
 
-    dividerTheme: const DividerThemeData(color: Color(0xFFE3E8F2), thickness: 1),
+    dividerTheme: const DividerThemeData(
+      color: Color(0xFFE3E8F2),
+      thickness: 1,
+    ),
   );
 }
 

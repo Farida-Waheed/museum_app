@@ -5,6 +5,8 @@ import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 import '../../l10n/app_localizations.dart';
 import '../../app/router.dart';
+import '../../widgets/app_menu_shell.dart';
+import '../../widgets/bottom_nav.dart';
 
 class SupportInboxScreen extends StatefulWidget {
   const SupportInboxScreen({super.key});
@@ -20,13 +22,10 @@ class _SupportInboxScreenState extends State<SupportInboxScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final requests = _service.requests;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.supportInboxTitle),
-        backgroundColor: AppColors.darkHeader,
-        elevation: 0,
-      ),
+    return AppMenuShell(
+      title: l10n.supportInboxTitle.toUpperCase(),
       backgroundColor: AppColors.darkBackground,
+      bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: requests.isEmpty
@@ -63,10 +62,7 @@ class _SupportRequestCard extends StatelessWidget {
   final SupportRequest request;
   final VoidCallback onTap;
 
-  const _SupportRequestCard({
-    required this.request,
-    required this.onTap,
-  });
+  const _SupportRequestCard({required this.request, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -105,12 +101,13 @@ class _SupportRequestCard extends StatelessWidget {
                       request.status == SupportRequestStatus.pending
                           ? AppLocalizations.of(context)!.supportStatusPending
                           : request.status == SupportRequestStatus.inProgress
-                              ? AppLocalizations.of(context)!.supportStatusInProgress
-                              : AppLocalizations.of(context)!.supportStatusResolved,
-                      style: AppTextStyles.metadata(context).copyWith(
-                        color: AppColors.primaryGold,
-                        fontSize: 12,
-                      ),
+                          ? AppLocalizations.of(
+                              context,
+                            )!.supportStatusInProgress
+                          : AppLocalizations.of(context)!.supportStatusResolved,
+                      style: AppTextStyles.metadata(
+                        context,
+                      ).copyWith(color: AppColors.primaryGold, fontSize: 12),
                     ),
                   ),
                 ],
@@ -120,21 +117,24 @@ class _SupportRequestCard extends StatelessWidget {
                 request.latestMessage,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.bodyPrimary(context).copyWith(
-                  color: Colors.white70,
-                  height: 1.5,
-                ),
+                style: AppTextStyles.bodyPrimary(
+                  context,
+                ).copyWith(color: Colors.white70, height: 1.5),
               ),
               const SizedBox(height: 12),
               Row(
                 children: [
-                  Icon(Icons.place_outlined, color: AppColors.primaryGold, size: 18),
+                  Icon(
+                    Icons.place_outlined,
+                    color: AppColors.primaryGold,
+                    size: 18,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     request.screen,
-                    style: AppTextStyles.metadata(context).copyWith(
-                      color: AppColors.helperText,
-                    ),
+                    style: AppTextStyles.metadata(
+                      context,
+                    ).copyWith(color: AppColors.helperText),
                   ),
                 ],
               ),

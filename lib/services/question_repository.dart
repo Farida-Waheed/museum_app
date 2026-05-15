@@ -65,14 +65,15 @@ class QuestionRepository {
       final snapshot = await _questions
           .where('sessionId', isEqualTo: sessionId)
           .get();
-      final questions = snapshot.docs
-          .map((doc) => TourQuestion.fromFirestore(doc.id, doc.data()))
-          .toList()
-        ..sort((a, b) {
-          final left = a.createdAt ?? DateTime(0);
-          final right = b.createdAt ?? DateTime(0);
-          return left.compareTo(right);
-        });
+      final questions =
+          snapshot.docs
+              .map((doc) => TourQuestion.fromFirestore(doc.id, doc.data()))
+              .toList()
+            ..sort((a, b) {
+              final left = a.createdAt ?? DateTime(0);
+              final right = b.createdAt ?? DateTime(0);
+              return left.compareTo(right);
+            });
       return questions;
     } on FirebaseException catch (e) {
       throw QuestionRepositoryException(_friendlyError(e));

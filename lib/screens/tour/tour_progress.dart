@@ -5,7 +5,6 @@ import '../../models/user_preferences.dart';
 import '../../models/exhibit.dart';
 import '../../core/services/mock_data.dart';
 import '../../app/router.dart';
-import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
@@ -42,10 +41,12 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
     final isArabic = prefs.language == 'ar';
     final cs = Theme.of(context).colorScheme;
 
-    final visited =
-        _allExhibits.where((e) => _visitedExhibitIds.contains(e.id)).toList();
-    final unvisited =
-        _allExhibits.where((e) => !_visitedExhibitIds.contains(e.id)).toList();
+    final visited = _allExhibits
+        .where((e) => _visitedExhibitIds.contains(e.id))
+        .toList();
+    final unvisited = _allExhibits
+        .where((e) => !_visitedExhibitIds.contains(e.id))
+        .toList();
 
     final progress = _allExhibits.isEmpty
         ? 0.0
@@ -54,12 +55,12 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
     return AppMenuShell(
       title: (isArabic ? "تقدم الجولة" : "Tour Progress").toUpperCase(),
       backgroundColor: AppColors.cinematicBackground,
-      bottomNavigationBar: const BottomNav(currentIndex: 2),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
-          crossAxisAlignment:
-              isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          crossAxisAlignment: isArabic
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
           children: [
             // overview
             Container(
@@ -71,11 +72,13 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
               child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(
-                  crossAxisAlignment:
-                      isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                  crossAxisAlignment: isArabic
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
                   children: [
                     Text(
-                      (isArabic ? "الجولة الحالية" : "Current tour").toUpperCase(),
+                      (isArabic ? "الجولة الحالية" : "Current tour")
+                          .toUpperCase(),
                       style: AppTextStyles.displaySectionTitle(context),
                     ),
                     const SizedBox(height: 20),
@@ -84,12 +87,17 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
                       children: [
                         Text(
                           isArabic ? "التقدم" : "Progress",
-                          style: AppTextStyles.metadata(context).copyWith(color: Colors.white70),
+                          style: AppTextStyles.metadata(
+                            context,
+                          ).copyWith(color: Colors.white70),
                         ),
                         Text(
                           "${visited.length} / ${_allExhibits.length} "
                           "${isArabic ? 'معروضات' : 'exhibits'}",
-                          style: AppTextStyles.metadata(context).copyWith(color: AppColors.primaryGold, fontWeight: FontWeight.bold),
+                          style: AppTextStyles.metadata(context).copyWith(
+                            color: AppColors.primaryGold,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
@@ -206,10 +214,9 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
             ),
             Text(
               value,
-              style: AppTextStyles.bodyPrimary(context).copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
+              style: AppTextStyles.bodyPrimary(
+                context,
+              ).copyWith(color: Colors.white, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -228,7 +235,9 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
         const SizedBox(width: 10),
         Text(
           title.toUpperCase(),
-          style: AppTextStyles.displaySectionTitle(context).copyWith(color: color, fontSize: 12),
+          style: AppTextStyles.displaySectionTitle(
+            context,
+          ).copyWith(color: color, fontSize: 12),
         ),
       ],
     );
@@ -278,8 +287,9 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
-                  crossAxisAlignment:
-                      isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                  crossAxisAlignment: isArabic
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
                   children: [
                     Text(
                       exhibit.getName(prefs.language),
@@ -299,7 +309,11 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
                 ),
               ),
               const SizedBox(width: 6),
-              const Icon(Icons.chevron_right_rounded, size: 18, color: AppColors.neutralMedium),
+              const Icon(
+                Icons.chevron_right_rounded,
+                size: 18,
+                color: AppColors.neutralMedium,
+              ),
             ],
           ),
         ),

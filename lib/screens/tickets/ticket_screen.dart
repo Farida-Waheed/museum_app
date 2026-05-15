@@ -97,7 +97,7 @@ class _TicketScreenState extends State<TicketScreen> {
 
     return AppMenuShell(
       title: 'HORUS-BOT',
-      bottomNavigationBar: const BottomNav(currentIndex: 3),
+      bottomNavigationBar: const BottomNav(currentIndex: 2),
       backgroundColor: AppColors.baseBlack,
       hideDefaultAppBar: true,
       body: Builder(
@@ -792,17 +792,6 @@ class _OrderSummaryCard extends StatelessWidget {
             label: l10n.totalLabel,
             value: _money(ticketProvider.orderTotal),
             emphasized: true,
-          ),
-          const SizedBox(height: 8),
-          Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: Text(
-              l10n.ticketsMockCheckoutNote,
-              textAlign: TextAlign.start,
-              style: AppTextStyles.metadata(
-                context,
-              ).copyWith(color: AppColors.neutralMedium),
-            ),
           ),
         ],
       ),

@@ -48,7 +48,7 @@ class RobotMqttService extends ChangeNotifier {
 
   MqttClient? _client;
   StreamSubscription<List<MqttReceivedMessage<MqttMessage>>>?
-      _updatesSubscription;
+  _updatesSubscription;
   String? _activeRobotId;
   String? _activeSessionId;
   RobotMqttConnectionState _connectionState;
@@ -140,9 +140,7 @@ class RobotMqttService extends ChangeNotifier {
     }
 
     if (!isConnected) {
-      debugPrint(
-        'MQTT connect failed: ${client.connectionStatus?.returnCode}',
-      );
+      debugPrint('MQTT connect failed: ${client.connectionStatus?.returnCode}');
       client.disconnect();
       _setConnectionState(RobotMqttConnectionState.error);
       return false;

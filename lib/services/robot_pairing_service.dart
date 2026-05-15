@@ -89,7 +89,6 @@ class RobotPairingService {
           'status': 'paired',
           'activeSessionId': sessionId,
           'currentUserId': userId,
-          'lastSeenAt': FieldValue.serverTimestamp(),
           'updatedAt': FieldValue.serverTimestamp(),
         });
       });

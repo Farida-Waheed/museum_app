@@ -91,18 +91,25 @@ void showTourAlertOnce(
                             AppAssets.ankhIcon,
                             width: 26,
                             height: 26,
-                            errorBuilder: (_, __, ___) => const Icon(Icons.notifications),
+                            errorBuilder: (_, __, ___) =>
+                                const Icon(Icons.notifications),
                           ),
                           const SizedBox(width: AppSizes.sm),
                           Expanded(
                             child: Text(
                               title,
-                              style: AppTextStyles.cardTitle(ctx).copyWith(fontSize: 16),
+                              style: AppTextStyles.cardTitle(
+                                ctx,
+                              ).copyWith(fontSize: 16),
                             ),
                           ),
                           IconButton(
                             onPressed: () => navigator.pop(),
-                            icon: const Icon(Icons.close, size: 18, color: Colors.white54),
+                            icon: const Icon(
+                              Icons.close,
+                              size: 18,
+                              color: Colors.white54,
+                            ),
                             tooltip: 'Close',
                           ),
                         ],
@@ -114,10 +121,12 @@ void showTourAlertOnce(
                             : Alignment.centerLeft,
                         child: Text(
                           bodyText,
-                          textAlign: isArabic ? TextAlign.right : TextAlign.left,
-                          style: AppTextStyles.bodyPrimary(ctx).copyWith(
-                            color: Colors.white.withOpacity(0.92),
-                          ),
+                          textAlign: isArabic
+                              ? TextAlign.right
+                              : TextAlign.left,
+                          style: AppTextStyles.bodyPrimary(
+                            ctx,
+                          ).copyWith(color: Colors.white.withOpacity(0.92)),
                         ),
                       ),
                       const SizedBox(height: AppSizes.md),
@@ -126,7 +135,12 @@ void showTourAlertOnce(
                         children: [
                           TextButton(
                             onPressed: () => navigator.pop(),
-                            child: Text(isArabic ? "لاحقاً" : "Later", style: AppTextStyles.button(ctx).copyWith(color: AppColors.neutralMedium)),
+                            child: Text(
+                              isArabic ? "لاحقاً" : "Later",
+                              style: AppTextStyles.button(
+                                ctx,
+                              ).copyWith(color: AppColors.neutralMedium),
+                            ),
                           ),
                           const SizedBox(width: AppSizes.sm),
                           ElevatedButton(
@@ -134,14 +148,19 @@ void showTourAlertOnce(
                               backgroundColor: AppColors.primaryGold,
                               foregroundColor: AppColors.darkInk,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                                borderRadius: BorderRadius.circular(
+                                  AppSizes.radiusSm,
+                                ),
                               ),
                             ),
                             onPressed: () {
                               navigator.pop();
                               onViewMap?.call();
                             },
-                            child: Text(isArabic ? "افتح الخريطة" : "Open Map", style: AppTextStyles.button(ctx)),
+                            child: Text(
+                              isArabic ? "افتح الخريطة" : "Open Map",
+                              style: AppTextStyles.button(ctx),
+                            ),
                           ),
                         ],
                       ),
@@ -154,9 +173,15 @@ void showTourAlertOnce(
         );
       },
       transitionBuilder: (context, animation, secondary, child) {
-        final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutCubic,
+        );
         return SlideTransition(
-          position: Tween<Offset>(begin: const Offset(0, -0.15), end: Offset.zero).animate(curved),
+          position: Tween<Offset>(
+            begin: const Offset(0, -0.15),
+            end: Offset.zero,
+          ).animate(curved),
           child: FadeTransition(opacity: curved, child: child),
         );
       },

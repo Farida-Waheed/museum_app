@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../l10n/app_localizations.dart';
-import '../../widgets/bottom_nav.dart';
 import '../../widgets/primary_button.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
@@ -16,13 +15,16 @@ class TourPlannerScreen extends StatelessWidget {
     return AppMenuShell(
       title: l10n.tourPlanner.toUpperCase(),
       backgroundColor: AppColors.cinematicBackground,
-      bottomNavigationBar: const BottomNav(currentIndex: 2),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Icon(Icons.auto_awesome, size: 48, color: AppColors.primaryGold),
+            const Icon(
+              Icons.auto_awesome,
+              size: 48,
+              color: AppColors.primaryGold,
+            ),
             const SizedBox(height: 20),
             Text(
               l10n.tourPlanner.toUpperCase(),
@@ -33,7 +35,9 @@ class TourPlannerScreen extends StatelessWidget {
               isArabic
                   ? "قم بتخصيص جولتك في المتحف بناءً على اهتماماتك والوقت المتاح."
                   : "Customize your museum tour based on your interests and available time.",
-              style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 16, color: Colors.white70),
+              style: AppTextStyles.bodyPrimary(
+                context,
+              ).copyWith(fontSize: 16, color: Colors.white70),
             ),
             const SizedBox(height: 40),
             _buildInterestSection(context, l10n),
@@ -87,7 +91,13 @@ class _InterestChipState extends State<_InterestChip> {
   @override
   Widget build(BuildContext context) {
     return FilterChip(
-      label: Text(widget.label, style: AppTextStyles.metadata(context).copyWith(color: _selected ? AppColors.darkInk : Colors.white, fontWeight: FontWeight.bold)),
+      label: Text(
+        widget.label,
+        style: AppTextStyles.metadata(context).copyWith(
+          color: _selected ? AppColors.darkInk : Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       selected: _selected,
       onSelected: (val) => setState(() => _selected = val),
       selectedColor: AppColors.primaryGold,
@@ -96,7 +106,9 @@ class _InterestChipState extends State<_InterestChip> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: _selected ? AppColors.primaryGold : Colors.white.withOpacity(0.1),
+          color: _selected
+              ? AppColors.primaryGold
+              : Colors.white.withOpacity(0.1),
         ),
       ),
     );

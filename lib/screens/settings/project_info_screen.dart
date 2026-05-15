@@ -48,124 +48,134 @@ class _ProjectInfoScreenState extends State<ProjectInfoScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final teamOnly = widget.targetSection == 'team';
 
     final textColor = isDark ? Colors.white : AppColors.darkInk;
     final secondaryTextColor = isDark ? Colors.white70 : AppColors.mutedText;
 
     return AppMenuShell(
-      title: l10n.aboutHorusBot.toUpperCase(),
+      title: (teamOnly ? l10n.team : l10n.aboutHorusBot).toUpperCase(),
       backgroundColor: isDark
           ? AppColors.darkBackground
           : AppColors.warmSurface,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header Card
-            _InfoCard(
-              child: Column(
-                children: [
-                  Image.asset("assets/icons/ankh.png", width: 64, height: 64),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.horusBotTitle,
-                    style: AppTextStyles.displayArtifactTitle(context).copyWith(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w900,
-                      color: textColor,
-                      letterSpacing: 1,
+      body: Directionality(
+        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+        child: SingleChildScrollView(
+          controller: _scrollController,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment:
+                isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            children: [
+            if (!teamOnly) ...[
+              _InfoCard(
+                child: Column(
+                  children: [
+                    Image.asset("assets/icons/ankh.png", width: 64, height: 64),
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.horusBotTitle,
+                      style: AppTextStyles.displayArtifactTitle(context).copyWith(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                        color: textColor,
+                        letterSpacing: 1,
+                      ),
                     ),
-                  ),
-                  Text(
-                    l10n.version1,
-                    style: AppTextStyles.metadata(context).copyWith(
-                      fontSize: 14,
-                      color: AppColors.primaryGold,
-                      fontWeight: FontWeight.bold,
+                    Text(
+                      l10n.version1,
+                      style: AppTextStyles.metadata(context).copyWith(
+                        fontSize: 14,
+                        color: AppColors.primaryGold,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l10n.smartAutonomousGuide,
-                    style: AppTextStyles.bodyPrimary(context).copyWith(
-                      fontSize: 16,
-                      color: secondaryTextColor,
-                      fontWeight: FontWeight.w500,
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.smartAutonomousGuide,
+                      textAlign: TextAlign.center,
+                      style: AppTextStyles.bodyPrimary(context).copyWith(
+                        fontSize: 16,
+                        color: secondaryTextColor,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
 
-            const SizedBox(height: 32),
-            _SectionTitle(title: l10n.projectDescriptionLabel),
-            _InfoCard(
-              child: Text(
-                l10n.projectDescription,
-                style: AppTextStyles.bodyPrimary(
-                  context,
-                ).copyWith(fontSize: 15, color: textColor, height: 1.6),
+              const SizedBox(height: 32),
+              _SectionTitle(title: l10n.projectDescriptionLabel),
+              _InfoCard(
+                child: Text(
+                  l10n.projectDescription,
+                  style: AppTextStyles.bodyPrimary(
+                    context,
+                  ).copyWith(fontSize: 15, color: textColor, height: 1.6),
+                ),
               ),
-            ),
 
-            const SizedBox(height: 32),
-            _SectionTitle(title: l10n.technologiesUsedLabel),
-            const _InfoCard(
-              child: Wrap(
-                spacing: 12,
-                runSpacing: 12,
-                children: [
-                  _TechChip(label: "ROS 2"),
-                  _TechChip(label: "Navigation2"),
-                  _TechChip(label: "Flutter"),
-                  _TechChip(label: "Firebase"),
-                  _TechChip(label: "Raspberry Pi"),
-                  _TechChip(label: "Arduino"),
-                ],
+              const SizedBox(height: 32),
+              _SectionTitle(title: l10n.technologiesUsedLabel),
+              const _InfoCard(
+                child: Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    _TechChip(label: "ROS 2"),
+                    _TechChip(label: "Navigation2"),
+                    _TechChip(label: "Flutter"),
+                    _TechChip(label: "Firebase"),
+                    _TechChip(label: "Raspberry Pi"),
+                    _TechChip(label: "Arduino"),
+                  ],
+                ),
               ),
-            ),
 
-            const SizedBox(height: 32),
-            _SectionTitle(title: l10n.developedByLabel),
-            _InfoCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.benhaUniversity,
-                    style: AppTextStyles.titleMedium(
-                      context,
-                    ).copyWith(fontSize: 17, color: textColor),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    l10n.facultyEngineeringShoubra,
-                    style: AppTextStyles.bodyPrimary(
-                      context,
-                    ).copyWith(fontSize: 15, color: secondaryTextColor),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    l10n.computerCommunicationProgram,
-                    style: AppTextStyles.metadata(context).copyWith(
-                      fontSize: 14,
-                      color: AppColors.primaryGold,
-                      fontWeight: FontWeight.bold,
+              const SizedBox(height: 32),
+              _SectionTitle(title: l10n.developedByLabel),
+              _InfoCard(
+                child: Column(
+                  crossAxisAlignment: isArabic
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.benhaUniversity,
+                      style: AppTextStyles.titleMedium(
+                        context,
+                      ).copyWith(fontSize: 17, color: textColor),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.facultyEngineeringShoubra,
+                      style: AppTextStyles.bodyPrimary(
+                        context,
+                      ).copyWith(fontSize: 15, color: secondaryTextColor),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.computerCommunicationProgram,
+                      style: AppTextStyles.metadata(context).copyWith(
+                        fontSize: 14,
+                        color: AppColors.primaryGold,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
+            ],
 
             const SizedBox(height: 32),
             _SectionTitle(key: _teamSectionKey, title: l10n.teamLabel),
-            const _InfoCard(
+            _InfoCard(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+                crossAxisAlignment:
+                    isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                children: const [
                   _TeamMember(name: "Mohammed Ahmed Mohamed Hassan"),
                   _TeamMember(name: "Farida Waheed Abdelbary"),
                   _TeamMember(name: "Abdelrahman Salaheldein Abdelaziz"),
@@ -202,7 +212,8 @@ class _ProjectInfoScreenState extends State<ProjectInfoScreen> {
                 ],
               ),
             ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -243,7 +254,7 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 12),
+      padding: const EdgeInsetsDirectional.only(start: 4, bottom: 12),
       child: Text(
         title.toUpperCase(),
         style: AppTextStyles.displaySectionTitle(

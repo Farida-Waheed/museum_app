@@ -158,10 +158,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _openTickets(BuildContext context, HomeSnapshot snapshot) {
-    Navigator.pushNamed(
-      context,
-      snapshot.hasAnyTicket ? AppRoutes.myTickets : AppRoutes.tickets,
-    );
+    Navigator.pushNamed(context, AppRoutes.tickets);
   }
 
   Future<void> _openTourFlow(
@@ -401,7 +398,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (snapshot.lastRobotSyncTime != null) {
       parts.add(_syncLabel(snapshot.lastRobotSyncTime!, l10n));
     }
-    return parts.join(' · ');
+    return parts.join(' • ');
   }
 
   String _syncLabel(DateTime time, AppLocalizations l10n) {
@@ -555,23 +552,18 @@ class _HomeScreenState extends State<HomeScreen> {
           label: l10n.homeScanRobotQr,
           subtitle: l10n.homePairWithHorus,
           onTap: () => _openRobotPairing(context),
-        )
-      else
-        HomeQuickActionItem(
-          icon: Icons.confirmation_number_outlined,
-          label: l10n.viewTickets,
-          subtitle: l10n.startMyTourDescription,
-          onTap: () => _openTickets(context, snapshot),
         ),
       HomeQuickActionItem(
-        icon: Icons.confirmation_number_outlined,
-        label: l10n.myTickets,
-        subtitle: l10n.homeStoredQrCodes,
-        onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
+        icon: Icons.photo_library_outlined,
+        label: isArabic ? 'الذكريات' : 'Memories',
+        subtitle: isArabic
+            ? 'شاهد صور جولتك وذكريات زياراتك السابقة.'
+            : 'View your captured tour photos and past visits.',
+        onTap: () => Navigator.pushNamed(context, AppRoutes.memories),
       ),
       HomeQuickActionItem(
-        icon: Icons.photo_library_outlined,
-        label: l10n.gallery,
+        icon: Icons.museum_outlined,
+        label: l10n.exhibits,
         subtitle: l10n.homeExploreArtifacts,
         onTap: () => Navigator.pushNamed(context, AppRoutes.exhibits),
       ),
@@ -656,7 +648,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           title: l10n.homePlanVisitTitle,
                           subtitle: l10n.homePlanVisitSubtitle,
                           statusLine: _ticketStatusLine(snapshot, l10n),
-                          primaryLabel: l10n.viewTickets,
+                          primaryLabel: l10n.tickets,
                           secondaryLabel: _primaryActionLabel(snapshot, l10n),
                           onPrimary: () => _openTickets(context, snapshot),
                           onSecondary: () => _openTourFlow(context, snapshot),

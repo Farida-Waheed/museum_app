@@ -8,6 +8,7 @@ import '../../core/constants/text_styles.dart';
 import '../../app/router.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/app_menu_shell.dart';
+import '../../widgets/bottom_nav.dart';
 import '../../widgets/dialogs/branded_permission_dialog.dart';
 
 class AccessibilityScreen extends StatefulWidget {
@@ -32,6 +33,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
       Permission.location,
       Permission.notification,
       Permission.camera,
+      Permission.microphone,
       Permission.bluetooth,
     ].request();
     if (mounted) {
@@ -109,36 +111,23 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final l10n = AppLocalizations.of(context)!;
+    final isArabic = prefs.language == 'ar';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return AppMenuShell(
-      hideDefaultAppBar: true,
-      backgroundColor: AppColors.cinematicBackground,
-      body: Scaffold(
-        backgroundColor: AppColors.cinematicBackground,
-        appBar: AppBar(
-          backgroundColor: AppColors.cinematicNav,
-          elevation: 0,
-          leading: IconButton(
-            icon: const Icon(Icons.menu, color: Colors.white),
-            onPressed: () => AppMenuShell.of(context)?.openMenu(),
+      title: l10n.settings.toUpperCase(),
+      backgroundColor: isDark ? AppColors.cinematicBackground : AppColors.warmSurface,
+      bottomNavigationBar: const BottomNav(currentIndex: 4),
+      body: Directionality(
+        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+        child: SingleChildScrollView(
+          padding: const EdgeInsetsDirectional.symmetric(
+            horizontal: 16,
+            vertical: 24,
           ),
-          title: Row(
-            children: [
-              Image.asset("assets/icons/ankh.png", width: 24, height: 24),
-              const SizedBox(width: 16),
-              Text(
-                l10n.settings.toUpperCase(),
-                style: AppTextStyles.displayScreenTitle(
-                  context,
-                ).copyWith(fontSize: 20),
-              ),
-            ],
-          ),
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment:
+                isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
             children: [
               // 1. Introduction Card
               Container(
@@ -191,48 +180,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
 
               const SizedBox(height: 32),
 
-              // 2. MUSEUM EXPERIENCE
-              _SectionTitle(title: l10n.museumExperience.toUpperCase()),
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.cinematicCard,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
-                ),
-                child: Column(
-                  children: [
-                    Text(
-                      l10n.museumExperienceSub,
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.metadata(
-                        context,
-                      ).copyWith(fontSize: 13),
-                    ),
-                    const SizedBox(height: 24),
-                    _SwitchItem(
-                      title: l10n.autoFollow,
-                      value: true,
-                      onChanged: (v) {},
-                    ),
-                    _SwitchItem(
-                      title: l10n.nearbyAlerts,
-                      value: true,
-                      onChanged: (v) {},
-                    ),
-                    _SwitchItem(
-                      title: l10n.detailedExplanations,
-                      value: true,
-                      onChanged: (v) {},
-                    ),
-                    _SwitchItem(title: "", value: false, onChanged: (v) {}),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // 3. PERMISSIONS
+              // 2. PERMISSIONS
               _SectionTitle(title: l10n.permissionsCenter.toUpperCase()),
               Container(
                 decoration: BoxDecoration(
@@ -288,7 +236,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
 
               const SizedBox(height: 32),
 
-              // 4. DISPLAY & TEXT
+              // 3. DISPLAY & TEXT
               _SectionTitle(title: l10n.displayText.toUpperCase()),
               Container(
                 padding: const EdgeInsets.all(20),
@@ -305,24 +253,6 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                       value: prefs.isHighContrast,
                       onChanged: (v) => prefs.toggleHighContrast(v),
                     ),
-                    _SwitchItem(
-                      title: l10n.audioGuide,
-                      subtitle: l10n.audioGuideSub,
-                      value: false,
-                      onChanged: (v) {},
-                    ),
-                    _SwitchItem(
-                      title: l10n.reduceAnimations,
-                      subtitle: l10n.reduceAnimationsSub,
-                      value: false,
-                      onChanged: (v) {},
-                    ),
-                    _SwitchItem(
-                      title: l10n.simpleMode,
-                      subtitle: l10n.simpleModeSub,
-                      value: false,
-                      onChanged: (v) {},
-                    ),
                     const SizedBox(height: 24),
                     Text(
                       l10n.appearanceMode,
@@ -331,7 +261,9 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                       ).copyWith(fontSize: 16),
                     ),
                     const SizedBox(height: 16),
-                    Row(
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
                       children: [
                         _AppearanceChip(
                           label: l10n.system,
@@ -339,14 +271,12 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                           selected: prefs.themeMode == 'system',
                           onTap: () => prefs.setThemeMode('system'),
                         ),
-                        const SizedBox(width: 8),
                         _AppearanceChip(
                           label: l10n.light,
                           icon: Icons.light_mode_outlined,
                           selected: prefs.themeMode == 'light',
                           onTap: () => prefs.setThemeMode('light'),
                         ),
-                        const SizedBox(width: 8),
                         _AppearanceChip(
                           label: l10n.dark,
                           icon: Icons.dark_mode,
@@ -532,11 +462,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                     ),
                     _AboutNavItem(
                       title: l10n.team,
-                      onTap: () => Navigator.pushNamed(
-                        context,
-                        AppRoutes.projectInfo,
-                        arguments: 'team',
-                      ),
+                      onTap: () => Navigator.pushNamed(context, AppRoutes.team),
                     ),
                     // Notification test screen removed during cleanup.
                     _AboutNavItem(title: l10n.privacyPolicy),
@@ -559,7 +485,7 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 16),
+      padding: const EdgeInsetsDirectional.only(start: 4, bottom: 16),
       child: Text(
         title,
         style: AppTextStyles.displaySectionTitle(
@@ -585,13 +511,15 @@ class _SwitchItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Directionality.of(context) == TextDirection.rtl;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
         children: [
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
@@ -643,10 +571,13 @@ class _PermissionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isGranted = status == l10n.notificationPermissionGranted;
+    final isArabic = Directionality.of(context) == TextDirection.rtl;
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment:
+            isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -655,7 +586,9 @@ class _PermissionItem extends StatelessWidget {
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: isArabic
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
                   children: [
                     Text(
                       title,
@@ -675,19 +608,21 @@ class _PermissionItem extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              Text(
-                status,
-                style: TextStyle(
-                  color: status == l10n.notificationPermissionGranted
-                      ? Colors.green
-                      : Colors.white38,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
+              Expanded(
+                child: Text(
+                  status,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: isGranted ? Colors.green : Colors.white38,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
                 ),
               ),
-              const Spacer(),
+              const SizedBox(width: 12),
               ElevatedButton(
-                onPressed: status == "Enabled" ? null : onEnable,
+                onPressed: isGranted ? null : onEnable,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryGold,
                   foregroundColor: AppColors.darkInk,
@@ -721,6 +656,8 @@ class _AboutNavItem extends StatelessWidget {
   const _AboutNavItem({required this.title, this.onTap});
   @override
   Widget build(BuildContext context) {
+    final isArabic = Directionality.of(context) == TextDirection.rtl;
+    final enabled = onTap != null;
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -731,16 +668,19 @@ class _AboutNavItem extends StatelessWidget {
             Text(
               title,
               style: AppTextStyles.bodyPrimary(context).copyWith(
-                color: Colors.white,
+                color: enabled ? Colors.white : AppColors.neutralMedium,
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
               ),
             ),
-            const Icon(
-              Icons.chevron_right,
-              color: AppColors.primaryGold,
-              size: 20,
-            ),
+            if (enabled)
+              Icon(
+                isArabic
+                    ? Icons.chevron_left_rounded
+                    : Icons.chevron_right_rounded,
+                color: AppColors.primaryGold,
+                size: 20,
+              ),
           ],
         ),
       ),
@@ -763,7 +703,8 @@ class _AppearanceChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return SizedBox(
+      width: 104,
       child: GestureDetector(
         onTap: onTap,
         child: Container(

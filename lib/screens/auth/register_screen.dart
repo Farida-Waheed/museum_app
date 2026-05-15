@@ -76,7 +76,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       password: _passwordController.text,
-      phone: _phoneController.text.isEmpty ? null : _phoneController.text.trim(),
+      phone: _phoneController.text.isEmpty
+          ? null
+          : _phoneController.text.trim(),
     );
 
     if (!mounted) return;
@@ -91,7 +93,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -102,7 +106,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       backgroundColor: AppColors.baseBlack,
       body: Container(
-        decoration: const BoxDecoration(gradient: AppGradients.screenBackground),
+        decoration: const BoxDecoration(
+          gradient: AppGradients.screenBackground,
+        ),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
@@ -125,26 +131,35 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           Center(
                             child: Column(
                               children: [
-                                Image.asset('assets/icons/ankh.png', width: 28, height: 28),
+                                Image.asset(
+                                  'assets/icons/ankh.png',
+                                  width: 28,
+                                  height: 28,
+                                ),
                                 const SizedBox(height: 10),
                                 Text(
                                   'HORUS-BOT',
-                                  style: AppTextStyles.premiumBrandTitle(context),
+                                  style: AppTextStyles.premiumBrandTitle(
+                                    context,
+                                  ),
                                 ),
                                 const SizedBox(height: 28),
                                 Text(
                                   l10n.createAccount,
                                   textAlign: TextAlign.center,
-                                  style: AppTextStyles.premiumHero(context).copyWith(
-                                    fontSize: isArabic ? 34 : 32,
-                                    shadows: [
-                                      Shadow(
-                                        color: Colors.black.withValues(alpha: 0.45),
-                                        blurRadius: 12,
-                                        offset: const Offset(0, 4),
+                                  style: AppTextStyles.premiumHero(context)
+                                      .copyWith(
+                                        fontSize: isArabic ? 34 : 32,
+                                        shadows: [
+                                          Shadow(
+                                            color: Colors.black.withValues(
+                                              alpha: 0.45,
+                                            ),
+                                            blurRadius: 12,
+                                            offset: const Offset(0, 4),
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
                                 ),
                                 const SizedBox(height: 10),
                                 Text(
@@ -152,9 +167,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       ? 'احفظ التذاكر والتفضيلات ووصول جولتك مع حورس-بوت.'
                                       : 'Save tickets, preferences, and your Horus-Bot tour access.',
                                   textAlign: TextAlign.center,
-                                  style: AppTextStyles.premiumBody(context).copyWith(
-                                    color: AppColors.bodyText,
-                                  ),
+                                  style: AppTextStyles.premiumBody(
+                                    context,
+                                  ).copyWith(color: AppColors.bodyText),
                                 ),
                               ],
                             ),
@@ -195,7 +210,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             isArabic: isArabic,
                             suffixIcon: IconButton(
                               onPressed: () {
-                                setState(() => _obscurePassword = !_obscurePassword);
+                                setState(
+                                  () => _obscurePassword = !_obscurePassword,
+                                );
                               },
                               icon: Icon(
                                 _obscurePassword
@@ -216,7 +233,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             suffixIcon: IconButton(
                               onPressed: () {
                                 setState(() {
-                                  _obscureConfirmPassword = !_obscureConfirmPassword;
+                                  _obscureConfirmPassword =
+                                      !_obscureConfirmPassword;
                                 });
                               },
                               icon: Icon(
@@ -251,21 +269,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const SizedBox(height: 14),
                           TextButton(
                             onPressed: () {
-                              Navigator.pushReplacementNamed(context, AppRoutes.login);
+                              Navigator.pushReplacementNamed(
+                                context,
+                                AppRoutes.login,
+                              );
                             },
                             child: RichText(
                               textAlign: TextAlign.center,
                               text: TextSpan(
-                                style: AppTextStyles.premiumMutedBody(context).copyWith(
-                                  color: AppColors.bodyText,
-                                ),
+                                style: AppTextStyles.premiumMutedBody(
+                                  context,
+                                ).copyWith(color: AppColors.bodyText),
                                 children: [
                                   TextSpan(text: '${l10n.alreadyHaveAccount} '),
                                   TextSpan(
                                     text: l10n.login,
-                                    style: AppTextStyles.premiumButtonLabel(context).copyWith(
-                                      color: AppColors.primaryGold,
-                                    ),
+                                    style: AppTextStyles.premiumButtonLabel(
+                                      context,
+                                    ).copyWith(color: AppColors.primaryGold),
                                   ),
                                 ],
                               ),
@@ -313,25 +334,28 @@ class _GlassField extends StatelessWidget {
       keyboardType: keyboardType,
       obscureText: obscureText,
       textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-      style: AppTextStyles.premiumBody(context).copyWith(
-        color: AppColors.whiteTitle,
-      ),
+      style: AppTextStyles.premiumBody(
+        context,
+      ).copyWith(color: AppColors.whiteTitle),
       decoration: InputDecoration(
         labelText: label,
         hintText: hintText,
-        labelStyle: AppTextStyles.premiumMutedBody(context).copyWith(
-          color: AppColors.bodyText,
-        ),
-        hintStyle: AppTextStyles.premiumMutedBody(context).copyWith(
-          color: AppColors.bodyText.withValues(alpha: 0.70),
-        ),
+        labelStyle: AppTextStyles.premiumMutedBody(
+          context,
+        ).copyWith(color: AppColors.bodyText),
+        hintStyle: AppTextStyles.premiumMutedBody(
+          context,
+        ).copyWith(color: AppColors.bodyText.withValues(alpha: 0.70)),
         prefixIcon: icon == null
             ? null
             : Icon(icon, color: AppColors.softGold, size: 20),
         suffixIcon: suffixIcon,
         filled: true,
         fillColor: AppColors.panelGlassBase.withValues(alpha: 0.70),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 18,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
           borderSide: BorderSide(color: AppColors.goldBorder(0.18)),
@@ -342,7 +366,10 @@ class _GlassField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(18),
-          borderSide: const BorderSide(color: AppColors.primaryGold, width: 1.1),
+          borderSide: const BorderSide(
+            color: AppColors.primaryGold,
+            width: 1.1,
+          ),
         ),
       ),
     );

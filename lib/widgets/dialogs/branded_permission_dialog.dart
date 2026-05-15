@@ -24,10 +24,12 @@ class BrandedPermissionDialog extends StatefulWidget {
   });
 
   @override
-  State<BrandedPermissionDialog> createState() => _BrandedPermissionDialogState();
+  State<BrandedPermissionDialog> createState() =>
+      _BrandedPermissionDialogState();
 }
 
-class _BrandedPermissionDialogState extends State<BrandedPermissionDialog> with SingleTickerProviderStateMixin {
+class _BrandedPermissionDialogState extends State<BrandedPermissionDialog>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
@@ -111,7 +113,10 @@ class _BrandedPermissionDialogState extends State<BrandedPermissionDialog> with 
                   insetPadding: const EdgeInsets.symmetric(horizontal: 40),
                   elevation: 0,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 32,
+                    ),
                     decoration: BoxDecoration(
                       color: surfaceColor,
                       borderRadius: BorderRadius.circular(24),
@@ -136,21 +141,18 @@ class _BrandedPermissionDialogState extends State<BrandedPermissionDialog> with 
                             shape: BoxShape.circle,
                             color: goldAccent.withOpacity(0.1),
                           ),
-                          child: Icon(
-                            widget.icon,
-                            size: 32,
-                            color: goldAccent,
-                          ),
+                          child: Icon(widget.icon, size: 32, color: goldAccent),
                         ),
                         const SizedBox(height: 24),
                         Text(
                           widget.title.toUpperCase(),
                           textAlign: TextAlign.center,
-                          style: AppTextStyles.displaySectionTitle(context).copyWith(
-                            color: textColor,
-                            fontSize: 18,
-                            letterSpacing: 1.2,
-                          ),
+                          style: AppTextStyles.displaySectionTitle(context)
+                              .copyWith(
+                                color: textColor,
+                                fontSize: 18,
+                                letterSpacing: 1.2,
+                              ),
                         ),
                         const SizedBox(height: 14),
                         Text(
@@ -181,18 +183,22 @@ class _BrandedPermissionDialogState extends State<BrandedPermissionDialog> with 
                               child: OutlinedButton(
                                 onPressed: widget.onDeny,
                                 style: OutlinedButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  side: BorderSide(color: goldAccent, width: 1.2),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
+                                  side: BorderSide(
+                                    color: goldAccent,
+                                    width: 1.2,
+                                  ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
                                   ),
                                 ),
                                 child: Text(
                                   l10n.notNow,
-                                  style: AppTextStyles.buttonLabel(context).copyWith(
-                                    color: goldAccent,
-                                    fontSize: 14.5,
-                                  ),
+                                  style: AppTextStyles.buttonLabel(
+                                    context,
+                                  ).copyWith(color: goldAccent, fontSize: 14.5),
                                 ),
                               ),
                             ),
@@ -202,8 +208,13 @@ class _BrandedPermissionDialogState extends State<BrandedPermissionDialog> with 
                                 onPressed: widget.onAllow,
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: goldAccent,
-                                  foregroundColor: isDark || widget.isHighContrast ? AppColors.darkInk : Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  foregroundColor:
+                                      isDark || widget.isHighContrast
+                                      ? AppColors.darkInk
+                                      : Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 16,
+                                  ),
                                   elevation: 4,
                                   shadowColor: goldAccent.withOpacity(0.3),
                                   shape: RoundedRectangleBorder(
@@ -212,9 +223,9 @@ class _BrandedPermissionDialogState extends State<BrandedPermissionDialog> with 
                                 ),
                                 child: Text(
                                   l10n.allow,
-                                  style: AppTextStyles.buttonLabel(context).copyWith(
-                                    fontSize: 14.5,
-                                  ),
+                                  style: AppTextStyles.buttonLabel(
+                                    context,
+                                  ).copyWith(fontSize: 14.5),
                                 ),
                               ),
                             ),

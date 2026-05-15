@@ -37,14 +37,20 @@ class _SideMenu extends StatelessWidget {
         : l10n.exploreTheMuseum;
 
     return Align(
-      alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft,
+      alignment: isArabic
+          ? AlignmentDirectional.centerEnd
+          : AlignmentDirectional.centerStart,
       child: SizedBox(
         width: width,
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              begin: isArabic ? Alignment.centerRight : Alignment.centerLeft,
-              end: isArabic ? Alignment.centerLeft : Alignment.centerRight,
+              begin: isArabic
+                  ? AlignmentDirectional.centerEnd
+                  : AlignmentDirectional.centerStart,
+              end: isArabic
+                  ? AlignmentDirectional.centerStart
+                  : AlignmentDirectional.centerEnd,
               colors: [
                 Colors.black.withValues(alpha: 0.90),
                 Colors.black.withValues(alpha: 0.74),
@@ -54,13 +60,18 @@ class _SideMenu extends StatelessWidget {
             ),
           ),
           child: SafeArea(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Directionality(
+              textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+              child: Column(
+              crossAxisAlignment:
+                  isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 28, 24, 22),
+                  padding: const EdgeInsetsDirectional.fromSTEB(24, 28, 24, 22),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: isArabic
+                        ? CrossAxisAlignment.end
+                        : CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
@@ -70,11 +81,15 @@ class _SideMenu extends StatelessWidget {
                             height: 32,
                           ),
                           const SizedBox(width: 16),
-                          Text(
-                            l10n.appTitle.toUpperCase(),
-                            style: AppTextStyles.premiumBrandTitle(
-                              context,
-                            ).copyWith(color: AppColors.primaryGold),
+                          Expanded(
+                            child: Text(
+                              l10n.appTitle.toUpperCase(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles.premiumBrandTitle(
+                                context,
+                              ).copyWith(color: AppColors.primaryGold),
+                            ),
                           ),
                         ],
                       ),
@@ -93,7 +108,9 @@ class _SideMenu extends StatelessWidget {
                           const SizedBox(width: 14),
                           Expanded(
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: isArabic
+                                  ? CrossAxisAlignment.end
+                                  : CrossAxisAlignment.start,
                               children: [
                                 Text(
                                   userName,
@@ -134,31 +151,21 @@ class _SideMenu extends StatelessWidget {
                         onTap: () => onReplace(AppRoutes.profile),
                       ),
                       _MenuItem(
-                        icon: Icons.accessibility_outlined,
-                        label: l10n.accessibility,
-                        selected: currentRoute == AppRoutes.accessibility,
-                        onTap: () => onReplace(AppRoutes.accessibility),
-                      ),
-                      _MenuItem(
                         icon: Icons.settings_outlined,
                         label: l10n.settings,
-                        selected: currentRoute == AppRoutes.settings,
+                        selected:
+                            currentRoute == AppRoutes.settings ||
+                            currentRoute == AppRoutes.accessibility,
                         onTap: () => onReplace(AppRoutes.settings),
+                      ),
+                      _MenuItem(
+                        icon: Icons.notifications_outlined,
+                        label: l10n.notifications,
+                        selected: currentRoute == AppRoutes.notificationSettings,
+                        onTap: () => onReplace(AppRoutes.notificationSettings),
                       ),
                       const SizedBox(height: 16),
                       _SectionHeader(label: l10n.extras),
-                      _MenuItem(
-                        icon: Icons.event_note_outlined,
-                        label: l10n.tourPlanner,
-                        selected: currentRoute == AppRoutes.tourPlanner,
-                        onTap: () => onReplace(AppRoutes.tourPlanner),
-                      ),
-                      _MenuItem(
-                        icon: Icons.event_outlined,
-                        label: l10n.events,
-                        selected: currentRoute == AppRoutes.events,
-                        onTap: () => onReplace(AppRoutes.events),
-                      ),
                       _MenuItem(
                         icon: Icons.emoji_events_outlined,
                         label: l10n.achievements,
@@ -172,15 +179,28 @@ class _SideMenu extends StatelessWidget {
                         onTap: () => onReplace(AppRoutes.feedback),
                       ),
                       _MenuItem(
+                        icon: Icons.support_agent_outlined,
+                        label: l10n.supportInboxTitle,
+                        selected: currentRoute == AppRoutes.supportInbox,
+                        onTap: () => onReplace(AppRoutes.supportInbox),
+                      ),
+                      _MenuItem(
                         icon: Icons.info_outline,
                         label: l10n.about,
                         selected: currentRoute == AppRoutes.projectInfo,
                         onTap: () => onReplace(AppRoutes.projectInfo),
                       ),
+                      _MenuItem(
+                        icon: Icons.groups_2_outlined,
+                        label: l10n.team,
+                        selected: currentRoute == AppRoutes.team,
+                        onTap: () => onReplace(AppRoutes.team),
+                      ),
                     ],
                   ),
                 ),
               ],
+              ),
             ),
           ),
         ),
@@ -196,7 +216,7 @@ class _SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(28, 24, 24, 12),
+      padding: const EdgeInsetsDirectional.fromSTEB(28, 24, 24, 12),
       child: Text(
         label.toUpperCase(),
         style: AppTextStyles.premiumSectionLabel(context).copyWith(
@@ -224,30 +244,28 @@ class _MenuItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: ListTile(
         onTap: onTap,
         dense: true,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+        contentPadding: const EdgeInsetsDirectional.symmetric(
+          horizontal: 12,
+          vertical: 2,
+        ),
         visualDensity: const VisualDensity(vertical: -3),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         leading: Icon(
           icon,
           size: 23,
-          color: selected
-              ? AppColors.primaryGold
-              : (isDark ? AppColors.bodyText : AppColors.darkInk),
+          color: selected ? AppColors.primaryGold : AppColors.bodyText,
         ),
         title: Text(
           label,
           style: AppTextStyles.premiumBody(context).copyWith(
             fontSize: 15,
             fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-            color: selected
-                ? AppColors.primaryGold
-                : (isDark ? AppColors.bodyText : AppColors.darkInk),
+            color: selected ? AppColors.primaryGold : AppColors.bodyText,
           ),
         ),
         tileColor: selected
@@ -388,11 +406,16 @@ class AppMenuShellState extends State<AppMenuShell>
                                 leading: IconButton(
                                   icon: Icon(
                                     Navigator.canPop(innerContext)
-                                        ? Icons.arrow_back_ios_new
+                                        ? (isArabic
+                                              ? Icons.arrow_forward_ios
+                                              : Icons.arrow_back_ios_new)
                                         : Icons.menu,
                                     size: Navigator.canPop(innerContext)
                                         ? 20
                                         : null,
+                                    color: isDark
+                                        ? Colors.white
+                                        : AppColors.darkInk,
                                   ),
                                   onPressed: () {
                                     if (Navigator.canPop(innerContext)) {
@@ -410,17 +433,21 @@ class AppMenuShellState extends State<AppMenuShell>
                                       height: 26,
                                     ),
                                     const SizedBox(width: 16),
-                                    Text(
-                                      (widget.title ?? l10n.appTitle)
-                                          .toUpperCase(),
-                                      style:
-                                          AppTextStyles.premiumBrandTitle(
-                                            innerContext,
-                                          ).copyWith(
-                                            fontSize: 18,
-                                            color: AppColors.primaryGold,
-                                            letterSpacing: 1.2,
-                                          ),
+                                    Expanded(
+                                      child: Text(
+                                        (widget.title ?? l10n.appTitle)
+                                            .toUpperCase(),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style:
+                                            AppTextStyles.premiumBrandTitle(
+                                              innerContext,
+                                            ).copyWith(
+                                              fontSize: 18,
+                                              color: AppColors.primaryGold,
+                                              letterSpacing: 1.2,
+                                            ),
+                                      ),
                                     ),
                                   ],
                                 ),

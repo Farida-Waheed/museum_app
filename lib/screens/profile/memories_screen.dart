@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +11,7 @@ import '../../models/exhibit_provider.dart';
 import '../../models/tour_photo.dart';
 import '../../services/photo_repository.dart';
 import '../../widgets/app_menu_shell.dart';
+import '../../widgets/bottom_nav.dart';
 
 class MemoriesScreen extends StatelessWidget {
   const MemoriesScreen({super.key});
@@ -22,8 +25,11 @@ class MemoriesScreen extends StatelessWidget {
     return AppMenuShell(
       title: (isArabic ? 'ذكريات الجولة' : 'Tour Memories').toUpperCase(),
       backgroundColor: AppColors.cinematicBackground,
+      bottomNavigationBar: const BottomNav(currentIndex: 3),
       body: DecoratedBox(
-        decoration: const BoxDecoration(gradient: AppGradients.screenBackground),
+        decoration: const BoxDecoration(
+          gradient: AppGradients.screenBackground,
+        ),
         child: SafeArea(
           child: userId == null || userId.isEmpty
               ? _StateMessage(
@@ -80,7 +86,12 @@ class MemoriesScreen extends StatelessWidget {
                     return CustomScrollView(
                       slivers: [
                         SliverPadding(
-                          padding: const EdgeInsets.fromLTRB(20, 24, 20, 6),
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                            20,
+                            24,
+                            20,
+                            6,
+                          ),
                           sliver: SliverToBoxAdapter(
                             child: _HeroCount(
                               count: photos.length,
@@ -96,19 +107,25 @@ class MemoriesScreen extends StatelessWidget {
                               : 'No photos from today yet.',
                         ),
                         _PhotoSection(
-                          title: isArabic ? 'الزيارات السابقة' : 'Previous Visits',
+                          title: isArabic
+                              ? 'الزيارات السابقة'
+                              : 'Previous Visits',
                           photos: previousPhotos,
                           emptyText: isArabic
                               ? 'لا توجد زيارات سابقة محفوظة.'
                               : 'No previous visits saved yet.',
                         ),
                         _PhotoSection(
-                          title: isArabic ? 'الصور الملتقطة' : 'Captured Photos',
+                          title: isArabic
+                              ? 'الصور الملتقطة'
+                              : 'Captured Photos',
                           photos: photos,
                           emptyText: '',
                         ),
                         _PhotoSection(
-                          title: isArabic ? 'الذكريات المفضلة' : 'Favorite Memories',
+                          title: isArabic
+                              ? 'الذكريات المفضلة'
+                              : 'Favorite Memories',
                           photos: favoritePhotos,
                           emptyText: isArabic
                               ? 'سيتم عرض أبرز ذكرياتك هنا.'
@@ -133,16 +150,19 @@ class MemoriesScreen extends StatelessWidget {
 }
 
 class _HeroCount extends StatelessWidget {
+  const _HeroCount({required this.count, required this.isArabic});
+
   final int count;
   final bool isArabic;
-
-  const _HeroCount({required this.count, required this.isArabic});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: AppDecorations.premiumGlassCard(radius: 22, highlighted: true),
+      decoration: AppDecorations.premiumGlassCard(
+        radius: 22,
+        highlighted: true,
+      ),
       child: Row(
         textDirection: Directionality.of(context),
         children: [
@@ -161,7 +181,10 @@ class _HeroCount extends StatelessWidget {
           const SizedBox(width: 16),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  Directionality.of(context) == ui.TextDirection.rtl
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
               children: [
                 Text(
                   isArabic
@@ -188,23 +211,25 @@ class _HeroCount extends StatelessWidget {
 }
 
 class _PhotoSection extends StatelessWidget {
-  final String title;
-  final List<TourPhoto> photos;
-  final String emptyText;
-
   const _PhotoSection({
     required this.title,
     required this.photos,
     required this.emptyText,
   });
 
+  final String title;
+  final List<TourPhoto> photos;
+  final String emptyText;
+
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 0),
       sliver: SliverToBoxAdapter(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: Directionality.of(context) == ui.TextDirection.rtl
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
           children: [
             Text(
               title.toUpperCase(),
@@ -248,9 +273,9 @@ class _PhotoSection extends StatelessWidget {
 }
 
 class _MemoryCard extends StatelessWidget {
-  final TourPhoto photo;
-
   const _MemoryCard({required this.photo});
+
+  final TourPhoto photo;
 
   @override
   Widget build(BuildContext context) {
@@ -330,15 +355,15 @@ class _MemoryCard extends StatelessWidget {
 }
 
 class _StateMessage extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String body;
-
   const _StateMessage({
     required this.icon,
     required this.title,
     required this.body,
   });
+
+  final IconData icon;
+  final String title;
+  final String body;
 
   @override
   Widget build(BuildContext context) {

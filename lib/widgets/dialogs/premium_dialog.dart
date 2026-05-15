@@ -32,7 +32,10 @@ class PremiumDialog extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.darkInk.withOpacity(0.95),
               borderRadius: BorderRadius.circular(28),
-              border: Border.all(color: AppColors.primaryGold.withOpacity(0.4), width: 1.5),
+              border: Border.all(
+                color: AppColors.primaryGold.withOpacity(0.4),
+                width: 1.5,
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.5),
@@ -49,10 +52,7 @@ class PremiumDialog extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(24, 24, 16, 16),
                   child: Row(
                     children: [
-                      if (icon != null) ...[
-                        icon!,
-                        const SizedBox(width: 12),
-                      ],
+                      if (icon != null) ...[icon!, const SizedBox(width: 12)],
                       Expanded(
                         child: Text(
                           title,
@@ -67,7 +67,11 @@ class PremiumDialog extends StatelessWidget {
                       if (showCloseButton)
                         IconButton(
                           onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.close_rounded, color: Colors.white70, size: 24),
+                          icon: const Icon(
+                            Icons.close_rounded,
+                            color: Colors.white70,
+                            size: 24,
+                          ),
                         ),
                     ],
                   ),

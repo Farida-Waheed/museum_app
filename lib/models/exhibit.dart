@@ -44,14 +44,16 @@ class Exhibit {
     return Exhibit(
       id: _stringValue(data['exhibitId']) ?? docId,
       nameEn: _stringValue(data['nameEn']) ?? _stringValue(data['name']) ?? '',
-      nameAr: _stringValue(data['nameAr']) ?? _stringValue(data['nameEn']) ?? '',
+      nameAr:
+          _stringValue(data['nameAr']) ?? _stringValue(data['nameEn']) ?? '',
       descriptionEn: _stringValue(data['descriptionEn']) ?? '',
       descriptionAr:
           _stringValue(data['descriptionAr']) ??
           _stringValue(data['descriptionEn']) ??
           '',
       imageAsset:
-          _stringValue(data['imageAsset']) ?? 'assets/images/museum_interior.jpg',
+          _stringValue(data['imageAsset']) ??
+          'assets/images/museum_interior.jpg',
       imageUrl: _stringValue(data['imageUrl']) ?? '',
       audioUrl: _stringValue(data['audioUrl']),
       category: _stringValue(data['category']) ?? '',

@@ -331,10 +331,7 @@ class AppTextStyles {
   static TextStyle premiumButtonLabel(BuildContext context) {
     if (_isArabic(context)) {
       return GoogleFonts.notoSansArabic(
-        textStyle: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 16,
-        ),
+        textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
       );
     }
     return GoogleFonts.inter(
@@ -349,17 +346,11 @@ class AppTextStyles {
   static TextStyle premiumNavLabel(BuildContext context) {
     if (_isArabic(context)) {
       return GoogleFonts.notoSansArabic(
-        textStyle: const TextStyle(
-          fontWeight: FontWeight.w500,
-          fontSize: 11,
-        ),
+        textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11),
       );
     }
     return GoogleFonts.inter(
-      textStyle: const TextStyle(
-        fontWeight: FontWeight.w500,
-        fontSize: 11,
-      ),
+      textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11),
     );
   }
 
@@ -594,10 +585,7 @@ class AppTextStyles {
   static TextStyle buttonLabel(BuildContext context) {
     if (_isArabic(context)) {
       return GoogleFonts.notoSansArabic(
-        textStyle: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 16,
-        ),
+        textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
       );
     }
     return GoogleFonts.inter(
@@ -613,17 +601,11 @@ class AppTextStyles {
   static TextStyle navLabel(BuildContext context) {
     if (_isArabic(context)) {
       return GoogleFonts.notoSansArabic(
-        textStyle: const TextStyle(
-          fontWeight: FontWeight.w500,
-          fontSize: 12,
-        ),
+        textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
       );
     }
     return GoogleFonts.inter(
-      textStyle: const TextStyle(
-        fontWeight: FontWeight.w500,
-        fontSize: 12,
-      ),
+      textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
     );
   }
 

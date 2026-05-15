@@ -12,6 +12,7 @@ class BottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     void handleTap(int index) {
       if (index == 0) {
@@ -32,10 +33,10 @@ class BottomNav extends StatelessWidget {
           route = AppRoutes.map;
           break;
         case 2:
-          route = AppRoutes.liveTour;
+          route = AppRoutes.tickets;
           break;
         case 3:
-          route = AppRoutes.tickets;
+          route = AppRoutes.memories;
           break;
         case 4:
         default:
@@ -88,15 +89,15 @@ class BottomNav extends StatelessWidget {
               _buildNavItem(1, Icons.map_outlined, Icons.map_rounded, l10n.map),
               _buildNavItem(
                 2,
-                Icons.radio_button_checked_outlined,
-                Icons.radio_button_checked_rounded,
-                l10n.tour,
-              ),
-              _buildNavItem(
-                3,
                 Icons.confirmation_number_outlined,
                 Icons.confirmation_number_rounded,
                 l10n.tickets,
+              ),
+              _buildNavItem(
+                3,
+                Icons.photo_library_outlined,
+                Icons.photo_library_rounded,
+                isArabic ? 'الذكريات' : 'Memories',
               ),
               _buildNavItem(
                 4,

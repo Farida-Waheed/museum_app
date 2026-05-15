@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import 'package:museum_app/models/chat_message.dart';
 
-/// Keeps a simple in-memory chat history for the Horus chatbot.
+/// Keeps a simple in-memory Ask Horus history for tour fallback questions.
 class ChatProvider extends ChangeNotifier {
   final List<ChatMessageModel> _messages = [];
 
@@ -31,8 +31,8 @@ class ChatProvider extends ChangeNotifier {
     if (_messages.isNotEmpty) return;
 
     final greeting = isArabic
-        ? 'مرحبا! أنا دليلك في المتحف، كيف يمكنني مساعدتك؟'
-        : 'Welcome! I am your museum guide. How can I help you today?';
+        ? 'مرحبًا! استخدم هذه المساحة عندما لا يستطيع حورس سماعك بوضوح أثناء الجولة.'
+        : 'Use this when Horus cannot hear you clearly during your tour.';
 
     addMessage(
       ChatMessageModel.text(

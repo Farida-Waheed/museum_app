@@ -54,7 +54,9 @@ class NotificationPayload {
     if (routeParamsRaw != null && routeParamsRaw.isNotEmpty) {
       try {
         final parsed = jsonDecode(routeParamsRaw) as Map<String, dynamic>;
-        routeParams = parsed.map((key, value) => MapEntry(key, value.toString()));
+        routeParams = parsed.map(
+          (key, value) => MapEntry(key, value.toString()),
+        );
       } catch (_) {
         routeParams = null;
       }

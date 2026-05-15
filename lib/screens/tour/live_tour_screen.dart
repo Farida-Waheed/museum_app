@@ -13,7 +13,6 @@ import '../../models/exhibit_provider.dart';
 import '../../models/tour_photo.dart';
 import '../../models/auth_provider.dart';
 import '../../core/services/mock_data.dart';
-import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
 import '../../widgets/ask_the_guide_button.dart';
@@ -156,10 +155,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     _mqttEventSubscription ??= mqttService.events.listen((event) async {
       if (event.sessionId.isEmpty) return;
       try {
-        await _tourSessionRepository.recordRobotEvent(
-          event.sessionId,
-          event,
-        );
+        await _tourSessionRepository.recordRobotEvent(event.sessionId, event);
       } on TourSessionRepositoryException catch (e) {
         debugPrint('MQTT event Firestore update failed: ${e.message}');
       }
@@ -543,7 +539,9 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   }
 
   void _maybeListenToSessionPhotos(String? sessionId) {
-    if (sessionId == null || sessionId.isEmpty || _photoSessionId == sessionId) {
+    if (sessionId == null ||
+        sessionId.isEmpty ||
+        _photoSessionId == sessionId) {
       return;
     }
     _photoSessionId = sessionId;
@@ -665,7 +663,6 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       return AppMenuShell(
         title: 'HORUS-BOT',
         subHeader: const RobotStatusBanner(),
-        bottomNavigationBar: const BottomNav(currentIndex: 2),
         showChatButton: false,
         hideDefaultAppBar: true,
         floatingActionButton: AskTheGuideButton(
@@ -697,7 +694,6 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         subHeader: sessionProvider.shouldShowRobotOnMap
             ? const RobotStatusBanner()
             : null,
-        bottomNavigationBar: const BottomNav(currentIndex: 2),
         showChatButton: false,
         hideDefaultAppBar: true,
         body: _buildLockedState(
@@ -729,7 +725,6 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       return AppMenuShell(
         title: 'HORUS-BOT',
         subHeader: const RobotStatusBanner(),
-        bottomNavigationBar: const BottomNav(currentIndex: 2),
         showChatButton: false,
         hideDefaultAppBar: true,
         floatingActionButton: AskTheGuideButton(
@@ -773,7 +768,6 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       return AppMenuShell(
         title: 'HORUS-BOT',
         subHeader: const RobotStatusBanner(),
-        bottomNavigationBar: const BottomNav(currentIndex: 2),
         showChatButton: false,
         hideDefaultAppBar: true,
         floatingActionButton: AskTheGuideButton(
@@ -813,7 +807,6 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     return AppMenuShell(
       title: 'HORUS-BOT',
       subHeader: const RobotStatusBanner(),
-      bottomNavigationBar: const BottomNav(currentIndex: 2),
       showChatButton: false,
       hideDefaultAppBar: true,
       floatingActionButton: AskTheGuideButton(
@@ -932,18 +925,13 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                         ? () => _togglePause()
                         : null,
                     onSkip: canSkip ? () => _skipExhibit() : null,
-                    onRecover: canRecover
-                        ? () => _findRobot()
-                        : null,
+                    onRecover: canRecover ? () => _findRobot() : null,
                   ),
                   const SizedBox(height: 18),
                   _buildNarrationUpdates(context),
                   const SizedBox(height: 18),
                   if (isRecovery && !isCompleted)
-                    _buildRecoveryCard(
-                      context,
-                      onRecover: () => _findRobot(),
-                    ),
+                    _buildRecoveryCard(context, onRecover: () => _findRobot()),
                   if (isRecovery && !isCompleted) const SizedBox(height: 16),
                   if (nextExhibit != null)
                     _buildNextStopCard(

@@ -57,7 +57,9 @@ class _VisitSummaryScreenState extends State<VisitSummaryScreen> {
       title: l10n.visitSummary.toUpperCase(),
       backgroundColor: AppColors.darkBackground,
       body: DecoratedBox(
-        decoration: const BoxDecoration(gradient: AppGradients.screenBackground),
+        decoration: const BoxDecoration(
+          gradient: AppGradients.screenBackground,
+        ),
         child: FutureBuilder<VisitSummaryData>(
           future: _summaryFuture,
           builder: (context, snapshot) {
@@ -249,10 +251,8 @@ class _SummaryContent extends StatelessWidget {
           const SizedBox(height: 12),
           _OutlineAction(
             label: l10n.done,
-            onPressed: () => Navigator.pushReplacementNamed(
-              context,
-              AppRoutes.mainHome,
-            ),
+            onPressed: () =>
+                Navigator.pushReplacementNamed(context, AppRoutes.mainHome),
           ),
           const SizedBox(height: 22),
         ],

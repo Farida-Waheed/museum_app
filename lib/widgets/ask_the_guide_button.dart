@@ -12,9 +12,8 @@ import 'package:provider/provider.dart';
 ///
 /// Features:
 /// - Premium visual design with glowing animation
-/// - Consistent "Ask the Guide" title
-/// - "Discover the story behind everything" subtitle
-/// - Opens AI chat popup immediately
+/// - Consistent Ask Horus title
+/// - Opens the fallback question popup only during a tour
 /// - Responsive and accessible
 class AskTheGuideButton extends StatefulWidget {
   final String screen;

@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/notifications/notification_types.dart';
-import '../../core/notifications/notification_preference_manager.dart';
-import '../../core/constants/text_styles.dart';
+
 import '../../core/constants/colors.dart';
+import '../../core/constants/text_styles.dart';
+import '../../core/notifications/notification_preference_manager.dart';
+import '../../core/notifications/notification_types.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/user_preferences.dart';
+import '../../widgets/app_menu_shell.dart';
+import '../../widgets/bottom_nav.dart';
 
-/// Notification settings screen for user to control notification preferences.
-///
-/// Allows users to:
-/// - Enable/disable all notifications
-/// - Toggle individual notification categories
-/// - Check permission status
-/// - Open system settings if needed
 class NotificationSettingsScreen extends StatefulWidget {
   const NotificationSettingsScreen({super.key});
 
@@ -25,7 +21,7 @@ class NotificationSettingsScreen extends StatefulWidget {
 class _NotificationSettingsScreenState
     extends State<NotificationSettingsScreen> {
   final _prefManager = NotificationPreferenceManager();
-  late Map<NotificationCategory, bool> _categoryStates;
+  Map<NotificationCategory, bool> _categoryStates = {};
   bool _masterEnabled = true;
   bool _initialized = false;
 
@@ -36,18 +32,18 @@ class _NotificationSettingsScreenState
   }
 
   Future<void> _loadPreferences() async {
-    final categoryStates = _prefManager.getAllCategoryStates();
-    final masterEnabled = _prefManager.notificationsEnabled;
-
+    await _prefManager.initialize();
+    if (!mounted) return;
     setState(() {
-      _categoryStates = categoryStates;
-      _masterEnabled = masterEnabled;
+      _categoryStates = _prefManager.getAllCategoryStates();
+      _masterEnabled = _prefManager.notificationsEnabled;
       _initialized = true;
     });
   }
 
   Future<void> _setMasterEnabled(bool enabled) async {
     await _prefManager.setNotificationsEnabled(enabled);
+    if (!mounted) return;
     setState(() => _masterEnabled = enabled);
   }
 
@@ -56,186 +52,276 @@ class _NotificationSettingsScreenState
     bool enabled,
   ) async {
     await _prefManager.setCategoryEnabled(category, enabled);
+    if (!mounted) return;
     setState(() => _categoryStates[category] = enabled);
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isArabic =
-        Provider.of<UserPreferencesModel>(context).language == 'ar';
+    final prefs = context.watch<UserPreferencesModel>();
+    final isArabic = prefs.language == 'ar';
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    if (!_initialized) {
-      return Scaffold(
-        appBar: AppBar(title: Text(l10n.notificationSettings)),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
-
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.notificationSettings), elevation: 0),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Subtitle
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text(
-                l10n.notificationSettingsSubtitle,
-                style: AppTextStyles.bodySecondary(context),
-              ),
-            ),
-
-            // Master toggle
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return AppMenuShell(
+      title: l10n.notificationSettings.toUpperCase(),
+      backgroundColor: isDark ? AppColors.cinematicBackground : AppColors.warmSurface,
+      bottomNavigationBar: const BottomNav(currentIndex: 4),
+      body: Directionality(
+        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+        child: !_initialized
+            ? const Center(
+                child: CircularProgressIndicator(color: AppColors.primaryGold),
+              )
+            : ListView(
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 120),
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _masterEnabled
-                              ? l10n.enableAllNotifications
-                              : l10n.disableAllNotifications,
-                          style: AppTextStyles.titleMedium(context),
-                        ),
-                      ],
-                    ),
+                  _IntroCard(
+                    title: l10n.notificationSettings,
+                    subtitle: l10n.notificationSettingsSubtitle,
                   ),
-                  Switch(
+                  const SizedBox(height: 20),
+                  _MasterToggleCard(
+                    title: _masterEnabled
+                        ? l10n.enableAllNotifications
+                        : l10n.disableAllNotifications,
                     value: _masterEnabled,
                     onChanged: _setMasterEnabled,
-                    activeThumbColor: AppColors.primaryGold,
+                  ),
+                  const SizedBox(height: 24),
+                  _SectionTitle(label: l10n.notificationSettingsSubtitle),
+                  const SizedBox(height: 12),
+                  _CategoryCard(
+                    title: l10n.tourUpdatesCategory,
+                    description: l10n.tourUpdatesCategoryDesc,
+                    category: NotificationCategory.tourUpdates,
+                    enabled: _categoryStates[NotificationCategory.tourUpdates] ??
+                        true,
+                    disabledByMaster: !_masterEnabled,
+                    onChanged: _setCategoryEnabled,
+                  ),
+                  _CategoryCard(
+                    title: l10n.exhibitRemindersCategory,
+                    description: l10n.exhibitRemindersCategoryDesc,
+                    category: NotificationCategory.exhibitReminders,
+                    enabled:
+                        _categoryStates[NotificationCategory.exhibitReminders] ??
+                            true,
+                    disabledByMaster: !_masterEnabled,
+                    onChanged: _setCategoryEnabled,
+                  ),
+                  _CategoryCard(
+                    title: l10n.quizRemindersCategory,
+                    description: l10n.quizRemindersCategoryDesc,
+                    category: NotificationCategory.quizReminders,
+                    enabled:
+                        _categoryStates[NotificationCategory.quizReminders] ??
+                            true,
+                    disabledByMaster: !_masterEnabled,
+                    onChanged: _setCategoryEnabled,
+                  ),
+                  _CategoryCard(
+                    title: l10n.guideRemindersCategory,
+                    description: l10n.guideRemindersCategoryDesc,
+                    category: NotificationCategory.guideReminders,
+                    enabled:
+                        _categoryStates[NotificationCategory.guideReminders] ??
+                            false,
+                    disabledByMaster: !_masterEnabled,
+                    onChanged: _setCategoryEnabled,
+                  ),
+                  _CategoryCard(
+                    title: l10n.museumNewsCategory,
+                    description: l10n.museumNewsCategoryDesc,
+                    category: NotificationCategory.museumNews,
+                    enabled:
+                        _categoryStates[NotificationCategory.museumNews] ??
+                            false,
+                    disabledByMaster: !_masterEnabled,
+                    onChanged: _setCategoryEnabled,
+                  ),
+                  _CategoryCard(
+                    title: l10n.ticketRemindersCategory,
+                    description: l10n.ticketRemindersCategoryDesc,
+                    category: NotificationCategory.ticketReminders,
+                    enabled:
+                        _categoryStates[NotificationCategory.ticketReminders] ??
+                            true,
+                    disabledByMaster: !_masterEnabled,
+                    onChanged: _setCategoryEnabled,
+                  ),
+                  _CategoryCard(
+                    title: l10n.systemAlertsCategory,
+                    description: l10n.systemAlertsCategoryDesc,
+                    category: NotificationCategory.systemAlerts,
+                    enabled:
+                        _categoryStates[NotificationCategory.systemAlerts] ??
+                            true,
+                    disabledByMaster: !_masterEnabled,
+                    onChanged: _setCategoryEnabled,
                   ),
                 ],
               ),
-            ),
-
-            const Divider(height: 24),
-
-            // Category toggles
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(
-                l10n.notificationSettingsSubtitle,
-                style: AppTextStyles.titleMedium(context),
-              ),
-            ),
-
-            _buildCategoryCard(
-              context,
-              l10n.tourUpdatesCategory,
-              l10n.tourUpdatesCategoryDesc,
-              NotificationCategory.tourUpdates,
-              isArabic,
-            ),
-            _buildCategoryCard(
-              context,
-              l10n.exhibitRemindersCategory,
-              l10n.exhibitRemindersCategoryDesc,
-              NotificationCategory.exhibitReminders,
-              isArabic,
-            ),
-            _buildCategoryCard(
-              context,
-              l10n.quizRemindersCategory,
-              l10n.quizRemindersCategoryDesc,
-              NotificationCategory.quizReminders,
-              isArabic,
-            ),
-            _buildCategoryCard(
-              context,
-              l10n.guideRemindersCategory,
-              l10n.guideRemindersCategoryDesc,
-              NotificationCategory.guideReminders,
-              isArabic,
-            ),
-            _buildCategoryCard(
-              context,
-              l10n.museumNewsCategory,
-              l10n.museumNewsCategoryDesc,
-              NotificationCategory.museumNews,
-              isArabic,
-            ),
-            _buildCategoryCard(
-              context,
-              l10n.ticketRemindersCategory,
-              l10n.ticketRemindersCategoryDesc,
-              NotificationCategory.ticketReminders,
-              isArabic,
-            ),
-            _buildCategoryCard(
-              context,
-              l10n.systemAlertsCategory,
-              l10n.systemAlertsCategoryDesc,
-              NotificationCategory.systemAlerts,
-              isArabic,
-            ),
-
-            const SizedBox(height: 24),
-          ],
-        ),
       ),
     );
   }
+}
 
-  Widget _buildCategoryCard(
-    BuildContext context,
-    String title,
-    String description,
-    NotificationCategory category,
-    bool isArabic,
-  ) {
-    final enabled = _categoryStates[category] ?? true;
-    final isDisabledByMaster = !_masterEnabled;
+class _IntroCard extends StatelessWidget {
+  const _IntroCard({required this.title, required this.subtitle});
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: AppTextStyles.titleMedium(context).copyWith(
-                        color: isDisabledByMaster
-                            ? Colors.grey.shade600
-                            : Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      description,
-                      style: AppTextStyles.bodySecondary(context).copyWith(
-                        color: isDisabledByMaster
-                            ? Colors.grey.shade500
-                            : Colors.white.withOpacity(0.7),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Switch(
-                value: isDisabledByMaster ? false : enabled,
-                onChanged: isDisabledByMaster
-                    ? null
-                    : (value) => _setCategoryEnabled(category, value),
-                activeThumbColor: AppColors.primaryGold,
-              ),
-            ],
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final isArabic = Directionality.of(context) == TextDirection.rtl;
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: AppDecorations.premiumGlassCard(radius: 22, highlighted: true),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.primaryGold.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Icon(
+              Icons.notifications_active_outlined,
+              color: AppColors.primaryGold,
+            ),
           ),
-        ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+                  isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.titleMedium(context)
+                      .copyWith(color: Colors.white),
+                ),
+                const SizedBox(height: 6),
+                Text(subtitle, style: AppTextStyles.metadata(context)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MasterToggleCard extends StatelessWidget {
+  const _MasterToggleCard({
+    required this.title,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final String title;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: AppDecorations.secondaryGlassCard(radius: 18),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: AppTextStyles.titleMedium(context)
+                  .copyWith(color: Colors.white, fontSize: 16),
+            ),
+          ),
+          Switch.adaptive(
+            value: value,
+            onChanged: onChanged,
+            activeColor: AppColors.primaryGold,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label.toUpperCase(),
+      style: AppTextStyles.displaySectionTitle(context)
+          .copyWith(color: AppColors.softGold, fontSize: 12),
+    );
+  }
+}
+
+class _CategoryCard extends StatelessWidget {
+  const _CategoryCard({
+    required this.title,
+    required this.description,
+    required this.category,
+    required this.enabled,
+    required this.disabledByMaster,
+    required this.onChanged,
+  });
+
+  final String title;
+  final String description;
+  final NotificationCategory category;
+  final bool enabled;
+  final bool disabledByMaster;
+  final Future<void> Function(NotificationCategory category, bool enabled)
+      onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final isArabic = Directionality.of(context) == TextDirection.rtl;
+    final textColor = disabledByMaster ? AppColors.neutralMedium : Colors.white;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(18),
+      decoration: AppDecorations.secondaryGlassCard(radius: 18),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment:
+                  isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTextStyles.titleMedium(context)
+                      .copyWith(color: textColor, fontSize: 15),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  description,
+                  style: AppTextStyles.metadata(context),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Switch.adaptive(
+            value: disabledByMaster ? false : enabled,
+            onChanged: disabledByMaster
+                ? null
+                : (value) => onChanged(category, value),
+            activeColor: AppColors.primaryGold,
+          ),
+        ],
       ),
     );
   }

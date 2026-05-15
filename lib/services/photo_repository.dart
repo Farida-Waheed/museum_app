@@ -35,7 +35,9 @@ class PhotoRepository {
   Future<List<TourPhoto>> loadSessionPhotos(String sessionId) async {
     if (sessionId.trim().isEmpty) return const [];
     try {
-      final snapshot = await _photos.where('sessionId', isEqualTo: sessionId).get();
+      final snapshot = await _photos
+          .where('sessionId', isEqualTo: sessionId)
+          .get();
       return _photosFromSnapshot(snapshot);
     } on FirebaseException catch (e) {
       throw PhotoRepositoryException(_friendlyError(e));
@@ -83,15 +85,16 @@ class PhotoRepository {
   List<TourPhoto> _photosFromSnapshot(
     QuerySnapshot<Map<String, dynamic>> snapshot,
   ) {
-    final photos = snapshot.docs
-        .map((doc) => TourPhoto.fromFirestore(doc.id, doc.data()))
-        .where((photo) => photo.photoUrl.isNotEmpty)
-        .toList()
-      ..sort((a, b) {
-        final left = a.createdAt ?? DateTime(0);
-        final right = b.createdAt ?? DateTime(0);
-        return right.compareTo(left);
-      });
+    final photos =
+        snapshot.docs
+            .map((doc) => TourPhoto.fromFirestore(doc.id, doc.data()))
+            .where((photo) => photo.photoUrl.isNotEmpty)
+            .toList()
+          ..sort((a, b) {
+            final left = a.createdAt ?? DateTime(0);
+            final right = b.createdAt ?? DateTime(0);
+            return right.compareTo(left);
+          });
     return photos;
   }
 

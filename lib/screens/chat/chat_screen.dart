@@ -474,7 +474,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _chatProvider = Provider.of<ChatProvider>(context, listen: false);
-    _chatProvider.clear(); // reset on each popup open, per new AskTheGuide UX.
+    _chatProvider.clear(); // reset on each popup open for Ask Horus fallback.
     _conversationMemory = ConversationMemoryService();
     _assistantService = LocalMuseumChatService(
       knowledge: MuseumKnowledgeService(),
@@ -790,181 +790,189 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
     final content = canAskDuringTour
         ? Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
-          child: Align(
-            alignment: isArabic ? Alignment.centerRight : Alignment.centerLeft,
-            child: Text(
-              isArabic
-                  ? 'استخدمها عندما لا يستطيع حورس سماعك بوضوح.'
-                  : 'Use this when Horus cannot hear you clearly.',
-              textAlign: isArabic ? TextAlign.right : TextAlign.left,
-              style: AppTextStyles.metadata(
-                context,
-              ).copyWith(color: AppColors.neutralMedium),
-            ),
-          ),
-        ),
-        Expanded(
-          child: Consumer<ChatProvider>(
-            builder: (context, chat, _) {
-              final messages = chat.messages;
-              return ListView.builder(
-                controller: _scroll,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                itemCount: messages.length,
-                itemBuilder: (context, i) {
-                  final m = messages[i];
-                  if (!m.isUser &&
-                      m.kind == MessageKind.infoCard &&
-                      m.cardTitle?.toLowerCase().contains('quick') == true) {
-                    return MessageEntryAnimator(
-                      isUser: m.isUser,
-                      child: _SuggestionChipsCard(
-                        suggestions: m.cardItems ?? [],
-                        isArabic: isArabic,
-                        onSuggestion: (value) => _submit(value),
-                      ),
-                    );
-                  }
-                  return MessageEntryAnimator(
-                    isUser: m.isUser,
-                    child: ChatBubble(msg: m, isArabicUI: isArabic),
-                  );
-                },
-              );
-            },
-          ),
-        ),
-        if (_isTyping)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Align(
-              alignment: isArabic
-                  ? Alignment.centerRight
-                  : Alignment.centerLeft,
-              child: _TypingIndicator(isArabic: isArabic),
-            ),
-          ),
-
-        // INPUT AREA
-        Container(
-          padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
-          child: Row(
             children: [
-              Expanded(
-                child: TextField(
-                  controller: _controller,
-                  textDirection: isArabic
-                      ? TextDirection.rtl
-                      : TextDirection.ltr,
-                  onSubmitted: _submit,
-                  style: AppTextStyles.bodyPrimary(
-                    context,
-                  ).copyWith(color: isDark ? Colors.white : AppColors.darkInk),
-                  decoration: InputDecoration(
-                    hintText: l10n.chatInputHint,
-                    hintStyle: AppTextStyles.bodyPrimary(
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
+                child: Align(
+                  alignment: isArabic
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
+                  child: Text(
+                    isArabic
+                        ? 'استخدمها عندما لا يستطيع حورس سماعك بوضوح.'
+                        : 'Use this when Horus cannot hear you clearly.',
+                    textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                    style: AppTextStyles.metadata(
                       context,
-                    ).copyWith(color: isDark ? Colors.white54 : Colors.black45),
-                    fillColor: isDark
-                        ? Colors.white.withOpacity(0.06)
-                        : Colors.grey.shade100,
-                    filled: true,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(26),
-                      borderSide: BorderSide.none,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 14,
-                    ),
+                    ).copyWith(color: AppColors.neutralMedium),
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
-              AnimatedScale(
-                scale: _canSend ? 1.0 : 0.92,
-                duration: const Duration(milliseconds: 200),
-                child: CircleAvatar(
-                  backgroundColor: _canSend
-                      ? AppColors.primaryGold
-                      : (isDark ? Colors.white10 : Colors.grey.shade200),
-                  radius: 22,
-                  child: IconButton(
-                    onPressed: _canSend
-                        ? () => _submit(_controller.text)
-                        : null,
-                    icon: Icon(
-                      Icons.send_rounded,
-                      color: _canSend ? AppColors.darkInk : Colors.grey,
-                      size: 18,
-                    ),
-                  ),
+              Expanded(
+                child: Consumer<ChatProvider>(
+                  builder: (context, chat, _) {
+                    final messages = chat.messages;
+                    return ListView.builder(
+                      controller: _scroll,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      itemCount: messages.length,
+                      itemBuilder: (context, i) {
+                        final m = messages[i];
+                        if (!m.isUser &&
+                            m.kind == MessageKind.infoCard &&
+                            m.cardTitle?.toLowerCase().contains('quick') ==
+                                true) {
+                          return MessageEntryAnimator(
+                            isUser: m.isUser,
+                            child: _SuggestionChipsCard(
+                              suggestions: m.cardItems ?? [],
+                              isArabic: isArabic,
+                              onSuggestion: (value) => _submit(value),
+                            ),
+                          );
+                        }
+                        return MessageEntryAnimator(
+                          isUser: m.isUser,
+                          child: ChatBubble(msg: m, isArabicUI: isArabic),
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
-            ],
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 8, bottom: 4),
-          child: Row(
-            children: [
-              CompositedTransformTarget(
-                link: _infoLink,
+              if (_isTyping)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Align(
+                    alignment: isArabic
+                        ? Alignment.centerRight
+                        : Alignment.centerLeft,
+                    child: _TypingIndicator(isArabic: isArabic),
+                  ),
+                ),
+
+              // INPUT AREA
+              Container(
+                padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    IconButton(
-                      icon: Icon(
-                        Icons.info_outline,
-                        size: 20,
-                        color: AppColors.primaryGold,
+                    Expanded(
+                      child: TextField(
+                        controller: _controller,
+                        textDirection: isArabic
+                            ? TextDirection.rtl
+                            : TextDirection.ltr,
+                        onSubmitted: _submit,
+                        style: AppTextStyles.bodyPrimary(context).copyWith(
+                          color: isDark ? Colors.white : AppColors.darkInk,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: l10n.chatInputHint,
+                          hintStyle: AppTextStyles.bodyPrimary(context)
+                              .copyWith(
+                                color: isDark ? Colors.white54 : Colors.black45,
+                              ),
+                          fillColor: isDark
+                              ? Colors.white.withOpacity(0.06)
+                              : Colors.grey.shade100,
+                          filled: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(26),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 14,
+                          ),
+                        ),
                       ),
-                      onPressed: () =>
-                          setState(() => _showHelperPanel = !_showHelperPanel),
                     ),
-                    const SizedBox(width: 4),
-                    Text(
-                      l10n.moreInfo,
-                      style: AppTextStyles.metadata(context).copyWith(
-                        color: AppColors.primaryGold,
-                        fontWeight: FontWeight.w600,
+                    const SizedBox(width: 12),
+                    AnimatedScale(
+                      scale: _canSend ? 1.0 : 0.92,
+                      duration: const Duration(milliseconds: 200),
+                      child: CircleAvatar(
+                        backgroundColor: _canSend
+                            ? AppColors.primaryGold
+                            : (isDark ? Colors.white10 : Colors.grey.shade200),
+                        radius: 22,
+                        child: IconButton(
+                          onPressed: _canSend
+                              ? () => _submit(_controller.text)
+                              : null,
+                          icon: Icon(
+                            Icons.send_rounded,
+                            color: _canSend ? AppColors.darkInk : Colors.grey,
+                            size: 18,
+                          ),
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
-              const Spacer(),
-              Flexible(
-                child: TextButton.icon(
-                  icon: const Icon(Icons.support_agent_outlined, size: 18),
-                  label: Flexible(
-                    child: Text(
-                      l10n.humanSupportLabel,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.metadata(
-                        context,
-                      ).copyWith(color: AppColors.primaryGold),
+              Padding(
+                padding: const EdgeInsets.only(top: 8, bottom: 4),
+                child: Row(
+                  children: [
+                    CompositedTransformTarget(
+                      link: _infoLink,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.info_outline,
+                              size: 20,
+                              color: AppColors.primaryGold,
+                            ),
+                            onPressed: () => setState(
+                              () => _showHelperPanel = !_showHelperPanel,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            l10n.moreInfo,
+                            style: AppTextStyles.metadata(context).copyWith(
+                              color: AppColors.primaryGold,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  onPressed: () => _requestHumanSupport(),
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 12,
+                    const Spacer(),
+                    Flexible(
+                      child: TextButton.icon(
+                        icon: const Icon(
+                          Icons.support_agent_outlined,
+                          size: 18,
+                        ),
+                        label: Flexible(
+                          child: Text(
+                            l10n.humanSupportLabel,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTextStyles.metadata(
+                              context,
+                            ).copyWith(color: AppColors.primaryGold),
+                          ),
+                        ),
+                        onPressed: () => _requestHumanSupport(),
+                        style: TextButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 12,
+                          ),
+                          foregroundColor: AppColors.primaryGold,
+                        ),
+                      ),
                     ),
-                    foregroundColor: AppColors.primaryGold,
-                  ),
+                  ],
                 ),
               ),
             ],
-          ),
-        ),
-      ],
-    )
+          )
         : inactiveContent;
 
     final helperItems = isArabic

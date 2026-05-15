@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../widgets/app_menu_shell.dart';
-import '../../l10n/app_localizations.dart';
-import '../../widgets/bottom_nav.dart';
+
+import '../../app/router.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
+import '../../l10n/app_localizations.dart';
+import '../../models/app_session_provider.dart' as app_session;
 import '../../models/auth_provider.dart';
-import '../../app/router.dart';
+import '../../models/ticket_provider.dart';
+import '../../models/tour_photo.dart';
+import '../../models/user_preferences.dart';
+import '../../services/photo_repository.dart';
+import '../../services/robot_mqtt_service.dart';
+import '../../widgets/app_menu_shell.dart';
+import '../../widgets/bottom_nav.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -16,191 +23,296 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  String? _loadedUserId;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final authProvider = context.watch<AuthProvider>();
+    final userId = authProvider.currentUser?.id;
+    if (authProvider.isLoggedIn && userId != null && userId != _loadedUserId) {
+      _loadedUserId = userId;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        context.read<TicketProvider>().loadUserTickets(userId);
+      });
+    }
+  }
+
+  Future<void> _confirmSignOut(BuildContext context, bool isArabic) async {
+    final authProvider = context.read<AuthProvider>();
+    final userId = authProvider.currentUser?.id;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColors.cinematicCard,
+          title: Text(
+            isArabic ? 'تسجيل الخروج' : 'Sign out',
+            style: AppTextStyles.titleLarge(
+              dialogContext,
+            ).copyWith(color: Colors.white),
+          ),
+          content: Text(
+            isArabic
+                ? 'هل أنت متأكد أنك تريد تسجيل الخروج؟'
+                : 'Are you sure you want to sign out?',
+            style: AppTextStyles.bodyPrimary(
+              dialogContext,
+            ).copyWith(color: AppColors.bodyText),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(isArabic ? 'إلغاء' : 'Cancel'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(
+                isArabic ? 'تسجيل الخروج' : 'Sign out',
+                style: const TextStyle(color: AppColors.alertRed),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (ok != true || !context.mounted) return;
+
+    if (userId != null && userId.isNotEmpty) {
+      context.read<TicketProvider>().clearUserTickets(userId);
+    }
+    context.read<app_session.AppSessionProvider>().resetSession();
+    await context.read<RobotMqttService>().disconnect();
+    await authProvider.logout();
+
+    if (!context.mounted) return;
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      AppRoutes.login,
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final authProvider = context.watch<AuthProvider>();
+    final ticketProvider = context.watch<TicketProvider>();
+    final prefs = context.watch<UserPreferencesModel>();
+    final user = authProvider.currentUser;
+    final userId = user?.id;
 
     return AppMenuShell(
       title: l10n.profile.toUpperCase(),
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       backgroundColor: AppColors.darkBackground,
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        child: Column(
-          children: [
-            // A. Visitor Identity Header
-            _VisitorHeader(isArabic: isArabic, l10n: l10n),
-            const SizedBox(height: 32),
-
-            // B. Visitor Statistics
-            _SectionTitle(
-              title: isArabic ? "إحصائيات الزائر" : "Visitor Statistics",
-            ),
-            _VisitorStats(isArabic: isArabic),
-            const SizedBox(height: 32),
-
-            // C. My Tours
-            _SectionTitle(title: isArabic ? "جولاتي" : "My Tours"),
-            _MyTours(isArabic: isArabic),
-            const SizedBox(height: 32),
-
-            // D. Saved Exhibits
-            _SectionTitle(
-              title: isArabic ? "المعروضات المحفوظة" : "Saved Exhibits",
-            ),
-            _SavedExhibits(isArabic: isArabic),
-            const SizedBox(height: 32),
-
-            // E. Learning Progress
-            _SectionTitle(
-              title: isArabic ? "تقدم التعلم" : "Learning Progress",
-            ),
-            _LearningProgress(isArabic: isArabic),
-            const SizedBox(height: 32),
-
-            // F. Quick Preferences
-            _SectionTitle(
-              title: isArabic ? "التفضيلات السريعة" : "Quick Preferences",
-            ),
-            _QuickPreferences(isArabic: isArabic),
-            const SizedBox(height: 32),
-
-            // G. My Tickets
-            _SectionTitle(title: isArabic ? "تذاكري" : "My Tickets"),
-            _MyTickets(isArabic: isArabic),
-            const SizedBox(height: 48),
-
-            // Logout
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: TextButton(
-                onPressed: () {},
-                style: TextButton.styleFrom(
-                  foregroundColor: AppColors.alertRed,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+      body: Directionality(
+        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+        child: DecoratedBox(
+          decoration: const BoxDecoration(
+            gradient: AppGradients.screenBackground,
+          ),
+          child: SafeArea(
+            child: ListView(
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 120),
+              children: [
+                _ProfileHeader(
+                  name: user?.name ?? l10n.guestVisitor,
+                  email:
+                      user?.email ??
+                      (isArabic ? 'غير مسجل الدخول' : 'Not signed in'),
+                  avatarUrl: user?.avatarUrl,
+                  isArabic: isArabic,
+                ),
+                const SizedBox(height: 18),
+                _InfoCard(
+                  rows: [
+                    _InfoRow(
+                      label: isArabic ? 'اللغة المفضلة' : 'Preferred language',
+                      value: _languageName(
+                        user?.preferredLanguage ?? prefs.language,
+                        isArabic,
+                      ),
+                    ),
+                    if ((user?.nationality ?? '').isNotEmpty)
+                      _InfoRow(
+                        label: isArabic ? 'الجنسية' : 'Nationality',
+                        value: user!.nationality!,
+                      ),
+                    _InfoRow(
+                      label: isArabic ? 'عدد الزيارات' : 'Visit count',
+                      value: '${user?.visitCount ?? 0}',
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                if (userId == null || userId.isEmpty)
+                  _AccountGate(isArabic: isArabic)
+                else
+                  StreamBuilder<List<TourPhoto>>(
+                    stream: PhotoRepository().watchUserPhotos(userId),
+                    builder: (context, snapshot) {
+                      final photoCount = snapshot.data?.length ?? 0;
+                      return _StatsGrid(
+                        isArabic: isArabic,
+                        museumTickets: ticketProvider.museumTickets.length,
+                        robotTickets: ticketProvider.robotTourTickets.length,
+                        memories: photoCount,
+                      );
+                    },
                   ),
-                  backgroundColor: AppColors.darkSurface,
+                const SizedBox(height: 24),
+                _SectionTitle(isArabic ? 'الوصول السريع' : 'Quick access'),
+                const SizedBox(height: 12),
+                _ActionTile(
+                  icon: Icons.confirmation_number_outlined,
+                  title: l10n.myTickets,
+                  subtitle: isArabic
+                      ? 'تذاكر الدخول وجولات Horus-Bot'
+                      : 'Entry passes and Horus-Bot tours',
+                  onTap: () =>
+                      Navigator.pushNamed(context, AppRoutes.myTickets),
                 ),
-                child: Text(
-                  isArabic ? "تسجيل الخروج" : "Sign Out",
-                  style: AppTextStyles.buttonLabel(
+                _ActionTile(
+                  icon: Icons.photo_library_outlined,
+                  title: isArabic ? 'الذكريات' : 'Memories',
+                  subtitle: isArabic
+                      ? 'الصور وسجل الزيارات'
+                      : 'Photos and visit history',
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.memories),
+                ),
+                _ActionTile(
+                  icon: Icons.accessibility_outlined,
+                  title: l10n.settings,
+                  subtitle: isArabic
+                      ? 'اللغة والتباين وحجم النص'
+                      : 'Language, contrast, and text size',
+                  onTap: () =>
+                      Navigator.pushNamed(context, AppRoutes.settings),
+                ),
+                _ActionTile(
+                  icon: Icons.notifications_outlined,
+                  title: l10n.notifications,
+                  subtitle: isArabic
+                      ? 'تنبيهات الجولة والتذاكر'
+                      : 'Tour and ticket alerts',
+                  onTap: () => Navigator.pushNamed(
                     context,
-                  ).copyWith(color: AppColors.alertRed),
+                    AppRoutes.notificationSettings,
+                  ),
                 ),
-              ),
+                _ActionTile(
+                  icon: Icons.emoji_events_outlined,
+                  title: l10n.achievements,
+                  subtitle: isArabic ? 'الشارات وتقدم الزيارة' : 'Badges and visit progress',
+                  onTap: () =>
+                      Navigator.pushNamed(context, AppRoutes.achievements),
+                ),
+                _ActionTile(
+                  icon: Icons.feedback_outlined,
+                  title: l10n.feedback,
+                  subtitle: isArabic ? 'شاركنا رأيك في التجربة' : 'Share your visit feedback',
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.feedback),
+                ),
+                _ActionTile(
+                  icon: Icons.support_agent_outlined,
+                  title: l10n.supportInboxTitle,
+                  subtitle: isArabic ? 'طلبات ومحادثات الدعم' : 'Support requests and conversations',
+                  onTap: () =>
+                      Navigator.pushNamed(context, AppRoutes.supportInbox),
+                ),
+                _ActionTile(
+                  icon: Icons.info_outline,
+                  title: l10n.about,
+                  subtitle: isArabic ? 'عن مشروع Horus-Bot' : 'About the Horus-Bot project',
+                  onTap: () =>
+                      Navigator.pushNamed(context, AppRoutes.projectInfo),
+                ),
+                _ActionTile(
+                  icon: Icons.groups_2_outlined,
+                  title: l10n.team,
+                  subtitle: isArabic ? 'الفريق والمشرفون' : 'Team members and supervisors',
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.team),
+                ),
+                const SizedBox(height: 22),
+                SizedBox(
+                  height: 56,
+                  child: TextButton.icon(
+                    onPressed: () => _confirmSignOut(context, isArabic),
+                    icon: const Icon(Icons.logout_rounded),
+                    label: Text(isArabic ? 'تسجيل الخروج' : 'Sign out'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.alertRed,
+                      backgroundColor: AppColors.cinematicCard,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                        side: BorderSide(
+                          color: AppColors.alertRed.withValues(alpha: 0.28),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 48),
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-class _SectionTitle extends StatelessWidget {
-  final String title;
-  const _SectionTitle({required this.title});
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 20),
-        child: Text(
-          title.toUpperCase(),
-          style: AppTextStyles.displaySectionTitle(context),
-        ),
-      ),
-    );
-  }
-}
+class _ProfileHeader extends StatelessWidget {
+  const _ProfileHeader({
+    required this.name,
+    required this.email,
+    required this.avatarUrl,
+    required this.isArabic,
+  });
 
-class _VisitorHeader extends StatelessWidget {
+  final String name;
+  final String email;
+  final String? avatarUrl;
   final bool isArabic;
-  final AppLocalizations l10n;
-  const _VisitorHeader({required this.isArabic, required this.l10n});
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.darkSurface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+      decoration: AppDecorations.premiumGlassCard(
+        radius: 24,
+        highlighted: true,
       ),
       child: Row(
+        textDirection: Directionality.of(context),
         children: [
-          Stack(
-            alignment: Alignment.bottomRight,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(3),
-                decoration: const BoxDecoration(
-                  color: AppColors.primaryGold,
-                  shape: BoxShape.circle,
-                ),
-                child: const CircleAvatar(
-                  radius: 40,
-                  backgroundColor: AppColors.darkBackground,
-                  child: Icon(
-                    Icons.person_outline,
-                    size: 40,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: const BoxDecoration(
-                  color: AppColors.primaryGold,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.camera_alt,
-                  size: 12,
-                  color: AppColors.darkInk,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(width: 20),
+          _Avatar(name: name, avatarUrl: avatarUrl),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: isArabic
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
               children: [
                 Text(
-                  l10n.guestVisitor,
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.titleLarge(
                     context,
-                  ).copyWith(fontSize: 18),
+                  ).copyWith(color: Colors.white),
                 ),
-                const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryGold.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    isArabic ? "مستكشف" : "Explorer",
-                    style: AppTextStyles.metadata(context).copyWith(
-                      color: AppColors.primaryGold,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 11,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 5),
                 Text(
-                  isArabic ? "عضو منذ أكتوبر ٢٠٢٣" : "Member since Oct 2023",
-                  style: AppTextStyles.metadata(context),
+                  email,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.metadata(
+                    context,
+                  ).copyWith(color: AppColors.neutralMedium),
                 ),
               ],
             ),
@@ -211,38 +323,128 @@ class _VisitorHeader extends StatelessWidget {
   }
 }
 
-class _VisitorStats extends StatelessWidget {
+class _Avatar extends StatelessWidget {
+  const _Avatar({required this.name, required this.avatarUrl});
+
+  final String name;
+  final String? avatarUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    final initials = name
+        .trim()
+        .split(RegExp(r'\s+'))
+        .where((part) => part.isNotEmpty)
+        .take(2)
+        .map((part) => part.substring(0, 1).toUpperCase())
+        .join();
+    return CircleAvatar(
+      radius: 34,
+      backgroundColor: AppColors.primaryGold,
+      foregroundColor: AppColors.darkInk,
+      backgroundImage: avatarUrl == null || avatarUrl!.isEmpty
+          ? null
+          : NetworkImage(avatarUrl!),
+      child: avatarUrl == null || avatarUrl!.isEmpty
+          ? Text(
+              initials.isEmpty ? 'H' : initials,
+              style: AppTextStyles.titleLarge(
+                context,
+              ).copyWith(color: AppColors.darkInk),
+            )
+          : null,
+    );
+  }
+}
+
+class _InfoCard extends StatelessWidget {
+  const _InfoCard({required this.rows});
+
+  final List<_InfoRow> rows;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: AppDecorations.secondaryGlassCard(radius: 20),
+      child: Column(
+        children: rows
+            .map(
+              (row) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 7),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        row.label,
+                        style: AppTextStyles.metadata(
+                          context,
+                        ).copyWith(color: AppColors.neutralMedium),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Flexible(
+                      child: Text(
+                        row.value,
+                        textAlign: TextAlign.end,
+                        style: AppTextStyles.bodyPrimary(
+                          context,
+                        ).copyWith(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+}
+
+class _InfoRow {
+  const _InfoRow({required this.label, required this.value});
+
+  final String label;
+  final String value;
+}
+
+class _StatsGrid extends StatelessWidget {
+  const _StatsGrid({
+    required this.isArabic,
+    required this.museumTickets,
+    required this.robotTickets,
+    required this.memories,
+  });
+
   final bool isArabic;
-  const _VisitorStats({required this.isArabic});
+  final int museumTickets;
+  final int robotTickets;
+  final int memories;
+
   @override
   Widget build(BuildContext context) {
     return GridView.count(
-      crossAxisCount: 2,
+      crossAxisCount: 3,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
-      childAspectRatio: 1.6,
+      crossAxisSpacing: 10,
+      childAspectRatio: 0.95,
       children: [
         _StatCard(
-          icon: Icons.explore_outlined,
-          count: "12",
-          label: isArabic ? "معرض مستكشف" : "Exhibits",
+          icon: Icons.museum_outlined,
+          value: '$museumTickets',
+          label: isArabic ? 'تذاكر المتحف' : 'Museum tickets',
         ),
         _StatCard(
-          icon: Icons.route_outlined,
-          count: "03",
-          label: isArabic ? "جولة مكتملة" : "Tours",
+          icon: Icons.smart_toy_outlined,
+          value: '$robotTickets',
+          label: isArabic ? 'جولات الروبوت' : 'Robot tours',
         ),
         _StatCard(
-          icon: Icons.auto_stories_outlined,
-          count: "45",
-          label: isArabic ? "قطع تم تعلمها" : "Artifacts",
-        ),
-        _StatCard(
-          icon: Icons.quiz_outlined,
-          count: "850",
-          label: isArabic ? "نقاط الاختبار" : "Quiz Score",
+          icon: Icons.photo_library_outlined,
+          value: '$memories',
+          label: isArabic ? 'ذكريات' : 'Memories',
         ),
       ],
     );
@@ -250,393 +452,167 @@ class _VisitorStats extends StatelessWidget {
 }
 
 class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final String count;
-  final String label;
   const _StatCard({
     required this.icon,
-    required this.count,
+    required this.value,
     required this.label,
   });
+
+  final IconData icon;
+  final String value;
+  final String label;
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.darkSurface,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
-      ),
+      padding: const EdgeInsets.all(14),
+      decoration: AppDecorations.secondaryGlassCard(radius: 18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: AppColors.primaryGold, size: 20),
-          const SizedBox(height: 8),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(count, style: AppTextStyles.titleLarge(context)),
-              const SizedBox(width: 4),
-              Flexible(
-                child: Text(
-                  label,
-                  style: AppTextStyles.metadata(context).copyWith(fontSize: 10),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MyTours extends StatelessWidget {
-  final bool isArabic;
-  const _MyTours({required this.isArabic});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.darkSurface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.darkDivider),
-      ),
-      child: Column(
-        children: [
-          _TourRow(
-            name: isArabic
-                ? "أبرز مقتنيات الدولة الحديثة"
-                : "New Kingdom Highlights",
-            status: "Completed",
-            progress: 1.0,
-          ),
-          const Divider(height: 32, color: AppColors.darkDivider),
-          _TourRow(
-            name: isArabic ? "جولة كنوز توت عنخ آمون" : "Tutankhamun Treasures",
-            status: "In Progress",
-            progress: 0.6,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TourRow extends StatelessWidget {
-  final String name;
-  final String status;
-  final double progress;
-  const _TourRow({
-    required this.name,
-    required this.status,
-    required this.progress,
-  });
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              name,
-              style: AppTextStyles.titleMedium(context).copyWith(fontSize: 15),
-            ),
-            Text(
-              status,
-              style: AppTextStyles.metadata(context).copyWith(
-                color: status == "Completed"
-                    ? Colors.green
-                    : AppColors.primaryGold,
-                fontWeight: FontWeight.bold,
-                fontSize: 11,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-          child: LinearProgressIndicator(
-            value: progress,
-            minHeight: 4,
-            backgroundColor: AppColors.darkBackground,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              progress == 1.0 ? Colors.green : AppColors.primaryGold,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _SavedExhibits extends StatelessWidget {
-  final bool isArabic;
-  const _SavedExhibits({required this.isArabic});
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 140,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: [
-          _SavedItem(
-            image: "assets/images/pharaoh_head.jpg",
-            name: isArabic ? "قناع توت عنخ آمون" : "Tut Mask",
-          ),
-          _SavedItem(
-            image: "assets/images/museum_interior.jpg",
-            name: isArabic ? "تمثال رمسيس" : "Ramesses II",
-          ),
-          _SavedItem(
-            image: "assets/images/canopic_jars.jpg",
-            name: isArabic ? "أواني كانوبية" : "Canopic Jars",
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SavedItem extends StatelessWidget {
-  final String image;
-  final String name;
-  const _SavedItem({required this.image, required this.name});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 120,
-      margin: const EdgeInsets.only(right: 12),
-      decoration: BoxDecoration(
-        color: AppColors.darkSurface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.darkDivider),
-      ),
-      child: Column(
-        children: [
-          Expanded(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(15),
-              ),
-              child: Image.asset(
-                image,
-                fit: BoxFit.cover,
-                width: double.infinity,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              name,
-              style: AppTextStyles.metadata(context).copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 11,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _LearningProgress extends StatelessWidget {
-  final bool isArabic;
-  const _LearningProgress({required this.isArabic});
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: AppColors.darkSurface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.darkDivider),
-      ),
-      child: Column(
-        children: [
-          _LearningRow(
-            label: isArabic ? "تاريخ مصر القديمة" : "Ancient Egypt History",
-            progress: 0.4,
-          ),
-          const SizedBox(height: 16),
-          _LearningRow(
-            label: isArabic ? "أساسيات الهيروغليفية" : "Hieroglyph Basics",
-            progress: 0.1,
-          ),
-          const SizedBox(height: 16),
-          _LearningRow(
-            label: isArabic
-                ? "معرفة الأسر الفرعونية"
-                : "Pharaoh Dynasty Knowledge",
-            progress: 0.7,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _LearningRow extends StatelessWidget {
-  final String label;
-  final double progress;
-  const _LearningRow({required this.label, required this.progress});
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Text(
-            label,
-            style: AppTextStyles.bodyPrimary(
+          Icon(icon, color: AppColors.primaryGold, size: 22),
+          const Spacer(),
+          Text(
+            value,
+            style: AppTextStyles.titleLarge(
               context,
-            ).copyWith(color: Colors.white, fontSize: 13),
+            ).copyWith(color: Colors.white),
           ),
-        ),
-        const SizedBox(width: 16),
-        SizedBox(
-          width: 80,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(10),
-            child: LinearProgressIndicator(
-              value: progress,
-              minHeight: 6,
-              backgroundColor: AppColors.darkBackground,
-              valueColor: const AlwaysStoppedAnimation<Color>(
-                AppColors.primaryGold,
-              ),
-            ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.metadata(
+              context,
+            ).copyWith(color: AppColors.neutralMedium, fontSize: 11),
           ),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          "${(progress * 100).round()}%",
-          style: AppTextStyles.metadata(context).copyWith(
-            color: AppColors.primaryGold,
-            fontWeight: FontWeight.bold,
-            fontSize: 11,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
-class _QuickPreferences extends StatelessWidget {
+class _AccountGate extends StatelessWidget {
+  const _AccountGate({required this.isArabic});
+
   final bool isArabic;
-  const _QuickPreferences({required this.isArabic});
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        _QuickAction(icon: Icons.language, label: isArabic ? "اللغة" : "Lang"),
-        _QuickAction(
-          icon: Icons.dark_mode,
-          label: isArabic ? "المظهر" : "Dark",
-        ),
-        _QuickAction(
-          icon: Icons.volume_up,
-          label: isArabic ? "الصوت" : "Audio",
-        ),
-        _QuickAction(
-          icon: Icons.accessibility,
-          label: isArabic ? "الوصول" : "Access",
-        ),
-      ],
+    return _ActionTile(
+      icon: Icons.login_rounded,
+      title: isArabic ? 'سجّل الدخول لحفظ رحلتك' : 'Sign in to save your visit',
+      subtitle: isArabic
+          ? 'التذاكر والذكريات والجولات ترتبط بحسابك.'
+          : 'Tickets, memories, and tours are linked to your account.',
+      onTap: () => Navigator.pushNamed(context, AppRoutes.login),
     );
   }
 }
 
-class _QuickAction extends StatelessWidget {
+class _SectionTitle extends StatelessWidget {
+  const _SectionTitle(this.title);
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title.toUpperCase(),
+      style: AppTextStyles.displaySectionTitle(
+        context,
+      ).copyWith(color: AppColors.softGold),
+    );
+  }
+}
+
+class _ActionTile extends StatelessWidget {
+  const _ActionTile({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
   final IconData icon;
-  final String label;
-  const _QuickAction({required this.icon, required this.label});
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColors.darkSurface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.darkDivider),
-        ),
-        child: Column(
-          children: [
-            Icon(icon, color: AppColors.primaryGold, size: 20),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: AppTextStyles.metadata(
-                context,
-              ).copyWith(color: Colors.white, fontSize: 10),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
 
-class _MyTickets extends StatelessWidget {
-  final bool isArabic;
-  const _MyTickets({required this.isArabic});
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.darkSurface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.darkDivider),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColors.primaryGold.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(
-              Icons.confirmation_number_outlined,
-              color: AppColors.primaryGold,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    final isArabic = Directionality.of(context) == TextDirection.rtl;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: AppDecorations.secondaryGlassCard(radius: 18),
+            child: Row(
+              textDirection: Directionality.of(context),
               children: [
-                Text(
-                  isArabic ? "المتحف المصري الكبير" : "Grand Egyptian Museum",
-                  style: AppTextStyles.bodyPrimary(
-                    context,
-                  ).copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryGold.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: Icon(icon, color: AppColors.primaryGold),
                 ),
-                Text(
-                  "Oct 25, 2023 • 10:00 AM",
-                  style: AppTextStyles.metadata(context),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment:
+                        Directionality.of(context) == TextDirection.rtl
+                        ? CrossAxisAlignment.end
+                        : CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.bodyPrimary(context).copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        subtitle,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.metadata(
+                          context,
+                        ).copyWith(color: AppColors.neutralMedium),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Icon(
+                  isArabic
+                      ? Icons.chevron_left_rounded
+                      : Icons.chevron_right_rounded,
+                  color: AppColors.primaryGold,
                 ),
               ],
             ),
           ),
-          const Icon(Icons.qr_code_2, color: Colors.white70, size: 32),
-        ],
+        ),
       ),
     );
   }
+}
+
+String _languageName(String languageCode, bool isArabic) {
+  if (languageCode == 'ar') {
+    return isArabic ? 'العربية' : 'Arabic';
+  }
+  return isArabic ? 'الإنجليزية' : 'English';
 }
