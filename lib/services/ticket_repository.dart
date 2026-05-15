@@ -38,6 +38,14 @@ class TicketRepository {
       final bookingId = bookingDoc.id;
       final museumTicketId = museumDoc.id;
       final robotTicketId = robotDoc.id;
+      final operation = _TicketFirestoreOperation(
+        label: 'create mobile booking ticket set',
+        paths: [
+          bookingDoc.path,
+          museumDoc.path,
+          robotDoc.path,
+        ],
+      );
 
       final museumTicket = _museumTicketFromDraft(
         uid: uid,
@@ -70,7 +78,7 @@ class TicketRepository {
       batch.set(museumDoc, _museumTicketData(museumTicket, draft));
       batch.set(robotDoc, _robotTicketData(robotTicket, draft));
 
-      await batch.commit();
+      await _commitBatch(batch, operation);
 
       return TicketCheckoutResult(
         bookingId: bookingId,
@@ -86,9 +94,13 @@ class TicketRepository {
     final uid = _verifiedUid(userId);
 
     try {
-      final bookingSnapshot = await _bookings
-          .where('userId', isEqualTo: uid)
-          .get();
+      final bookingSnapshot = await _getQuery(
+        _bookings.where('userId', isEqualTo: uid),
+        const _TicketFirestoreOperation(
+          label: 'read user bookings',
+          paths: ['bookings where userId == auth uid'],
+        ),
+      );
       final museumTickets = <MuseumTicket>[];
       final robotTickets = <RobotTourTicket>[];
 
@@ -99,7 +111,13 @@ class TicketRepository {
         final robotTicketId = _stringValue(booking['robot_tour_ticket_id']);
 
         if (museumTicketId != null) {
-          final doc = await _museumTickets.doc(museumTicketId).get();
+          final doc = await _getDoc(
+            _museumTickets.doc(museumTicketId),
+            _TicketFirestoreOperation(
+              label: 'read linked museum ticket',
+              paths: ['museumTickets/$museumTicketId'],
+            ),
+          );
           if (doc.exists && doc.data() != null) {
             museumTickets.add(
               MuseumTicket.fromFirestore(doc.id, {
@@ -111,7 +129,13 @@ class TicketRepository {
         }
 
         if (robotTicketId != null) {
-          final doc = await _robotTourTickets.doc(robotTicketId).get();
+          final doc = await _getDoc(
+            _robotTourTickets.doc(robotTicketId),
+            _TicketFirestoreOperation(
+              label: 'read linked robot tour ticket',
+              paths: ['robotTourTickets/$robotTicketId'],
+            ),
+          );
           if (doc.exists && doc.data() != null) {
             robotTickets.add(
               RobotTourTicket.fromFirestore(doc.id, {
@@ -162,19 +186,37 @@ class TicketRepository {
         update,
         SetOptions(merge: true),
       );
-      await batch.commit();
+      await _commitBatch(
+        batch,
+        _TicketFirestoreOperation(
+          label: 'cancel booking ticket set',
+          paths: [
+            'bookings/$bookingId',
+            'museumTickets/$museumTicketId',
+            'robotTourTickets/$robotTourTicketId',
+          ],
+        ),
+      );
     } on FirebaseException catch (e) {
       throw TicketRepositoryException(_friendlyFirestoreError(e));
     }
   }
 
   Future<TicketLoadResult> _loadLegacyTickets(String uid) async {
-    final museumSnapshot = await _museumTickets
-        .where('userId', isEqualTo: uid)
-        .get();
-    final robotSnapshot = await _robotTourTickets
-        .where('userId', isEqualTo: uid)
-        .get();
+    final museumSnapshot = await _getQuery(
+      _museumTickets.where('userId', isEqualTo: uid),
+      const _TicketFirestoreOperation(
+        label: 'read legacy museum tickets',
+        paths: ['museumTickets where userId == auth uid'],
+      ),
+    );
+    final robotSnapshot = await _getQuery(
+      _robotTourTickets.where('userId', isEqualTo: uid),
+      const _TicketFirestoreOperation(
+        label: 'read legacy robot tour tickets',
+        paths: ['robotTourTickets where userId == auth uid'],
+      ),
+    );
 
     return TicketLoadResult(
       museumTickets: museumSnapshot.docs
@@ -468,10 +510,56 @@ class TicketRepository {
     return null;
   }
 
+  Future<void> _commitBatch(
+    WriteBatch batch,
+    _TicketFirestoreOperation operation,
+  ) async {
+    try {
+      await batch.commit();
+    } on FirebaseException catch (e) {
+      throw _withOperation(e, operation);
+    }
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> _getDoc(
+    DocumentReference<Map<String, dynamic>> ref,
+    _TicketFirestoreOperation operation,
+  ) async {
+    try {
+      return await ref.get();
+    } on FirebaseException catch (e) {
+      throw _withOperation(e, operation);
+    }
+  }
+
+  Future<QuerySnapshot<Map<String, dynamic>>> _getQuery(
+    Query<Map<String, dynamic>> query,
+    _TicketFirestoreOperation operation,
+  ) async {
+    try {
+      return await query.get();
+    } on FirebaseException catch (e) {
+      throw _withOperation(e, operation);
+    }
+  }
+
+  FirebaseException _withOperation(
+    FirebaseException e,
+    _TicketFirestoreOperation operation,
+  ) {
+    return FirebaseException(
+      plugin: e.plugin,
+      code: e.code,
+      message: '${e.message ?? e.code} | ${operation.describe()}',
+      stackTrace: e.stackTrace,
+    );
+  }
+
   String _friendlyFirestoreError(FirebaseException e) {
     switch (e.code) {
       case 'permission-denied':
-        return 'You do not have permission to access these tickets.';
+        return 'You do not have permission to access these tickets. ${e.message ?? ''}'
+            .trim();
       case 'unavailable':
       case 'deadline-exceeded':
       case 'network-request-failed':
@@ -480,6 +568,18 @@ class TicketRepository {
         return 'Ticket service is unavailable. Please try again.';
     }
   }
+}
+
+class _TicketFirestoreOperation {
+  final String label;
+  final List<String> paths;
+
+  const _TicketFirestoreOperation({
+    required this.label,
+    required this.paths,
+  });
+
+  String describe() => 'operation: $label; paths: ${paths.join(', ')}';
 }
 
 class TicketCheckoutResult {

@@ -26,7 +26,6 @@ class TourProgressScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
-    final cs = Theme.of(context).colorScheme;
     final allExhibits = context.watch<ExhibitProvider>().exhibits;
 
     final visited = allExhibits
@@ -80,7 +79,7 @@ class TourProgressScreen extends StatelessWidget {
                           ).copyWith(color: Colors.white70),
                         ),
                         Text(
-                          "${visited.length} / ${_allExhibits.length} "
+                          "${visited.length} / ${allExhibits.length} "
                           "${isArabic ? 'معروضات' : 'exhibits'}",
                           style: AppTextStyles.metadata(context).copyWith(
                             color: AppColors.primaryGold,
@@ -106,6 +105,7 @@ class TourProgressScreen extends StatelessWidget {
                       children: [
                         Expanded(
                           child: _statItem(
+                            context,
                             icon: Icons.access_time,
                             color: AppColors.primaryGold,
                             label: isArabic ? "المدة" : "Duration",
@@ -115,6 +115,7 @@ class TourProgressScreen extends StatelessWidget {
                         const SizedBox(width: 12),
                         Expanded(
                           child: _statItem(
+                            context,
                             icon: Icons.check_circle_outline,
                             color: Colors.green,
                             label: isArabic ? "مكتمل" : "Completed",
@@ -132,6 +133,7 @@ class TourProgressScreen extends StatelessWidget {
 
             if (visited.isNotEmpty) ...[
               _sectionHeader(
+                context,
                 icon: Icons.check_circle,
                 color: Colors.green,
                 title: isArabic
@@ -153,6 +155,7 @@ class TourProgressScreen extends StatelessWidget {
 
             if (unvisited.isNotEmpty) ...[
               _sectionHeader(
+                context,
                 icon: Icons.location_on_outlined,
                 color: Colors.grey,
                 title: isArabic
@@ -176,7 +179,8 @@ class TourProgressScreen extends StatelessWidget {
     );
   }
 
-  Widget _statItem({
+  Widget _statItem(
+    BuildContext context, {
     required IconData icon,
     required Color color,
     required String label,
@@ -212,7 +216,8 @@ class TourProgressScreen extends StatelessWidget {
     );
   }
 
-  Widget _sectionHeader({
+  Widget _sectionHeader(
+    BuildContext context, {
     required IconData icon,
     required Color color,
     required String title,

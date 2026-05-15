@@ -237,8 +237,9 @@ class _EmptyTicketsState extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: _GoldButton(
-                  label: l10n.myTicketsBuyTickets,
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.tickets),
+                  label: isArabic ? l10n.myTicketsBuyTickets : 'Buy tickets',
+                  onTap: () =>
+                      Navigator.pushNamed(context, AppRoutes.buyTickets),
                 ),
               ),
             ],

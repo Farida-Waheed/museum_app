@@ -60,6 +60,7 @@ class AppRoutes {
   static const String tourCustomization = '/tour_customization';
 
   static const String tickets = '/tickets';
+  static const String buyTickets = '/buy_tickets';
   static const String myTickets = '/my_tickets';
   static const String qrScan = '/qr_scan';
 
@@ -109,6 +110,7 @@ class AppRoutes {
       tourCustomization: (context) => const TourCustomizationScreen(),
 
       tickets: (context) => const TicketsTabScreen(),
+      buyTickets: (context) => const TicketScreen(),
       myTickets: (context) => const MyTicketsScreen(),
       qrScan: (context) {
         final args = ModalRoute.of(context)?.settings.arguments;

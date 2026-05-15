@@ -44,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final HomeController _homeController = const HomeController();
   final ScrollController _scrollController = ScrollController();
   String? _lastRestoreUid;
+  String? _loadedTicketsUserId;
   bool _restoreInFlight = false;
 
   @override
@@ -57,6 +58,24 @@ class _HomeScreenState extends State<HomeScreen> {
         await _requestInitialPermissions(context);
       }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final authProvider = context.watch<AuthProvider>();
+    final userId = authProvider.currentUser?.id;
+    if (!authProvider.isLoggedIn || userId == null) {
+      _loadedTicketsUserId = null;
+      return;
+    }
+    if (authProvider.isLoggedIn && userId != _loadedTicketsUserId) {
+      _loadedTicketsUserId = userId;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        context.read<TicketProvider>().loadUserTickets(userId);
+      });
+    }
   }
 
   @override
@@ -143,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final isReconnect =
         sessionProvider.robotConnectionState == app.RobotConnectionState.failed;
     if (!ticketProvider.hasValidRobotTourEligibility && !isReconnect) {
-      Navigator.pushNamed(context, AppRoutes.tickets);
+      Navigator.pushNamed(context, AppRoutes.buyTickets);
       return;
     }
     sessionProvider.startVisiting();
@@ -156,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _openTickets(BuildContext context, HomeSnapshot snapshot) {
-    Navigator.pushNamed(context, AppRoutes.tickets);
+    Navigator.pushNamed(context, AppRoutes.buyTickets);
   }
 
   Future<void> _openTourFlow(
@@ -209,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     sessionProvider.startVisiting();
-    Navigator.pushNamed(context, AppRoutes.tickets);
+    Navigator.pushNamed(context, AppRoutes.buyTickets);
   }
 
   void _openMap(BuildContext context) {
@@ -552,6 +571,18 @@ class _HomeScreenState extends State<HomeScreen> {
           subtitle: l10n.homePairWithHorus,
           onTap: () => _openRobotPairing(context),
         ),
+      HomeQuickActionItem(
+        icon: Icons.confirmation_number_outlined,
+        label: l10n.myTickets,
+        subtitle: snapshot.hasAnyTicket
+            ? (isArabic
+                  ? 'عرض تذاكر دخول المتحف وجولة الروبوت'
+                  : 'View your museum entry and robot tour tickets')
+            : (isArabic
+                  ? 'ستظهر تذاكرك هنا بعد الحجز'
+                  : 'Your tickets will appear here after booking'),
+        onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
+      ),
       HomeQuickActionItem(
         icon: Icons.photo_library_outlined,
         label: isArabic ? 'الذكريات' : 'Memories',

@@ -708,7 +708,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                 arguments: QRScanMode.robotConnection,
               );
             } else {
-              Navigator.pushNamed(context, AppRoutes.tickets);
+              Navigator.pushNamed(context, AppRoutes.buyTickets);
             }
           },
           showSecondaryQrAction: false,

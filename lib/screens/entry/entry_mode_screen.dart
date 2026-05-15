@@ -164,7 +164,7 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
                                   } else {
                                     Navigator.pushReplacementNamed(
                                       context,
-                                      AppRoutes.tickets,
+                                      AppRoutes.buyTickets,
                                     );
                                   }
                                 } else {
