@@ -201,6 +201,15 @@ class MuseumTicketLineItem {
 }
 
 class StandardTourConfig {
+  static const List<String> officialRouteExhibitIds = [
+    'artifact_001',
+    'artifact_005',
+    'artifact_002',
+    'artifact_006',
+    'artifact_018',
+    'artifact_030',
+  ];
+
   final int durationMinutes;
   final String languageCode;
   final String routeName;
@@ -249,12 +258,7 @@ class StandardTourConfig {
     durationMinutes: 45,
     languageCode: 'english',
     routeName: 'Horus-Bot Highlights Route',
-    routeExhibitIds: [
-      'gem_ramses2_colossus',
-      'gem_ptolemaic_king_colossus',
-      'gem_anubis_chest',
-      'gem_tut_golden_mask',
-    ],
+    routeExhibitIds: officialRouteExhibitIds,
   );
 }
 

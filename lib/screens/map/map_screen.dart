@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../app/router.dart';
 import '../../models/exhibit.dart';
+import '../../models/exhibit_provider.dart';
 import '../../models/tour_provider.dart';
 import '../../models/app_session_provider.dart' as session;
-import '../../core/services/mock_data.dart';
 import '../tickets/qr_scanner_screen.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
@@ -46,7 +46,7 @@ class _MapScreenState extends State<MapScreen>
   @override
   void initState() {
     super.initState();
-    exhibits = MockDataService.getAllExhibits();
+    exhibits = const [];
     Future.delayed(Duration.zero, () {
       _checkLocationPermission();
     });
@@ -211,6 +211,7 @@ class _MapScreenState extends State<MapScreen>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    exhibits = context.watch<ExhibitProvider>().exhibits;
     _maybeRestoreActiveSession();
     final tourProvider = Provider.of<TourProvider>(context);
     final sessionProvider = Provider.of<session.AppSessionProvider>(context);

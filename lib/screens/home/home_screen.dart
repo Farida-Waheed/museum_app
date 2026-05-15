@@ -8,11 +8,11 @@ import 'package:provider/provider.dart';
 import '../../app/router.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
-import '../../core/services/mock_data.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/app_session_provider.dart' as app;
 import '../../models/auth_provider.dart';
 import '../../models/exhibit.dart';
+import '../../models/exhibit_provider.dart';
 import '../../models/ticket_provider.dart';
 import '../../models/tour_provider.dart';
 import '../../models/user_preferences.dart';
@@ -43,14 +43,12 @@ class _HomeScreenState extends State<HomeScreen> {
   static const double _readyCardOverlap = 58;
   final HomeController _homeController = const HomeController();
   final ScrollController _scrollController = ScrollController();
-  late final List<Exhibit> exhibits;
   String? _lastRestoreUid;
   bool _restoreInFlight = false;
 
   @override
   void initState() {
     super.initState();
-    exhibits = MockDataService.getAllExhibits();
 
     Future.delayed(const Duration(seconds: 1), () async {
       if (!mounted) return;
@@ -128,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  HomeSnapshot _snapshot(BuildContext context) {
+  HomeSnapshot _snapshot(BuildContext context, List<Exhibit> exhibits) {
     return _homeController.buildSnapshot(
       authProvider: context.watch<AuthProvider>(),
       ticketProvider: context.watch<TicketProvider>(),
@@ -252,12 +250,12 @@ class _HomeScreenState extends State<HomeScreen> {
   void _openArtifactDetails(
     BuildContext context,
     HomeFeaturedArtifact artifact,
+    List<Exhibit> exhibits,
   ) {
+    if (exhibits.isEmpty) return;
     final exhibit = exhibits.firstWhere(
       (item) => item.id == artifact.id,
-      orElse: () => exhibits.isNotEmpty
-          ? exhibits.first
-          : MockDataService.getAllExhibits().first,
+      orElse: () => exhibits.first,
     );
     Navigator.pushNamed(context, AppRoutes.exhibitDetails, arguments: exhibit);
   }
@@ -530,8 +528,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final prefs = context.watch<UserPreferencesModel>();
     final isArabic = prefs.language == 'ar';
     final l10n = AppLocalizations.of(context)!;
+    final exhibits = context.watch<ExhibitProvider>().exhibits;
     _maybeRestoreActiveSession();
-    final snapshot = _snapshot(context);
+    final snapshot = _snapshot(context, exhibits);
     final status = _statusModel(context, snapshot, isArabic);
     final heroHeight = MediaQuery.sizeOf(context).height * 0.56;
     final contextualArtifact = _contextualArtifact(snapshot, l10n);
@@ -673,7 +672,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: HomeFeaturedArtifactCard(
                           artifact: contextualArtifact,
                           onTap: () =>
-                              _openArtifactDetails(context, contextualArtifact),
+                              _openArtifactDetails(
+                                context,
+                                contextualArtifact,
+                                exhibits,
+                              ),
                         ),
                       ),
                       const SizedBox(height: 24),

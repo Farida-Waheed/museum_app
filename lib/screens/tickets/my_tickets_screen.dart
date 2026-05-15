@@ -8,6 +8,8 @@ import '../../core/constants/text_styles.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/app_session_provider.dart';
 import '../../models/auth_provider.dart';
+import '../../models/exhibit.dart';
+import '../../models/exhibit_provider.dart';
 import '../../models/museum_ticket.dart';
 import '../../models/robot_tour_ticket.dart';
 import '../../models/ticket_order.dart';
@@ -46,6 +48,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
     final prefs = context.watch<UserPreferencesModel>();
     final authProvider = context.watch<AuthProvider>();
     final ticketProvider = context.watch<TicketProvider>();
+    final exhibits = context.watch<ExhibitProvider>().exhibits;
     final sessionProvider = context.watch<AppSessionProvider>();
     final l10n = AppLocalizations.of(context)!;
     final isArabic = prefs.language == 'ar';
@@ -64,6 +67,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
               ? _buildWallet(
                   context,
                   ticketProvider,
+                  exhibits,
                   sessionProvider,
                   l10n,
                   isArabic,
@@ -77,6 +81,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
   Widget _buildWallet(
     BuildContext context,
     TicketProvider ticketProvider,
+    List<Exhibit> exhibits,
     AppSessionProvider sessionProvider,
     AppLocalizations l10n,
     bool isArabic,
@@ -110,6 +115,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
             padding: const EdgeInsetsDirectional.only(bottom: 18),
             child: _OrderCard(
               order: order,
+              exhibits: exhibits,
               sessionProvider: sessionProvider,
               l10n: l10n,
               isArabic: isArabic,
@@ -246,12 +252,14 @@ class _EmptyTicketsState extends StatelessWidget {
 class _OrderCard extends StatelessWidget {
   const _OrderCard({
     required this.order,
+    required this.exhibits,
     required this.sessionProvider,
     required this.l10n,
     required this.isArabic,
   });
 
   final PurchasedTicketSet order;
+  final List<Exhibit> exhibits;
   final AppSessionProvider sessionProvider;
   final AppLocalizations l10n;
   final bool isArabic;
@@ -289,6 +297,7 @@ class _OrderCard extends StatelessWidget {
             const SizedBox(height: 14),
             _RobotPassCard(
               ticket: robotTicket,
+              exhibits: exhibits,
               sessionProvider: sessionProvider,
               l10n: l10n,
               isArabic: isArabic,
@@ -461,12 +470,14 @@ class _MuseumPassCard extends StatelessWidget {
 class _RobotPassCard extends StatelessWidget {
   const _RobotPassCard({
     required this.ticket,
+    required this.exhibits,
     required this.sessionProvider,
     required this.l10n,
     required this.isArabic,
   });
 
   final RobotTourTicket ticket;
+  final List<Exhibit> exhibits;
   final AppSessionProvider sessionProvider;
   final AppLocalizations l10n;
   final bool isArabic;
@@ -503,7 +514,12 @@ class _RobotPassCard extends StatelessWidget {
             helper: l10n.myTicketsRobotPairingSeparate,
           ),
           const SizedBox(height: 14),
-          _RobotConfigSummary(ticket: ticket, l10n: l10n, isArabic: isArabic),
+          _RobotConfigSummary(
+            ticket: ticket,
+            exhibits: exhibits,
+            l10n: l10n,
+            isArabic: isArabic,
+          ),
           const SizedBox(height: 14),
           _MutedText(l10n.myTicketsPhysicalRobotQrNote),
           const SizedBox(height: 14),
@@ -523,11 +539,13 @@ class _RobotPassCard extends StatelessWidget {
 class _RobotConfigSummary extends StatelessWidget {
   const _RobotConfigSummary({
     required this.ticket,
+    required this.exhibits,
     required this.l10n,
     required this.isArabic,
   });
 
   final RobotTourTicket ticket;
+  final List<Exhibit> exhibits;
   final AppLocalizations l10n;
   final bool isArabic;
 
@@ -549,6 +567,15 @@ class _RobotConfigSummary extends StatelessWidget {
             label: l10n.myTicketsSelectedExhibitsCount,
             value: '${config.selectedExhibitIds.length}',
           ),
+          if (config.selectedExhibitIds.isNotEmpty)
+            _BreakdownLine(
+              label: l10n.exhibits,
+              value: _exhibitNames(
+                exhibits,
+                config.selectedExhibitIds,
+                isArabic ? 'ar' : 'en',
+              ),
+            ),
           _BreakdownLine(
             label: l10n.myTicketsThemes,
             value: config.selectedThemes.isEmpty
@@ -604,6 +631,14 @@ class _RobotConfigSummary extends StatelessWidget {
           label: l10n.myTicketsRouteStops,
           value:
               '${config?.routeExhibitIds.length ?? ticket.selectedArtifactIds?.length ?? 0}',
+        ),
+        _BreakdownLine(
+          label: l10n.exhibits,
+          value: _exhibitNames(
+            exhibits,
+            config?.routeExhibitIds ?? ticket.selectedArtifactIds ?? const [],
+            isArabic ? 'ar' : 'en',
+          ),
         ),
       ],
     );
@@ -1246,6 +1281,12 @@ String _standardRouteLabel(AppLocalizations l10n, String routeName) {
     return l10n.myTicketsStandardRouteName;
   }
   return routeName;
+}
+
+String _exhibitNames(List<Exhibit> exhibits, List<String> ids, String lang) {
+  if (ids.isEmpty) return '';
+  final byId = {for (final exhibit in exhibits) exhibit.id: exhibit};
+  return ids.map((id) => byId[id]?.getName(lang) ?? id).join(' • ');
 }
 
 String _themeLabel(AppLocalizations l10n, String id) {

@@ -59,8 +59,10 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/artifacts/
     - assets/icons/
     - assets/fonts/
+    - shared/booking-product-system/exhibits.v1.json
 
   fonts:
     - family: Playfair Display 

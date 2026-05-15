@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/exhibit.dart';
-import '../core/services/mock_data.dart';
+import '../core/services/exhibit_fallback_data.dart';
 
 class ExhibitProvider with ChangeNotifier {
   final FirebaseFirestore _firestore;
@@ -29,23 +29,33 @@ class ExhibitProvider with ChangeNotifier {
     try {
       final snapshot = await _firestore
           .collection('exhibits')
-          .where('isActive', isEqualTo: true)
+          .where('is_active', isEqualTo: true)
           .get();
       final firestoreExhibits = snapshot.docs
           .map((doc) => Exhibit.fromFirestore(doc.id, doc.data()))
           .where((exhibit) => exhibit.nameEn.isNotEmpty)
-          .toList();
+          .toList()
+        ..sort((a, b) => a.id.compareTo(b.id));
       _exhibits = firestoreExhibits.isEmpty
-          ? MockDataService.getAllExhibits()
+          ? await _loadFallbackExhibits()
           : firestoreExhibits;
     } on FirebaseException catch (e) {
       _error = e.code == 'permission-denied'
           ? 'Firestore rules blocked exhibit access.'
           : 'Unable to load exhibits.';
-      _exhibits = MockDataService.getAllExhibits();
+      _exhibits = await _loadFallbackExhibits();
     } finally {
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<List<Exhibit>> _loadFallbackExhibits() async {
+    try {
+      return await ExhibitFallbackData.load();
+    } catch (_) {
+      _error ??= 'Unable to load exhibit fallback data.';
+      return const [];
     }
   }
 

@@ -3,9 +3,9 @@ import 'package:provider/provider.dart';
 
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
-import '../../core/services/mock_data.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/exhibit.dart';
+import '../../models/exhibit_provider.dart';
 import '../../models/ticket_order.dart';
 import '../../models/ticket_provider.dart';
 import '../../widgets/app_menu_shell.dart';
@@ -105,7 +105,8 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isArabic = l10n.localeName == 'ar';
-    final exhibits = MockDataService.getAllExhibits();
+    final exhibitProvider = context.watch<ExhibitProvider>();
+    final exhibits = exhibitProvider.exhibits;
 
     return AppMenuShell(
       title: 'HORUS-BOT',
@@ -138,6 +139,14 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                       onToggle: (id) =>
                           _toggleSetValue(_selectedExhibitIds, id),
                     ),
+                    if (exhibitProvider.isLoading) ...[
+                      const SizedBox(height: 10),
+                      const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primaryGold,
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 18),
                     _ChipSectionCard(
                       title: l10n.tourCustomizeThemesTitle,

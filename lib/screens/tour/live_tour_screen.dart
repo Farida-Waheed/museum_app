@@ -12,7 +12,6 @@ import '../../models/exhibit.dart';
 import '../../models/exhibit_provider.dart';
 import '../../models/tour_photo.dart';
 import '../../models/auth_provider.dart';
-import '../../core/services/mock_data.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
 import '../../widgets/ask_the_guide_button.dart';
@@ -87,7 +86,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         sessionProvider.currentExhibitId ?? tourProvider.currentExhibitId;
     if (exhibitId == null) return;
 
-    final allExhibits = MockDataService.getAllExhibits();
+    final allExhibits = context.read<ExhibitProvider>().exhibits;
     final exhibitIndex = allExhibits.indexWhere((e) => e.id == exhibitId);
     if (exhibitIndex < 0) return;
     final exhibit = allExhibits[exhibitIndex];
@@ -528,9 +527,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         ? sessionProvider.selectedExhibitIds
         : tourProvider.selectedExhibitIds;
     if (routeIds.isEmpty) return const [];
-    final exhibits = availableExhibits.isEmpty
-        ? MockDataService.getAllExhibits()
-        : availableExhibits;
+    final exhibits = availableExhibits;
     final byId = {for (final exhibit in exhibits) exhibit.id: exhibit};
     return [
       for (final id in routeIds)
@@ -626,9 +623,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     final isSessionCompleted =
         sessionTourState == session.TourLifecycleState.completed;
     final firestoreExhibits = context.watch<ExhibitProvider>().exhibits;
-    final allExhibits = firestoreExhibits.isEmpty
-        ? MockDataService.getAllExhibits()
-        : firestoreExhibits;
+    final allExhibits = firestoreExhibits;
     final routeExhibits = _routeExhibits(
       tourProvider,
       sessionProvider,

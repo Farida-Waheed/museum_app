@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import '../../core/constants/colors.dart';
 import '../../l10n/app_localizations.dart';
 
-import '../../core/services/mock_data.dart';
 import '../../models/exhibit.dart';
+import '../../models/exhibit_provider.dart';
 import '../../models/user_preferences.dart';
 import '../../app/router.dart';
 import '../../widgets/app_menu_shell.dart';
@@ -16,7 +16,8 @@ class ExhibitListScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final exhibits = MockDataService.getAllExhibits();
+    final exhibitProvider = context.watch<ExhibitProvider>();
+    final exhibits = exhibitProvider.exhibits;
     final prefs = Provider.of<UserPreferencesModel>(context);
     final l10n = AppLocalizations.of(context)!;
 
@@ -24,24 +25,28 @@ class ExhibitListScreen extends StatelessWidget {
       title: l10n.exhibits.toUpperCase(),
       backgroundColor: AppColors.darkBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
-      body: ListView.builder(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        itemCount: exhibits.length,
-        itemBuilder: (context, index) {
-          final exhibit = exhibits[index];
-          return _ExhibitListTile(
-            exhibit: exhibit,
-            prefs: prefs,
-            onTap: () {
-              Navigator.pushNamed(
-                context,
-                AppRoutes.exhibitDetails,
-                arguments: exhibit,
-              );
-            },
-          );
-        },
-      ),
+      body: exhibitProvider.isLoading && exhibits.isEmpty
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.primaryGold),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              itemCount: exhibits.length,
+              itemBuilder: (context, index) {
+                final exhibit = exhibits[index];
+                return _ExhibitListTile(
+                  exhibit: exhibit,
+                  prefs: prefs,
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.exhibitDetails,
+                      arguments: exhibit,
+                    );
+                  },
+                );
+              },
+            ),
     );
   }
 }

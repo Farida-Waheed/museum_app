@@ -3,30 +3,17 @@ import 'package:provider/provider.dart';
 
 import '../../models/user_preferences.dart';
 import '../../models/exhibit.dart';
-import '../../core/services/mock_data.dart';
+import '../../models/exhibit_provider.dart';
 import '../../app/router.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 
-class TourProgressScreen extends StatefulWidget {
+class TourProgressScreen extends StatelessWidget {
   const TourProgressScreen({super.key});
 
-  @override
-  State<TourProgressScreen> createState() => _TourProgressScreenState();
-}
-
-class _TourProgressScreenState extends State<TourProgressScreen> {
-  late List<Exhibit> _allExhibits;
-
-  final List<String> _visitedExhibitIds = ['1', '2'];
-  final int _durationMinutes = 45;
-
-  @override
-  void initState() {
-    super.initState();
-    _allExhibits = MockDataService.getAllExhibits();
-  }
+  static const List<String> _visitedExhibitIds = ['artifact_001', 'artifact_005'];
+  static const int _durationMinutes = 45;
 
   String _formatDuration(int minutes) {
     final hours = (minutes / 60).floor();
@@ -40,17 +27,18 @@ class _TourProgressScreenState extends State<TourProgressScreen> {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
     final cs = Theme.of(context).colorScheme;
+    final allExhibits = context.watch<ExhibitProvider>().exhibits;
 
-    final visited = _allExhibits
+    final visited = allExhibits
         .where((e) => _visitedExhibitIds.contains(e.id))
         .toList();
-    final unvisited = _allExhibits
+    final unvisited = allExhibits
         .where((e) => !_visitedExhibitIds.contains(e.id))
         .toList();
 
-    final progress = _allExhibits.isEmpty
+    final progress = allExhibits.isEmpty
         ? 0.0
-        : _visitedExhibitIds.length / _allExhibits.length;
+        : _visitedExhibitIds.length / allExhibits.length;
 
     return AppMenuShell(
       title: (isArabic ? "تقدم الجولة" : "Tour Progress").toUpperCase(),

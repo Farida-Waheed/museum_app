@@ -13,7 +13,7 @@ class MockDataService {
   // -------------------------
   static final List<Exhibit> exhibits = [
     Exhibit(
-      id: 'gem_ramses2_colossus',
+      id: 'artifact_001',
       nameEn: 'Colossal Statue of Ramesses II',
       nameAr: 'تمثال رمسيس الثاني الضخم',
       descriptionEn:
@@ -25,7 +25,7 @@ class MockDataService {
       y: 120.0,
     ),
     Exhibit(
-      id: 'gem_ptolemaic_king_colossus',
+      id: 'artifact_002',
       nameEn: 'Colossus of a Ptolemaic King',
       nameAr: 'تمثال ضخم لملك بطلمي',
       descriptionEn:
@@ -37,7 +37,7 @@ class MockDataService {
       y: 280.0,
     ),
     Exhibit(
-      id: 'gem_ptolemaic_queen_colossus',
+      id: 'artifact_003',
       nameEn: 'Colossus of a Ptolemaic Queen',
       nameAr: 'تمثال ضخم لملكة بطلمية',
       descriptionEn:
@@ -49,7 +49,7 @@ class MockDataService {
       y: 150.0,
     ),
     Exhibit(
-      id: 'gem_anubis_chest',
+      id: 'artifact_006',
       nameEn: 'Anubis on a Chest',
       nameAr: 'أنوبيس على مقصورة',
       descriptionEn:
@@ -61,7 +61,7 @@ class MockDataService {
       y: 450.0,
     ),
     Exhibit(
-      id: 'gem_tut_golden_mask',
+      id: 'artifact_030',
       nameEn: 'Golden Burial Mask of Tutankhamun',
       nameAr: 'قناع دفن توت عنخ آمون الذهبي',
       descriptionEn:
@@ -103,7 +103,7 @@ class MockDataService {
   static final List<QuizQuestion> questions = [
     QuizQuestion(
       id: 'q1',
-      exhibitId: 'gem_tut_golden_mask',
+      exhibitId: 'artifact_030',
       exhibitNameEn: 'Golden Burial Mask of Tutankhamun',
       exhibitNameAr: 'قناع دفن توت عنخ آمون الذهبي',
       questionEn: 'In what year was Tutankhamun\'s tomb discovered?',
@@ -116,7 +116,7 @@ class MockDataService {
     ),
     QuizQuestion(
       id: 'q2',
-      exhibitId: 'gem_anubis_chest',
+      exhibitId: 'artifact_006',
       exhibitNameEn: 'Anubis on a Chest',
       exhibitNameAr: 'أنوبيس على مقصورة',
       questionEn: 'What were Canopic Jars used for?',
@@ -140,7 +140,7 @@ class MockDataService {
     ),
     QuizQuestion(
       id: 'q3',
-      exhibitId: 'gem_ramses2_colossus',
+      exhibitId: 'artifact_001',
       exhibitNameEn: 'Colossal Statue of Ramesses II',
       exhibitNameAr: 'تمثال رمسيس الثاني الضخم',
       questionEn: 'What is the material used to cover the royal sandals?',

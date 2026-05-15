@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/constants/colors.dart';
 
 import '../../models/user_preferences.dart';
-import '../../core/services/mock_data.dart';
+import '../../models/exhibit_provider.dart';
 import '../../models/exhibit.dart';
 import '../../app/router.dart';
 import '../../widgets/app_menu_shell.dart';
@@ -24,12 +24,6 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration.zero, () {
-      _allExhibits = MockDataService.getAllExhibits();
-      _filteredExhibits = _allExhibits;
-      setState(() {});
-    });
-
     _searchController.addListener(() {
       setState(() {}); // just to show/hide clear icon
     });
@@ -60,6 +54,16 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
+    final providerExhibits = context.watch<ExhibitProvider>().exhibits;
+    if (!identical(_allExhibits, providerExhibits)) {
+      _allExhibits = providerExhibits;
+      _filteredExhibits = _searchController.text.isEmpty
+          ? _allExhibits
+          : _allExhibits.where((exhibit) {
+              final name = exhibit.getName(prefs.language).toLowerCase();
+              return name.contains(_searchController.text.toLowerCase());
+            }).toList();
+    }
 
     final theme = Theme.of(context);
     final cs = theme.colorScheme;

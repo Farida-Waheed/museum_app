@@ -3431,7 +3431,7 @@ abstract class AppLocalizations {
   /// No description provided for @ticketsMockCheckoutNote.
   ///
   /// In en, this message translates to:
-  /// **'Mock checkout for prototype. Payment and backend sync will be added later.'**
+  /// **'Cash only for now. Pay at the museum counter when you arrive.'**
   String get ticketsMockCheckoutNote;
 
   /// No description provided for @ticketsCheckout.
@@ -3563,7 +3563,7 @@ abstract class AppLocalizations {
   /// No description provided for @myTicketsTotalPaid.
   ///
   /// In en, this message translates to:
-  /// **'Total paid'**
+  /// **'Total due'**
   String get myTicketsTotalPaid;
 
   /// No description provided for @myTicketsPurchasedAt.
@@ -3575,7 +3575,7 @@ abstract class AppLocalizations {
   /// No description provided for @myTicketsMuseumPassTitle.
   ///
   /// In en, this message translates to:
-  /// **'Museum Entry Pass'**
+  /// **'Museum Entry Ticket'**
   String get myTicketsMuseumPassTitle;
 
   /// No description provided for @myTicketsEntryQr.
@@ -3611,7 +3611,7 @@ abstract class AppLocalizations {
   /// No description provided for @myTicketsMuseumQrExplanation.
   ///
   /// In en, this message translates to:
-  /// **'This is for the museum gate only.'**
+  /// **'Museum Entry QR is used at the museum gate.'**
   String get myTicketsMuseumQrExplanation;
 
   /// No description provided for @myTicketsShowEntryQr.
@@ -3629,7 +3629,7 @@ abstract class AppLocalizations {
   /// No description provided for @myTicketsRobotPassTitle.
   ///
   /// In en, this message translates to:
-  /// **'Robot Tour Pass'**
+  /// **'Horus-Bot Robot Tour Ticket'**
   String get myTicketsRobotPassTitle;
 
   /// No description provided for @myTicketsRobotPassCode.
@@ -3641,13 +3641,13 @@ abstract class AppLocalizations {
   /// No description provided for @myTicketsRobotPairingSeparate.
   ///
   /// In en, this message translates to:
-  /// **'This proves your robot tour eligibility. Robot pairing is a separate scan.'**
+  /// **'Robot pairing happens later inside the mobile app by scanning the physical robot QR.'**
   String get myTicketsRobotPairingSeparate;
 
   /// No description provided for @myTicketsPhysicalRobotQrNote.
   ///
   /// In en, this message translates to:
-  /// **'Scan the physical Horus-Bot QR when you arrive to pair with the robot.'**
+  /// **'Your robot tour ticket will be ready in the app. Pairing happens at the museum by scanning the physical robot QR.'**
   String get myTicketsPhysicalRobotQrNote;
 
   /// No description provided for @myTicketsNoPreferencesSaved.

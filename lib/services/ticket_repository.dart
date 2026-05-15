@@ -274,7 +274,7 @@ class TicketRepository {
           : const [],
       selectedArtifactIds: isPersonalized
           ? personalizedConfig.selectedExhibitIds
-          : const [],
+          : standardConfig.routeExhibitIds,
     );
   }
 
@@ -366,7 +366,7 @@ class TicketRepository {
       'selected_exhibits':
           personalized?.selectedExhibitIds ??
           ticket.selectedArtifactIds ??
-          const <String>[],
+          (ticket.standardTourConfig?.routeExhibitIds ?? const <String>[]),
       'accessibility': personalized?.accessibilityNeeds ?? const <String>[],
       'kids_mode': personalized?.visitorMode == VisitorMode.kidsFamily,
       'photo_spots': personalized?.photoSpotsEnabled ?? false,
