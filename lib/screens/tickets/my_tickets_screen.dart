@@ -294,6 +294,32 @@ class _OrderCard extends StatelessWidget {
               isArabic: isArabic,
             ),
           ],
+          if (museumTicket?.status == TicketStatus.active &&
+              robotTicket?.status == TicketStatus.active) ...[
+            const SizedBox(height: 14),
+            SizedBox(
+              width: double.infinity,
+              child: _OutlineButton(
+                label: 'Cancel booking',
+                onTap: () async {
+                  final ok = await context
+                      .read<TicketProvider>()
+                      .cancelBooking(order);
+                  if (!context.mounted) return;
+                  final error = context.read<TicketProvider>().ticketError;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        ok
+                            ? 'Booking cancelled.'
+                            : error ?? 'Unable to cancel this booking.',
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -338,7 +364,7 @@ class _OrderHeader extends StatelessWidget {
                 ).copyWith(color: AppColors.softGold),
               ),
             ),
-            _StatusPill(label: order.paymentRecord.status),
+            _StatusPill(label: _paymentStatusLabel(order.paymentRecord.status)),
           ],
         ),
         const SizedBox(height: 12),
@@ -1151,7 +1177,11 @@ String _formatDate(DateTime value, bool isArabic) {
   return DateFormat('MMM d, yyyy').format(value);
 }
 
-String _money(double value) => '\$${value.toStringAsFixed(2)}';
+String _money(double value) => '${value.toStringAsFixed(2)} EGP';
+
+String _paymentStatusLabel(String status) {
+  return status == 'pay_at_counter' ? 'Pay at counter' : status;
+}
 
 String _shortCode(String id) {
   if (id.length <= 8) return id;

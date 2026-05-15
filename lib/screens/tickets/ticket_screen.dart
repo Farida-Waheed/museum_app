@@ -568,7 +568,7 @@ class _CategoryQuantityRow extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  '\$${category.price.toStringAsFixed(2)}',
+                  _money(category.price),
                   style: AppTextStyles.metadata(
                     context,
                   ).copyWith(color: AppColors.primaryGold),
@@ -1276,7 +1276,7 @@ class _OutlineActionButton extends StatelessWidget {
   }
 }
 
-String _money(double value) => '\$${value.toStringAsFixed(2)}';
+String _money(double value) => '${value.toStringAsFixed(2)} EGP';
 
 String _localizedTimeSlot(String slot, bool isArabic) {
   if (!isArabic) return slot;

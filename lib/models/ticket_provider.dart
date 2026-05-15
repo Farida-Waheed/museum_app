@@ -223,10 +223,10 @@ class TicketProvider with ChangeNotifier {
       id: 'PAY-${now.millisecondsSinceEpoch}',
       userId: userId,
       amount: draft.total,
-      currency: 'USD',
+      currency: 'EGP',
       label: _paymentLabelForDraft(),
       date: now,
-      status: 'completed',
+      status: 'pay_at_counter',
       relatedTicketIds: ticketIds,
     );
     _payments.add(payment);
@@ -260,60 +260,41 @@ class TicketProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final now = DateTime.now();
-      final orderId = 'ORD-${now.millisecondsSinceEpoch}';
       final draft = _currentOrderDraft;
-      final museumTicket = _createMuseumTicketFromDraft(
-        userId: userId,
-        orderId: orderId,
-        now: now,
-      );
-      final robotTicket = draft.hasRobotTour
-          ? _createRobotTourTicketFromDraft(
-              userId: userId,
-              orderId: orderId,
-              museumTicketId: museumTicket.id,
-              now: now,
-            )
-          : null;
 
       final result = await _ticketRepository.checkoutDraft(
         userId: userId,
         draft: draft,
-        museumTicket: museumTicket,
-        robotTicket: robotTicket,
       );
 
       final savedMuseumTicket = result.museumTicket;
       final savedRobotTicket = result.robotTourTicket;
       final ticketIds = [
         savedMuseumTicket.id,
-        if (savedRobotTicket != null) savedRobotTicket.id,
+        savedRobotTicket.id,
       ];
       final payment = PaymentRecord(
-        id: 'PAY-${now.millisecondsSinceEpoch}',
+        id: 'PAY-${result.bookingId}',
         userId: userId,
         amount: draft.total,
         currency: 'EGP',
         label: _paymentLabelForDraft(),
-        date: now,
-        status: 'completed',
+        date: savedMuseumTicket.purchasedAt,
+        status: 'pay_at_counter',
         relatedTicketIds: ticketIds,
       );
 
       _upsertMuseumTicket(savedMuseumTicket);
-      if (savedRobotTicket != null) {
-        _upsertRobotTicket(savedRobotTicket);
-      }
+      _upsertRobotTicket(savedRobotTicket);
       _payments.add(payment);
 
       final purchasedSet = PurchasedTicketSet(
-        id: orderId,
+        id: result.bookingId,
         userId: userId,
         museumTicket: savedMuseumTicket,
         robotTourTicket: savedRobotTicket,
         paymentRecord: payment,
-        purchasedAt: now,
+        purchasedAt: savedMuseumTicket.purchasedAt,
         totalAmount: draft.total,
       );
       _upsertPurchasedTicketSet(purchasedSet);
@@ -361,6 +342,45 @@ class TicketProvider with ChangeNotifier {
       _isLoadingTickets = false;
       notifyListeners();
     }
+  }
+
+  Future<bool> cancelBooking(PurchasedTicketSet set) async {
+    final bookingId =
+        set.museumTicket?.bookingId ??
+        set.robotTourTicket?.bookingId ??
+        set.id;
+    final museumTicketId = set.museumTicket?.id;
+    final robotTourTicketId = set.robotTourTicket?.id;
+    if (museumTicketId == null || robotTourTicketId == null) {
+      _ticketError = 'Unable to cancel this booking.';
+      notifyListeners();
+      return false;
+    }
+
+    try {
+      await _ticketRepository.cancelBooking(
+        userId: set.userId,
+        bookingId: bookingId,
+        museumTicketId: museumTicketId,
+        robotTourTicketId: robotTourTicketId,
+      );
+
+      _upsertMuseumTicket(
+        set.museumTicket!.copyWith(status: TicketStatus.cancelled),
+      );
+      _upsertRobotTicket(
+        set.robotTourTicket!.copyWith(status: TicketStatus.cancelled),
+      );
+      _rebuildPurchasedSetsForUser(set.userId);
+      notifyListeners();
+      return true;
+    } on TicketRepositoryException catch (e) {
+      _ticketError = e.message;
+    } catch (_) {
+      _ticketError = 'Unable to cancel this booking. Please try again.';
+    }
+    notifyListeners();
+    return false;
   }
 
   MuseumTicket _createMuseumTicketFromDraft({
@@ -514,7 +534,7 @@ class TicketProvider with ChangeNotifier {
       _payments.add(payment);
       _purchasedTicketSets.add(
         PurchasedTicketSet(
-          id: museumTicket.orderId ?? museumTicket.id,
+          id: museumTicket.bookingId ?? museumTicket.orderId ?? museumTicket.id,
           userId: userId,
           museumTicket: museumTicket,
           robotTourTicket: robotTicket,
@@ -535,7 +555,7 @@ class TicketProvider with ChangeNotifier {
       _payments.add(payment);
       _purchasedTicketSets.add(
         PurchasedTicketSet(
-          id: robotTicket.orderId ?? robotTicket.id,
+          id: robotTicket.bookingId ?? robotTicket.orderId ?? robotTicket.id,
           userId: userId,
           museumTicket: null,
           robotTourTicket: robotTicket,
@@ -557,6 +577,10 @@ class TicketProvider with ChangeNotifier {
         return robotTicket;
       }
       if (robotTicket.museumTicketId == museumTicket.id) {
+        return robotTicket;
+      }
+      if (museumTicket.bookingId != null &&
+          robotTicket.bookingId == museumTicket.bookingId) {
         return robotTicket;
       }
       if (museumTicket.orderId != null &&
@@ -589,7 +613,7 @@ class TicketProvider with ChangeNotifier {
           ? 'Museum Entry Tickets'
           : 'Museum Entry + ${robotTicket.packageName}',
       date: purchasedAt,
-      status: 'completed',
+      status: 'pay_at_counter',
       relatedTicketIds: ids,
     );
   }
@@ -667,7 +691,7 @@ class TicketProvider with ChangeNotifier {
       currency: package.currency,
       label: package.name,
       date: now,
-      status: 'completed',
+      status: 'pay_at_counter',
       relatedTicketIds: ticketIds,
     );
     _payments.add(payment);
@@ -711,7 +735,7 @@ class TicketProvider with ChangeNotifier {
       timeSlot: '10:00 AM - 12:00 PM',
       visitorCount: 2,
       price: 40.0,
-      currency: 'USD',
+      currency: 'EGP',
       qrCodeValue: 'TKT-MUSEUM-MT-MOCK-001',
       status: TicketStatus.active,
       purchasedAt: now.subtract(const Duration(hours: 2)),
@@ -724,7 +748,7 @@ class TicketProvider with ChangeNotifier {
             labelEn: 'Foreigner Adult',
             labelAr: 'أجنبي بالغ',
             price: 20,
-            currency: 'USD',
+            currency: 'EGP',
           ),
           quantity: 2,
           unitPrice: 20,
@@ -747,7 +771,7 @@ class TicketProvider with ChangeNotifier {
         'Photo opportunities',
       ],
       price: 35.0,
-      currency: 'USD',
+      currency: 'EGP',
       status: TicketStatus.active,
       purchasedAt: now.subtract(const Duration(hours: 1)),
       tourType: RobotTourType.standard,
@@ -764,10 +788,10 @@ class TicketProvider with ChangeNotifier {
       id: 'PAY-MOCK-001',
       userId: userId,
       amount: 75.0,
-      currency: 'USD',
+      currency: 'EGP',
       label: 'Complete Experience Bundle',
       date: now.subtract(const Duration(hours: 2)),
-      status: 'completed',
+      status: 'pay_at_counter',
       relatedTicketIds: [museumTicket.id, robotTicket.id],
     );
     _payments.add(payment);

@@ -23,6 +23,8 @@ class RobotTourTicket {
   final String? timeSlot;
   final String? museumTicketId;
   final String? orderId;
+  final String? bookingId;
+  final String? bookingSource;
   final String? qrCodeValue;
 
   // Optional for future extension
@@ -48,6 +50,8 @@ class RobotTourTicket {
     this.timeSlot,
     this.museumTicketId,
     this.orderId,
+    this.bookingId,
+    this.bookingSource,
     this.qrCodeValue,
     this.selectedInterests,
     this.selectedArtifactIds,
@@ -73,6 +77,8 @@ class RobotTourTicket {
     String? timeSlot,
     String? museumTicketId,
     String? orderId,
+    String? bookingId,
+    String? bookingSource,
     String? qrCodeValue,
     List<String>? selectedInterests,
     List<String>? selectedArtifactIds,
@@ -97,6 +103,8 @@ class RobotTourTicket {
       timeSlot: timeSlot ?? this.timeSlot,
       museumTicketId: museumTicketId ?? this.museumTicketId,
       orderId: orderId ?? this.orderId,
+      bookingId: bookingId ?? this.bookingId,
+      bookingSource: bookingSource ?? this.bookingSource,
       qrCodeValue: qrCodeValue ?? this.qrCodeValue,
       selectedInterests: selectedInterests ?? this.selectedInterests,
       selectedArtifactIds: selectedArtifactIds ?? this.selectedArtifactIds,
@@ -124,6 +132,8 @@ class RobotTourTicket {
       'timeSlot': timeSlot,
       'museumTicketId': museumTicketId,
       'orderId': orderId,
+      'bookingId': bookingId,
+      'bookingSource': bookingSource,
       'qrCodeValue': qrCodeValue,
       'selectedInterests': selectedInterests,
       'selectedArtifactIds': selectedArtifactIds,
@@ -151,7 +161,8 @@ class RobotTourTicket {
       'visit_time': timeSlot,
       'qr_value': qrCodeValue,
       'qrCodeValue': qrCodeValue,
-      'orderId': orderId,
+      'booking_id': bookingId,
+      'booking_source': bookingSource,
       'purchased_at': Timestamp.fromDate(purchasedAt),
     };
   }
@@ -195,6 +206,9 @@ class RobotTourTicket {
       timeSlot: json['timeSlot'] as String?,
       museumTicketId: json['museumTicketId'] as String?,
       orderId: json['orderId'] as String?,
+      bookingId: json['bookingId'] as String? ?? json['booking_id'] as String?,
+      bookingSource:
+          json['bookingSource'] as String? ?? json['booking_source'] as String?,
       qrCodeValue: json['qrCodeValue'] as String?,
       selectedInterests: json['selectedInterests'] != null
           ? List<String>.from(json['selectedInterests'] as List)
@@ -211,7 +225,9 @@ class RobotTourTicket {
   ) {
     final tourType = _tourTypeValue(json['tourType'] ?? json['tour_type']);
     final selectedExhibitIds = _stringList(
-      json['selectedArtifactIds'] ?? json['selected_exhibit_ids'],
+      json['selectedArtifactIds'] ??
+          json['selected_exhibits'] ??
+          json['selected_exhibit_ids'],
     );
     final interests = _stringList(
       json['selectedInterests'] ?? json['interests'],
@@ -221,6 +237,7 @@ class RobotTourTicket {
     );
     final duration =
         _intValue(json['durationMinutes']) ??
+        _intValue(json['tour_duration_min']) ??
         _intValue(json['tour_duration']) ??
         90;
     final language =
@@ -243,13 +260,15 @@ class RobotTourTicket {
     );
 
     return RobotTourTicket(
-      id: _stringValue(json['id']) ?? docId,
+      id: _stringValue(json['tourTicketId']) ?? _stringValue(json['id']) ?? docId,
       userId: _stringValue(json['userId']) ?? '',
       packageId: _stringValue(json['packageId']) ?? tourType.name,
       packageName:
           _stringValue(json['packageName']) ??
           (tourType == RobotTourType.personalized
               ? 'Personalized Horus-Bot Tour'
+              : tourType == RobotTourType.none
+              ? 'No Horus-Bot Tour'
               : 'Standard Horus-Bot Tour'),
       durationMinutes: duration,
       languageCode: language,
@@ -278,6 +297,11 @@ class RobotTourTicket {
           _stringValue(json['museumTicketId']) ??
           _stringValue(json['museum_ticket_id']),
       orderId: _stringValue(json['orderId']) ?? _stringValue(json['order_id']),
+      bookingId:
+          _stringValue(json['bookingId']) ?? _stringValue(json['booking_id']),
+      bookingSource:
+          _stringValue(json['bookingSource']) ??
+          _stringValue(json['booking_source']),
       qrCodeValue:
           _stringValue(json['qrCodeValue']) ?? _stringValue(json['qr_value']),
       selectedInterests: interests,
@@ -338,7 +362,9 @@ class RobotTourTicket {
       pace: _paceValue(json['pace']),
       photoSpotsEnabled:
           _boolValue(
-            json['photoSpotsEnabled'] ?? json['photo_spots_enabled'],
+            json['photoSpotsEnabled'] ??
+                json['photo_spots_enabled'] ??
+                json['photo_spots'],
           ) ??
           true,
       avoidCrowds:

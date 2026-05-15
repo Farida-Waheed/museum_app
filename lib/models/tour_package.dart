@@ -60,7 +60,7 @@ class TourPackage {
       subtitle: 'Access to museum exhibits',
       durationMinutes: 0, // Not applicable
       price: 20.0,
-      currency: 'USD',
+      currency: 'EGP',
       includedFeatures: [
         'Museum entry access',
         'Exhibit exploration',
@@ -78,7 +78,7 @@ class TourPackage {
       subtitle: 'Interactive robot-guided experience',
       durationMinutes: 90,
       price: 35.0,
-      currency: 'USD',
+      currency: 'EGP',
       includedFeatures: [
         'Personal robot guide',
         'Interactive storytelling',
@@ -98,7 +98,7 @@ class TourPackage {
       subtitle: 'Museum entry + robot guided tour',
       durationMinutes: 90,
       price: 45.0,
-      currency: 'USD',
+      currency: 'EGP',
       includedFeatures: [
         'Museum entry access',
         'Exhibit exploration',

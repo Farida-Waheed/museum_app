@@ -1784,7 +1784,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ticketsMockCheckoutNote =>
-      'Mock checkout for prototype. Payment and backend sync will be added later.';
+      'Cash only for now. Pay at the museum counter when you arrive.';
 
   @override
   String get ticketsCheckout => 'Checkout';
@@ -1859,13 +1859,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myTicketsNotAvailable => 'Not available';
 
   @override
-  String get myTicketsTotalPaid => 'Total paid';
+  String get myTicketsTotalPaid => 'Total due';
 
   @override
   String get myTicketsPurchasedAt => 'Purchased';
 
   @override
-  String get myTicketsMuseumPassTitle => 'Museum Entry Pass';
+  String get myTicketsMuseumPassTitle => 'Museum Entry Ticket';
 
   @override
   String get myTicketsEntryQr => 'Entry QR';
@@ -1884,7 +1884,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get myTicketsMuseumQrExplanation =>
-      'This is for the museum gate only.';
+      'Museum Entry QR is for entering the museum.';
 
   @override
   String get myTicketsShowEntryQr => 'Show Entry QR';
@@ -1893,14 +1893,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myTicketsUseAtGate => 'Use this at the museum gate.';
 
   @override
-  String get myTicketsRobotPassTitle => 'Robot Tour Pass';
+  String get myTicketsRobotPassTitle => 'Horus-Bot Robot Tour Ticket';
 
   @override
   String get myTicketsRobotPassCode => 'Robot tour pass code';
 
   @override
   String get myTicketsRobotPairingSeparate =>
-      'This proves your robot tour eligibility. Robot pairing is a separate scan.';
+      'Robot pairing happens later by scanning the physical robot QR.';
 
   @override
   String get myTicketsPhysicalRobotQrNote =>

@@ -76,7 +76,6 @@ class AppUser {
   Map<String, dynamic> toFirestore() {
     return {
       'uid': id,
-      'user_id': id,
       'display_name': name,
       'full_name': name,
       'email': email,
@@ -84,7 +83,8 @@ class AppUser {
       'nationality': nationality,
       'preferred_language': preferredLanguage,
       'avatar_url': avatarUrl,
-      'visit_count': visitCount,
+      'accessibility_defaults': <String, dynamic>{},
+      'marketing_opt_in': false,
     };
   }
 

@@ -97,6 +97,7 @@ class AuthService {
         ...user.toFirestore(),
         'created_at': FieldValue.serverTimestamp(),
         'updated_at': FieldValue.serverTimestamp(),
+        'last_seen_at': FieldValue.serverTimestamp(),
       });
 
       return user;
@@ -214,7 +215,24 @@ class AuthService {
   Future<AppUser> _loadOrCreateUserProfile(User firebaseUser) async {
     final doc = await _userDoc(firebaseUser.uid).get();
     if (doc.exists && doc.data() != null) {
-      return AppUser.fromFirestore(doc.data()!, fallbackUid: firebaseUser.uid);
+      final data = doc.data()!;
+      await _userDoc(firebaseUser.uid).set({
+        'uid': firebaseUser.uid,
+        'email': firebaseUser.email ?? '',
+        'display_name': data['display_name'] ?? firebaseUser.displayName,
+        'full_name': data['full_name'] ?? firebaseUser.displayName,
+        'phone_number': data['phone_number'] ?? firebaseUser.phoneNumber,
+        'nationality': data['nationality'],
+        'preferred_language': data['preferred_language'] ?? 'en',
+        'avatar_url': data['avatar_url'] ?? firebaseUser.photoURL,
+        'accessibility_defaults':
+            data['accessibility_defaults'] ?? <String, dynamic>{},
+        'marketing_opt_in': data['marketing_opt_in'] ?? false,
+        'created_at': data['created_at'] ?? FieldValue.serverTimestamp(),
+        'last_seen_at': FieldValue.serverTimestamp(),
+        'updated_at': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+      return AppUser.fromFirestore(data, fallbackUid: firebaseUser.uid);
     }
 
     final user = AppUser(
@@ -231,6 +249,7 @@ class AuthService {
       ...user.toFirestore(),
       'created_at': FieldValue.serverTimestamp(),
       'updated_at': FieldValue.serverTimestamp(),
+      'last_seen_at': FieldValue.serverTimestamp(),
     });
 
     return user;

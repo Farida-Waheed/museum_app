@@ -20,6 +20,8 @@ class MuseumTicket {
   final DateTime purchasedAt;
   final List<MuseumTicketLineItem> lineItems;
   final String? orderId;
+  final String? bookingId;
+  final String? bookingSource;
   final String? robotTourTicketId;
 
   const MuseumTicket({
@@ -36,6 +38,8 @@ class MuseumTicket {
     required this.purchasedAt,
     this.lineItems = const [],
     this.orderId,
+    this.bookingId,
+    this.bookingSource,
     this.robotTourTicketId,
   });
 
@@ -54,6 +58,8 @@ class MuseumTicket {
     DateTime? purchasedAt,
     List<MuseumTicketLineItem>? lineItems,
     String? orderId,
+    String? bookingId,
+    String? bookingSource,
     String? robotTourTicketId,
   }) {
     return MuseumTicket(
@@ -70,6 +76,8 @@ class MuseumTicket {
       purchasedAt: purchasedAt ?? this.purchasedAt,
       lineItems: lineItems ?? this.lineItems,
       orderId: orderId ?? this.orderId,
+      bookingId: bookingId ?? this.bookingId,
+      bookingSource: bookingSource ?? this.bookingSource,
       robotTourTicketId: robotTourTicketId ?? this.robotTourTicketId,
     );
   }
@@ -90,6 +98,8 @@ class MuseumTicket {
       'purchasedAt': purchasedAt.toIso8601String(),
       'lineItems': lineItems.map((item) => item.toJson()).toList(),
       'orderId': orderId,
+      'bookingId': bookingId,
+      'bookingSource': bookingSource,
       'robotTourTicketId': robotTourTicketId,
     };
   }
@@ -111,7 +121,8 @@ class MuseumTicket {
       'status': status.name,
       'purchased_at': Timestamp.fromDate(purchasedAt),
       'lineItems': lineItems.map((item) => item.toJson()).toList(),
-      'orderId': orderId,
+      'booking_id': bookingId,
+      'booking_source': bookingSource,
       'robot_tour_ticket_id': robotTourTicketId,
     };
   }
@@ -143,6 +154,9 @@ class MuseumTicket {
                 )
                 .toList(),
       orderId: json['orderId'] as String?,
+      bookingId: json['bookingId'] as String? ?? json['booking_id'] as String?,
+      bookingSource:
+          json['bookingSource'] as String? ?? json['booking_source'] as String?,
       robotTourTicketId: json['robotTourTicketId'] as String?,
     );
   }
@@ -160,7 +174,7 @@ class MuseumTicket {
         lineItems.fold<double>(0.0, (total, item) => total + item.subtotal);
 
     return MuseumTicket(
-      id: _stringValue(json['id']) ?? docId,
+      id: _stringValue(json['ticketId']) ?? _stringValue(json['id']) ?? docId,
       userId: _stringValue(json['userId']) ?? '',
       museumName:
           _stringValue(json['museumName']) ??
@@ -189,6 +203,11 @@ class MuseumTicket {
           DateTime.now(),
       lineItems: lineItems,
       orderId: _stringValue(json['orderId']) ?? _stringValue(json['order_id']),
+      bookingId:
+          _stringValue(json['bookingId']) ?? _stringValue(json['booking_id']),
+      bookingSource:
+          _stringValue(json['bookingSource']) ??
+          _stringValue(json['booking_source']),
       robotTourTicketId:
           _stringValue(json['robotTourTicketId']) ??
           _stringValue(json['robot_tour_ticket_id']),

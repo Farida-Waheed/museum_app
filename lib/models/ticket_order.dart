@@ -90,7 +90,7 @@ class VisitorTicketCategory {
       labelEn: 'Egyptian Adult',
       labelAr: '\u0645\u0635\u0631\u064a \u0628\u0627\u0644\u063a',
       price: 5,
-      currency: 'USD',
+      currency: 'EGP',
     ),
     VisitorTicketCategory(
       id: 'egyptian-student',
@@ -99,7 +99,7 @@ class VisitorTicketCategory {
       labelEn: 'Egyptian Student',
       labelAr: '\u0637\u0627\u0644\u0628 \u0645\u0635\u0631\u064a',
       price: 3,
-      currency: 'USD',
+      currency: 'EGP',
       eligibilityNoteEn: 'Student ID required.',
       eligibilityNoteAr:
           '\u064a\u0644\u0632\u0645 \u0625\u0628\u0631\u0627\u0632 \u0628\u0637\u0627\u0642\u0629 \u0637\u0627\u0644\u0628.',
@@ -111,7 +111,7 @@ class VisitorTicketCategory {
       labelEn: 'Egyptian Child',
       labelAr: '\u0637\u0641\u0644 \u0645\u0635\u0631\u064a',
       price: 2,
-      currency: 'USD',
+      currency: 'EGP',
       eligibilityNoteEn: 'Child age verification may be required.',
       eligibilityNoteAr:
           '\u0642\u062f \u064a\u0644\u0632\u0645 \u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0646 \u0639\u0645\u0631 \u0627\u0644\u0637\u0641\u0644.',
@@ -123,7 +123,7 @@ class VisitorTicketCategory {
       labelEn: 'Foreigner Adult',
       labelAr: '\u0623\u062c\u0646\u0628\u064a \u0628\u0627\u0644\u063a',
       price: 20,
-      currency: 'USD',
+      currency: 'EGP',
     ),
     VisitorTicketCategory(
       id: 'foreigner-student',
@@ -132,7 +132,7 @@ class VisitorTicketCategory {
       labelEn: 'Foreigner Student',
       labelAr: '\u0637\u0627\u0644\u0628 \u0623\u062c\u0646\u0628\u064a',
       price: 12,
-      currency: 'USD',
+      currency: 'EGP',
       eligibilityNoteEn: 'Student ID required.',
       eligibilityNoteAr:
           '\u064a\u0644\u0632\u0645 \u0625\u0628\u0631\u0627\u0632 \u0628\u0637\u0627\u0642\u0629 \u0637\u0627\u0644\u0628.',
@@ -144,7 +144,7 @@ class VisitorTicketCategory {
       labelEn: 'Foreigner Child',
       labelAr: '\u0637\u0641\u0644 \u0623\u062c\u0646\u0628\u064a',
       price: 8,
-      currency: 'USD',
+      currency: 'EGP',
       eligibilityNoteEn: 'Child age verification may be required.',
       eligibilityNoteAr:
           '\u0642\u062f \u064a\u0644\u0632\u0645 \u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0646 \u0639\u0645\u0631 \u0627\u0644\u0637\u0641\u0644.',
