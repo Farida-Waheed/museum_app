@@ -1,3 +1,5 @@
+import 'dart:developer' as developer;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -102,49 +104,58 @@ class TicketRepository {
 
       for (final bookingDoc in bookingSnapshot.docs) {
         final booking = bookingDoc.data();
-        final bookingId = _stringValue(booking['booking_id']) ?? bookingDoc.id;
+        final bookingId = bookingDoc.id;
+        final bookingSource =
+            _stringValue(booking['booking_source']) ?? mobileBookingSource;
         final museumTicketId = _stringValue(booking['museum_ticket_id']);
         final robotTicketId = _stringValue(booking['robot_tour_ticket_id']);
 
-        if (museumTicketId != null) {
-          final doc = await _getDoc(
-            _museumTickets.doc(museumTicketId),
-            _TicketFirestoreOperation(
-              label: 'read linked museum ticket',
-              paths: ['museumTickets/$museumTicketId'],
-            ),
+        if (museumTicketId == null || robotTicketId == null) {
+          developer.log(
+            'Skipping legacy/incomplete booking in My Tickets: '
+            'booking_id=$bookingId; booking_source=$bookingSource; '
+            'museum_ticket_id=$museumTicketId; '
+            'robot_tour_ticket_id=$robotTicketId',
+            name: 'TicketRepository',
           );
-          if (doc.exists && doc.data() != null) {
-            museumTickets.add(
-              MuseumTicket.fromFirestore(doc.id, {
-                ...doc.data()!,
-                'booking_id': bookingId,
-              }),
-            );
-          }
+          continue;
         }
 
-        if (robotTicketId != null) {
-          final doc = await _getDoc(
-            _robotTourTickets.doc(robotTicketId),
-            _TicketFirestoreOperation(
-              label: 'read linked robot tour ticket',
-              paths: ['robotTourTickets/$robotTicketId'],
-            ),
+        final museumDoc = await _getDoc(
+          _museumTickets.doc(museumTicketId),
+          _TicketFirestoreOperation(
+            label: 'read linked museum ticket',
+            paths: ['museumTickets/$museumTicketId'],
+          ),
+        );
+        if (museumDoc.exists && museumDoc.data() != null) {
+          museumTickets.add(
+            MuseumTicket.fromFirestore(museumDoc.id, {
+              ...museumDoc.data()!,
+              'booking_id': bookingId,
+              'booking_source': bookingSource,
+              'robot_tour_ticket_id': robotTicketId,
+            }),
           );
-          if (doc.exists && doc.data() != null) {
-            robotTickets.add(
-              RobotTourTicket.fromFirestore(doc.id, {
-                ...doc.data()!,
-                'booking_id': bookingId,
-              }),
-            );
-          }
         }
-      }
 
-      if (bookingSnapshot.docs.isEmpty) {
-        return _loadLegacyTickets(uid);
+        final robotDoc = await _getDoc(
+          _robotTourTickets.doc(robotTicketId),
+          _TicketFirestoreOperation(
+            label: 'read linked robot tour ticket',
+            paths: ['robotTourTickets/$robotTicketId'],
+          ),
+        );
+        if (robotDoc.exists && robotDoc.data() != null) {
+          robotTickets.add(
+            RobotTourTicket.fromFirestore(robotDoc.id, {
+              ...robotDoc.data()!,
+              'booking_id': bookingId,
+              'booking_source': bookingSource,
+              'museum_ticket_id': museumTicketId,
+            }),
+          );
+        }
       }
 
       return TicketLoadResult(
@@ -167,8 +178,8 @@ class TicketRepository {
     try {
       final bookingDoc = await _bookingDocForCancellation(bookingId, uid);
       final booking = bookingDoc.data()!;
-      final resolvedBookingId =
-          _stringValue(booking['booking_id']) ?? bookingDoc.id;
+      final resolvedBookingId = bookingDoc.id;
+      final bookingSource = _stringValue(booking['booking_source']);
       final resolvedMuseumTicketId =
           _stringValue(booking['museum_ticket_id']) ?? museumTicketId;
       final resolvedRobotTicketId =
@@ -186,6 +197,13 @@ class TicketRepository {
       );
       final museumRef = museumDoc.reference;
       final robotRef = robotDoc.reference;
+      developer.log(
+        'Cancelling booking: booking_id=$resolvedBookingId; '
+        'booking_source=$bookingSource; '
+        'museum_ticket_id=$resolvedMuseumTicketId; '
+        'robot_tour_ticket_id=$resolvedRobotTicketId',
+        name: 'TicketRepository',
+      );
 
       final update = {
         'status': TicketStatus.cancelled.name,
@@ -203,7 +221,10 @@ class TicketRepository {
           paths: [bookingRef.path, museumRef.path, robotRef.path],
           details:
               'requestedBookingId=$bookingId; '
-              'resolvedBookingId=$resolvedBookingId; userId=$uid',
+              'resolvedBookingId=$resolvedBookingId; '
+              'bookingSource=$bookingSource; '
+              'museumTicketId=$resolvedMuseumTicketId; '
+              'robotTourTicketId=$resolvedRobotTicketId; userId=$uid',
         ),
       );
     } on FirebaseException catch (e) {
@@ -215,21 +236,12 @@ class TicketRepository {
     String bookingId,
     String uid,
   ) async {
-    final matchingBookings = await _getQuery(
-      _bookings
-          .where('booking_id', isEqualTo: bookingId)
-          .where('userId', isEqualTo: uid),
-      _TicketFirestoreOperation(
-        label: 'resolve booking document id before cancellation',
-        paths: [
-          'bookings where booking_id == $bookingId and userId == auth uid',
-        ],
-      ),
-    );
-    if (matchingBookings.docs.isNotEmpty) {
-      return matchingBookings.docs.first;
+    if (_isLegacyOrderId(bookingId)) {
+      throw TicketRepositoryException(
+        'Unable to cancel this booking because it is a legacy order, not a '
+        'shared booking document: $bookingId.',
+      );
     }
-
     final directRef = _bookings.doc(bookingId);
     final directDoc = await _getDoc(
       directRef,
@@ -281,32 +293,6 @@ class TicketRepository {
       );
     }
     return doc;
-  }
-
-  Future<TicketLoadResult> _loadLegacyTickets(String uid) async {
-    final museumSnapshot = await _getQuery(
-      _museumTickets.where('userId', isEqualTo: uid),
-      const _TicketFirestoreOperation(
-        label: 'read legacy museum tickets',
-        paths: ['museumTickets where userId == auth uid'],
-      ),
-    );
-    final robotSnapshot = await _getQuery(
-      _robotTourTickets.where('userId', isEqualTo: uid),
-      const _TicketFirestoreOperation(
-        label: 'read legacy robot tour tickets',
-        paths: ['robotTourTickets where userId == auth uid'],
-      ),
-    );
-
-    return TicketLoadResult(
-      museumTickets: museumSnapshot.docs
-          .map((doc) => MuseumTicket.fromFirestore(doc.id, doc.data()))
-          .toList(),
-      robotTourTickets: robotSnapshot.docs
-          .map((doc) => RobotTourTicket.fromFirestore(doc.id, doc.data()))
-          .toList(),
-    );
   }
 
   String _verifiedUid(String userId) {
@@ -593,6 +579,10 @@ class TicketRepository {
   String? _stringValue(Object? value) {
     if (value is String && value.trim().isNotEmpty) return value;
     return null;
+  }
+
+  bool _isLegacyOrderId(String value) {
+    return value.trim().toUpperCase().startsWith('ORD-');
   }
 
   Future<void> _commitBatch(

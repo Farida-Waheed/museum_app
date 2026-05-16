@@ -372,13 +372,25 @@ class TicketProvider with ChangeNotifier {
         set.museumTicket?.bookingId ?? set.robotTourTicket?.bookingId ?? set.id;
     final museumTicketId = set.museumTicket?.id;
     final robotTourTicketId = set.robotTourTicket?.id;
-    if (museumTicketId == null || robotTourTicketId == null) {
+    final bookingSource =
+        set.museumTicket?.bookingSource ??
+        set.robotTourTicket?.bookingSource ??
+        'unknown';
+    if (!_isSharedBookingId(bookingId) ||
+        museumTicketId == null ||
+        robotTourTicketId == null) {
       _ticketError = 'Unable to cancel this booking.';
       notifyListeners();
       return false;
     }
 
     try {
+      debugPrint(
+        'Cancelling booking from My Tickets: '
+        'booking_id=$bookingId; booking_source=$bookingSource; '
+        'museum_ticket_id=$museumTicketId; '
+        'robot_tour_ticket_id=$robotTourTicketId',
+      );
       await _ticketRepository.cancelBooking(
         userId: set.userId,
         bookingId: bookingId,
@@ -546,18 +558,21 @@ class TicketProvider with ChangeNotifier {
 
     final userMuseumTickets = _museumTickets
         .where((ticket) => ticket.userId == userId)
+        .where(_isSharedMuseumTicket)
         .toList();
     final userRobotTickets = _robotTourTickets
         .where((ticket) => ticket.userId == userId)
+        .where(_isSharedRobotTicket)
         .toList();
 
     for (final museumTicket in userMuseumTickets) {
       final robotTicket = _matchingRobotTicket(museumTicket, userRobotTickets);
+      if (robotTicket == null) continue;
       final payment = _paymentForTickets(userId, museumTicket, robotTicket);
       _payments.add(payment);
       _purchasedTicketSets.add(
         PurchasedTicketSet(
-          id: museumTicket.bookingId ?? museumTicket.orderId ?? museumTicket.id,
+          id: museumTicket.bookingId!,
           userId: userId,
           museumTicket: museumTicket,
           robotTourTicket: robotTicket,
@@ -568,26 +583,8 @@ class TicketProvider with ChangeNotifier {
       );
     }
 
-    final pairedRobotIds = _purchasedTicketSets
-        .map((set) => set.robotTourTicket?.id)
-        .whereType<String>()
-        .toSet();
-    for (final robotTicket in userRobotTickets) {
-      if (pairedRobotIds.contains(robotTicket.id)) continue;
-      final payment = _paymentForTickets(userId, null, robotTicket);
-      _payments.add(payment);
-      _purchasedTicketSets.add(
-        PurchasedTicketSet(
-          id: robotTicket.bookingId ?? robotTicket.orderId ?? robotTicket.id,
-          userId: userId,
-          museumTicket: null,
-          robotTourTicket: robotTicket,
-          paymentRecord: payment,
-          purchasedAt: robotTicket.purchasedAt,
-          totalAmount: payment.amount,
-        ),
-      );
-    }
+    // Final QA uses complete shared bookings only. Legacy/order-only or
+    // orphaned ticket docs are intentionally hidden from My Tickets.
   }
 
   RobotTourTicket? _matchingRobotTicket(
@@ -606,12 +603,26 @@ class TicketProvider with ChangeNotifier {
           robotTicket.bookingId == museumTicket.bookingId) {
         return robotTicket;
       }
-      if (museumTicket.orderId != null &&
-          robotTicket.orderId == museumTicket.orderId) {
-        return robotTicket;
-      }
     }
     return null;
+  }
+
+  bool _isSharedMuseumTicket(MuseumTicket ticket) {
+    return _isSharedBookingId(ticket.bookingId) &&
+        ticket.robotTourTicketId != null &&
+        ticket.robotTourTicketId!.trim().isNotEmpty;
+  }
+
+  bool _isSharedRobotTicket(RobotTourTicket ticket) {
+    return _isSharedBookingId(ticket.bookingId) &&
+        ticket.museumTicketId != null &&
+        ticket.museumTicketId!.trim().isNotEmpty;
+  }
+
+  bool _isSharedBookingId(String? value) {
+    final id = value?.trim();
+    if (id == null || id.isEmpty) return false;
+    return !id.toUpperCase().startsWith('ORD-');
   }
 
   PaymentRecord _paymentForTickets(

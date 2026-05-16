@@ -574,6 +574,9 @@ class _RobotConfigSummary extends StatelessWidget {
       if (config == null) {
         return _MutedText(l10n.myTicketsNoPreferencesSaved);
       }
+      final selectedExhibitIds = _newBookingExhibitIds(
+        config.selectedExhibitIds,
+      );
       return Column(
         crossAxisAlignment: isArabic
             ? CrossAxisAlignment.end
@@ -583,14 +586,14 @@ class _RobotConfigSummary extends StatelessWidget {
           const SizedBox(height: 8),
           _BreakdownLine(
             label: l10n.myTicketsSelectedExhibitsCount,
-            value: '${config.selectedExhibitIds.length}',
+            value: '${selectedExhibitIds.length}',
           ),
-          if (config.selectedExhibitIds.isNotEmpty)
+          if (selectedExhibitIds.isNotEmpty)
             _BreakdownLine(
               label: l10n.exhibits,
               value: _exhibitNames(
                 exhibits,
-                config.selectedExhibitIds,
+                selectedExhibitIds,
                 isArabic ? 'ar' : 'en',
               ),
             ),
@@ -631,6 +634,9 @@ class _RobotConfigSummary extends StatelessWidget {
     }
 
     final config = ticket.standardTourConfig;
+    final routeExhibitIds = _newBookingExhibitIds(
+      config?.routeExhibitIds ?? ticket.selectedArtifactIds ?? const [],
+    );
     return Column(
       crossAxisAlignment: isArabic
           ? CrossAxisAlignment.end
@@ -647,17 +653,17 @@ class _RobotConfigSummary extends StatelessWidget {
         ),
         _BreakdownLine(
           label: l10n.myTicketsRouteStops,
-          value:
-              '${config?.routeExhibitIds.length ?? ticket.selectedArtifactIds?.length ?? 0}',
+          value: '${routeExhibitIds.length}',
         ),
-        _BreakdownLine(
-          label: l10n.exhibits,
-          value: _exhibitNames(
-            exhibits,
-            config?.routeExhibitIds ?? ticket.selectedArtifactIds ?? const [],
-            isArabic ? 'ar' : 'en',
+        if (routeExhibitIds.isNotEmpty)
+          _BreakdownLine(
+            label: l10n.exhibits,
+            value: _exhibitNames(
+              exhibits,
+              routeExhibitIds,
+              isArabic ? 'ar' : 'en',
+            ),
           ),
-        ),
       ],
     );
   }
@@ -1306,6 +1312,9 @@ String _exhibitNames(List<Exhibit> exhibits, List<String> ids, String lang) {
   final byId = {for (final exhibit in exhibits) exhibit.id: exhibit};
   return ids.map((id) => byId[id]?.getName(lang) ?? id).join(' • ');
 }
+
+List<String> _newBookingExhibitIds(List<String> ids) =>
+    ids.where((id) => id.startsWith('artifact_')).toList();
 
 String _themeLabel(AppLocalizations l10n, String id) {
   switch (id) {
