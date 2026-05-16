@@ -1,6 +1,7 @@
 import 'museum_ticket.dart';
 import 'payment_record.dart';
 import 'robot_tour_ticket.dart';
+import '../core/constants/pricing.dart';
 
 enum VisitorAudience { egyptian, foreigner }
 
@@ -89,8 +90,8 @@ class VisitorTicketCategory {
       ageGroup: VisitorAgeGroup.adult,
       labelEn: 'Egyptian Adult',
       labelAr: '\u0645\u0635\u0631\u064a \u0628\u0627\u0644\u063a',
-      price: 60,
-      currency: 'EGP',
+      price: BookingPricing.egyptianAdult,
+      currency: BookingPricing.currency,
     ),
     VisitorTicketCategory(
       id: 'egyptian-student',
@@ -98,8 +99,8 @@ class VisitorTicketCategory {
       ageGroup: VisitorAgeGroup.student,
       labelEn: 'Egyptian Student',
       labelAr: '\u0637\u0627\u0644\u0628 \u0645\u0635\u0631\u064a',
-      price: 30,
-      currency: 'EGP',
+      price: BookingPricing.egyptianStudent,
+      currency: BookingPricing.currency,
       eligibilityNoteEn: 'Student ID required.',
       eligibilityNoteAr:
           '\u064a\u0644\u0632\u0645 \u0625\u0628\u0631\u0627\u0632 \u0628\u0637\u0627\u0642\u0629 \u0637\u0627\u0644\u0628.',
@@ -110,8 +111,8 @@ class VisitorTicketCategory {
       ageGroup: VisitorAgeGroup.child,
       labelEn: 'Egyptian Child',
       labelAr: '\u0637\u0641\u0644 \u0645\u0635\u0631\u064a',
-      price: 20,
-      currency: 'EGP',
+      price: BookingPricing.egyptianChild,
+      currency: BookingPricing.currency,
       eligibilityNoteEn: 'Child age verification may be required.',
       eligibilityNoteAr:
           '\u0642\u062f \u064a\u0644\u0632\u0645 \u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0646 \u0639\u0645\u0631 \u0627\u0644\u0637\u0641\u0644.',
@@ -122,8 +123,8 @@ class VisitorTicketCategory {
       ageGroup: VisitorAgeGroup.adult,
       labelEn: 'Foreigner Adult',
       labelAr: '\u0623\u062c\u0646\u0628\u064a \u0628\u0627\u0644\u063a',
-      price: 500,
-      currency: 'EGP',
+      price: BookingPricing.foreignerAdult,
+      currency: BookingPricing.currency,
     ),
     VisitorTicketCategory(
       id: 'foreigner-student',
@@ -131,8 +132,8 @@ class VisitorTicketCategory {
       ageGroup: VisitorAgeGroup.student,
       labelEn: 'Foreigner Student',
       labelAr: '\u0637\u0627\u0644\u0628 \u0623\u062c\u0646\u0628\u064a',
-      price: 250,
-      currency: 'EGP',
+      price: BookingPricing.foreignerStudent,
+      currency: BookingPricing.currency,
       eligibilityNoteEn: 'Student ID required.',
       eligibilityNoteAr:
           '\u064a\u0644\u0632\u0645 \u0625\u0628\u0631\u0627\u0632 \u0628\u0637\u0627\u0642\u0629 \u0637\u0627\u0644\u0628.',
@@ -143,8 +144,8 @@ class VisitorTicketCategory {
       ageGroup: VisitorAgeGroup.child,
       labelEn: 'Foreigner Child',
       labelAr: '\u0637\u0641\u0644 \u0623\u062c\u0646\u0628\u064a',
-      price: 250,
-      currency: 'EGP',
+      price: BookingPricing.foreignerChild,
+      currency: BookingPricing.currency,
       eligibilityNoteEn: 'Child age verification may be required.',
       eligibilityNoteAr:
           '\u0642\u062f \u064a\u0644\u0632\u0645 \u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0646 \u0639\u0645\u0631 \u0627\u0644\u0637\u0641\u0644.',
@@ -417,9 +418,9 @@ class TicketOrderDraft {
       case RobotTourType.none:
         return 0;
       case RobotTourType.standard:
-        return 150;
+        return BookingPricing.standardRobotTour;
       case RobotTourType.personalized:
-        return 300;
+        return BookingPricing.personalizedRobotTour;
     }
   }
 

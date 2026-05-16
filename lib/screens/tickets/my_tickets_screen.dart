@@ -286,6 +286,7 @@ class _OrderCard extends StatelessWidget {
                 ? l10n.myTicketsNotAvailable
                 : _localizedTimeSlot(timeSlot, isArabic),
             l10n: l10n,
+            isArabic: isArabic,
           ),
           const SizedBox(height: 16),
           if (museumTicket != null)
@@ -312,9 +313,9 @@ class _OrderCard extends StatelessWidget {
               child: _OutlineButton(
                 label: 'Cancel booking',
                 onTap: () async {
-                  final ok = await context
-                      .read<TicketProvider>()
-                      .cancelBooking(order);
+                  final ok = await context.read<TicketProvider>().cancelBooking(
+                    order,
+                  );
                   if (!context.mounted) return;
                   final error = context.read<TicketProvider>().ticketError;
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -342,12 +343,14 @@ class _OrderHeader extends StatelessWidget {
     required this.visitDate,
     required this.timeSlot,
     required this.l10n,
+    required this.isArabic,
   });
 
   final PurchasedTicketSet order;
   final String visitDate;
   final String timeSlot;
   final AppLocalizations l10n;
+  final bool isArabic;
 
   @override
   Widget build(BuildContext context) {
@@ -356,6 +359,8 @@ class _OrderHeader extends StatelessWidget {
           ? CrossAxisAlignment.end
           : CrossAxisAlignment.start,
       children: [
+        _SectionLabel(isArabic ? 'ملخص الحجز' : 'Booking summary'),
+        const SizedBox(height: 10),
         Row(
           textDirection: Directionality.of(context),
           children: [
@@ -383,6 +388,10 @@ class _OrderHeader extends StatelessWidget {
             _InfoItem(l10n.visitDate, visitDate),
             _InfoItem(l10n.timeSlot, timeSlot),
             _InfoItem(l10n.myTicketsTotalPaid, _money(order.totalAmount)),
+            _InfoItem(
+              isArabic ? 'حالة الدفع' : 'Payment status',
+              _paymentStatusLabel(order.paymentRecord.status),
+            ),
             _InfoItem(
               l10n.myTicketsPurchasedAt,
               _formatDate(order.purchasedAt, false),
@@ -429,6 +438,10 @@ class _MuseumPassCard extends StatelessWidget {
               ),
               _InfoItem(l10n.status, _ticketStatusLabel(l10n, ticket.status)),
               _InfoItem(l10n.myTicketsTotalVisitors, '${ticket.visitorCount}'),
+              _InfoItem(
+                isArabic ? 'حالة الدفع' : 'Payment status',
+                _paymentStatusLabel('pay_at_counter'),
+              ),
             ],
           ),
           const SizedBox(height: 14),
@@ -506,6 +519,10 @@ class _RobotPassCard extends StatelessWidget {
                 _languageLabel(l10n, ticket.languageCode),
               ),
               _InfoItem(l10n.status, _ticketStatusLabel(l10n, ticket.status)),
+              _InfoItem(
+                isArabic ? 'حالة الدفع' : 'Payment status',
+                _paymentStatusLabel('pay_at_counter'),
+              ),
             ],
           ),
           const SizedBox(height: 14),

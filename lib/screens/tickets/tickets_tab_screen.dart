@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import '../../models/auth_provider.dart';
 import '../../models/ticket_provider.dart';
 import 'my_tickets_screen.dart';
-import 'ticket_screen.dart';
 
 class TicketsTabScreen extends StatefulWidget {
   const TicketsTabScreen({super.key});
@@ -32,19 +31,6 @@ class _TicketsTabScreenState extends State<TicketsTabScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = context.watch<AuthProvider>();
-    final ticketProvider = context.watch<TicketProvider>();
-    final waitingForTickets =
-        authProvider.isLoggedIn && ticketProvider.isLoadingTickets;
-    final hasTickets =
-        authProvider.isLoggedIn &&
-        (ticketProvider.hasTickets ||
-            ticketProvider.purchasedTicketSets.isNotEmpty ||
-            ticketProvider.museumTickets.isNotEmpty ||
-            ticketProvider.robotTourTickets.isNotEmpty);
-
-    return waitingForTickets || hasTickets
-        ? const MyTicketsScreen()
-        : const TicketScreen();
+    return const MyTicketsScreen();
   }
 }

@@ -22,12 +22,7 @@ class TicketScreen extends StatefulWidget {
 }
 
 class _TicketScreenState extends State<TicketScreen> {
-  static const List<String> _timeSlots = [
-    '09:00',
-    '11:00',
-    '13:00',
-    '15:00',
-  ];
+  static const List<String> _timeSlots = ['09:00', '11:00', '13:00', '15:00'];
 
   Future<void> _selectDate(TicketProvider ticketProvider) async {
     final picked = await showDatePicker(
@@ -104,8 +99,7 @@ class _TicketScreenState extends State<TicketScreen> {
           backgroundColor: AppColors.cinematicCard,
           title: const Text('Cash payment at counter'),
           content: Text(
-            'Cash only for now. Your booking will be saved with '
-            'payment_method: cash and payment_status: pay_at_counter. '
+            'Cash only for now. Payment status: Pay at counter. '
             'Total due at the museum counter: ${_money(total)}.',
           ),
           actions: [
@@ -268,16 +262,6 @@ class _TicketScreenState extends State<TicketScreen> {
               children: [
                 _PageIntroCard(l10n: l10n, isArabic: isArabic),
                 const SizedBox(height: 18),
-                _VisitDetailsCard(
-                  l10n: l10n,
-                  formattedDate: formattedDate,
-                  selectedTimeSlot: draft.timeSlot,
-                  timeSlots: _timeSlots,
-                  onDateTap: () => _selectDate(ticketProvider),
-                  onTimeSlotChanged: ticketProvider.updateTimeSlot,
-                  isArabic: isArabic,
-                ),
-                const SizedBox(height: 18),
                 _MuseumEntryCard(
                   l10n: l10n,
                   ticketProvider: ticketProvider,
@@ -289,14 +273,22 @@ class _TicketScreenState extends State<TicketScreen> {
                   ticketProvider: ticketProvider,
                   isArabic: isArabic,
                 ),
-                if (draft.robotTourType == RobotTourType.standard) ...[
-                  const SizedBox(height: 18),
-                  _StandardTourConfigCard(
-                    l10n: l10n,
-                    ticketProvider: ticketProvider,
-                    isArabic: isArabic,
-                  ),
-                ],
+                const SizedBox(height: 18),
+                _VisitDetailsCard(
+                  l10n: l10n,
+                  formattedDate: formattedDate,
+                  selectedTimeSlot: draft.timeSlot,
+                  timeSlots: _timeSlots,
+                  onDateTap: () => _selectDate(ticketProvider),
+                  onTimeSlotChanged: ticketProvider.updateTimeSlot,
+                  isArabic: isArabic,
+                ),
+                const SizedBox(height: 18),
+                _NarrationLanguageCard(
+                  l10n: l10n,
+                  ticketProvider: ticketProvider,
+                  isArabic: isArabic,
+                ),
                 if (draft.robotTourType == RobotTourType.personalized) ...[
                   const SizedBox(height: 18),
                   _PersonalizedTourCard(l10n: l10n, isArabic: isArabic),
@@ -689,8 +681,8 @@ class _RobotTourCard extends StatelessWidget {
   }
 }
 
-class _StandardTourConfigCard extends StatelessWidget {
-  const _StandardTourConfigCard({
+class _NarrationLanguageCard extends StatelessWidget {
+  const _NarrationLanguageCard({
     required this.l10n,
     required this.ticketProvider,
     required this.isArabic,
@@ -702,58 +694,57 @@ class _StandardTourConfigCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final config =
-        ticketProvider.currentOrderDraft.standardTourConfig ??
-        StandardTourConfig.defaultConfig;
-    final officialDuration = StandardTourConfig.defaultConfig.durationMinutes;
+    final draft = ticketProvider.currentOrderDraft;
+    final languageCode = draft.robotTourType == RobotTourType.personalized
+        ? (draft.personalizedTourConfig?.languageCode ??
+              PersonalizedTourConfig.defaultConfig.languageCode)
+        : (draft.standardTourConfig?.languageCode ??
+              StandardTourConfig.defaultConfig.languageCode);
     return _SectionCard(
-      title: l10n.ticketsStandardConfigTitle,
+      title: l10n.language,
+      subtitle: isArabic
+          ? 'اختر لغة السرد قبل تخصيص الجولة أو تأكيدها.'
+          : 'Choose the tour narration language before personalization or checkout.',
       isArabic: isArabic,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _ConfigLabel(l10n.duration),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [officialDuration].map((duration) {
-              return _ChoicePill(
-                label: l10n.ticketsDurationValue(duration),
-                selected: config.durationMinutes == duration,
-                onTap: () {},
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 16),
           _ConfigLabel(l10n.language),
           Wrap(
             spacing: 8,
+            runSpacing: 8,
             children: [
               _ChoicePill(
                 label: l10n.ticketsEnglish,
-                selected: config.languageCode == 'english',
-                onTap: () => ticketProvider.updateStandardTourConfig(
-                  config.copyWith(languageCode: 'english'),
-                ),
+                selected: languageCode == 'english',
+                onTap: () => ticketProvider.updateTourLanguage('english'),
               ),
               _ChoicePill(
                 label: l10n.ticketsArabic,
-                selected: config.languageCode == 'arabic',
-                onTap: () => ticketProvider.updateStandardTourConfig(
-                  config.copyWith(languageCode: 'arabic'),
-                ),
+                selected: languageCode == 'arabic',
+                onTap: () => ticketProvider.updateTourLanguage('arabic'),
               ),
               _ChoicePill(
                 label: 'Egyptian Arabic',
-                selected: config.languageCode == 'egyptian_arabic',
-                onTap: () => ticketProvider.updateStandardTourConfig(
-                  config.copyWith(languageCode: 'egyptian_arabic'),
-                ),
+                selected: languageCode == 'egyptian_arabic',
+                onTap: () =>
+                    ticketProvider.updateTourLanguage('egyptian_arabic'),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          _RouteSummary(text: l10n.ticketsRecommendedRoute),
+          if (draft.robotTourType == RobotTourType.standard) ...[
+            const SizedBox(height: 16),
+            _ConfigLabel(l10n.duration),
+            _ChoicePill(
+              label: l10n.ticketsDurationValue(
+                StandardTourConfig.defaultConfig.durationMinutes,
+              ),
+              selected: true,
+              onTap: () {},
+            ),
+            const SizedBox(height: 16),
+            _RouteSummary(text: l10n.ticketsRecommendedRoute),
+          ],
         ],
       ),
     );
@@ -861,7 +852,7 @@ class _PaymentNoticeCard extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'payment_method: cash | payment_status: pay_at_counter',
+              'Payment status: Pay at counter',
               textAlign: TextAlign.start,
               style: AppTextStyles.metadata(
                 context,

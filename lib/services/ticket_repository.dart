@@ -40,11 +40,7 @@ class TicketRepository {
       final robotTicketId = robotDoc.id;
       final operation = _TicketFirestoreOperation(
         label: 'create mobile booking ticket set',
-        paths: [
-          bookingDoc.path,
-          museumDoc.path,
-          robotDoc.path,
-        ],
+        paths: [bookingDoc.path, museumDoc.path, robotDoc.path],
       );
 
       final museumTicket = _museumTicketFromDraft(
@@ -178,8 +174,18 @@ class TicketRepository {
       final resolvedRobotTicketId =
           _stringValue(booking['robot_tour_ticket_id']) ?? robotTourTicketId;
       final bookingRef = bookingDoc.reference;
-      final museumRef = _museumTickets.doc(resolvedMuseumTicketId);
-      final robotRef = _robotTourTickets.doc(resolvedRobotTicketId);
+      final museumDoc = await _ownedLinkedDocForCancellation(
+        _museumTickets.doc(resolvedMuseumTicketId),
+        uid,
+        'museum ticket',
+      );
+      final robotDoc = await _ownedLinkedDocForCancellation(
+        _robotTourTickets.doc(resolvedRobotTicketId),
+        uid,
+        'robot tour ticket',
+      );
+      final museumRef = museumDoc.reference;
+      final robotRef = robotDoc.reference;
 
       final update = {
         'status': TicketStatus.cancelled.name,
@@ -194,12 +200,9 @@ class TicketRepository {
         batch,
         _TicketFirestoreOperation(
           label: 'cancel booking ticket set',
-          paths: [
-            bookingRef.path,
-            museumRef.path,
-            robotRef.path,
-          ],
-          details: 'requestedBookingId=$bookingId; '
+          paths: [bookingRef.path, museumRef.path, robotRef.path],
+          details:
+              'requestedBookingId=$bookingId; '
               'resolvedBookingId=$resolvedBookingId; userId=$uid',
         ),
       );
@@ -236,6 +239,13 @@ class TicketRepository {
       ),
     );
     if (directDoc.exists && directDoc.data() != null) {
+      final directBooking = directDoc.data()!;
+      if (_stringValue(directBooking['userId']) != uid) {
+        throw TicketRepositoryException(
+          'Unable to cancel this booking. Booking does not belong to the '
+          'signed-in user: ${directRef.path}.',
+        );
+      }
       return directDoc;
     }
 
@@ -243,6 +253,34 @@ class TicketRepository {
       'Unable to cancel this booking. Booking document was not found: '
       'bookings/$bookingId.',
     );
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> _ownedLinkedDocForCancellation(
+    DocumentReference<Map<String, dynamic>> ref,
+    String uid,
+    String label,
+  ) async {
+    final doc = await _getDoc(
+      ref,
+      _TicketFirestoreOperation(
+        label: 'read linked $label before cancellation',
+        paths: [ref.path],
+      ),
+    );
+    final data = doc.data();
+    if (!doc.exists || data == null) {
+      throw TicketRepositoryException(
+        'Unable to cancel this booking. Linked $label was not found: '
+        '${ref.path}.',
+      );
+    }
+    if (_stringValue(data['userId']) != uid) {
+      throw TicketRepositoryException(
+        'Unable to cancel this booking. Linked $label does not belong to the '
+        'signed-in user: ${ref.path}.',
+      );
+    }
+    return doc;
   }
 
   Future<TicketLoadResult> _loadLegacyTickets(String uid) async {
@@ -277,7 +315,9 @@ class TicketRepository {
       throw const TicketRepositoryException('Please sign in to buy tickets.');
     }
     if (userId.trim().isNotEmpty && userId != uid) {
-      throw const TicketRepositoryException('Ticket user does not match login.');
+      throw const TicketRepositoryException(
+        'Ticket user does not match login.',
+      );
     }
     return uid;
   }
@@ -531,8 +571,10 @@ class TicketRepository {
 
   String _toTwentyFourHourStart(String raw) {
     final value = raw.trim();
-    final match = RegExp(r'^(\d{1,2}):(\d{2})\s*(AM|PM)$', caseSensitive: false)
-        .firstMatch(value);
+    final match = RegExp(
+      r'^(\d{1,2}):(\d{2})\s*(AM|PM)$',
+      caseSensitive: false,
+    ).firstMatch(value);
     if (match == null) return value;
     var hour = int.parse(match.group(1)!);
     final minute = match.group(2)!;
@@ -608,7 +650,8 @@ class TicketRepository {
       case 'network-request-failed':
         return 'Network error. Please check your connection and try again.';
       default:
-        return 'Ticket service is unavailable. Please try again.';
+        return 'Ticket service is unavailable. Please try again. '
+            'Firestore ${e.code}: ${e.message ?? 'no details'}';
     }
   }
 }

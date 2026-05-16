@@ -1,3 +1,5 @@
+import '../core/constants/pricing.dart';
+
 /// Tour package model for robot guided tours
 class TourPackage {
   final String id;
@@ -59,8 +61,8 @@ class TourPackage {
       name: 'Museum Entry Only',
       subtitle: 'Access to museum exhibits',
       durationMinutes: 0, // Not applicable
-      price: 60.0,
-      currency: 'EGP',
+      price: BookingPricing.egyptianAdult,
+      currency: BookingPricing.currency,
       includedFeatures: [
         'Museum entry access',
         'Exhibit exploration',
@@ -77,8 +79,8 @@ class TourPackage {
       name: 'Horus-Bot Guided Tour',
       subtitle: 'Interactive robot-guided experience',
       durationMinutes: 45,
-      price: 150.0,
-      currency: 'EGP',
+      price: BookingPricing.standardRobotTour,
+      currency: BookingPricing.currency,
       includedFeatures: [
         'Personal robot guide',
         'Interactive storytelling',
@@ -97,8 +99,8 @@ class TourPackage {
       name: 'Complete Experience Bundle',
       subtitle: 'Museum entry + robot guided tour',
       durationMinutes: 45,
-      price: 210.0,
-      currency: 'EGP',
+      price: BookingPricing.egyptianAdult + BookingPricing.standardRobotTour,
+      currency: BookingPricing.currency,
       includedFeatures: [
         'Museum entry access',
         'Exhibit exploration',

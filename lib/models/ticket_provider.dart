@@ -5,6 +5,7 @@ import 'tour_package.dart';
 import 'payment_record.dart';
 import 'ticket_order.dart';
 import '../services/ticket_repository.dart';
+import '../core/constants/pricing.dart';
 
 /// Provider for managing user tickets, draft orders, and ticket entitlements.
 class TicketProvider with ChangeNotifier {
@@ -191,6 +192,24 @@ class TicketProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void updateTourLanguage(String languageCode) {
+    final normalized = languageCode.trim().toLowerCase().replaceAll('-', '_');
+    final standardConfig =
+        _currentOrderDraft.standardTourConfig ??
+        StandardTourConfig.defaultConfig;
+    final personalizedConfig =
+        _currentOrderDraft.personalizedTourConfig ??
+        PersonalizedTourConfig.defaultConfig;
+
+    _currentOrderDraft = _currentOrderDraft.copyWith(
+      standardTourConfig: standardConfig.copyWith(languageCode: normalized),
+      personalizedTourConfig: personalizedConfig.copyWith(
+        languageCode: normalized,
+      ),
+    );
+    notifyListeners();
+  }
+
   void updatePersonalizedTourConfig(PersonalizedTourConfig config) {
     _currentOrderDraft = _currentOrderDraft.copyWith(
       personalizedTourConfig: config,
@@ -276,10 +295,7 @@ class TicketProvider with ChangeNotifier {
 
       final savedMuseumTicket = result.museumTicket;
       final savedRobotTicket = result.robotTourTicket;
-      final ticketIds = [
-        savedMuseumTicket.id,
-        savedRobotTicket.id,
-      ];
+      final ticketIds = [savedMuseumTicket.id, savedRobotTicket.id];
       final payment = PaymentRecord(
         id: 'PAY-${result.bookingId}',
         userId: userId,
@@ -353,9 +369,7 @@ class TicketProvider with ChangeNotifier {
 
   Future<bool> cancelBooking(PurchasedTicketSet set) async {
     final bookingId =
-        set.museumTicket?.bookingId ??
-        set.robotTourTicket?.bookingId ??
-        set.id;
+        set.museumTicket?.bookingId ?? set.robotTourTicket?.bookingId ?? set.id;
     final museumTicketId = set.museumTicket?.id;
     final robotTourTicketId = set.robotTourTicket?.id;
     if (museumTicketId == null || robotTourTicketId == null) {
@@ -743,8 +757,8 @@ class TicketProvider with ChangeNotifier {
       visitDate: tomorrow,
       timeSlot: '11:00',
       visitorCount: 2,
-      price: 1000.0,
-      currency: 'EGP',
+      price: BookingPricing.foreignerAdult * 2,
+      currency: BookingPricing.currency,
       qrCodeValue: 'TKT-MUSEUM-MT-MOCK-001',
       status: TicketStatus.active,
       purchasedAt: now.subtract(const Duration(hours: 2)),
@@ -756,11 +770,11 @@ class TicketProvider with ChangeNotifier {
             ageGroup: VisitorAgeGroup.adult,
             labelEn: 'Foreigner Adult',
             labelAr: 'أجنبي بالغ',
-            price: 500,
-            currency: 'EGP',
+            price: BookingPricing.foreignerAdult,
+            currency: BookingPricing.currency,
           ),
           quantity: 2,
-          unitPrice: 500,
+          unitPrice: BookingPricing.foreignerAdult,
         ),
       ],
       orderId: orderId,
@@ -779,8 +793,8 @@ class TicketProvider with ChangeNotifier {
         'Interactive storytelling',
         'Photo opportunities',
       ],
-      price: 150.0,
-      currency: 'EGP',
+      price: BookingPricing.standardRobotTour,
+      currency: BookingPricing.currency,
       status: TicketStatus.active,
       purchasedAt: now.subtract(const Duration(hours: 1)),
       tourType: RobotTourType.standard,
@@ -796,8 +810,9 @@ class TicketProvider with ChangeNotifier {
     final payment = PaymentRecord(
       id: 'PAY-MOCK-001',
       userId: userId,
-      amount: 1150.0,
-      currency: 'EGP',
+      amount:
+          BookingPricing.foreignerAdult * 2 + BookingPricing.standardRobotTour,
+      currency: BookingPricing.currency,
       label: 'Complete Experience Bundle',
       date: now.subtract(const Duration(hours: 2)),
       status: 'pay_at_counter',
