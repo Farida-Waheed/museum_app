@@ -30,6 +30,8 @@ class _TicketScreenState extends State<TicketScreen> {
   final RecommendedRoutesService _recommendedRoutesService =
       RecommendedRoutesService();
   List<RecommendedRoute> _recommendedRoutes = const [];
+  List<String> _recommendedRouteWarnings = const [];
+  bool _recommendedRoutesLoaded = false;
   String? _recommendedRoutesExhibitKey;
 
   @override
@@ -49,7 +51,15 @@ class _TicketScreenState extends State<TicketScreen> {
       _recommendedRoutes = result.routes
           .where((route) => route.isActive)
           .toList(growable: false);
+      _recommendedRouteWarnings = result.warnings;
+      _recommendedRoutesLoaded = true;
     });
+    debugPrint(
+      'Recommended routes loaded: '
+      'count=${result.routes.length}; '
+      'active=${_recommendedRoutes.length}; '
+      'warnings=${result.warnings.join(' | ')}',
+    );
     for (final warning in result.warnings) {
       debugPrint('Recommended route warning: $warning');
     }
@@ -310,6 +320,12 @@ class _TicketScreenState extends State<TicketScreen> {
                     routes: _recommendedRoutes,
                     selectedRouteId: draft.recommendedRouteId,
                     onRouteSelected: ticketProvider.selectRecommendedRoute,
+                    isArabic: isArabic,
+                  ),
+                ] else if (_recommendedRoutesLoaded) ...[
+                  const SizedBox(height: 18),
+                  _RecommendedRoutesFallbackCard(
+                    warnings: _recommendedRouteWarnings,
                     isArabic: isArabic,
                   ),
                 ],
@@ -819,6 +835,32 @@ class _RecommendedRoutesCard extends StatelessWidget {
             ),
           );
         }).toList(),
+      ),
+    );
+  }
+}
+
+class _RecommendedRoutesFallbackCard extends StatelessWidget {
+  const _RecommendedRoutesFallbackCard({
+    required this.warnings,
+    required this.isArabic,
+  });
+
+  final List<String> warnings;
+  final bool isArabic;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SectionCard(
+      title: isArabic ? 'المسارات المقترحة' : 'Recommended Routes',
+      subtitle: isArabic
+          ? 'تعذر تحميل المسارات المقترحة. راجع سجل التطبيق للتفاصيل.'
+          : 'Recommended routes could not be loaded. Check the app log for details.',
+      isArabic: isArabic,
+      child: _RouteSummary(
+        text: warnings.isEmpty
+            ? 'Recommended routes list is empty.'
+            : warnings.take(2).join(' | '),
       ),
     );
   }
