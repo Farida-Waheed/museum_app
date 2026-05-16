@@ -386,6 +386,9 @@ class TicketRepository {
       selectedArtifactIds: isPersonalized
           ? personalizedConfig.selectedExhibitIds
           : standardConfig.routeExhibitIds,
+      routeId: draft.recommendedRouteId,
+      routeTitleEn: draft.recommendedRouteTitleEn,
+      routeTitleAr: draft.recommendedRouteTitleAr,
     );
   }
 
@@ -482,6 +485,9 @@ class TicketRepository {
       'kids_mode': personalized?.visitorMode == VisitorMode.kidsFamily,
       'photo_spots': personalized?.photoSpotsEnabled ?? false,
       'notes': null,
+      'route_id': ticket.routeId,
+      'route_title_en': ticket.routeTitleEn,
+      'route_title_ar': ticket.routeTitleAr,
       'total_price': draft.robotTourSubtotal,
       'currency': 'EGP',
       'payment_method': 'cash',

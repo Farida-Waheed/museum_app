@@ -509,6 +509,11 @@ class _RobotPassCard extends StatelessWidget {
         children: [
           _InfoGrid(
             items: [
+              if (_routeTitle(ticket, isArabic) != null)
+                _InfoItem(
+                  isArabic ? 'المسار' : 'Route',
+                  _routeTitle(ticket, isArabic)!,
+                ),
               _InfoItem(l10n.tourType, _tourTypeLabel(l10n, ticket.tourType)),
               _InfoItem(
                 l10n.duration,
@@ -646,10 +651,12 @@ class _RobotConfigSummary extends StatelessWidget {
         const SizedBox(height: 8),
         _BreakdownLine(
           label: l10n.myTicketsRouteName,
-          value: _standardRouteLabel(
-            l10n,
-            config?.routeName ?? ticket.packageName,
-          ),
+          value:
+              _routeTitle(ticket, isArabic) ??
+              _standardRouteLabel(
+                l10n,
+                config?.routeName ?? ticket.packageName,
+              ),
         ),
         _BreakdownLine(
           label: l10n.myTicketsRouteStops,
@@ -1305,6 +1312,14 @@ String _standardRouteLabel(AppLocalizations l10n, String routeName) {
     return l10n.myTicketsStandardRouteName;
   }
   return routeName;
+}
+
+String? _routeTitle(RobotTourTicket ticket, bool isArabic) {
+  final title = isArabic
+      ? ticket.routeTitleAr ?? ticket.routeTitleEn
+      : ticket.routeTitleEn ?? ticket.routeTitleAr;
+  if (title == null || title.trim().isEmpty) return null;
+  return title;
 }
 
 String _exhibitNames(List<Exhibit> exhibits, List<String> ids, String lang) {

@@ -1,0 +1,209 @@
+[
+  {
+    "id": "horus_highlights",
+    "title_en": "Horus Highlights",
+    "title_ar": "أبرز معروضات حورس",
+    "description_en": "A balanced first-visit route through monumental royal sculpture, divine protection, and the most recognizable treasures of Tutankhamun.",
+    "description_ar": "مسار متوازن للزيارة الأولى يمر بالتماثيل الملكية الضخمة والحماية المقدسة وأشهر كنوز توت عنخ آمون.",
+    "theme": "museum_highlights",
+    "recommended_for": [
+      "first_time_visitors",
+      "quick_visit",
+      "tourists"
+    ],
+    "duration_min": 45,
+    "pace": "normal",
+    "kids_friendly": false,
+    "photo_spots": false,
+    "cover_image": "assets/artifacts/artifact_030_golden_burial_mask_of_tutankhamun.jpg",
+    "artifact_ids": [
+      "artifact_001",
+      "artifact_005",
+      "artifact_002",
+      "artifact_006",
+      "artifact_018",
+      "artifact_030"
+    ],
+    "recommended_language": "english",
+    "is_active": true,
+    "route_order": 1
+  },
+  {
+    "id": "tutankhamun_treasures",
+    "title_en": "Tutankhamun Treasures",
+    "title_ar": "كنوز توت عنخ آمون",
+    "description_en": "A focused route through the young king's funerary treasures, royal furniture, protective statues, jewelry, and golden burial equipment.",
+    "description_ar": "مسار مركز بين كنوز الملك الشاب الجنائزية وأثاثه الملكي وتماثيل الحراسة والحلي ومعدات الدفن الذهبية.",
+    "theme": "tutankhamun_treasures",
+    "recommended_for": [
+      "history_lovers",
+      "tourists",
+      "deep_exploration"
+    ],
+    "duration_min": 60,
+    "pace": "normal",
+    "kids_friendly": false,
+    "photo_spots": true,
+    "cover_image": "assets/artifacts/artifact_018_golden_throne_of_tutankhamun.jpg",
+    "artifact_ids": [
+      "artifact_018",
+      "artifact_019",
+      "artifact_020",
+      "artifact_024",
+      "artifact_027",
+      "artifact_029",
+      "artifact_030"
+    ],
+    "recommended_language": "english",
+    "is_active": true,
+    "route_order": 2
+  },
+  {
+    "id": "royal_power_kingship",
+    "title_en": "Royal Power and Kingship",
+    "title_ar": "السلطة الملكية والملكية",
+    "description_en": "A route about how Egyptian rulers expressed authority through colossal statues, royal inscriptions, throne imagery, and symbols of divine kingship.",
+    "description_ar": "مسار يوضح كيف عبر ملوك مصر عن السلطة من خلال التماثيل الضخمة والنقوش الملكية وصور العرش ورموز الملكية المقدسة.",
+    "theme": "royal_power",
+    "recommended_for": [
+      "history_lovers",
+      "students",
+      "tourists"
+    ],
+    "duration_min": 50,
+    "pace": "normal",
+    "kids_friendly": false,
+    "photo_spots": false,
+    "cover_image": "assets/artifacts/artifact_001_colossal_statue_of_ramesses_ii.jpg",
+    "artifact_ids": [
+      "artifact_001",
+      "artifact_002",
+      "artifact_003",
+      "artifact_004",
+      "artifact_005",
+      "artifact_018"
+    ],
+    "recommended_language": "english",
+    "is_active": true,
+    "route_order": 3
+  },
+  {
+    "id": "afterlife_burial",
+    "title_en": "Afterlife and Burial",
+    "title_ar": "العالم الآخر والدفن",
+    "description_en": "A deeper route exploring mummification, protection, ritual containers, funerary furniture, and objects prepared for the king's journey after death.",
+    "description_ar": "مسار أعمق يستكشف التحنيط والحماية والأوعية الطقسية والأثاث الجنائزي والأدوات المعدة لرحلة الملك بعد الموت.",
+    "theme": "afterlife_burial",
+    "recommended_for": [
+      "history_lovers",
+      "deep_exploration",
+      "students"
+    ],
+    "duration_min": 55,
+    "pace": "normal",
+    "kids_friendly": false,
+    "photo_spots": false,
+    "cover_image": "assets/artifacts/artifact_006_anubis_on_a_chest.jpg",
+    "artifact_ids": [
+      "artifact_006",
+      "artifact_007",
+      "artifact_008",
+      "artifact_012",
+      "artifact_023",
+      "artifact_025",
+      "artifact_027"
+    ],
+    "recommended_language": "english",
+    "is_active": true,
+    "route_order": 4
+  },
+  {
+    "id": "family_highlights",
+    "title_en": "Family Highlights",
+    "title_ar": "أبرز المعروضات للعائلة",
+    "description_en": "A relaxed family-friendly route with memorable shapes, animals, bright royal objects, and short stories that are easy for younger visitors to follow.",
+    "description_ar": "مسار عائلي هادئ يضم أشكالا مميزة وحيوانات وقطعا ملكية لامعة وقصصا قصيرة يسهل على الزوار الصغار متابعتها.",
+    "theme": "family_highlights",
+    "recommended_for": [
+      "kids",
+      "first_time_visitors",
+      "quick_visit"
+    ],
+    "duration_min": 40,
+    "pace": "relaxed",
+    "kids_friendly": true,
+    "photo_spots": false,
+    "cover_image": "assets/artifacts/artifact_024_lotus_cup_of_tutankhamun.jpg",
+    "artifact_ids": [
+      "artifact_001",
+      "artifact_006",
+      "artifact_013",
+      "artifact_014",
+      "artifact_018",
+      "artifact_024"
+    ],
+    "recommended_language": "english",
+    "is_active": true,
+    "route_order": 5
+  },
+  {
+    "id": "photo_spots_tour",
+    "title_en": "Photo Spots Tour",
+    "title_ar": "جولة مواقع التصوير",
+    "description_en": "A visual route built around iconic silhouettes, gold surfaces, dramatic royal objects, and memorable stops suited for visitor photos.",
+    "description_ar": "مسار بصري يركز على الأشكال الأيقونية والأسطح الذهبية والقطع الملكية اللافتة ومحطات مناسبة لصور الزوار.",
+    "theme": "photo_spots",
+    "recommended_for": [
+      "photography",
+      "tourists",
+      "quick_visit"
+    ],
+    "duration_min": 45,
+    "pace": "normal",
+    "kids_friendly": false,
+    "photo_spots": true,
+    "cover_image": "assets/artifacts/artifact_030_golden_burial_mask_of_tutankhamun.jpg",
+    "artifact_ids": [
+      "artifact_001",
+      "artifact_003",
+      "artifact_018",
+      "artifact_019",
+      "artifact_020",
+      "artifact_026",
+      "artifact_030"
+    ],
+    "recommended_language": "english",
+    "is_active": true,
+    "route_order": 6
+  },
+  {
+    "id": "ancient_egyptian_symbols",
+    "title_en": "Ancient Egyptian Symbols",
+    "title_ar": "رموز مصر القديمة",
+    "description_en": "A thematic route about protective animals, lotus imagery, royal regalia, funerary symbols, and the visual language of ancient Egyptian belief.",
+    "description_ar": "مسار موضوعي عن الحيوانات الحامية وصور اللوتس والشارات الملكية والرموز الجنائزية واللغة البصرية لعقيدة مصر القديمة.",
+    "theme": "ancient_symbols",
+    "recommended_for": [
+      "students",
+      "history_lovers",
+      "deep_exploration"
+    ],
+    "duration_min": 50,
+    "pace": "normal",
+    "kids_friendly": false,
+    "photo_spots": false,
+    "cover_image": "assets/artifacts/artifact_029_royal_diadem_of_tutankhamun.jpg",
+    "artifact_ids": [
+      "artifact_006",
+      "artifact_013",
+      "artifact_014",
+      "artifact_023",
+      "artifact_024",
+      "artifact_028",
+      "artifact_029"
+    ],
+    "recommended_language": "english",
+    "is_active": true,
+    "route_order": 7
+  }
+]

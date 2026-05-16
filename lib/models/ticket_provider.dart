@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'museum_ticket.dart';
+import 'recommended_route.dart';
 import 'robot_tour_ticket.dart';
 import 'tour_package.dart';
 import 'payment_record.dart';
@@ -17,6 +18,7 @@ class TicketProvider with ChangeNotifier {
   final List<PurchasedTicketSet> _purchasedTicketSets = [];
 
   TicketOrderDraft _currentOrderDraft = TicketOrderDraft.initial();
+  bool _tourLanguageTouched = false;
   bool _isLoadingTickets = false;
   bool _isCheckingOut = false;
   String? _ticketError;
@@ -107,6 +109,7 @@ class TicketProvider with ChangeNotifier {
 
   void resetOrderDraft() {
     _currentOrderDraft = TicketOrderDraft.initial();
+    _tourLanguageTouched = false;
     notifyListeners();
   }
 
@@ -178,7 +181,62 @@ class TicketProvider with ChangeNotifier {
           ? _currentOrderDraft.personalizedTourConfig ??
                 PersonalizedTourConfig.defaultConfig
           : _currentOrderDraft.personalizedTourConfig,
+      clearRecommendedRoute: true,
     );
+    notifyListeners();
+  }
+
+  void selectRecommendedRoute(RecommendedRoute route) {
+    final artifactIds = route.artifactIds
+        .where((id) => RegExp(r'^artifact_\d{3}$').hasMatch(id))
+        .toList(growable: false);
+    if (artifactIds.isEmpty) return;
+
+    final currentLanguage =
+        _currentOrderDraft.robotTourType == RobotTourType.personalized
+        ? _currentOrderDraft.personalizedTourConfig?.languageCode
+        : _currentOrderDraft.standardTourConfig?.languageCode;
+    final languageCode = _tourLanguageTouched
+        ? (currentLanguage ?? StandardTourConfig.defaultConfig.languageCode)
+        : route.recommendedLanguage;
+
+    if (route.id == 'horus_highlights') {
+      _currentOrderDraft = _currentOrderDraft.copyWith(
+        robotTourType: RobotTourType.standard,
+        standardTourConfig: StandardTourConfig(
+          durationMinutes: route.durationMin,
+          languageCode: languageCode,
+          routeName: route.titleEn,
+          routeExhibitIds: artifactIds,
+        ),
+        recommendedRouteId: route.id,
+        recommendedRouteTitleEn: route.titleEn,
+        recommendedRouteTitleAr: route.titleAr,
+      );
+    } else {
+      final existing =
+          _currentOrderDraft.personalizedTourConfig ??
+          PersonalizedTourConfig.defaultConfig;
+      _currentOrderDraft = _currentOrderDraft.copyWith(
+        robotTourType: RobotTourType.personalized,
+        personalizedTourConfig: existing.copyWith(
+          selectedExhibitIds: artifactIds,
+          selectedThemes: route.theme.trim().isEmpty
+              ? route.recommendedFor
+              : [route.theme],
+          durationMinutes: route.durationMin,
+          languageCode: languageCode,
+          visitorMode: route.kidsFriendly
+              ? VisitorMode.kidsFamily
+              : existing.visitorMode,
+          pace: _paceFromRecommendedRoute(route.pace),
+          photoSpotsEnabled: route.photoSpots,
+        ),
+        recommendedRouteId: route.id,
+        recommendedRouteTitleEn: route.titleEn,
+        recommendedRouteTitleAr: route.titleAr,
+      );
+    }
     notifyListeners();
   }
 
@@ -194,6 +252,7 @@ class TicketProvider with ChangeNotifier {
 
   void updateTourLanguage(String languageCode) {
     final normalized = languageCode.trim().toLowerCase().replaceAll('-', '_');
+    _tourLanguageTouched = true;
     final standardConfig =
         _currentOrderDraft.standardTourConfig ??
         StandardTourConfig.defaultConfig;
@@ -483,6 +542,9 @@ class TicketProvider with ChangeNotifier {
       museumTicketId: museumTicketId,
       orderId: orderId,
       qrCodeValue: 'TKT-ROBOT-$orderId',
+      routeId: _currentOrderDraft.recommendedRouteId,
+      routeTitleEn: _currentOrderDraft.recommendedRouteTitleEn,
+      routeTitleAr: _currentOrderDraft.recommendedRouteTitleAr,
       selectedInterests: isPersonalized
           ? personalizedConfig.selectedThemes
           : null,
@@ -523,6 +585,13 @@ class TicketProvider with ChangeNotifier {
           'Accessibility-aware pacing',
         ];
     }
+  }
+
+  TourPace _paceFromRecommendedRoute(String pace) {
+    return TourPace.values.firstWhere(
+      (value) => value.name == pace.trim().toLowerCase(),
+      orElse: () => TourPace.normal,
+    );
   }
 
   void _upsertMuseumTicket(MuseumTicket ticket) {

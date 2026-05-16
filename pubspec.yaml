@@ -63,6 +63,7 @@ flutter:
     - assets/icons/
     - assets/fonts/
     - shared/booking-product-system/exhibits.v1.json
+    - shared/booking-product-system/recommended_routes.v1.json
 
   fonts:
     - family: Playfair Display 

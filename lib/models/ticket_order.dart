@@ -393,6 +393,9 @@ class TicketOrderDraft {
   final RobotTourType robotTourType;
   final StandardTourConfig? standardTourConfig;
   final PersonalizedTourConfig? personalizedTourConfig;
+  final String? recommendedRouteId;
+  final String? recommendedRouteTitleEn;
+  final String? recommendedRouteTitleAr;
 
   const TicketOrderDraft({
     required this.visitDate,
@@ -401,6 +404,9 @@ class TicketOrderDraft {
     required this.robotTourType,
     this.standardTourConfig,
     this.personalizedTourConfig,
+    this.recommendedRouteId,
+    this.recommendedRouteTitleEn,
+    this.recommendedRouteTitleAr,
   });
 
   double get museumSubtotal =>
@@ -433,6 +439,10 @@ class TicketOrderDraft {
     RobotTourType? robotTourType,
     StandardTourConfig? standardTourConfig,
     PersonalizedTourConfig? personalizedTourConfig,
+    String? recommendedRouteId,
+    String? recommendedRouteTitleEn,
+    String? recommendedRouteTitleAr,
+    bool clearRecommendedRoute = false,
   }) {
     return TicketOrderDraft(
       visitDate: visitDate ?? this.visitDate,
@@ -442,6 +452,15 @@ class TicketOrderDraft {
       standardTourConfig: standardTourConfig ?? this.standardTourConfig,
       personalizedTourConfig:
           personalizedTourConfig ?? this.personalizedTourConfig,
+      recommendedRouteId: clearRecommendedRoute
+          ? null
+          : recommendedRouteId ?? this.recommendedRouteId,
+      recommendedRouteTitleEn: clearRecommendedRoute
+          ? null
+          : recommendedRouteTitleEn ?? this.recommendedRouteTitleEn,
+      recommendedRouteTitleAr: clearRecommendedRoute
+          ? null
+          : recommendedRouteTitleAr ?? this.recommendedRouteTitleAr,
     );
   }
 
@@ -453,6 +472,9 @@ class TicketOrderDraft {
       'robotTourType': robotTourType.name,
       'standardTourConfig': standardTourConfig?.toJson(),
       'personalizedTourConfig': personalizedTourConfig?.toJson(),
+      'recommendedRouteId': recommendedRouteId,
+      'recommendedRouteTitleEn': recommendedRouteTitleEn,
+      'recommendedRouteTitleAr': recommendedRouteTitleAr,
       'museumSubtotal': museumSubtotal,
       'robotTourSubtotal': robotTourSubtotal,
       'total': total,
@@ -483,6 +505,9 @@ class TicketOrderDraft {
           : PersonalizedTourConfig.fromJson(
               json['personalizedTourConfig'] as Map<String, dynamic>,
             ),
+      recommendedRouteId: json['recommendedRouteId'] as String?,
+      recommendedRouteTitleEn: json['recommendedRouteTitleEn'] as String?,
+      recommendedRouteTitleAr: json['recommendedRouteTitleAr'] as String?,
     );
   }
 

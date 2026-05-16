@@ -8,9 +8,13 @@ import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/auth_provider.dart';
+import '../../models/exhibit.dart';
+import '../../models/exhibit_provider.dart';
+import '../../models/recommended_route.dart';
 import '../../models/ticket_order.dart';
 import '../../models/ticket_provider.dart';
 import '../../models/user_preferences.dart';
+import '../../services/recommended_routes_service.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
 
@@ -23,6 +27,33 @@ class TicketScreen extends StatefulWidget {
 
 class _TicketScreenState extends State<TicketScreen> {
   static const List<String> _timeSlots = ['09:00', '11:00', '13:00', '15:00'];
+  final RecommendedRoutesService _recommendedRoutesService =
+      RecommendedRoutesService();
+  List<RecommendedRoute> _recommendedRoutes = const [];
+  String? _recommendedRoutesExhibitKey;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final exhibits = context.watch<ExhibitProvider>().exhibits;
+    final exhibitKey = exhibits.map((exhibit) => exhibit.id).join('|');
+    if (exhibitKey == _recommendedRoutesExhibitKey) return;
+    _recommendedRoutesExhibitKey = exhibitKey;
+    _loadRecommendedRoutes(exhibits);
+  }
+
+  Future<void> _loadRecommendedRoutes(Iterable<Exhibit> exhibits) async {
+    final result = await _recommendedRoutesService.load(exhibits: exhibits);
+    if (!mounted) return;
+    setState(() {
+      _recommendedRoutes = result.routes
+          .where((route) => route.isActive)
+          .toList(growable: false);
+    });
+    for (final warning in result.warnings) {
+      debugPrint('Recommended route warning: $warning');
+    }
+  }
 
   Future<void> _selectDate(TicketProvider ticketProvider) async {
     final picked = await showDatePicker(
@@ -273,6 +304,15 @@ class _TicketScreenState extends State<TicketScreen> {
                   ticketProvider: ticketProvider,
                   isArabic: isArabic,
                 ),
+                if (_recommendedRoutes.isNotEmpty) ...[
+                  const SizedBox(height: 18),
+                  _RecommendedRoutesCard(
+                    routes: _recommendedRoutes,
+                    selectedRouteId: draft.recommendedRouteId,
+                    onRouteSelected: ticketProvider.selectRecommendedRoute,
+                    isArabic: isArabic,
+                  ),
+                ],
                 const SizedBox(height: 18),
                 _VisitDetailsCard(
                   l10n: l10n,
@@ -676,6 +716,109 @@ class _RobotTourCard extends StatelessWidget {
                 ticketProvider.selectRobotTourType(RobotTourType.personalized),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _RecommendedRoutesCard extends StatelessWidget {
+  const _RecommendedRoutesCard({
+    required this.routes,
+    required this.selectedRouteId,
+    required this.onRouteSelected,
+    required this.isArabic,
+  });
+
+  final List<RecommendedRoute> routes;
+  final String? selectedRouteId;
+  final ValueChanged<RecommendedRoute> onRouteSelected;
+  final bool isArabic;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SectionCard(
+      title: isArabic ? 'المسارات المقترحة' : 'Recommended Routes',
+      subtitle: isArabic
+          ? 'اختر مسارا جاهزا لملء محطات الجولة وتفضيلاتها.'
+          : 'Choose a ready route to fill the tour stops and preferences.',
+      isArabic: isArabic,
+      child: Column(
+        children: routes.map((route) {
+          final selected = selectedRouteId == route.id;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: InkWell(
+              onTap: () => onRouteSelected(route),
+              borderRadius: BorderRadius.circular(18),
+              child: Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: selected
+                      ? AppColors.primaryGold.withValues(alpha: 0.13)
+                      : AppColors.secondaryGlass(0.30),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: selected
+                        ? AppColors.primaryGold
+                        : AppColors.goldBorder(0.12),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: isArabic
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      textDirection: Directionality.of(context),
+                      children: [
+                        const Icon(
+                          Icons.route_outlined,
+                          color: AppColors.primaryGold,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            route.title(isArabic ? 'ar' : 'en'),
+                            textAlign: TextAlign.start,
+                            style: AppTextStyles.bodyPrimary(
+                              context,
+                            ).copyWith(fontWeight: FontWeight.w800),
+                          ),
+                        ),
+                        Icon(
+                          selected
+                              ? Icons.radio_button_checked_rounded
+                              : Icons.radio_button_off_rounded,
+                          color: selected
+                              ? AppColors.primaryGold
+                              : AppColors.bodyText,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      route.description(isArabic ? 'ar' : 'en'),
+                      textAlign: TextAlign.start,
+                      style: AppTextStyles.metadata(
+                        context,
+                      ).copyWith(color: AppColors.neutralMedium, height: 1.35),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      '${route.durationMin} min • ${route.artifactIds.length} stops',
+                      textAlign: TextAlign.start,
+                      style: AppTextStyles.metadata(
+                        context,
+                      ).copyWith(color: AppColors.primaryGold),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
