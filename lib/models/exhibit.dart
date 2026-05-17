@@ -47,7 +47,8 @@ class Exhibit {
     final media = data['media'];
     final contentEn = data['content_en'];
     final contentAr = data['content_ar'];
-    final location = data['location'] ?? (locations is Map ? locations['map'] : null);
+    final location =
+        data['location'] ?? (locations is Map ? locations['map'] : null);
     final x = location is GeoPoint
         ? location.longitude
         : _doubleValue(location is Map ? location['x'] : data['x']) ?? 0;
@@ -61,7 +62,9 @@ class Exhibit {
         '';
     final descriptionEn =
         _stringValue(contentEn is Map ? contentEn['summary'] : null) ??
-        _stringValue(contentEn is Map ? contentEn['historical_background'] : null) ??
+        _stringValue(
+          contentEn is Map ? contentEn['historical_background'] : null,
+        ) ??
         _stringValue(data['descriptionEn']) ??
         '';
     final titleAr =
@@ -88,7 +91,8 @@ class Exhibit {
           _stringValue(data['imageUrl']) ??
           '',
       audioUrl: _stringValue(data['audioUrl']),
-      category: _stringValue(data['historical_period']) ??
+      category:
+          _stringValue(data['historical_period']) ??
           _stringValue(data['category']) ??
           '',
       floor:
@@ -101,7 +105,9 @@ class Exhibit {
       routeOrder: _intValue(data['route_order']),
       themes: _stringList(data['themes']),
       tags: _stringList(data['tags']),
-      photoSpot: data['photo_spot'] is bool ? data['photo_spot'] as bool : false,
+      photoSpot: data['photo_spot'] is bool
+          ? data['photo_spot'] as bool
+          : false,
       recommendedDurationMin: _intValue(data['recommended_duration_min']),
       x: x,
       y: y,

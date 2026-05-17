@@ -165,14 +165,8 @@ class _MapScreenState extends State<MapScreen>
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       final sessionProvider = context.read<session.AppSessionProvider>();
-      final tourProvider = context.read<TourProvider>();
       try {
-        final restoredSession = await sessionProvider
-            .restoreActiveSessionForUser(userId);
-        if (!mounted) return;
-        if (restoredSession != null) {
-          await tourProvider.restoreActiveSessionForUser(userId);
-        }
+        await sessionProvider.restoreActiveSessionForUser(userId);
       } on TourSessionRepositoryException catch (e) {
         _lastRestoreUid = null;
         if (!mounted) return;
@@ -603,6 +597,7 @@ class _MapScreenState extends State<MapScreen>
               right: 0,
               child: _MapHomeStyleHeader(
                 onMenu: () => AppMenuShell.of(shellContext)?.toggleMenu(),
+                onSearch: () => Navigator.pushNamed(context, AppRoutes.search),
               ),
             ),
             if (_previewExhibit != null)
@@ -1189,7 +1184,8 @@ class _StatusPill extends StatelessWidget {
 
 class _MapHomeStyleHeader extends StatelessWidget {
   final VoidCallback onMenu;
-  const _MapHomeStyleHeader({required this.onMenu});
+  final VoidCallback onSearch;
+  const _MapHomeStyleHeader({required this.onMenu, required this.onSearch});
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.paddingOf(context).top;
@@ -1231,7 +1227,10 @@ class _MapHomeStyleHeader extends StatelessWidget {
                           onTap: onMenu,
                         ),
                         const Spacer(),
-                        const SizedBox(width: 44, height: 44),
+                        _HeaderCircleButton(
+                          icon: Icons.search_rounded,
+                          onTap: onSearch,
+                        ),
                       ],
                     ),
                     const IgnorePointer(child: _MapHeaderBrand()),

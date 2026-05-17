@@ -62,7 +62,12 @@ Future<void> main() async {
             skipLoad: true,
           ),
         ),
-        ChangeNotifierProvider(create: (_) => AuthProvider(authService)),
+        ChangeNotifierProvider(
+          create: (context) => AuthProvider(
+            authService,
+            preferences: context.read<UserPreferencesModel>(),
+          ),
+        ),
         ChangeNotifierProvider(create: (_) => TicketProvider()),
         ChangeNotifierProvider(create: (_) => ExhibitProvider()),
         ChangeNotifierProvider(create: (_) => session.AppSessionProvider()),

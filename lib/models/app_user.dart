@@ -1,147 +1,224 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// User account model.
+/// Shared account profile for Firebase Auth users/{uid}.
 ///
-/// Keeps the existing app-facing API while mapping to the Firebase users/{uid}
-/// profile shape shared with the website.
+/// The Firestore document id must be the Firebase Auth uid. Legacy getters
+/// remain so existing app screens can keep reading `id`, `name`, and `phone`.
 class AppUser {
-  final String id;
-  final String name;
+  final String uid;
   final String email;
-  final String? phone;
+  final String fullName;
+  final String displayName;
+  final String? phoneNumber;
   final String? nationality;
   final String preferredLanguage;
   final String? avatarUrl;
-  final int visitCount;
+  final Map<String, dynamic> accessibilityDefaults;
+  final bool marketingOptIn;
   final DateTime createdAt;
   final DateTime? updatedAt;
+  final DateTime? lastSeenAt;
 
   AppUser({
-    required this.id,
-    required this.name,
+    required this.uid,
     required this.email,
-    this.phone,
+    required this.fullName,
+    required this.displayName,
+    this.phoneNumber,
     this.nationality,
     required this.preferredLanguage,
     this.avatarUrl,
-    this.visitCount = 0,
+    Map<String, dynamic>? accessibilityDefaults,
+    this.marketingOptIn = false,
     required this.createdAt,
     this.updatedAt,
-  });
+    this.lastSeenAt,
+  }) : accessibilityDefaults = accessibilityDefaults ?? <String, dynamic>{};
 
-  /// Create a copy of this user with optional field overrides.
+  String get id => uid;
+  String get name => displayName.isNotEmpty ? displayName : fullName;
+  String? get phone => phoneNumber;
+  int get visitCount => 0;
+
   AppUser copyWith({
-    String? id,
-    String? name,
+    String? uid,
     String? email,
-    String? phone,
+    String? fullName,
+    String? displayName,
+    String? phoneNumber,
     String? nationality,
     String? preferredLanguage,
     String? avatarUrl,
-    int? visitCount,
+    Map<String, dynamic>? accessibilityDefaults,
+    bool? marketingOptIn,
     DateTime? createdAt,
     DateTime? updatedAt,
+    DateTime? lastSeenAt,
   }) {
     return AppUser(
-      id: id ?? this.id,
-      name: name ?? this.name,
+      uid: uid ?? this.uid,
       email: email ?? this.email,
-      phone: phone ?? this.phone,
+      fullName: fullName ?? this.fullName,
+      displayName: displayName ?? this.displayName,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
       nationality: nationality ?? this.nationality,
       preferredLanguage: preferredLanguage ?? this.preferredLanguage,
       avatarUrl: avatarUrl ?? this.avatarUrl,
-      visitCount: visitCount ?? this.visitCount,
+      accessibilityDefaults:
+          accessibilityDefaults ?? Map<String, dynamic>.from(this.accessibilityDefaults),
+      marketingOptIn: marketingOptIn ?? this.marketingOptIn,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      lastSeenAt: lastSeenAt ?? this.lastSeenAt,
     );
   }
 
   /// Convert user to legacy/local JSON.
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'id': uid,
+      'uid': uid,
       'name': name,
       'email': email,
-      'phone': phone,
+      'fullName': fullName,
+      'displayName': displayName,
+      'phone': phoneNumber,
+      'phoneNumber': phoneNumber,
       'nationality': nationality,
       'preferredLanguage': preferredLanguage,
       'avatarUrl': avatarUrl,
-      'visitCount': visitCount,
+      'accessibilityDefaults': accessibilityDefaults,
+      'marketingOptIn': marketingOptIn,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
+      'lastSeenAt': lastSeenAt?.toIso8601String(),
     };
   }
 
   /// Convert user to Firestore users/{uid} profile fields.
   Map<String, dynamic> toFirestore() {
     return {
-      'uid': id,
-      'display_name': name,
-      'full_name': name,
+      'uid': uid,
       'email': email,
-      'phone_number': phone,
+      'full_name': fullName,
+      'display_name': displayName,
+      'phone_number': phoneNumber,
       'nationality': nationality,
-      'preferred_language': preferredLanguage,
+      'preferred_language': normalizeAccountLanguage(preferredLanguage),
       'avatar_url': avatarUrl,
-      'accessibility_defaults': <String, dynamic>{},
-      'marketing_opt_in': false,
+      'accessibility_defaults': accessibilityDefaults,
+      'marketing_opt_in': marketingOptIn,
     };
   }
 
-  /// Create user from legacy/local JSON.
   factory AppUser.fromJson(Map<String, dynamic> json) {
+    final email = _stringValue(json['email']) ?? '';
+    final fullName =
+        _stringValue(json['fullName']) ??
+        _stringValue(json['full_name']) ??
+        _stringValue(json['name']) ??
+        _nameFromEmail(email);
+    final displayName =
+        _stringValue(json['displayName']) ??
+        _stringValue(json['display_name']) ??
+        _stringValue(json['name']) ??
+        fullName;
+
     return AppUser(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      email: json['email'] as String,
-      phone: json['phone'] as String?,
-      nationality: json['nationality'] as String?,
-      preferredLanguage: _normalizedLanguage(json['preferredLanguage']) ?? 'english',
-      avatarUrl: json['avatarUrl'] as String?,
-      visitCount: json['visitCount'] as int? ?? 0,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      updatedAt: json['updatedAt'] == null
-          ? null
-          : DateTime.parse(json['updatedAt'] as String),
+      uid: _stringValue(json['uid']) ?? _stringValue(json['id']) ?? '',
+      email: email,
+      fullName: fullName,
+      displayName: displayName,
+      phoneNumber:
+          _stringValue(json['phoneNumber']) ??
+          _stringValue(json['phone_number']) ??
+          _stringValue(json['phone']),
+      nationality: _stringValue(json['nationality']),
+      preferredLanguage: normalizeAccountLanguage(
+        json['preferredLanguage'] ?? json['preferred_language'],
+      ),
+      avatarUrl:
+          _stringValue(json['avatarUrl']) ?? _stringValue(json['avatar_url']),
+      accessibilityDefaults: _mapValue(
+        json['accessibilityDefaults'] ?? json['accessibility_defaults'],
+      ),
+      marketingOptIn:
+          json['marketingOptIn'] is bool
+              ? json['marketingOptIn'] as bool
+              : json['marketing_opt_in'] == true,
+      createdAt:
+          _dateValue(json['createdAt'] ?? json['created_at']) ??
+          DateTime.now(),
+      updatedAt: _dateValue(json['updatedAt'] ?? json['updated_at']),
+      lastSeenAt: _dateValue(json['lastSeenAt'] ?? json['last_seen_at']),
     );
   }
 
-  /// Create user from Firestore users/{uid}.
   factory AppUser.fromFirestore(
     Map<String, dynamic> json, {
     required String fallbackUid,
   }) {
-    final id = _stringValue(json['uid']) ?? fallbackUid;
     final email = _stringValue(json['email']) ?? '';
-    final name =
+    final fullName =
+        _stringValue(json['full_name']) ??
+        _stringValue(json['display_name']) ??
+        _stringValue(json['name']) ??
+        _nameFromEmail(email);
+    final displayName =
         _stringValue(json['display_name']) ??
         _stringValue(json['full_name']) ??
-        _nameFromEmail(email);
+        fullName;
 
     return AppUser(
-      id: id,
-      name: name,
+      uid: fallbackUid,
       email: email,
-      phone: _stringValue(json['phone_number']),
+      fullName: fullName,
+      displayName: displayName,
+      phoneNumber: _stringValue(json['phone_number']),
       nationality: _stringValue(json['nationality']),
-      preferredLanguage:
-          _normalizedLanguage(json['preferred_language']) ?? 'english',
+      preferredLanguage: normalizeAccountLanguage(json['preferred_language']),
       avatarUrl: _stringValue(json['avatar_url']),
-      visitCount: _intValue(json['visit_count']),
+      accessibilityDefaults: _mapValue(json['accessibility_defaults']),
+      marketingOptIn: json['marketing_opt_in'] == true,
       createdAt: _dateValue(json['created_at']) ?? DateTime.now(),
       updatedAt: _dateValue(json['updated_at']),
+      lastSeenAt: _dateValue(json['last_seen_at']),
     );
   }
 
+  static String normalizeAccountLanguage(Object? value) {
+    final raw = value?.toString().trim().toLowerCase().replaceAll('-', '_');
+    switch (raw) {
+      case 'ar':
+      case 'arabic':
+        return 'arabic';
+      case 'en':
+      case 'english':
+        return 'english';
+      default:
+        return 'english';
+    }
+  }
+
+  static String languageCodeFromAccount(String preferredLanguage) {
+    return normalizeAccountLanguage(preferredLanguage) == 'arabic' ? 'ar' : 'en';
+  }
+
+  static String accountLanguageFromCode(String languageCode) {
+    return languageCode.toLowerCase().startsWith('ar') ? 'arabic' : 'english';
+  }
+
   static String? _stringValue(Object? value) {
-    if (value is String && value.trim().isNotEmpty) return value;
+    if (value is String && value.trim().isNotEmpty) return value.trim();
     return null;
   }
 
-  static int _intValue(Object? value) {
-    if (value is int) return value;
-    if (value is num) return value.toInt();
-    return 0;
+  static Map<String, dynamic> _mapValue(Object? value) {
+    if (value is Map<String, dynamic>) return Map<String, dynamic>.from(value);
+    if (value is Map) {
+      return value.map((key, value) => MapEntry(key.toString(), value));
+    }
+    return <String, dynamic>{};
   }
 
   static DateTime? _dateValue(Object? value) {
@@ -156,23 +233,6 @@ class AppUser {
     return localPart.isEmpty ? 'Museum Visitor' : localPart;
   }
 
-  static String? _normalizedLanguage(Object? value) {
-    final raw = value?.toString().trim();
-    if (raw == null || raw.isEmpty) return null;
-    switch (raw.toLowerCase().replaceAll('-', '_')) {
-      case 'en':
-      case 'english':
-        return 'english';
-      case 'ar':
-      case 'arabic':
-        return 'arabic';
-      case 'egyptian_arabic':
-        return 'egyptian_arabic';
-      default:
-        return raw.toLowerCase().replaceAll('-', '_');
-    }
-  }
-
   @override
-  String toString() => 'AppUser(id: $id, name: $name, email: $email)';
+  String toString() => 'AppUser(uid: $uid, displayName: $displayName, email: $email)';
 }

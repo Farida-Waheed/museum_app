@@ -47,7 +47,11 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/robotTourTickets/$(ticketId)).data.status == 'active';
     }
 
-    function validTourSessionCreate() {
+    function validTourSessionCreate(sessionId) {
+      return validFinalTourSessionCreate(sessionId) || validLegacyTourSessionCreate();
+    }
+
+    function validLegacyTourSessionCreate() {
       return ownsIncoming()
         && request.resource.data.sessionId is string
         && request.resource.data.robotId is string
@@ -58,21 +62,62 @@ service cloud.firestore {
         && request.resource.data.status in ['ready', 'active', 'paused'];
     }
 
-    function validRobotPair(robotId) {
+    function validFinalTourSessionCreate(sessionId) {
+      return ownsIncoming()
+        && request.resource.data.session_id is string
+        && request.resource.data.session_id == sessionId
+        && request.resource.data.robotId is string
+        && request.resource.data.booking_id is string
+        && request.resource.data.museum_ticket_id is string
+        && request.resource.data.robot_tour_ticket_id is string
+        && activeOwnedMuseumTicket(request.resource.data.museum_ticket_id)
+        && activeOwnedRobotTourTicket(request.resource.data.robot_tour_ticket_id)
+        && request.resource.data.status == 'paired'
+        && request.resource.data.current_exhibit_id == null
+        && request.resource.data.current_exhibit_index == 0
+        && request.resource.data.selected_exhibits is list
+        && request.resource.data.started_at == null
+        && request.resource.data.completed_at == null;
+    }
+
+    function unassignedRobot() {
+      return (!('active_session_id' in resource.data) || resource.data.active_session_id == null || resource.data.active_session_id == '')
+        && (!('active_user_id' in resource.data) || resource.data.active_user_id == null || resource.data.active_user_id == '')
+        && (!('active_robot_tour_ticket_id' in resource.data) || resource.data.active_robot_tour_ticket_id == null || resource.data.active_robot_tour_ticket_id == '');
+    }
+
+    function validFinalRobotAssign(robotId) {
       return signedIn()
         && resource.data.status == 'available'
+        && unassignedRobot()
         && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['status', 'activeSessionId', 'currentUserId', 'updatedAt'])
-        && request.resource.data.status == 'paired'
-        && request.resource.data.activeSessionId is string
-        && request.resource.data.activeSessionId != ''
-        && request.resource.data.currentUserId == request.auth.uid
-        && existsAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.activeSessionId))
-        && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.activeSessionId)).data.userId == request.auth.uid
-        && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.activeSessionId)).data.robotId == robotId;
+          .hasOnly(['status', 'active_session_id', 'active_user_id', 'active_robot_tour_ticket_id', 'updated_at'])
+        && request.resource.data.status == 'assigned'
+        && request.resource.data.active_session_id is string
+        && request.resource.data.active_session_id != ''
+        && request.resource.data.active_user_id == request.auth.uid
+        && request.resource.data.active_robot_tour_ticket_id is string
+        && request.resource.data.active_robot_tour_ticket_id != ''
+        && existsAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.active_session_id))
+        && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.active_session_id)).data.userId == request.auth.uid
+        && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.active_session_id)).data.robotId == robotId
+        && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.active_session_id)).data.robot_tour_ticket_id == request.resource.data.active_robot_tour_ticket_id;
+    }
+
+    function validLegacyRobotPair() {
+      return signedIn()
+        && false;
+    }
+
+    function validRobotPair(robotId) {
+      return validFinalRobotAssign(robotId) || validLegacyRobotPair();
     }
 
     function validRobotRelease() {
+      return validFinalRobotRelease() || validLegacyRobotRelease();
+    }
+
+    function validLegacyRobotRelease() {
       return signedIn()
         && resource.data.status == 'paired'
         && resource.data.currentUserId == request.auth.uid
@@ -83,9 +128,111 @@ service cloud.firestore {
         && request.resource.data.currentUserId == '';
     }
 
+    function validFinalRobotStart() {
+      return signedIn()
+        && resource.data.status == 'assigned'
+        && resource.data.active_user_id == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'updated_at'])
+        && request.resource.data.status == 'in_tour';
+    }
+
+    function validFinalRobotRelease() {
+      return signedIn()
+        && resource.data.status in ['assigned', 'in_tour']
+        && resource.data.active_user_id == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'active_session_id', 'active_user_id', 'active_robot_tour_ticket_id', 'updated_at'])
+        && request.resource.data.status == 'available'
+        && request.resource.data.active_session_id == null
+        && request.resource.data.active_user_id == null
+        && request.resource.data.active_robot_tour_ticket_id == null;
+    }
+
+    function unpairedExistingTicket() {
+      return (!('paired_robot_id' in resource.data) || resource.data.paired_robot_id == null || resource.data.paired_robot_id == '')
+        && (!('session_id' in resource.data) || resource.data.session_id == null || resource.data.session_id == '');
+    }
+
+    function validRobotTourTicketPairUpdate(ticketId) {
+      return ownsExisting()
+        && ownsIncoming()
+        && resource.data.status == 'active'
+        && unpairedExistingTicket()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'paired_robot_id', 'session_id', 'paired_at', 'updated_at'])
+        && request.resource.data.status == 'paired'
+        && request.resource.data.paired_robot_id is string
+        && request.resource.data.paired_robot_id != ''
+        && request.resource.data.session_id is string
+        && request.resource.data.session_id != ''
+        && existsAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.session_id))
+        && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.session_id)).data.userId == request.auth.uid
+        && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.session_id)).data.robot_tour_ticket_id == ticketId
+        && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.session_id)).data.robotId == request.resource.data.paired_robot_id
+        && existsAfter(/databases/$(database)/documents/robots/$(request.resource.data.paired_robot_id))
+        && getAfter(/databases/$(database)/documents/robots/$(request.resource.data.paired_robot_id)).data.active_session_id == request.resource.data.session_id
+        && getAfter(/databases/$(database)/documents/robots/$(request.resource.data.paired_robot_id)).data.active_user_id == request.auth.uid
+        && getAfter(/databases/$(database)/documents/robots/$(request.resource.data.paired_robot_id)).data.active_robot_tour_ticket_id == ticketId;
+    }
+
+    function validRobotTourTicketStartUpdate(ticketId) {
+      return ownsExisting()
+        && ownsIncoming()
+        && resource.data.status == 'paired'
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'updated_at'])
+        && request.resource.data.status == 'in_progress'
+        && existsAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id))
+        && getAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id)).data.userId == request.auth.uid
+        && getAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id)).data.robot_tour_ticket_id == ticketId
+        && getAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id)).data.status == 'active';
+    }
+
+    function validRobotTourTicketCompleteUpdate(ticketId) {
+      return ownsExisting()
+        && ownsIncoming()
+        && resource.data.status in ['paired', 'in_progress']
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['status', 'updated_at'])
+        && request.resource.data.status == 'completed'
+        && existsAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id))
+        && getAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id)).data.userId == request.auth.uid
+        && getAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id)).data.robot_tour_ticket_id == ticketId
+        && getAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id)).data.status == 'completed';
+    }
+
+    function validTourSessionOwnerUpdate() {
+      return ownsExisting()
+        && ownsIncoming()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly([
+            'status',
+            'current_exhibit_id',
+            'current_exhibit_index',
+            'started_at',
+            'completed_at',
+            'updated_at',
+            'robotState',
+            'visitedExhibitIds',
+            'commandStatus',
+            'lastCommandId',
+            'lastCommandType',
+            'lastCommandError',
+            'lastCommandAt',
+            'lastAckAt',
+            'lastRobotEvent',
+            'lastRobotEventAt',
+            'mqttEnabled',
+            'robotConnectionState'
+          ])
+        && request.resource.data.status in ['paired', 'active', 'paused', 'completed', 'cancelled'];
+    }
+
     match /users/{userId} {
-      allow read, update, delete: if signedIn() && userId == request.auth.uid;
+      allow read, update: if signedIn() && userId == request.auth.uid;
       allow create: if signedIn() && userId == request.auth.uid;
+      allow delete: if false;
     }
 
     match /bookings/{bookingId} {
@@ -105,7 +252,10 @@ service cloud.firestore {
     match /robotTourTickets/{ticketId} {
       allow read: if ownsExisting();
       allow create: if bookingContractCreateValid();
-      allow update: if ownedCancelUpdate();
+      allow update: if ownedCancelUpdate()
+        || validRobotTourTicketPairUpdate(ticketId)
+        || validRobotTourTicketStartUpdate(ticketId)
+        || validRobotTourTicketCompleteUpdate(ticketId);
       allow delete: if false;
     }
 
@@ -113,8 +263,8 @@ service cloud.firestore {
       allow read: if ownsExisting();
       // Prototype client pairing rule. Production should move pairing to a
       // Cloud Function/server endpoint so robot assignment is authoritative.
-      allow create: if validTourSessionCreate();
-      allow update: if ownsExisting() && ownsIncoming();
+      allow create: if validTourSessionCreate(sessionId);
+      allow update: if validTourSessionOwnerUpdate();
       allow delete: if false;
     }
 
@@ -131,7 +281,8 @@ service cloud.firestore {
       allow read: if ownsExisting();
       allow create: if ownsIncoming()
         && request.resource.data.type == 'robot_capture';
-      allow update, delete: if ownsExisting();
+      allow update: if ownsExisting();
+      allow delete: if false;
     }
 
     match /exhibits/{exhibitId} {
@@ -141,7 +292,9 @@ service cloud.firestore {
 
     match /robots/{robotId} {
       allow read: if signedIn();
-      allow update: if validRobotPair(robotId) || validRobotRelease();
+      allow update: if validRobotPair(robotId)
+        || validFinalRobotStart()
+        || validRobotRelease();
       allow create, delete: if false;
     }
   }

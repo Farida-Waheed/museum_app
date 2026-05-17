@@ -162,6 +162,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   }
 
   void _toggleMode() {
+    if (_blockWebLiveTourControls()) return;
     final tourProvider = Provider.of<TourProvider>(context, listen: false);
     final nextMode = tourProvider.followMode == FollowModeState.on
         ? FollowModeState.off
@@ -170,6 +171,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   }
 
   Future<void> _togglePause() async {
+    if (_blockWebLiveTourControls()) return;
     final tourProvider = Provider.of<TourProvider>(context, listen: false);
     final sessionProvider = Provider.of<session.AppSessionProvider>(
       context,
@@ -234,6 +236,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   }
 
   Future<void> _skipExhibit() async {
+    if (_blockWebLiveTourControls()) return;
     final tourProvider = Provider.of<TourProvider>(context, listen: false);
     final sessionProvider = Provider.of<session.AppSessionProvider>(
       context,
@@ -309,6 +312,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   }
 
   Future<void> _startTourFromReadyState() async {
+    if (_blockWebLiveTourControls()) return;
     final tourProvider = Provider.of<TourProvider>(context, listen: false);
     final sessionProvider = Provider.of<session.AppSessionProvider>(
       context,
@@ -344,17 +348,15 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     }
     if (!mounted) return;
 
-    if (sessionId == null) {
-      sessionProvider.startActiveTour(
-        currentExhibitId: currentExhibit.id,
-        nextExhibitId: nextExhibit?.id,
-      );
-      tourProvider.startTour(
-        context: context,
-        initialExhibitId: currentExhibit.id,
-        nextExhibitId: nextExhibit?.id,
-      );
-    }
+    sessionProvider.startActiveTour(
+      currentExhibitId: currentExhibit.id,
+      nextExhibitId: nextExhibit?.id,
+    );
+    tourProvider.startTour(
+      context: context,
+      initialExhibitId: currentExhibit.id,
+      nextExhibitId: nextExhibit?.id,
+    );
     setState(() => _isPaused = false);
     unawaited(
       _publishRobotCommand(
@@ -383,7 +385,18 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     }
   }
 
+  bool _blockWebLiveTourControls() {
+    if (!kIsWeb) return false;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Live robot tour controls are available only in the mobile app.'),
+      ),
+    );
+    return true;
+  }
+
   Future<void> _endTour() async {
+    if (_blockWebLiveTourControls()) return;
     final tourProvider = Provider.of<TourProvider>(context, listen: false);
     final sessionProvider = Provider.of<session.AppSessionProvider>(
       context,
@@ -403,10 +416,8 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     }
 
     if (!mounted) return;
-    if (sessionId == null) {
-      tourProvider.completeTour(context: context);
-      sessionProvider.endTour();
-    }
+    tourProvider.completeTour(context: context);
+    sessionProvider.endTour();
     unawaited(
       _publishRobotCommand(
         RobotCommandType.endTour,
@@ -420,6 +431,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     RobotCommandType type, {
     Map<String, dynamic> payload = const <String, dynamic>{},
   }) async {
+    if (kIsWeb) return false;
     final sessionProvider = context.read<session.AppSessionProvider>();
     final tourProvider = context.read<TourProvider>();
     final authProvider = context.read<AuthProvider>();
@@ -474,6 +486,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     session.AppSessionProvider sessionProvider,
     TourProvider tourProvider,
   ) {
+    if (kIsWeb) return;
     final sessionId =
         sessionProvider.activeSessionId ?? tourProvider.activeSessionId;
     final robotId =
@@ -501,6 +514,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   }
 
   void _findRobot() {
+    if (_blockWebLiveTourControls()) return;
     unawaited(
       _publishRobotCommand(
         RobotCommandType.findRobot,
@@ -585,14 +599,8 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       final sessionProvider = context.read<session.AppSessionProvider>();
-      final tourProvider = context.read<TourProvider>();
       try {
-        final restoredSession = await sessionProvider
-            .restoreActiveSessionForUser(userId);
-        if (!mounted) return;
-        if (restoredSession != null) {
-          await tourProvider.restoreActiveSessionForUser(userId);
-        }
+        await sessionProvider.restoreActiveSessionForUser(userId);
       } on TourSessionRepositoryException catch (e) {
         _lastRestoreUid = null;
         if (!mounted) return;
@@ -653,6 +661,22 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         ((sessionProvider.hasActiveOrPausedTour && currentExhibit != null) ||
             (isSessionCompleted && currentExhibit != null) ||
             isConnectedNotActive);
+
+    if (kIsWeb) {
+      return AppMenuShell(
+        title: 'HORUS-BOT',
+        showChatButton: false,
+        hideDefaultAppBar: true,
+        body: _buildLockedState(
+          context,
+          title: l10n.liveTourLockedTitle,
+          subtitle: 'Live robot tour controls are available only in the mobile app.',
+          primaryLabel: l10n.myTickets,
+          onPrimaryAction: () => Navigator.pushNamed(context, AppRoutes.myTickets),
+          showSecondaryQrAction: false,
+        ),
+      );
+    }
 
     if (hasValidTourAccess && isSessionPaused && currentExhibit != null) {
       return AppMenuShell(

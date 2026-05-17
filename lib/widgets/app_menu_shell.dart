@@ -63,143 +63,161 @@ class _SideMenu extends StatelessWidget {
             child: Directionality(
               textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
               child: Column(
-              crossAxisAlignment:
-                  isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(24, 28, 24, 22),
-                  child: Column(
-                    crossAxisAlignment: isArabic
-                        ? CrossAxisAlignment.end
-                        : CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Image.asset(
-                            'assets/icons/ankh.png',
-                            width: 32,
-                            height: 32,
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Text(
-                              l10n.appTitle.toUpperCase(),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTextStyles.premiumBrandTitle(
-                                context,
-                              ).copyWith(color: AppColors.primaryGold),
+                crossAxisAlignment: isArabic
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      24,
+                      28,
+                      24,
+                      22,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: isArabic
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Image.asset(
+                              'assets/icons/ankh.png',
+                              width: 32,
+                              height: 32,
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 26),
-                      Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 25,
-                            backgroundColor: AppColors.secondaryGlass(0.82),
-                            child: const Icon(
-                              Icons.person_outline,
-                              color: AppColors.primaryGold,
-                              size: 28,
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Text(
+                                l10n.appTitle.toUpperCase(),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTextStyles.premiumBrandTitle(
+                                  context,
+                                ).copyWith(color: AppColors.primaryGold),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: isArabic
-                                  ? CrossAxisAlignment.end
-                                  : CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  userName,
-                                  style: AppTextStyles.premiumCardTitle(
-                                    context,
-                                  ).copyWith(fontSize: 18, color: Colors.white),
-                                ),
-                                Text(
-                                  userSubtitle,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: AppTextStyles.premiumMutedBody(
-                                    context,
+                          ],
+                        ),
+                        const SizedBox(height: 26),
+                        Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 25,
+                              backgroundColor: AppColors.secondaryGlass(0.82),
+                              child: const Icon(
+                                Icons.person_outline,
+                                color: AppColors.primaryGold,
+                                size: 28,
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: isArabic
+                                    ? CrossAxisAlignment.end
+                                    : CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    userName,
+                                    style:
+                                        AppTextStyles.premiumCardTitle(
+                                          context,
+                                        ).copyWith(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                        ),
                                   ),
-                                ),
-                              ],
+                                  Text(
+                                    userSubtitle,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: AppTextStyles.premiumMutedBody(
+                                      context,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: AppColors.goldBorder(0.12),
-                ),
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    children: [
-                      _SectionHeader(label: l10n.accountPreferences),
-                      _MenuItem(
-                        icon: Icons.person_outline,
-                        label: l10n.profile,
-                        selected: currentRoute == AppRoutes.profile,
-                        onTap: () => onReplace(AppRoutes.profile),
-                      ),
-                      _MenuItem(
-                        icon: Icons.settings_outlined,
-                        label: l10n.settings,
-                        selected:
-                            currentRoute == AppRoutes.settings ||
-                            currentRoute == AppRoutes.accessibility,
-                        onTap: () => onReplace(AppRoutes.settings),
-                      ),
-                      _MenuItem(
-                        icon: Icons.notifications_outlined,
-                        label: l10n.notifications,
-                        selected: currentRoute == AppRoutes.notificationSettings,
-                        onTap: () => onReplace(AppRoutes.notificationSettings),
-                      ),
-                      const SizedBox(height: 16),
-                      _SectionHeader(label: l10n.extras),
-                      _MenuItem(
-                        icon: Icons.emoji_events_outlined,
-                        label: l10n.achievements,
-                        selected: currentRoute == AppRoutes.achievements,
-                        onTap: () => onReplace(AppRoutes.achievements),
-                      ),
-                      _MenuItem(
-                        icon: Icons.feedback_outlined,
-                        label: l10n.feedback,
-                        selected: currentRoute == AppRoutes.feedback,
-                        onTap: () => onReplace(AppRoutes.feedback),
-                      ),
-                      _MenuItem(
-                        icon: Icons.support_agent_outlined,
-                        label: l10n.supportInboxTitle,
-                        selected: currentRoute == AppRoutes.supportInbox,
-                        onTap: () => onReplace(AppRoutes.supportInbox),
-                      ),
-                      _MenuItem(
-                        icon: Icons.info_outline,
-                        label: l10n.about,
-                        selected: currentRoute == AppRoutes.projectInfo,
-                        onTap: () => onReplace(AppRoutes.projectInfo),
-                      ),
-                      _MenuItem(
-                        icon: Icons.groups_2_outlined,
-                        label: l10n.team,
-                        selected: currentRoute == AppRoutes.team,
-                        onTap: () => onReplace(AppRoutes.team),
-                      ),
-                    ],
+                  Divider(
+                    height: 1,
+                    thickness: 1,
+                    color: AppColors.goldBorder(0.12),
                   ),
-                ),
-              ],
+                  Expanded(
+                    child: ListView(
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      children: [
+                        _SectionHeader(label: l10n.accountPreferences),
+                        _MenuItem(
+                          icon: Icons.person_outline,
+                          label: l10n.profile,
+                          selected: currentRoute == AppRoutes.profile,
+                          onTap: () => onReplace(AppRoutes.profile),
+                        ),
+                        _MenuItem(
+                          icon: Icons.settings_outlined,
+                          label: l10n.settings,
+                          selected:
+                              currentRoute == AppRoutes.settings ||
+                              currentRoute == AppRoutes.accessibility,
+                          onTap: () => onReplace(AppRoutes.settings),
+                        ),
+                        _MenuItem(
+                          icon: Icons.notifications_outlined,
+                          label: l10n.notifications,
+                          selected:
+                              currentRoute == AppRoutes.notificationSettings,
+                          onTap: () =>
+                              onReplace(AppRoutes.notificationSettings),
+                        ),
+                        const SizedBox(height: 16),
+                        _SectionHeader(label: l10n.extras),
+                        _MenuItem(
+                          icon: Icons.event_outlined,
+                          label: l10n.events,
+                          selected: currentRoute == AppRoutes.events,
+                          onTap: () => onReplace(AppRoutes.events),
+                        ),
+                        _MenuItem(
+                          icon: Icons.emoji_events_outlined,
+                          label: l10n.achievements,
+                          selected: currentRoute == AppRoutes.achievements,
+                          onTap: () => onReplace(AppRoutes.achievements),
+                        ),
+                        _MenuItem(
+                          icon: Icons.feedback_outlined,
+                          label: l10n.feedback,
+                          selected: currentRoute == AppRoutes.feedback,
+                          onTap: () => onReplace(AppRoutes.feedback),
+                        ),
+                        _MenuItem(
+                          icon: Icons.support_agent_outlined,
+                          label: l10n.supportInboxTitle,
+                          selected: currentRoute == AppRoutes.supportInbox,
+                          onTap: () => onReplace(AppRoutes.supportInbox),
+                        ),
+                        _MenuItem(
+                          icon: Icons.info_outline,
+                          label: l10n.about,
+                          selected: currentRoute == AppRoutes.projectInfo,
+                          onTap: () => onReplace(AppRoutes.projectInfo),
+                        ),
+                        _MenuItem(
+                          icon: Icons.groups_2_outlined,
+                          label: l10n.team,
+                          selected: currentRoute == AppRoutes.team,
+                          onTap: () => onReplace(AppRoutes.team),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

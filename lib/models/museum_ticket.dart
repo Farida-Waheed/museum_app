@@ -3,7 +3,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'ticket_order.dart';
 
 /// Status of a museum ticket
-enum TicketStatus { pending, active, used, expired, cancelled }
+enum TicketStatus {
+  pending,
+  active,
+  paired,
+  in_progress,
+  completed,
+  used,
+  expired,
+  cancelled,
+}
 
 /// Museum entry ticket model
 class MuseumTicket {

@@ -246,14 +246,8 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       final sessionProvider = context.read<app.AppSessionProvider>();
-      final tourProvider = context.read<TourProvider>();
       try {
-        final restoredSession = await sessionProvider
-            .restoreActiveSessionForUser(userId);
-        if (!mounted) return;
-        if (restoredSession != null) {
-          await tourProvider.restoreActiveSessionForUser(userId);
-        }
+        await sessionProvider.restoreActiveSessionForUser(userId);
       } on TourSessionRepositoryException catch (e) {
         _lastRestoreUid = null;
         if (!mounted) return;
@@ -583,6 +577,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   : 'Your tickets will appear here after booking'),
         onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
       ),
+      if (!snapshot.hasAnyTicket)
+        HomeQuickActionItem(
+          icon: Icons.route_outlined,
+          label: l10n.tourPlanner,
+          subtitle: isArabic
+              ? 'جهز مسارك قبل الحجز'
+              : 'Plan your route before booking',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.tourPlanner),
+        ),
       HomeQuickActionItem(
         icon: Icons.photo_library_outlined,
         label: isArabic ? 'الذكريات' : 'Memories',
@@ -702,12 +705,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: HomeFeaturedArtifactCard(
                           artifact: contextualArtifact,
-                          onTap: () =>
-                              _openArtifactDetails(
-                                context,
-                                contextualArtifact,
-                                exhibits,
-                              ),
+                          onTap: () => _openArtifactDetails(
+                            context,
+                            contextualArtifact,
+                            exhibits,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 24),

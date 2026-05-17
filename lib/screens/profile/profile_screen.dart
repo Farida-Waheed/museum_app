@@ -95,6 +95,131 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Future<void> _editProfile(BuildContext context, bool isArabic) async {
+    final authProvider = context.read<AuthProvider>();
+    final user = authProvider.currentUser;
+    if (user == null) return;
+
+    final fullNameController = TextEditingController(text: user.fullName);
+    final displayNameController = TextEditingController(text: user.displayName);
+    final phoneController = TextEditingController(text: user.phoneNumber ?? '');
+    final nationalityController = TextEditingController(
+      text: user.nationality ?? '',
+    );
+    final avatarController = TextEditingController(text: user.avatarUrl ?? '');
+    var language = user.preferredLanguage == 'arabic' ? 'arabic' : 'english';
+    var marketingOptIn = user.marketingOptIn;
+
+    final saved = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              backgroundColor: AppColors.cinematicCard,
+              title: Text(
+                isArabic ? 'تعديل الملف الشخصي' : 'Edit profile',
+                style: AppTextStyles.titleLarge(
+                  dialogContext,
+                ).copyWith(color: Colors.white),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _ProfileTextField(
+                      controller: fullNameController,
+                      label: isArabic ? 'الاسم الكامل' : 'Full name',
+                    ),
+                    _ProfileTextField(
+                      controller: displayNameController,
+                      label: isArabic ? 'اسم العرض' : 'Display name',
+                    ),
+                    _ProfileTextField(
+                      controller: phoneController,
+                      label: isArabic ? 'رقم الهاتف' : 'Phone number',
+                      keyboardType: TextInputType.phone,
+                    ),
+                    _ProfileTextField(
+                      controller: nationalityController,
+                      label: isArabic ? 'الجنسية' : 'Nationality',
+                    ),
+                    _ProfileTextField(
+                      controller: avatarController,
+                      label: isArabic ? 'رابط الصورة' : 'Avatar URL',
+                      keyboardType: TextInputType.url,
+                    ),
+                    DropdownButtonFormField<String>(
+                      value: language,
+                      dropdownColor: AppColors.cinematicElevated,
+                      decoration: _profileInputDecoration(
+                        isArabic ? 'لغة الواجهة' : 'UI language',
+                      ),
+                      items: [
+                        DropdownMenuItem(
+                          value: 'english',
+                          child: Text(isArabic ? 'الإنجليزية' : 'English'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'arabic',
+                          child: Text(isArabic ? 'العربية' : 'Arabic'),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value == null) return;
+                        setDialogState(() => language = value);
+                      },
+                    ),
+                    CheckboxListTile(
+                      value: marketingOptIn,
+                      contentPadding: EdgeInsets.zero,
+                      activeColor: AppColors.primaryGold,
+                      title: Text(
+                        isArabic
+                            ? 'أخبار وعروض المتحف'
+                            : 'Museum news and offers',
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                      onChanged: (value) {
+                        setDialogState(() => marketingOptIn = value ?? false);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext, false),
+                  child: Text(isArabic ? 'إلغاء' : 'Cancel'),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.pop(dialogContext, true),
+                  child: Text(isArabic ? 'حفظ' : 'Save'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (saved != true || !context.mounted) return;
+
+    await authProvider.updateProfile(
+      fullName: fullNameController.text,
+      displayName: displayNameController.text,
+      phoneNumber: phoneController.text,
+      nationality: nationalityController.text,
+      preferredLanguage: language,
+      avatarUrl: avatarController.text,
+      marketingOptIn: marketingOptIn,
+    );
+    if (!context.mounted) return;
+    await context.read<UserPreferencesModel>().setLanguage(
+      language == 'arabic' ? 'ar' : 'en',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -128,6 +253,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   isArabic: isArabic,
                 ),
                 const SizedBox(height: 18),
+                if (user != null) ...[
+                  _ActionTile(
+                    icon: Icons.edit_outlined,
+                    title: isArabic ? 'تعديل الملف الشخصي' : 'Edit profile',
+                    subtitle: isArabic
+                        ? 'الاسم والهاتف والجنسية ولغة الواجهة'
+                        : 'Name, phone, nationality, and UI language',
+                    onTap: () => _editProfile(context, isArabic),
+                  ),
+                  const SizedBox(height: 6),
+                ],
                 _InfoCard(
                   rows: [
                     _InfoRow(
@@ -177,6 +313,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       Navigator.pushNamed(context, AppRoutes.myTickets),
                 ),
                 _ActionTile(
+                  icon: Icons.event_outlined,
+                  title: l10n.events,
+                  subtitle: isArabic
+                      ? 'الفعاليات والعروض المتاحة في المتحف'
+                      : 'Museum events and scheduled moments',
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.events),
+                ),
+                _ActionTile(
                   icon: Icons.photo_library_outlined,
                   title: isArabic ? 'الذكريات' : 'Memories',
                   subtitle: isArabic
@@ -190,8 +334,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   subtitle: isArabic
                       ? 'اللغة والتباين وحجم النص'
                       : 'Language, contrast, and text size',
-                  onTap: () =>
-                      Navigator.pushNamed(context, AppRoutes.settings),
+                  onTap: () => Navigator.pushNamed(context, AppRoutes.settings),
                 ),
                 _ActionTile(
                   icon: Icons.notifications_outlined,
@@ -207,34 +350,44 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _ActionTile(
                   icon: Icons.emoji_events_outlined,
                   title: l10n.achievements,
-                  subtitle: isArabic ? 'الشارات وتقدم الزيارة' : 'Badges and visit progress',
+                  subtitle: isArabic
+                      ? 'الشارات وتقدم الزيارة'
+                      : 'Badges and visit progress',
                   onTap: () =>
                       Navigator.pushNamed(context, AppRoutes.achievements),
                 ),
                 _ActionTile(
                   icon: Icons.feedback_outlined,
                   title: l10n.feedback,
-                  subtitle: isArabic ? 'شاركنا رأيك في التجربة' : 'Share your visit feedback',
+                  subtitle: isArabic
+                      ? 'شاركنا رأيك في التجربة'
+                      : 'Share your visit feedback',
                   onTap: () => Navigator.pushNamed(context, AppRoutes.feedback),
                 ),
                 _ActionTile(
                   icon: Icons.support_agent_outlined,
                   title: l10n.supportInboxTitle,
-                  subtitle: isArabic ? 'طلبات ومحادثات الدعم' : 'Support requests and conversations',
+                  subtitle: isArabic
+                      ? 'طلبات ومحادثات الدعم'
+                      : 'Support requests and conversations',
                   onTap: () =>
                       Navigator.pushNamed(context, AppRoutes.supportInbox),
                 ),
                 _ActionTile(
                   icon: Icons.info_outline,
                   title: l10n.about,
-                  subtitle: isArabic ? 'عن مشروع Horus-Bot' : 'About the Horus-Bot project',
+                  subtitle: isArabic
+                      ? 'عن مشروع Horus-Bot'
+                      : 'About the Horus-Bot project',
                   onTap: () =>
                       Navigator.pushNamed(context, AppRoutes.projectInfo),
                 ),
                 _ActionTile(
                   icon: Icons.groups_2_outlined,
                   title: l10n.team,
-                  subtitle: isArabic ? 'الفريق والمشرفون' : 'Team members and supervisors',
+                  subtitle: isArabic
+                      ? 'الفريق والمشرفون'
+                      : 'Team members and supervisors',
                   onTap: () => Navigator.pushNamed(context, AppRoutes.team),
                 ),
                 const SizedBox(height: 22),
@@ -321,6 +474,46 @@ class _ProfileHeader extends StatelessWidget {
       ),
     );
   }
+}
+
+class _ProfileTextField extends StatelessWidget {
+  const _ProfileTextField({
+    required this.controller,
+    required this.label,
+    this.keyboardType,
+  });
+
+  final TextEditingController controller;
+  final String label;
+  final TextInputType? keyboardType;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        style: const TextStyle(color: Colors.white),
+        decoration: _profileInputDecoration(label),
+      ),
+    );
+  }
+}
+
+InputDecoration _profileInputDecoration(String label) {
+  return InputDecoration(
+    labelText: label,
+    labelStyle: const TextStyle(color: AppColors.neutralMedium),
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: AppColors.primaryGold),
+    ),
+  );
 }
 
 class _Avatar extends StatelessWidget {
@@ -611,7 +804,8 @@ class _ActionTile extends StatelessWidget {
 }
 
 String _languageName(String languageCode, bool isArabic) {
-  if (languageCode == 'ar') {
+  final normalized = languageCode.toLowerCase().replaceAll('-', '_');
+  if (normalized == 'ar' || normalized == 'arabic') {
     return isArabic ? 'العربية' : 'Arabic';
   }
   return isArabic ? 'الإنجليزية' : 'English';

@@ -22,37 +22,81 @@ class _SupportInboxScreenState extends State<SupportInboxScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final requests = _service.requests;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     return AppMenuShell(
       title: l10n.supportInboxTitle.toUpperCase(),
-      backgroundColor: AppColors.darkBackground,
+      backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: requests.isEmpty
-            ? Center(
-                child: Text(
-                  l10n.supportNoRequests,
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.titleLarge(context),
+      body: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: AppGradients.screenBackground,
+        ),
+        child: Directionality(
+          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+          child: requests.isEmpty
+              ? _EmptySupportState(message: l10n.supportNoRequests)
+              : ListView.separated(
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                    20,
+                    24,
+                    20,
+                    120,
+                  ),
+                  itemCount: requests.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final request = requests[index];
+                    return _SupportRequestCard(
+                      request: request,
+                      onTap: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.supportConversation,
+                          arguments: request.id,
+                        ).then((_) => setState(() {}));
+                      },
+                    );
+                  },
                 ),
-              )
-            : ListView.separated(
-                itemCount: requests.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 12),
-                itemBuilder: (context, index) {
-                  final request = requests[index];
-                  return _SupportRequestCard(
-                    request: request,
-                    onTap: () {
-                      Navigator.pushNamed(
-                        context,
-                        AppRoutes.supportConversation,
-                        arguments: request.id,
-                      ).then((_) => setState(() {}));
-                    },
-                  );
-                },
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptySupportState extends StatelessWidget {
+  const _EmptySupportState({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(24),
+          decoration: AppDecorations.premiumGlassCard(radius: 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.support_agent_outlined,
+                color: AppColors.primaryGold,
+                size: 48,
               ),
+              const SizedBox(height: 16),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: AppTextStyles.titleLarge(
+                  context,
+                ).copyWith(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -67,17 +111,21 @@ class _SupportRequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.cinematicCard,
+      color: Colors.transparent,
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
         onTap: onTap,
-        child: Padding(
+        child: Container(
           padding: const EdgeInsets.all(18),
+          decoration: AppDecorations.secondaryGlassCard(radius: 18),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: Directionality.of(context) == TextDirection.rtl
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
             children: [
               Row(
+                textDirection: Directionality.of(context),
                 children: [
                   Expanded(
                     child: Text(
@@ -94,7 +142,7 @@ class _SupportRequestCard extends StatelessWidget {
                       vertical: 6,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryGold.withOpacity(0.16),
+                      color: AppColors.primaryGold.withValues(alpha: 0.16),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(
@@ -123,8 +171,9 @@ class _SupportRequestCard extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Row(
+                textDirection: Directionality.of(context),
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.place_outlined,
                     color: AppColors.primaryGold,
                     size: 18,

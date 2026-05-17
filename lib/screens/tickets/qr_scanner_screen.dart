@@ -14,13 +14,19 @@ import '../../models/tour_provider.dart' as tour;
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 import '../../services/robot_pairing_service.dart';
+import '../../services/ticket_repository.dart';
 
 enum QRScanMode { museumTicket, robotConnection }
 
 class QrScannerScreen extends StatefulWidget {
   final QRScanMode mode;
+  final String? robotTourTicketId;
 
-  const QrScannerScreen({super.key, this.mode = QRScanMode.museumTicket});
+  const QrScannerScreen({
+    super.key,
+    this.mode = QRScanMode.museumTicket,
+    this.robotTourTicketId,
+  });
 
   @override
   State<QrScannerScreen> createState() => _QrScannerScreenState();
@@ -31,6 +37,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
   bool _isScanned = false;
   late final AnimationController _scanAnim;
   final RobotPairingService _robotPairingService = RobotPairingService();
+  final TicketRepository _ticketRepository = TicketRepository();
 
   @override
   void initState() {
@@ -83,10 +90,6 @@ class _QrScannerScreenState extends State<QrScannerScreen>
     }
   }
 
-  bool _isValidMuseumQr(String code) {
-    return code.startsWith('TKT-MUSEUM-') || code.startsWith('TKT-ENTRY-');
-  }
-
   bool _isRobotTicketQr(String code) {
     return code.startsWith('ROBOT-') || code.startsWith('TKT-ROBOT-');
   }
@@ -108,14 +111,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
     late final _ScanResult result;
 
     if (mode == QRScanMode.museumTicket) {
-      if (_isValidMuseumQr(code)) {
-        result = _ScanResult(
-          isValid: true,
-          title: l10n.qrEntryVerifiedTitle,
-          message: l10n.qrEntryVerifiedMessage,
-          primaryLabel: l10n.done,
-        );
-      } else if (_isRobotTicketQr(code)) {
+      if (_isRobotTicketQr(code)) {
         result = _ScanResult(
           isValid: false,
           title: l10n.invalidQr,
@@ -123,12 +119,34 @@ class _QrScannerScreenState extends State<QrScannerScreen>
           primaryLabel: l10n.done,
         );
       } else {
-        result = _ScanResult(
-          isValid: false,
-          title: l10n.invalidQr,
-          message: l10n.qrMuseumInvalidMessage,
-          primaryLabel: l10n.done,
-        );
+        if (!authProvider.isLoggedIn || authProvider.currentUser == null) {
+          result = _ScanResult(
+            isValid: false,
+            title: l10n.qrSignInRequiredTitle,
+            message: l10n.qrMuseumSignInRequiredMessage,
+            primaryLabel: l10n.done,
+          );
+        } else {
+          try {
+            await _ticketRepository.validateMuseumTicketQr(
+              userId: authProvider.currentUser!.id,
+              scannedCode: code,
+            );
+            result = _ScanResult(
+              isValid: true,
+              title: l10n.qrEntryVerifiedTitle,
+              message: l10n.qrEntryVerifiedMessage,
+              primaryLabel: l10n.done,
+            );
+          } on TicketRepositoryException catch (e) {
+            result = _ScanResult(
+              isValid: false,
+              title: l10n.invalidQr,
+              message: _ticketValidationMessage(l10n, e),
+              primaryLabel: l10n.done,
+            );
+          }
+        }
       }
     } else {
       final robotId = _robotPairingService.parseRobotId(code);
@@ -156,6 +174,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
           final pairing = await _robotPairingService.pairRobot(
             userId: authProvider.currentUser!.id,
             scannedCode: code,
+            robotTourTicketId: widget.robotTourTicketId,
           );
           if (!mounted) return;
           sessionProvider.completeRobotConnection(
@@ -205,6 +224,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
       }
     }
 
+    if (!mounted) return;
     showGeneralDialog(
       context: context,
       barrierDismissible: false,
@@ -261,10 +281,14 @@ class _QrScannerScreenState extends State<QrScannerScreen>
         return l10n.qrSignInRequiredTitle;
       case RobotPairingFailureCode.robotTourTicketRequired:
         return l10n.qrRobotTicketRequiredTitle;
+      case RobotPairingFailureCode.ambiguousRobotTourTicket:
+        return l10n.qrRobotTicketRequiredTitle;
       case RobotPairingFailureCode.robotNotFound:
         return l10n.qrRobotNotFoundTitle;
       case RobotPairingFailureCode.robotUnavailable:
         return l10n.qrRobotUnavailableTitle;
+      case RobotPairingFailureCode.robotBusy:
+        return l10n.qrRobotBusyTitle;
       case RobotPairingFailureCode.permissionDenied:
         return l10n.qrPairingPermissionDeniedTitle;
       case RobotPairingFailureCode.invalidQr:
@@ -283,10 +307,14 @@ class _QrScannerScreenState extends State<QrScannerScreen>
         return l10n.qrSignInRequiredMessage;
       case RobotPairingFailureCode.robotTourTicketRequired:
         return l10n.qrRobotTicketRequiredMessage;
+      case RobotPairingFailureCode.ambiguousRobotTourTicket:
+        return 'Please select a robot tour ticket from My Tickets before pairing.';
       case RobotPairingFailureCode.robotNotFound:
         return l10n.qrRobotNotFoundMessage;
       case RobotPairingFailureCode.robotUnavailable:
         return l10n.qrRobotUnavailableMessage;
+      case RobotPairingFailureCode.robotBusy:
+        return l10n.qrRobotBusyMessage;
       case RobotPairingFailureCode.permissionDenied:
         return l10n.qrPairingPermissionDeniedMessage;
       case RobotPairingFailureCode.network:
@@ -295,6 +323,24 @@ class _QrScannerScreenState extends State<QrScannerScreen>
         return l10n.notHorusBotQr;
       case RobotPairingFailureCode.unknown:
         return l10n.qrPairingUnknownMessage;
+    }
+  }
+
+  String _ticketValidationMessage(
+    AppLocalizations l10n,
+    TicketRepositoryException error,
+  ) {
+    switch (error.code) {
+      case 'museum-ticket-not-found':
+        return l10n.qrMuseumTicketNotFoundMessage;
+      case 'ticket-user-mismatch':
+        return l10n.qrMuseumTicketWrongUserMessage;
+      case 'ticket-not-active':
+        return l10n.qrMuseumTicketInactiveMessage;
+      case 'ticket-date-passed':
+        return l10n.qrMuseumTicketExpiredMessage;
+      default:
+        return l10n.qrMuseumValidationFailedMessage;
     }
   }
 
@@ -309,6 +355,26 @@ class _QrScannerScreenState extends State<QrScannerScreen>
     final subtitle = mode == QRScanMode.robotConnection
         ? l10n.qrRobotPairingSubtitle
         : l10n.qrMuseumEntrySubtitle;
+    if (kIsWeb && mode == QRScanMode.robotConnection) {
+      return Scaffold(
+        backgroundColor: AppColors.cinematicBackground,
+        body: Directionality(
+          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+          child: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Text(
+                'Robot pairing is available only in the mobile app.',
+                textAlign: TextAlign.center,
+                style: AppTextStyles.displaySectionTitle(
+                  context,
+                ).copyWith(color: AppColors.primaryGold, fontSize: 22),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
     return Scaffold(
       backgroundColor: Colors.black,
       body: Directionality(

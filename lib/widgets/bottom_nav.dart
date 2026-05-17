@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+
 import '../app/router.dart';
-import '../l10n/app_localizations.dart';
 import '../core/constants/colors.dart';
 import '../core/constants/text_styles.dart';
+import '../l10n/app_localizations.dart';
 
 class BottomNav extends StatelessWidget {
   final int currentIndex;
@@ -12,39 +13,19 @@ class BottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     void handleTap(int index) {
-      if (index == 0) {
-        // Home must reset navigation stack
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          AppRoutes.mainHome,
-          (route) => false,
-        );
-        return;
-      }
-
       if (index == currentIndex) return;
 
-      String route;
-      switch (index) {
-        case 1:
-          route = AppRoutes.map;
-          break;
-        case 2:
-          route = AppRoutes.tickets;
-          break;
-        case 3:
-          route = AppRoutes.memories;
-          break;
-        case 4:
-        default:
-          route = AppRoutes.profile;
-          break;
-      }
+      final route = switch (index) {
+        0 => AppRoutes.mainHome,
+        1 => AppRoutes.map,
+        2 => AppRoutes.tickets,
+        3 => AppRoutes.memories,
+        _ => AppRoutes.profile,
+      };
 
-      Navigator.pushReplacementNamed(context, route);
+      Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);
     }
 
     return Container(
@@ -80,27 +61,19 @@ class BottomNav extends StatelessWidget {
             elevation: 0,
             backgroundColor: Colors.transparent,
             items: [
+              _buildNavItem(Icons.home_outlined, Icons.home_rounded, l10n.home),
+              _buildNavItem(Icons.map_outlined, Icons.map_rounded, l10n.map),
               _buildNavItem(
-                0,
-                Icons.home_outlined,
-                Icons.home_rounded,
-                l10n.home,
-              ),
-              _buildNavItem(1, Icons.map_outlined, Icons.map_rounded, l10n.map),
-              _buildNavItem(
-                2,
                 Icons.confirmation_number_outlined,
                 Icons.confirmation_number_rounded,
                 l10n.tickets,
               ),
               _buildNavItem(
-                3,
                 Icons.photo_library_outlined,
                 Icons.photo_library_rounded,
-                isArabic ? 'الذكريات' : 'Memories',
+                l10n.memories,
               ),
               _buildNavItem(
-                4,
                 Icons.person_outline,
                 Icons.person_rounded,
                 l10n.profile,
@@ -113,7 +86,6 @@ class BottomNav extends StatelessWidget {
   }
 
   BottomNavigationBarItem _buildNavItem(
-    int index,
     IconData icon,
     IconData activeIcon,
     String label,

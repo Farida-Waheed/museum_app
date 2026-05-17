@@ -169,11 +169,7 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                     const SizedBox(height: 18),
                     _SingleChoiceSection<String>(
                       title: l10n.language,
-                      options: const [
-                        'english',
-                        'arabic',
-                        'egyptian_arabic',
-                      ],
+                      options: const ['english', 'arabic', 'egyptian_arabic'],
                       selected: _languageCode,
                       labelFor: (value) => _languageLabel(l10n, value),
                       onSelected: (value) =>
@@ -314,7 +310,7 @@ String _languageLabel(AppLocalizations l10n, String languageCode) {
     case 'arabic':
       return l10n.ticketsArabic;
     case 'egyptian_arabic':
-      return 'Egyptian Arabic';
+      return l10n.egyptianArabic;
     default:
       return l10n.ticketsEnglish;
   }

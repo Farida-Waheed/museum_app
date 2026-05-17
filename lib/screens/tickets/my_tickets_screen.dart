@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:provider/provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../app/router.dart';
 import '../../core/constants/colors.dart';
@@ -71,6 +72,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
                   sessionProvider,
                   l10n,
                   isArabic,
+                  authProvider.currentUser?.id,
                 )
               : _AccountRequiredState(l10n: l10n, isArabic: isArabic),
         ),
@@ -85,11 +87,23 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
     AppSessionProvider sessionProvider,
     AppLocalizations l10n,
     bool isArabic,
+    String? userId,
   ) {
     final orders = ticketProvider.purchasedTicketSets;
     if (ticketProvider.isLoadingTickets && orders.isEmpty) {
       return const Center(
         child: CircularProgressIndicator(color: AppColors.primaryGold),
+      );
+    }
+
+    if (ticketProvider.ticketError != null && orders.isEmpty) {
+      return _TicketLoadErrorState(
+        message: ticketProvider.ticketError!,
+        l10n: l10n,
+        isArabic: isArabic,
+        onRetry: userId == null
+            ? null
+            : () => context.read<TicketProvider>().loadUserTickets(userId),
       );
     }
 
@@ -105,10 +119,20 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
       children: [
         _IntroCard(
           title: l10n.myTicketsWalletTitle,
-          subtitle: ticketProvider.ticketError ?? l10n.myTicketsWalletSubtitle,
+          subtitle: l10n.myTicketsWalletSubtitle,
           icon: Icons.confirmation_number_outlined,
           isArabic: isArabic,
         ),
+        if (ticketProvider.ticketError != null) ...[
+          const SizedBox(height: 12),
+          _TicketErrorBanner(
+            message: ticketProvider.ticketError!,
+            l10n: l10n,
+            onRetry: userId == null
+                ? null
+                : () => context.read<TicketProvider>().loadUserTickets(userId),
+          ),
+        ],
         const SizedBox(height: 18),
         ...sortedOrders.map(
           (order) => Padding(
@@ -237,11 +261,72 @@ class _EmptyTicketsState extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: _GoldButton(
-                  label: isArabic ? l10n.myTicketsBuyTickets : 'Buy tickets',
+                  label: l10n.myTicketsBuyTickets,
                   onTap: () =>
                       Navigator.pushNamed(context, AppRoutes.buyTickets),
                 ),
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TicketLoadErrorState extends StatelessWidget {
+  const _TicketLoadErrorState({
+    required this.message,
+    required this.l10n,
+    required this.isArabic,
+    required this.onRetry,
+  });
+
+  final String message;
+  final AppLocalizations l10n;
+  final bool isArabic;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsetsDirectional.fromSTEB(24, 24, 24, 120),
+        child: _GlassCard(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: isArabic
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
+            children: [
+              const Icon(
+                Icons.cloud_off_outlined,
+                color: AppColors.primaryGold,
+                size: 46,
+              ),
+              const SizedBox(height: 18),
+              Text(
+                l10n.myTicketsWalletTitle,
+                textAlign: TextAlign.start,
+                style: AppTextStyles.displayScreenTitle(
+                  context,
+                ).copyWith(fontSize: 24),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                message,
+                textAlign: TextAlign.start,
+                style: AppTextStyles.bodyPrimary(
+                  context,
+                ).copyWith(color: AppColors.bodyText, height: 1.45),
+              ),
+              if (onRetry != null) ...[
+                const SizedBox(height: 22),
+                SizedBox(
+                  width: double.infinity,
+                  child: _GoldButton(label: l10n.retry, onTap: onRetry!),
+                ),
+              ],
             ],
           ),
         ),
@@ -311,7 +396,7 @@ class _OrderCard extends StatelessWidget {
             SizedBox(
               width: double.infinity,
               child: _OutlineButton(
-                label: 'Cancel booking',
+                label: l10n.cancelBooking,
                 onTap: () async {
                   final ok = await context.read<TicketProvider>().cancelBooking(
                     order,
@@ -322,7 +407,7 @@ class _OrderCard extends StatelessWidget {
                     SnackBar(
                       content: Text(
                         ok
-                            ? 'Booking cancelled.'
+                            ? l10n.bookingCancelled
                             : error ?? 'Unable to cancel this booking.',
                       ),
                     ),
@@ -330,6 +415,54 @@ class _OrderCard extends StatelessWidget {
                 },
               ),
             ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _TicketErrorBanner extends StatelessWidget {
+  const _TicketErrorBanner({
+    required this.message,
+    required this.l10n,
+    required this.onRetry,
+  });
+
+  final String message;
+  final AppLocalizations l10n;
+  final VoidCallback? onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.alertRed.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.alertRed.withValues(alpha: 0.30)),
+      ),
+      child: Row(
+        textDirection: Directionality.of(context),
+        children: [
+          const Icon(
+            Icons.wifi_off_rounded,
+            color: AppColors.alertRed,
+            size: 20,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              textAlign: TextAlign.start,
+              style: AppTextStyles.metadata(
+                context,
+              ).copyWith(color: AppColors.bodyText, height: 1.35),
+            ),
+          ),
+          if (onRetry != null) ...[
+            const SizedBox(width: 10),
+            TextButton(onPressed: onRetry, child: Text(l10n.retry)),
           ],
         ],
       ),
@@ -359,7 +492,7 @@ class _OrderHeader extends StatelessWidget {
           ? CrossAxisAlignment.end
           : CrossAxisAlignment.start,
       children: [
-        _SectionLabel(isArabic ? 'ملخص الحجز' : 'Booking summary'),
+        _SectionLabel(isArabic ? '\u0645\u0644\u062e\u0635 \u0627\u0644\u062d\u062c\u0632' : 'Booking summary'),
         const SizedBox(height: 10),
         Row(
           textDirection: Directionality.of(context),
@@ -379,7 +512,9 @@ class _OrderHeader extends StatelessWidget {
                 ).copyWith(color: AppColors.softGold),
               ),
             ),
-            _StatusPill(label: _paymentStatusLabel(order.paymentRecord.status)),
+            _StatusPill(
+              label: _paymentStatusLabel(l10n, order.paymentRecord.status),
+            ),
           ],
         ),
         const SizedBox(height: 12),
@@ -389,8 +524,8 @@ class _OrderHeader extends StatelessWidget {
             _InfoItem(l10n.timeSlot, timeSlot),
             _InfoItem(l10n.myTicketsTotalPaid, _money(order.totalAmount)),
             _InfoItem(
-              isArabic ? 'حالة الدفع' : 'Payment status',
-              _paymentStatusLabel(order.paymentRecord.status),
+              l10n.paymentStatus,
+              _paymentStatusLabel(l10n, order.paymentRecord.status),
             ),
             _InfoItem(
               l10n.myTicketsPurchasedAt,
@@ -439,8 +574,8 @@ class _MuseumPassCard extends StatelessWidget {
               _InfoItem(l10n.status, _ticketStatusLabel(l10n, ticket.status)),
               _InfoItem(l10n.myTicketsTotalVisitors, '${ticket.visitorCount}'),
               _InfoItem(
-                isArabic ? 'حالة الدفع' : 'Payment status',
-                _paymentStatusLabel('pay_at_counter'),
+                l10n.paymentStatus,
+                _paymentStatusLabel(l10n, 'pay_at_counter'),
               ),
             ],
           ),
@@ -511,7 +646,7 @@ class _RobotPassCard extends StatelessWidget {
             items: [
               if (_routeTitle(ticket, isArabic) != null)
                 _InfoItem(
-                  isArabic ? 'المسار' : 'Route',
+                  isArabic ? '\u0627\u0644\u0645\u0633\u0627\u0631' : 'Route',
                   _routeTitle(ticket, isArabic)!,
                 ),
               _InfoItem(l10n.tourType, _tourTypeLabel(l10n, ticket.tourType)),
@@ -525,8 +660,8 @@ class _RobotPassCard extends StatelessWidget {
               ),
               _InfoItem(l10n.status, _ticketStatusLabel(l10n, ticket.status)),
               _InfoItem(
-                isArabic ? 'حالة الدفع' : 'Payment status',
-                _paymentStatusLabel('pay_at_counter'),
+                l10n.paymentStatus,
+                _paymentStatusLabel(l10n, 'pay_at_counter'),
               ),
             ],
           ),
@@ -551,6 +686,7 @@ class _RobotPassCard extends StatelessWidget {
             child: _RobotActionButton(
               sessionProvider: sessionProvider,
               l10n: l10n,
+              robotTourTicketId: ticket.id,
             ),
           ),
         ],
@@ -608,7 +744,7 @@ class _RobotConfigSummary extends StatelessWidget {
                 ? l10n.myTicketsNone
                 : config.selectedThemes
                       .map((id) => _themeLabel(l10n, id))
-                      .join(' • '),
+                      .join(' \u2022 '),
           ),
           _BreakdownLine(
             label: l10n.myTicketsVisitorMode,
@@ -624,7 +760,7 @@ class _RobotConfigSummary extends StatelessWidget {
                 ? l10n.myTicketsNone
                 : config.accessibilityNeeds
                       .map((id) => _accessibilityLabel(l10n, id))
-                      .join(' • '),
+                      .join(' \u2022 '),
           ),
           _BreakdownLine(
             label: l10n.myTicketsPhotoSpots,
@@ -677,10 +813,15 @@ class _RobotConfigSummary extends StatelessWidget {
 }
 
 class _RobotActionButton extends StatelessWidget {
-  const _RobotActionButton({required this.sessionProvider, required this.l10n});
+  const _RobotActionButton({
+    required this.sessionProvider,
+    required this.l10n,
+    required this.robotTourTicketId,
+  });
 
   final AppSessionProvider sessionProvider;
   final AppLocalizations l10n;
+  final String robotTourTicketId;
 
   @override
   Widget build(BuildContext context) {
@@ -694,7 +835,10 @@ class _RobotActionButton extends StatelessWidget {
             Navigator.pushNamed(
               context,
               AppRoutes.qrScan,
-              arguments: QRScanMode.robotConnection,
+              arguments: {
+                'mode': QRScanMode.robotConnection,
+                'robotTourTicketId': robotTourTicketId,
+              },
             );
             break;
           case _RobotActionDestination.liveTour:
@@ -1167,6 +1311,8 @@ void _showEntryCodeSheet(
                     ],
                   ),
                   const SizedBox(height: 14),
+                  _EntryQrPreview(data: ticket.qrCodeValue),
+                  const SizedBox(height: 14),
                   _CodeBox(
                     label: l10n.myTicketsMuseumGateCode,
                     code: ticket.qrCodeValue,
@@ -1188,6 +1334,34 @@ void _showEntryCodeSheet(
       );
     },
   );
+}
+
+class _EntryQrPreview extends StatelessWidget {
+  const _EntryQrPreview({required this.data});
+
+  final String data;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: AlignmentDirectional.center,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.goldBorder(0.30)),
+        ),
+        child: QrImageView(
+          data: data,
+          version: QrVersions.auto,
+          size: 210,
+          gapless: false,
+          backgroundColor: Colors.white,
+        ),
+      ),
+    );
+  }
 }
 
 _RobotAction _robotActionFor(
@@ -1245,8 +1419,8 @@ String _formatDate(DateTime value, bool isArabic) {
 
 String _money(double value) => '${value.toStringAsFixed(2)} EGP';
 
-String _paymentStatusLabel(String status) {
-  return status == 'pay_at_counter' ? 'Pay at counter' : status;
+String _paymentStatusLabel(AppLocalizations l10n, String status) {
+  return status == 'pay_at_counter' ? l10n.paymentStatusPayAtCounter : status;
 }
 
 String _shortCode(String id) {
@@ -1260,6 +1434,12 @@ String _ticketStatusLabel(AppLocalizations l10n, TicketStatus status) {
       return l10n.pending;
     case TicketStatus.active:
       return l10n.active;
+    case TicketStatus.paired:
+      return l10n.localeName == 'ar' ? 'مقترنة' : 'Paired';
+    case TicketStatus.in_progress:
+      return l10n.localeName == 'ar' ? 'جارية' : 'In progress';
+    case TicketStatus.completed:
+      return l10n.localeName == 'ar' ? 'مكتملة' : 'Completed';
     case TicketStatus.used:
       return l10n.myTicketsUsed;
     case TicketStatus.expired:
@@ -1286,7 +1466,7 @@ String _languageLabel(AppLocalizations l10n, String languageCode) {
     case 'arabic':
       return l10n.ticketsArabic;
     case 'egyptian_arabic':
-      return 'Egyptian Arabic';
+      return l10n.egyptianArabic;
     default:
       return l10n.ticketsEnglish;
   }
@@ -1304,8 +1484,11 @@ String _localizedTimeSlot(String slot, bool isArabic) {
       return '15:00 - 17:00';
   }
   if (!isArabic) return slot;
-  return slot.replaceAll('AM', 'ص').replaceAll('PM', 'م');
+  return slot.replaceAll('AM', '\u0635').replaceAll('PM', '\u0645');
 }
+
+List<String> _newBookingExhibitIds(List<String> ids) =>
+    ids.where((id) => id.startsWith('artifact_')).toList();
 
 String _standardRouteLabel(AppLocalizations l10n, String routeName) {
   if (routeName == StandardTourConfig.defaultConfig.routeName) {
@@ -1325,11 +1508,8 @@ String? _routeTitle(RobotTourTicket ticket, bool isArabic) {
 String _exhibitNames(List<Exhibit> exhibits, List<String> ids, String lang) {
   if (ids.isEmpty) return '';
   final byId = {for (final exhibit in exhibits) exhibit.id: exhibit};
-  return ids.map((id) => byId[id]?.getName(lang) ?? id).join(' • ');
+  return ids.map((id) => byId[id]?.getName(lang) ?? id).join(' \u2022 ');
 }
-
-List<String> _newBookingExhibitIds(List<String> ids) =>
-    ids.where((id) => id.startsWith('artifact_')).toList();
 
 String _themeLabel(AppLocalizations l10n, String id) {
   switch (id) {

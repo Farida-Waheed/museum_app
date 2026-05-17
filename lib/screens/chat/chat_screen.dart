@@ -315,7 +315,7 @@ class ChatBubble extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 4),
                   child: Text(
-                    isArabicUI ? 'الدعم البشري' : 'Human Support',
+                    AppLocalizations.of(context)!.humanSupport,
                     style: AppTextStyles.metadata(context).copyWith(
                       color: AppColors.primaryGold,
                       fontWeight: FontWeight.bold,
@@ -489,10 +489,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     });
     Future.delayed(const Duration(milliseconds: 500), () {
       if (!mounted) return;
-      final isArabic =
-          Provider.of<UserPreferencesModel>(context, listen: false).language ==
-          'ar';
-      _chatProvider.ensureGreeting(isArabic: isArabic);
+      final l10n = AppLocalizations.of(context)!;
+      _chatProvider.ensureGreeting(l10n.chatHeaderSubtitle);
       // Ensure we scroll to bottom once the greeting message is added.
       Future.delayed(const Duration(milliseconds: 50), () {
         if (!mounted) return;
@@ -775,9 +773,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             ),
             const SizedBox(height: 10),
             Text(
-              isArabic
-                  ? 'يمكنك سؤال حورس أثناء الجولة فقط.'
-                  : 'You can ask Horus during an active tour only.',
+              l10n.askDuringActiveTourOnly,
               textAlign: TextAlign.center,
               style: AppTextStyles.bodyPrimary(
                 context,
@@ -798,9 +794,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       ? Alignment.centerRight
                       : Alignment.centerLeft,
                   child: Text(
-                    isArabic
-                        ? 'استخدمها عندما لا يستطيع حورس سماعك بوضوح.'
-                        : 'Use this when Horus cannot hear you clearly.',
+                    l10n.chatHeaderSubtitle,
                     textAlign: isArabic ? TextAlign.right : TextAlign.left,
                     style: AppTextStyles.metadata(
                       context,

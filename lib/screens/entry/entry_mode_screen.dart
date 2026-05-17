@@ -9,7 +9,9 @@ import '../../core/constants/text_styles.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/app_session_provider.dart';
 import '../../models/auth_provider.dart';
+import '../../models/ticket_provider.dart';
 import '../../models/user_preferences.dart';
+import '../tickets/qr_scanner_screen.dart';
 
 class EntryModeScreen extends StatefulWidget {
   const EntryModeScreen({super.key});
@@ -151,15 +153,33 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
                                   ? 'خصص مسارك واتصل بحورس-بوت.'
                                   : 'Customize your route and connect to Horus-Bot.',
                               icon: Icons.route_outlined,
-                              onTap: () {
+                              onTap: () async {
                                 final authProvider = context
                                     .read<AuthProvider>();
                                 if (authProvider.isLoggedIn) {
+                                  final userId = authProvider.currentUser?.id;
+                                  if (userId != null) {
+                                    await context
+                                        .read<TicketProvider>()
+                                        .loadUserTickets(userId);
+                                  }
+                                  if (!context.mounted) return;
+                                  final ticketProvider = context
+                                      .read<TicketProvider>();
                                   sessionProvider.startVisiting();
-                                  if (sessionProvider.canStartRobotTour) {
+                                  if (sessionProvider
+                                      .hasRestorableTourSession) {
                                     Navigator.pushReplacementNamed(
                                       context,
-                                      AppRoutes.tourCustomization,
+                                      AppRoutes.liveTour,
+                                    );
+                                  } else if (ticketProvider
+                                      .hasValidRobotTourEligibility) {
+                                    sessionProvider.startRobotConnection();
+                                    Navigator.pushReplacementNamed(
+                                      context,
+                                      AppRoutes.qrScan,
+                                      arguments: QRScanMode.robotConnection,
                                     );
                                   } else {
                                     Navigator.pushReplacementNamed(

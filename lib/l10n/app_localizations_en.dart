@@ -47,6 +47,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get askTheGuide => 'Ask Horus';
 
   @override
+  String get askDuringActiveTourOnly =>
+      'You can ask Horus during an active tour only.';
+
+  @override
   String get guideStatus => 'Guide Status';
 
   @override
@@ -95,6 +99,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Ask about tickets, opening hours, events, exhibits, or directions.';
 
   @override
+  String get humanSupport => 'Human Support';
+
+  @override
   String get humanSupportLabel => 'Request live human support';
 
   @override
@@ -141,6 +148,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profile => 'Profile';
+
+  @override
+  String get memories => 'Memories';
 
   @override
   String get map => 'Map';
@@ -310,6 +320,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get qrMuseumInvalidMessage => 'This is not a valid Museum Entry QR.';
 
   @override
+  String get qrMuseumSignInRequiredMessage =>
+      'Please sign in before verifying a museum entry ticket.';
+
+  @override
+  String get qrMuseumTicketNotFoundMessage =>
+      'This museum ticket was not found.';
+
+  @override
+  String get qrMuseumTicketWrongUserMessage =>
+      'This ticket does not belong to the signed-in account.';
+
+  @override
+  String get qrMuseumTicketInactiveMessage =>
+      'This ticket is not active and cannot be used.';
+
+  @override
+  String get qrMuseumTicketExpiredMessage =>
+      'This ticket date has already passed.';
+
+  @override
+  String get qrMuseumValidationFailedMessage =>
+      'Unable to verify this museum ticket. Please try again.';
+
+  @override
   String get qrRobotTicketRequiredTitle => 'Robot tour ticket required';
 
   @override
@@ -352,6 +386,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get qrRobotUnavailableMessage =>
       'Horus-Bot is currently unavailable. Please try another robot or ask museum staff.';
+
+  @override
+  String get qrRobotBusyTitle => 'Horus-Bot is busy';
+
+  @override
+  String get qrRobotBusyMessage =>
+      'This Horus-Bot is already paired with another tour. Please scan an available robot or ask museum staff.';
 
   @override
   String get qrPairingPermissionDeniedTitle => 'Pairing blocked';
@@ -862,6 +903,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get searchByExhibitName => 'Search by exhibit name...';
+
+  @override
+  String get tapToViewDetailsAudioGuide =>
+      'Tap to view details and audio guide';
 
   @override
   String get noResultsFound => 'No results found';
@@ -1849,6 +1894,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get myTicketsBuyTickets => 'Buy Tickets';
+
+  @override
+  String get cashPaymentAtCounterTitle => 'Cash payment at counter';
+
+  @override
+  String cashPaymentAtCounterBody(String total) {
+    return 'Cash only for now. Payment status: Pay at counter. Total due at the museum counter: $total.';
+  }
+
+  @override
+  String get review => 'Review';
+
+  @override
+  String get confirmBooking => 'Confirm booking';
+
+  @override
+  String get paymentStatusPayAtCounter => 'Payment status: Pay at counter';
+
+  @override
+  String get egyptianArabic => 'Egyptian Arabic';
+
+  @override
+  String get cancelBooking => 'Cancel booking';
+
+  @override
+  String get bookingCancelled => 'Booking cancelled.';
+
+  @override
+  String get paymentStatus => 'Payment status';
 
   @override
   String myTicketsOrderCode(String code) {

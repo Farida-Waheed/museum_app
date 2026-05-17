@@ -25,6 +25,13 @@ class ExhibitListScreen extends StatelessWidget {
       title: l10n.exhibits.toUpperCase(),
       backgroundColor: AppColors.darkBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
+      actions: [
+        IconButton(
+          tooltip: l10n.searchExhibits,
+          icon: const Icon(Icons.search_rounded),
+          onPressed: () => Navigator.pushNamed(context, AppRoutes.search),
+        ),
+      ],
       body: exhibitProvider.isLoading && exhibits.isEmpty
           ? const Center(
               child: CircularProgressIndicator(color: AppColors.primaryGold),
@@ -64,7 +71,6 @@ class _ExhibitListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     final l10n = AppLocalizations.of(context)!;
     final isArabic = prefs.language == 'ar';
 

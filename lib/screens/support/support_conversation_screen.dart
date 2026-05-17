@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import '../../models/support_message.dart';
-import '../../models/support_request.dart';
-import '../../services/support_request_service.dart';
+
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 import '../../l10n/app_localizations.dart';
+import '../../models/support_message.dart';
+import '../../models/support_request.dart';
+import '../../services/support_request_service.dart';
 import '../../widgets/app_menu_shell.dart';
 
 class SupportConversationScreen extends StatefulWidget {
@@ -42,169 +43,118 @@ class _SupportConversationScreenState extends State<SupportConversationScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final request = _request;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return AppMenuShell(
       title: l10n.supportConversationTitle.toUpperCase(),
-      backgroundColor: AppColors.darkBackground,
-      body: request == null
-          ? Center(
-              child: Text(
-                l10n.supportRequestNotFound,
-                style: AppTextStyles.bodyPrimary(context),
-              ),
-            )
-          : Column(
-              children: [
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.all(16),
-                    children: [
-                      _RequestSummaryCard(request: request),
-                      const SizedBox(height: 16),
-                      ...request.messages.map(
-                        (message) => _SupportChatBubble(
-                          message: message,
-                          isArabic:
-                              Localizations.localeOf(context).languageCode ==
-                              'ar',
+      backgroundColor: AppColors.cinematicBackground,
+      body: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: AppGradients.screenBackground,
+        ),
+        child: Directionality(
+          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+          child: request == null
+              ? _MissingRequestState(message: l10n.supportRequestNotFound)
+              : Column(
+                  children: [
+                    Expanded(
+                      child: ListView(
+                        padding: const EdgeInsetsDirectional.fromSTEB(
+                          16,
+                          20,
+                          16,
+                          16,
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 20),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _controller,
-                          decoration: InputDecoration(
-                            hintText: l10n.supportReplyHint,
-                            hintStyle: AppTextStyles.bodyPrimary(
-                              context,
-                            ).copyWith(color: Colors.white38),
-                            filled: true,
-                            fillColor: AppColors.darkSurface,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(18),
-                              borderSide: BorderSide.none,
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 18,
-                              vertical: 14,
+                        children: [
+                          _RequestSummaryCard(request: request),
+                          const SizedBox(height: 16),
+                          ...request.messages.map(
+                            (message) => _SupportChatBubble(
+                              message: message,
+                              isArabic: isArabic,
                             ),
                           ),
-                          style: AppTextStyles.bodyPrimary(
-                            context,
-                          ).copyWith(color: Colors.white),
-                          onSubmitted: (_) => _sendReply(),
-                        ),
+                        ],
                       ),
-                      const SizedBox(width: 10),
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundColor: AppColors.primaryGold,
-                        child: IconButton(
-                          padding: EdgeInsets.zero,
-                          icon: const Icon(
-                            Icons.send_rounded,
-                            size: 20,
-                            color: AppColors.darkInk,
-                          ),
-                          onPressed: _sendReply,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                    _ReplyBar(controller: _controller, onSend: _sendReply),
+                  ],
                 ),
-              ],
-            ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MissingRequestState extends StatelessWidget {
+  const _MissingRequestState({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(24),
+        decoration: AppDecorations.premiumGlassCard(radius: 24),
+        child: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: AppTextStyles.bodyPrimary(
+            context,
+          ).copyWith(color: Colors.white),
+        ),
+      ),
     );
   }
 }
 
 class _RequestSummaryCard extends StatelessWidget {
-  final SupportRequest request;
   const _RequestSummaryCard({required this.request});
+
+  final SupportRequest request;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isArabic = Directionality.of(context) == TextDirection.rtl;
     return Container(
       padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: AppColors.cinematicCard,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.primaryGold.withOpacity(0.2)),
-      ),
+      decoration: AppDecorations.premiumGlassCard(radius: 20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: isArabic
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           Text(
             request.requesterName,
+            textAlign: TextAlign.start,
             style: AppTextStyles.titleMedium(
               context,
             ).copyWith(color: Colors.white, fontWeight: FontWeight.w900),
           ),
           const SizedBox(height: 10),
-          Row(
-            children: [
-              Text(
-                '${l10n.supportRequestFrom}: ',
-                style: AppTextStyles.metadata(
-                  context,
-                ).copyWith(color: Colors.white70),
-              ),
-              Text(
-                request.screen,
-                style: AppTextStyles.metadata(
-                  context,
-                ).copyWith(color: Colors.white),
-              ),
-            ],
+          _SummaryLine(label: l10n.supportRequestFrom, value: request.screen),
+          const SizedBox(height: 8),
+          _SummaryLine(
+            label: l10n.supportRequestStatus,
+            value: request.status == SupportRequestStatus.pending
+                ? l10n.supportStatusPending
+                : request.status == SupportRequestStatus.inProgress
+                ? l10n.supportStatusInProgress
+                : l10n.supportStatusResolved,
           ),
           const SizedBox(height: 8),
-          Row(
-            children: [
-              Text(
-                '${l10n.supportRequestStatus}: ',
-                style: AppTextStyles.metadata(
-                  context,
-                ).copyWith(color: Colors.white70),
-              ),
-              Text(
-                request.status == SupportRequestStatus.pending
-                    ? l10n.supportStatusPending
-                    : request.status == SupportRequestStatus.inProgress
-                    ? l10n.supportStatusInProgress
-                    : l10n.supportStatusResolved,
-                style: AppTextStyles.metadata(
-                  context,
-                ).copyWith(color: Colors.white),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Text(
-                '${l10n.supportRequestCreatedAt}: ',
-                style: AppTextStyles.metadata(
-                  context,
-                ).copyWith(color: Colors.white70),
-              ),
-              Text(
-                request.createdAt.toLocal().toString(),
-                style: AppTextStyles.metadata(
-                  context,
-                ).copyWith(color: Colors.white),
-              ),
-            ],
+          _SummaryLine(
+            label: l10n.supportRequestCreatedAt,
+            value: request.createdAt.toLocal().toString(),
           ),
           const SizedBox(height: 16),
           Text(
             request.contextSummary,
+            textAlign: TextAlign.start,
             style: AppTextStyles.bodyPrimary(
               context,
             ).copyWith(color: Colors.white70, height: 1.5),
@@ -215,36 +165,58 @@ class _RequestSummaryCard extends StatelessWidget {
   }
 }
 
+class _SummaryLine extends StatelessWidget {
+  const _SummaryLine({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      textDirection: Directionality.of(context),
+      children: [
+        Text(
+          '$label: ',
+          style: AppTextStyles.metadata(
+            context,
+          ).copyWith(color: Colors.white70),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            textAlign: TextAlign.start,
+            style: AppTextStyles.metadata(
+              context,
+            ).copyWith(color: Colors.white),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _SupportChatBubble extends StatelessWidget {
+  const _SupportChatBubble({required this.message, required this.isArabic});
+
   final SupportMessage message;
   final bool isArabic;
-
-  const _SupportChatBubble({required this.message, required this.isArabic});
 
   @override
   Widget build(BuildContext context) {
     final isUser = message.sender == SupportSender.user;
     final bubbleColor = isUser ? AppColors.primaryGold : AppColors.darkSurface;
     final textColor = isUser ? AppColors.darkInk : Colors.white;
-    final dir = isArabic ? TextDirection.rtl : TextDirection.ltr;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
+        textDirection: Directionality.of(context),
         mainAxisAlignment: isUser
             ? MainAxisAlignment.end
             : MainAxisAlignment.start,
         children: [
-          if (!isUser)
-            CircleAvatar(
-              radius: 14,
-              backgroundColor: AppColors.primaryGold.withOpacity(0.15),
-              child: const Icon(
-                Icons.support_agent_outlined,
-                size: 16,
-                color: AppColors.primaryGold,
-              ),
-            ),
+          if (!isUser) _BubbleAvatar(icon: Icons.support_agent_outlined),
           if (!isUser) const SizedBox(width: 10),
           Flexible(
             child: Container(
@@ -252,10 +224,13 @@ class _SupportChatBubble extends StatelessWidget {
               decoration: BoxDecoration(
                 color: bubbleColor,
                 borderRadius: BorderRadius.circular(20),
+                border: isUser
+                    ? null
+                    : Border.all(color: AppColors.goldBorder(0.10)),
               ),
               child: Text(
                 message.text,
-                textDirection: dir,
+                textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                 style: AppTextStyles.bodyPrimary(
                   context,
                 ).copyWith(color: textColor, height: 1.5),
@@ -263,16 +238,85 @@ class _SupportChatBubble extends StatelessWidget {
             ),
           ),
           if (isUser) const SizedBox(width: 10),
-          if (isUser)
-            CircleAvatar(
-              radius: 14,
-              backgroundColor: AppColors.primaryGold.withOpacity(0.15),
-              child: const Icon(
-                Icons.person_outline,
-                size: 16,
-                color: AppColors.primaryGold,
+          if (isUser) _BubbleAvatar(icon: Icons.person_outline),
+        ],
+      ),
+    );
+  }
+}
+
+class _BubbleAvatar extends StatelessWidget {
+  const _BubbleAvatar({required this.icon});
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return CircleAvatar(
+      radius: 14,
+      backgroundColor: AppColors.primaryGold.withValues(alpha: 0.15),
+      child: Icon(icon, size: 16, color: AppColors.primaryGold),
+    );
+  }
+}
+
+class _ReplyBar extends StatelessWidget {
+  const _ReplyBar({required this.controller, required this.onSend});
+
+  final TextEditingController controller;
+  final VoidCallback onSend;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(16, 8, 16, 20),
+      child: Row(
+        textDirection: Directionality.of(context),
+        children: [
+          Expanded(
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: l10n.supportReplyHint,
+                hintStyle: AppTextStyles.bodyPrimary(
+                  context,
+                ).copyWith(color: Colors.white38),
+                filled: true,
+                fillColor: AppColors.cinematicCard,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: BorderSide(color: AppColors.goldBorder(0.12)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(18),
+                  borderSide: const BorderSide(color: AppColors.primaryGold),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 14,
+                ),
               ),
+              style: AppTextStyles.bodyPrimary(
+                context,
+              ).copyWith(color: Colors.white),
+              onSubmitted: (_) => onSend(),
             ),
+          ),
+          const SizedBox(width: 10),
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: AppColors.primaryGold,
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              icon: const Icon(
+                Icons.send_rounded,
+                size: 20,
+                color: AppColors.darkInk,
+              ),
+              onPressed: onSend,
+            ),
+          ),
         ],
       ),
     );

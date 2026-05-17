@@ -65,7 +65,9 @@ class _NotificationSettingsScreenState
 
     return AppMenuShell(
       title: l10n.notificationSettings.toUpperCase(),
-      backgroundColor: isDark ? AppColors.cinematicBackground : AppColors.warmSurface,
+      backgroundColor: isDark
+          ? AppColors.cinematicBackground
+          : AppColors.warmSurface,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
@@ -95,7 +97,8 @@ class _NotificationSettingsScreenState
                     title: l10n.tourUpdatesCategory,
                     description: l10n.tourUpdatesCategoryDesc,
                     category: NotificationCategory.tourUpdates,
-                    enabled: _categoryStates[NotificationCategory.tourUpdates] ??
+                    enabled:
+                        _categoryStates[NotificationCategory.tourUpdates] ??
                         true,
                     disabledByMaster: !_masterEnabled,
                     onChanged: _setCategoryEnabled,
@@ -105,8 +108,9 @@ class _NotificationSettingsScreenState
                     description: l10n.exhibitRemindersCategoryDesc,
                     category: NotificationCategory.exhibitReminders,
                     enabled:
-                        _categoryStates[NotificationCategory.exhibitReminders] ??
-                            true,
+                        _categoryStates[NotificationCategory
+                            .exhibitReminders] ??
+                        true,
                     disabledByMaster: !_masterEnabled,
                     onChanged: _setCategoryEnabled,
                   ),
@@ -116,7 +120,7 @@ class _NotificationSettingsScreenState
                     category: NotificationCategory.quizReminders,
                     enabled:
                         _categoryStates[NotificationCategory.quizReminders] ??
-                            true,
+                        true,
                     disabledByMaster: !_masterEnabled,
                     onChanged: _setCategoryEnabled,
                   ),
@@ -126,7 +130,7 @@ class _NotificationSettingsScreenState
                     category: NotificationCategory.guideReminders,
                     enabled:
                         _categoryStates[NotificationCategory.guideReminders] ??
-                            false,
+                        false,
                     disabledByMaster: !_masterEnabled,
                     onChanged: _setCategoryEnabled,
                   ),
@@ -136,7 +140,7 @@ class _NotificationSettingsScreenState
                     category: NotificationCategory.museumNews,
                     enabled:
                         _categoryStates[NotificationCategory.museumNews] ??
-                            false,
+                        false,
                     disabledByMaster: !_masterEnabled,
                     onChanged: _setCategoryEnabled,
                   ),
@@ -146,7 +150,7 @@ class _NotificationSettingsScreenState
                     category: NotificationCategory.ticketReminders,
                     enabled:
                         _categoryStates[NotificationCategory.ticketReminders] ??
-                            true,
+                        true,
                     disabledByMaster: !_masterEnabled,
                     onChanged: _setCategoryEnabled,
                   ),
@@ -156,7 +160,7 @@ class _NotificationSettingsScreenState
                     category: NotificationCategory.systemAlerts,
                     enabled:
                         _categoryStates[NotificationCategory.systemAlerts] ??
-                            true,
+                        true,
                     disabledByMaster: !_masterEnabled,
                     onChanged: _setCategoryEnabled,
                   ),
@@ -178,7 +182,10 @@ class _IntroCard extends StatelessWidget {
     final isArabic = Directionality.of(context) == TextDirection.rtl;
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: AppDecorations.premiumGlassCard(radius: 22, highlighted: true),
+      decoration: AppDecorations.premiumGlassCard(
+        radius: 22,
+        highlighted: true,
+      ),
       child: Row(
         children: [
           Container(
@@ -195,15 +202,17 @@ class _IntroCard extends StatelessWidget {
           const SizedBox(width: 16),
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              crossAxisAlignment: isArabic
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.titleMedium(context)
-                      .copyWith(color: Colors.white),
+                  style: AppTextStyles.titleMedium(
+                    context,
+                  ).copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 6),
                 Text(subtitle, style: AppTextStyles.metadata(context)),
@@ -237,8 +246,9 @@ class _MasterToggleCard extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: AppTextStyles.titleMedium(context)
-                  .copyWith(color: Colors.white, fontSize: 16),
+              style: AppTextStyles.titleMedium(
+                context,
+              ).copyWith(color: Colors.white, fontSize: 16),
             ),
           ),
           Switch.adaptive(
@@ -261,8 +271,9 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       label.toUpperCase(),
-      style: AppTextStyles.displaySectionTitle(context)
-          .copyWith(color: AppColors.softGold, fontSize: 12),
+      style: AppTextStyles.displaySectionTitle(
+        context,
+      ).copyWith(color: AppColors.softGold, fontSize: 12),
     );
   }
 }
@@ -283,7 +294,7 @@ class _CategoryCard extends StatelessWidget {
   final bool enabled;
   final bool disabledByMaster;
   final Future<void> Function(NotificationCategory category, bool enabled)
-      onChanged;
+  onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -297,19 +308,18 @@ class _CategoryCard extends StatelessWidget {
         children: [
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              crossAxisAlignment: isArabic
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: AppTextStyles.titleMedium(context)
-                      .copyWith(color: textColor, fontSize: 15),
+                  style: AppTextStyles.titleMedium(
+                    context,
+                  ).copyWith(color: textColor, fontSize: 15),
                 ),
                 const SizedBox(height: 6),
-                Text(
-                  description,
-                  style: AppTextStyles.metadata(context),
-                ),
+                Text(description, style: AppTextStyles.metadata(context)),
               ],
             ),
           ),

@@ -17,7 +17,9 @@ import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 
 class ExhibitDetailScreen extends StatefulWidget {
-  const ExhibitDetailScreen({super.key});
+  const ExhibitDetailScreen({super.key, required this.exhibit});
+
+  final Exhibit exhibit;
 
   @override
   State<ExhibitDetailScreen> createState() => _ExhibitDetailScreenState();
@@ -92,7 +94,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    final exhibit = ModalRoute.of(context)!.settings.arguments as Exhibit;
+    final exhibit = widget.exhibit;
     final prefs = Provider.of<UserPreferencesModel>(context);
     final exhibitProvider = Provider.of<ExhibitProvider>(context);
     final tourProvider = Provider.of<TourProvider>(context);
@@ -112,7 +114,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
 
     // Mark as visited when viewing details
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<TourProvider>(
+      Provider.of<AppSessionProvider>(
         context,
         listen: false,
       ).setCurrentExhibit(exhibit.id);
@@ -214,7 +216,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
                   // Integrated Quiz Prompt
                   if (!hasCompletedQuiz && canTakeQuiz)
                     _buildQuizPrompt(l10n, cs, exhibit.id, isArabic)
-                  else
+                  else if (hasCompletedQuiz)
                     _buildQuizCompletedChip(
                       l10n,
                       cs,

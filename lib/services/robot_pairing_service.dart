@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../models/museum_ticket.dart';
 import '../models/robot_tour_ticket.dart';
 import '../models/ticket_order.dart';
 
@@ -8,8 +7,10 @@ enum RobotPairingFailureCode {
   invalidQr,
   signInRequired,
   robotTourTicketRequired,
+  ambiguousRobotTourTicket,
   robotNotFound,
   robotUnavailable,
+  robotBusy,
   permissionDenied,
   network,
   unknown,
@@ -24,6 +25,7 @@ class RobotPairingService {
   Future<RobotPairingResult> pairRobot({
     required String userId,
     required String scannedCode,
+    String? robotTourTicketId,
   }) async {
     final robotId = parseRobotId(scannedCode);
     if (robotId == null) {
@@ -34,23 +36,46 @@ class RobotPairingService {
     }
 
     try {
-      final museumTicket = await _activeMuseumTicketForUser(userId);
-      final robotTourTicket = await _activeRobotTourTicketForUser(
+      final pairableTicket = await _selectPairableRobotTourTicket(
         userId,
-        museumTicket,
+        preferredTicketId: robotTourTicketId,
       );
-      if (museumTicket == null || robotTourTicket == null) {
+      if (pairableTicket == null) {
         throw const RobotPairingException(
           RobotPairingFailureCode.robotTourTicketRequired,
         );
       }
 
+      final robotTourTicket = pairableTicket.ticket;
       final selectedExhibitIds = _selectedExhibitIds(robotTourTicket);
       final sessionRef = _firestore.collection('tourSessions').doc();
       final sessionId = sessionRef.id;
       final robotRef = _firestore.collection('robots').doc(robotId);
+      final robotTicketRef = _firestore
+          .collection('robotTourTickets')
+          .doc(pairableTicket.documentId);
+      final bookingId = robotTourTicket.bookingId ?? '';
+      final museumTicketId = robotTourTicket.museumTicketId ?? '';
+      if (bookingId.isEmpty || museumTicketId.isEmpty) {
+        throw const RobotPairingException(
+          RobotPairingFailureCode.robotTourTicketRequired,
+        );
+      }
 
       await _firestore.runTransaction((transaction) async {
+        final robotTicketSnapshot = await transaction.get(robotTicketRef);
+        if (!robotTicketSnapshot.exists) {
+          throw const RobotPairingException(
+            RobotPairingFailureCode.robotTourTicketRequired,
+          );
+        }
+        final robotTicketData = robotTicketSnapshot.data() ?? {};
+        if (!_isUnpairedActiveRobotTicket(robotTicketData, userId)) {
+          throw const RobotPairingException(
+            RobotPairingFailureCode.robotTourTicketRequired,
+          );
+        }
+
         final robotSnapshot = await transaction.get(robotRef);
         if (!robotSnapshot.exists) {
           throw const RobotPairingException(
@@ -59,45 +84,83 @@ class RobotPairingService {
         }
 
         final robotData = robotSnapshot.data() ?? {};
-        if (robotData['status'] != 'available') {
+        final robotStatus = robotData['status']?.toString();
+        final activeSessionId =
+            _stringValue(robotData['active_session_id']) ??
+            _stringValue(robotData['activeSessionId']);
+        final activeUserId =
+            _stringValue(robotData['active_user_id']) ??
+            _stringValue(robotData['currentUserId']);
+        final isOnline =
+            _boolValue(robotData['is_online']) ??
+            _boolValue(robotData['online']);
+        if (robotStatus != 'available' ||
+            activeSessionId != null ||
+            activeUserId != null) {
+          throw RobotPairingException(
+            robotStatus == 'paired' ||
+                    robotStatus == 'busy' ||
+                    robotStatus == 'assigned' ||
+                    robotStatus == 'in_tour' ||
+                    activeSessionId != null ||
+                    activeUserId != null
+                ? RobotPairingFailureCode.robotBusy
+                : RobotPairingFailureCode.robotUnavailable,
+          );
+        }
+        if (isOnline == false) {
           throw const RobotPairingException(
             RobotPairingFailureCode.robotUnavailable,
           );
         }
 
+        final now = FieldValue.serverTimestamp();
+
         transaction.set(sessionRef, {
-          'sessionId': sessionId,
+          'session_id': sessionId,
           'userId': userId,
+          'booking_id': bookingId,
+          'museum_ticket_id': museumTicketId,
+          'robot_tour_ticket_id': pairableTicket.documentId,
           'robotId': robotId,
-          'museumTicketId': museumTicket.id,
-          'robotTourTicketId': robotTourTicket.id,
-          'selectedExhibitIds': selectedExhibitIds,
-          'currentExhibitId': null,
-          'nextExhibitId': selectedExhibitIds.isEmpty
-              ? null
-              : selectedExhibitIds.first,
-          'visitedExhibitIds': const <String>[],
-          'status': 'ready',
-          'robotState': 'waiting',
-          'userDistanceFromRobot': null,
-          'startedAt': FieldValue.serverTimestamp(),
-          'updatedAt': FieldValue.serverTimestamp(),
-          'completedAt': null,
+          'status': 'paired',
+          'current_exhibit_id': null,
+          'current_exhibit_index': 0,
+          'selected_exhibits': selectedExhibitIds,
+          'route_id': robotTourTicket.routeId,
+          'route_title_en': robotTourTicket.routeTitleEn,
+          'route_title_ar': robotTourTicket.routeTitleAr,
+          'preferred_language': robotTourTicket.languageCode,
+          'pace': _paceValue(pairableTicket.data, robotTourTicket),
+          'started_at': null,
+          'paired_at': now,
+          'completed_at': null,
+          'created_at': now,
+          'updated_at': now,
+        });
+
+        transaction.update(robotTicketRef, {
+          'status': 'paired',
+          'paired_robot_id': robotId,
+          'session_id': sessionId,
+          'paired_at': now,
+          'updated_at': now,
         });
 
         transaction.update(robotRef, {
-          'status': 'paired',
-          'activeSessionId': sessionId,
-          'currentUserId': userId,
-          'updatedAt': FieldValue.serverTimestamp(),
+          'status': 'assigned',
+          'active_session_id': sessionId,
+          'active_user_id': userId,
+          'active_robot_tour_ticket_id': pairableTicket.documentId,
+          'updated_at': now,
         });
       });
 
       return RobotPairingResult(
         sessionId: sessionId,
         robotId: robotId,
-        museumTicketId: museumTicket.id,
-        robotTourTicketId: robotTourTicket.id,
+        museumTicketId: museumTicketId,
+        robotTourTicketId: pairableTicket.documentId,
         selectedExhibitIds: selectedExhibitIds,
         nextExhibitId: selectedExhibitIds.isEmpty
             ? null
@@ -126,50 +189,73 @@ class RobotPairingService {
     return match?.group(0);
   }
 
-  Future<MuseumTicket?> _activeMuseumTicketForUser(String userId) async {
-    final snapshot = await _firestore
-        .collection('museumTickets')
-        .where('userId', isEqualTo: userId)
-        .get();
-    final tickets = snapshot.docs
-        .map((doc) => MuseumTicket.fromFirestore(doc.id, doc.data()))
-        .where((ticket) => ticket.status == TicketStatus.active)
-        .toList();
-    if (tickets.isEmpty) return null;
-    tickets.sort((a, b) => b.purchasedAt.compareTo(a.purchasedAt));
-    return tickets.first;
-  }
-
-  Future<RobotTourTicket?> _activeRobotTourTicketForUser(
-    String userId,
-    MuseumTicket? museumTicket,
+  Future<_PairableRobotTicket?> _selectPairableRobotTourTicket(
+    String userId, {
+    String? preferredTicketId,
   ) async {
-    if (museumTicket == null) return null;
     final snapshot = await _firestore
         .collection('robotTourTickets')
         .where('userId', isEqualTo: userId)
         .get();
     final tickets = snapshot.docs
-        .map((doc) => RobotTourTicket.fromFirestore(doc.id, doc.data()))
-        .where((ticket) => ticket.status == TicketStatus.active)
+        .where((doc) => _isUnpairedActiveRobotTicket(doc.data(), userId))
+        .map(
+          (doc) => _PairableRobotTicket(
+            documentId: doc.id,
+            ticket: RobotTourTicket.fromFirestore(doc.id, doc.data()),
+            data: doc.data(),
+          ),
+        )
         .toList();
     if (tickets.isEmpty) return null;
 
-    for (final ticket in tickets) {
-      final robotLinksMuseum =
-          ticket.museumTicketId != null &&
-          ticket.museumTicketId == museumTicket.id;
-      final museumLinksRobot =
-          museumTicket.robotTourTicketId != null &&
-          museumTicket.robotTourTicketId == ticket.id;
-      if (robotLinksMuseum || museumLinksRobot) return ticket;
+    final preferred = preferredTicketId?.trim();
+    if (preferred != null && preferred.isNotEmpty) {
+      for (final ticket in tickets) {
+        if (ticket.documentId == preferred || ticket.ticket.id == preferred) {
+          return ticket;
+        }
+      }
+      return null;
     }
 
-    return tickets.firstWhere(
-      (ticket) =>
-          ticket.museumTicketId == null &&
-          museumTicket.robotTourTicketId == null,
-      orElse: () => tickets.first,
+    tickets.sort((a, b) => _tourStartValue(a).compareTo(_tourStartValue(b)));
+    if (tickets.length > 1 &&
+        _tourStartValue(
+          tickets[0],
+        ).isAtSameMomentAs(_tourStartValue(tickets[1]))) {
+      throw const RobotPairingException(
+        RobotPairingFailureCode.ambiguousRobotTourTicket,
+      );
+    }
+    return tickets.first;
+  }
+
+  bool _isUnpairedActiveRobotTicket(
+    Map<String, dynamic> data,
+    String userId,
+  ) {
+    return data['userId'] == userId &&
+        data['status'] == TicketStatus.active.name &&
+        _stringValue(data['paired_robot_id']) == null &&
+        _stringValue(data['session_id']) == null;
+  }
+
+  DateTime _tourStartValue(_PairableRobotTicket pairable) {
+    final ticket = pairable.ticket;
+    final visitDate = ticket.visitDate;
+    if (visitDate == null) return ticket.purchasedAt;
+    final parts = ticket.timeSlot?.split(':');
+    final hour = parts == null || parts.isEmpty ? 0 : int.tryParse(parts[0]);
+    final minute = parts == null || parts.length < 2
+        ? 0
+        : int.tryParse(parts[1]);
+    return DateTime(
+      visitDate.year,
+      visitDate.month,
+      visitDate.day,
+      hour ?? 0,
+      minute ?? 0,
     );
   }
 
@@ -189,6 +275,35 @@ class RobotPairingService {
 
     return const [];
   }
+
+  String _paceValue(Map<String, dynamic> data, RobotTourTicket ticket) {
+    return _stringValue(data['pace']) ??
+        ticket.personalizedTourConfig?.pace.name ??
+        TourPace.normal.name;
+  }
+
+  String? _stringValue(Object? value) {
+    if (value is String && value.trim().isNotEmpty) return value.trim();
+    return null;
+  }
+
+  bool? _boolValue(Object? value) {
+    if (value is bool) return value;
+    if (value is String) return bool.tryParse(value);
+    return null;
+  }
+}
+
+class _PairableRobotTicket {
+  const _PairableRobotTicket({
+    required this.documentId,
+    required this.ticket,
+    required this.data,
+  });
+
+  final String documentId;
+  final RobotTourTicket ticket;
+  final Map<String, dynamic> data;
 }
 
 class RobotPairingResult {

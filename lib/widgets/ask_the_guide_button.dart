@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import '../core/constants/colors.dart';
 import '../core/constants/text_styles.dart';
 import '../l10n/app_localizations.dart';
 import '../models/app_session_provider.dart' as session;
 import '../models/tour_provider.dart';
 import '../screens/chat/chat_screen.dart';
-import 'package:provider/provider.dart';
 
-/// Unified floating Ask Horus component for tour fallback questions.
-/// Used consistently across all relevant screens.
-///
-/// Features:
-/// - Premium visual design with glowing animation
-/// - Consistent Ask Horus title
-/// - Opens the fallback question popup only during a tour
-/// - Responsive and accessible
 class AskTheGuideButton extends StatefulWidget {
   final String screen;
   final String? currentExhibitId;
@@ -55,14 +48,10 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
         tourProvider.tourLifecycleState == TourLifecycleState.active ||
         tourProvider.tourLifecycleState == TourLifecycleState.paused;
     if (!canAsk) {
-      final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            isArabic
-                ? 'يمكنك سؤال حورس أثناء الجولة فقط.'
-                : 'You can ask Horus during an active tour only.',
-          ),
+          content: Text(l10n.askDuringActiveTourOnly),
           behavior: SnackBarBehavior.floating,
           backgroundColor: AppColors.cinematicElevated,
         ),
@@ -84,7 +73,6 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final buttonText = l10n.askTheGuide;
     return AnimatedBuilder(
       animation: _glowCtrl,
       builder: (context, child) {
@@ -148,7 +136,7 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
                     ),
                     SizedBox(width: widget.subtle ? 8 : 10),
                     Text(
-                      buttonText,
+                      l10n.askTheGuide,
                       style: AppTextStyles.buttonLabel(context).copyWith(
                         color: Colors.white.withValues(
                           alpha: widget.subtle ? 0.92 : 1.0,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../screens/intro/intro_screen.dart';
 import '../screens/onboarding/onboarding_screen.dart';
@@ -36,6 +37,11 @@ import '../screens/profile/memories_screen.dart';
 import '../screens/planner/tour_planner_screen.dart';
 import '../screens/events/events_screen.dart';
 import '../screens/achievements/achievements_screen.dart';
+import '../models/exhibit.dart';
+import '../models/exhibit_provider.dart';
+import '../l10n/app_localizations.dart';
+import '../core/constants/colors.dart';
+import '../core/constants/text_styles.dart';
 
 class AppRoutes {
   static const String intro = '/';
@@ -88,9 +94,18 @@ class AppRoutes {
 
       map: (context) => const MapScreen(),
       exhibits: (context) => const ExhibitListScreen(),
-      exhibitDetails: (context) => const ExhibitDetailScreen(),
+      exhibitDetails: (context) {
+        final exhibit = _resolveExhibitArgument(context);
+        if (exhibit == null) {
+          return const _RouteArgumentErrorScreen(icon: Icons.museum_outlined);
+        }
+        return ExhibitDetailScreen(exhibit: exhibit);
+      },
       chat: (context) => const ChatScreen(),
-      quiz: (context) => const QuizScreen(),
+      quiz: (context) {
+        final exhibitId = _resolveExhibitIdArgument(context);
+        return QuizScreen(exhibitId: exhibitId);
+      },
       search: (context) => const SearchScreen(),
       supportInbox: (context) => const SupportInboxScreen(),
       supportConversation: (context) {
@@ -114,8 +129,17 @@ class AppRoutes {
       myTickets: (context) => const MyTicketsScreen(),
       qrScan: (context) {
         final args = ModalRoute.of(context)?.settings.arguments;
-        final mode = args is QRScanMode ? args : QRScanMode.museumTicket;
-        return QrScannerScreen(mode: mode);
+        if (args is QRScanMode) {
+          return QrScannerScreen(mode: args);
+        }
+        if (args is Map) {
+          final mode = args['mode'];
+          return QrScannerScreen(
+            mode: mode is QRScanMode ? mode : QRScanMode.museumTicket,
+            robotTourTicketId: args['robotTourTicketId'] as String?,
+          );
+        }
+        return const QrScannerScreen();
       },
 
       settings: (context) => const AccessibilityScreen(),
@@ -135,5 +159,83 @@ class AppRoutes {
       events: (context) => const EventsScreen(),
       achievements: (context) => const AchievementsScreen(),
     };
+  }
+}
+
+Exhibit? _resolveExhibitArgument(BuildContext context) {
+  final args = ModalRoute.of(context)?.settings.arguments;
+  if (args is Exhibit) return args;
+
+  final exhibitId = _resolveExhibitIdArgument(context);
+  if (exhibitId == null || exhibitId.isEmpty) return null;
+
+  final exhibits = context.read<ExhibitProvider>().exhibits;
+  for (final exhibit in exhibits) {
+    if (exhibit.id == exhibitId) return exhibit;
+  }
+  return null;
+}
+
+String? _resolveExhibitIdArgument(BuildContext context) {
+  final args = ModalRoute.of(context)?.settings.arguments;
+  if (args is Exhibit) return args.id;
+  if (args is String && args.trim().isNotEmpty) return args.trim();
+  if (args is Map) {
+    final value = args['exhibitId'] ?? args['quizId'] ?? args['id'];
+    if (value is String && value.trim().isNotEmpty) return value.trim();
+  }
+  return null;
+}
+
+class _RouteArgumentErrorScreen extends StatelessWidget {
+  const _RouteArgumentErrorScreen({required this.icon});
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Scaffold(
+      backgroundColor: AppColors.cinematicBackground,
+      appBar: AppBar(
+        title: Text(l10n.exhibit.toUpperCase()),
+        backgroundColor: AppColors.darkHeader,
+        foregroundColor: Colors.white,
+      ),
+      body: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: AppGradients.screenBackground,
+        ),
+        child: Center(
+          child: Container(
+            margin: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(24),
+            decoration: AppDecorations.premiumGlassCard(radius: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, size: 44, color: AppColors.primaryGold),
+                const SizedBox(height: 16),
+                Text(
+                  l10n.myTicketsNotAvailable,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.titleMedium(
+                    context,
+                  ).copyWith(color: Colors.white),
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () => Navigator.pushReplacementNamed(
+                    context,
+                    AppRoutes.exhibits,
+                  ),
+                  child: Text(l10n.exhibits),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

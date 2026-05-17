@@ -6,6 +6,7 @@ import '../../l10n/app_localizations.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 import '../../app/router.dart';
+import '../../models/auth_provider.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
@@ -116,7 +117,9 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
 
     return AppMenuShell(
       title: l10n.settings.toUpperCase(),
-      backgroundColor: isDark ? AppColors.cinematicBackground : AppColors.warmSurface,
+      backgroundColor: isDark
+          ? AppColors.cinematicBackground
+          : AppColors.warmSurface,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
@@ -126,8 +129,9 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
             vertical: 24,
           ),
           child: Column(
-            crossAxisAlignment:
-                isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+            crossAxisAlignment: isArabic
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
             children: [
               // 1. Introduction Card
               Container(
@@ -388,7 +392,14 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
-                        onChanged: (v) => prefs.setLanguage(v!),
+                        onChanged: (v) async {
+                          if (v == null) return;
+                          await prefs.setLanguage(v);
+                          if (!context.mounted) return;
+                          await context
+                              .read<AuthProvider>()
+                              .updatePreferredLanguageFromUi(v);
+                        },
                         items: [
                           DropdownMenuItem(
                             value: 'en',
@@ -518,8 +529,9 @@ class _SwitchItem extends StatelessWidget {
         children: [
           Expanded(
             child: Column(
-              crossAxisAlignment:
-                  isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+              crossAxisAlignment: isArabic
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
@@ -576,8 +588,9 @@ class _PermissionItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
-        crossAxisAlignment:
-            isArabic ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: isArabic
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,

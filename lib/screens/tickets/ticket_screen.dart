@@ -55,7 +55,6 @@ class _TicketScreenState extends State<TicketScreen> {
       _recommendedRoutesLoaded = true;
     });
     debugPrint(
-      'Recommended routes loaded: '
       'count=${result.routes.length}; '
       'active=${_recommendedRoutes.length}; '
       'warnings=${result.warnings.join(' | ')}',
@@ -138,15 +137,18 @@ class _TicketScreenState extends State<TicketScreen> {
       builder: (dialogContext) {
         return AlertDialog(
           backgroundColor: AppColors.cinematicCard,
-          title: const Text('Cash payment at counter'),
+          title: Text(
+            AppLocalizations.of(dialogContext)!.cashPaymentAtCounterTitle,
+          ),
           content: Text(
-            'Cash only for now. Payment status: Pay at counter. '
-            'Total due at the museum counter: ${_money(total)}.',
+            AppLocalizations.of(
+              dialogContext,
+            )!.cashPaymentAtCounterBody(_money(total)),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext, false),
-              child: const Text('Review'),
+              child: Text(AppLocalizations.of(dialogContext)!.review),
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(dialogContext, true),
@@ -154,7 +156,7 @@ class _TicketScreenState extends State<TicketScreen> {
                 backgroundColor: AppColors.primaryGold,
                 foregroundColor: AppColors.darkInk,
               ),
-              child: const Text('Confirm booking'),
+              child: Text(AppLocalizations.of(dialogContext)!.confirmBooking),
             ),
           ],
         );
@@ -753,9 +755,11 @@ class _RecommendedRoutesCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _SectionCard(
-      title: isArabic ? 'المسارات المقترحة' : 'Recommended Routes',
+      title: isArabic
+          ? '\u0627\u0644\u0645\u0633\u0627\u0631\u0627\u062a \u0627\u0644\u0645\u0642\u062a\u0631\u062d\u0629'
+          : 'Recommended Routes',
       subtitle: isArabic
-          ? 'اختر مسارا جاهزا لملء محطات الجولة وتفضيلاتها.'
+          ? '\u0627\u062e\u062a\u0631 \u0645\u0633\u0627\u0631\u0627 \u062c\u0627\u0647\u0632\u0627 \u0644\u0645\u0644\u0621 \u0645\u062d\u0637\u0627\u062a \u0627\u0644\u062c\u0648\u0644\u0629 \u0648\u062a\u0641\u0636\u064a\u0644\u0627\u062a\u0647\u0627.'
           : 'Choose a ready route to fill the tour stops and preferences.',
       isArabic: isArabic,
       child: Column(
@@ -823,7 +827,7 @@ class _RecommendedRoutesCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      '${route.durationMin} min • ${route.artifactIds.length} stops',
+                      '${route.durationMin} min \u2022 ${route.artifactIds.length} stops',
                       textAlign: TextAlign.start,
                       style: AppTextStyles.metadata(
                         context,
@@ -852,9 +856,11 @@ class _RecommendedRoutesFallbackCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _SectionCard(
-      title: isArabic ? 'المسارات المقترحة' : 'Recommended Routes',
+      title: isArabic
+          ? '\u0627\u0644\u0645\u0633\u0627\u0631\u0627\u062a \u0627\u0644\u0645\u0642\u062a\u0631\u062d\u0629'
+          : 'Recommended Routes',
       subtitle: isArabic
-          ? 'تعذر تحميل المسارات المقترحة. راجع سجل التطبيق للتفاصيل.'
+          ? '\u062a\u0639\u0630\u0631 \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0633\u0627\u0631\u0627\u062a \u0627\u0644\u0645\u0642\u062a\u0631\u062d\u0629. \u0631\u0627\u062c\u0639 \u0633\u062c\u0644 \u0627\u0644\u062a\u0637\u0628\u064a\u0642 \u0644\u0644\u062a\u0641\u0627\u0635\u064a\u0644.'
           : 'Recommended routes could not be loaded. Check the app log for details.',
       isArabic: isArabic,
       child: _RouteSummary(
@@ -888,7 +894,7 @@ class _NarrationLanguageCard extends StatelessWidget {
     return _SectionCard(
       title: l10n.language,
       subtitle: isArabic
-          ? 'اختر لغة السرد قبل تخصيص الجولة أو تأكيدها.'
+          ? '\u0627\u062e\u062a\u0631 \u0644\u063a\u0629 \u0627\u0644\u0633\u0631\u062f \u0642\u0628\u0644 \u062a\u062e\u0635\u064a\u0635 \u0627\u0644\u062c\u0648\u0644\u0629 \u0623\u0648 \u062a\u0623\u0643\u064a\u062f\u0647\u0627.'
           : 'Choose the tour narration language before personalization or checkout.',
       isArabic: isArabic,
       child: Column(
@@ -910,7 +916,7 @@ class _NarrationLanguageCard extends StatelessWidget {
                 onTap: () => ticketProvider.updateTourLanguage('arabic'),
               ),
               _ChoicePill(
-                label: 'Egyptian Arabic',
+                label: l10n.egyptianArabic,
                 selected: languageCode == 'egyptian_arabic',
                 onTap: () =>
                     ticketProvider.updateTourLanguage('egyptian_arabic'),
@@ -1025,9 +1031,9 @@ class _PaymentNoticeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _SectionCard(
-      title: isArabic ? 'الدفع' : 'Payment',
+      title: isArabic ? '\u0627\u0644\u062f\u0641\u0639' : 'Payment',
       subtitle: isArabic
-          ? 'الحجز متاح نقداً فقط حالياً. ستدفع عند شباك المتحف.'
+          ? '\u0627\u0644\u062d\u062c\u0632 \u0645\u062a\u0627\u062d \u0646\u0642\u062f\u0627 \u0641\u0642\u0637 \u062d\u0627\u0644\u064a\u0627. \u0633\u062a\u062f\u0641\u0639 \u0639\u0646\u062f \u0634\u0628\u0627\u0643 \u0627\u0644\u0645\u062a\u062d\u0641.'
           : 'Cash only for now. You will pay at the museum counter.',
       isArabic: isArabic,
       child: Row(
@@ -1037,7 +1043,7 @@ class _PaymentNoticeCard extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Payment status: Pay at counter',
+              AppLocalizations.of(context)!.paymentStatusPayAtCounter,
               textAlign: TextAlign.start,
               style: AppTextStyles.metadata(
                 context,
@@ -1541,5 +1547,5 @@ String _localizedTimeSlot(String slot, bool isArabic) {
       return '15:00 - 17:00';
   }
   if (!isArabic) return slot;
-  return slot.replaceAll('AM', 'ص').replaceAll('PM', 'م');
+  return slot.replaceAll('AM', '\u0635').replaceAll('PM', '\u0645');
 }

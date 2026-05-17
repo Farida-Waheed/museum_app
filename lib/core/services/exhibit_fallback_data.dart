@@ -16,12 +16,16 @@ class ExhibitFallbackData {
         : decoded;
     if (exhibitsJson is! List) return const [];
 
-    final exhibits = exhibitsJson
-        .whereType<Map<String, dynamic>>()
-        .map((json) => Exhibit.fromFirestore(json['id'] as String? ?? '', json))
-        .where((exhibit) => exhibit.id.startsWith('artifact_'))
-        .toList()
-      ..sort((a, b) => a.id.compareTo(b.id));
+    final exhibits =
+        exhibitsJson
+            .whereType<Map<String, dynamic>>()
+            .map(
+              (json) =>
+                  Exhibit.fromFirestore(json['id'] as String? ?? '', json),
+            )
+            .where((exhibit) => exhibit.id.startsWith('artifact_'))
+            .toList()
+          ..sort((a, b) => a.id.compareTo(b.id));
 
     return exhibits;
   }

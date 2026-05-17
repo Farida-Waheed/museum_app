@@ -94,6 +94,7 @@ class AppSessionProvider with ChangeNotifier {
   // Current exhibit (used when in active tour)
   String? _currentExhibitId;
   String? _nextExhibitId;
+  int _currentExhibitIndex = 0;
 
   // Tour session ID for organizing memories
   String? _currentTourSessionId;
@@ -141,6 +142,7 @@ class AppSessionProvider with ChangeNotifier {
   RobotActivityState get robotActivityState => _robotActivityState;
   String? get currentExhibitId => _currentExhibitId;
   String? get nextExhibitId => _nextExhibitId;
+  int get currentExhibitIndex => _currentExhibitIndex;
   String? get currentTourSessionId => _currentTourSessionId;
   String? get activeSessionId => _currentTourSessionId;
   String? get connectedRobotId => _connectedRobotId;
@@ -358,6 +360,8 @@ class AppSessionProvider with ChangeNotifier {
     _followMode = FollowModeState.on;
     _currentExhibitId = currentExhibitId;
     _nextExhibitId = nextExhibitId;
+    _currentExhibitIndex = _selectedExhibitIds.indexOf(currentExhibitId);
+    if (_currentExhibitIndex < 0) _currentExhibitIndex = 0;
     _currentTourSessionId ??= DateTime.now().millisecondsSinceEpoch.toString();
     if (!_visitedExhibitIds.contains(currentExhibitId)) {
       _visitedExhibitIds.add(currentExhibitId);
@@ -414,6 +418,12 @@ class AppSessionProvider with ChangeNotifier {
   void setCurrentExhibit(String? exhibitId) {
     if (_currentExhibitId != exhibitId) {
       _currentExhibitId = exhibitId;
+      if (exhibitId == null) {
+        _currentExhibitIndex = 0;
+      } else {
+        final index = _selectedExhibitIds.indexOf(exhibitId);
+        if (index >= 0) _currentExhibitIndex = index;
+      }
       if (exhibitId != null && !_visitedExhibitIds.contains(exhibitId)) {
         _visitedExhibitIds.add(exhibitId);
       }
@@ -569,6 +579,7 @@ class AppSessionProvider with ChangeNotifier {
     _robotActivityState = RobotActivityState.unavailable;
     _currentExhibitId = null;
     _nextExhibitId = null;
+    _currentExhibitIndex = 0;
     _currentTourSessionId = null;
     _connectedRobotId = null;
     _restoredUserId = null;
@@ -604,6 +615,7 @@ class AppSessionProvider with ChangeNotifier {
     _connectedRobotId = session.robotId;
     _currentExhibitId = session.currentExhibitId;
     _nextExhibitId = session.nextExhibitId;
+    _currentExhibitIndex = session.currentExhibitIndex;
     _selectedExhibitIds
       ..clear()
       ..addAll(session.selectedExhibitIds);
@@ -644,6 +656,7 @@ class AppSessionProvider with ChangeNotifier {
         _robotConnectionState = RobotConnectionState.disconnected;
         _stopTourSessionListener();
         break;
+      case 'paired':
       case 'ready':
       default:
         _tourLifecycleState = TourLifecycleState.readyToStart;

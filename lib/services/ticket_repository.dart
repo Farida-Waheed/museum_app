@@ -2,6 +2,7 @@ import 'dart:developer' as developer;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/museum_ticket.dart';
 import '../models/robot_tour_ticket.dart';
@@ -13,9 +14,13 @@ class TicketRepository {
       _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   static const String mobileBookingSource = 'mobile_app';
+  static const String websiteBookingSource = 'website';
 
   final FirebaseFirestore _firestore;
   final FirebaseAuth _firebaseAuth;
+
+  String get _bookingSource =>
+      kIsWeb ? websiteBookingSource : mobileBookingSource;
 
   CollectionReference<Map<String, dynamic>> get _bookings =>
       _firestore.collection('bookings');
@@ -41,7 +46,7 @@ class TicketRepository {
       final museumTicketId = museumDoc.id;
       final robotTicketId = robotDoc.id;
       final operation = _TicketFirestoreOperation(
-        label: 'create mobile booking ticket set',
+        label: 'create $_bookingSource booking ticket set',
         paths: [bookingDoc.path, museumDoc.path, robotDoc.path],
       );
 
@@ -167,6 +172,56 @@ class TicketRepository {
     }
   }
 
+  Future<MuseumTicket> validateMuseumTicketQr({
+    required String userId,
+    required String scannedCode,
+    DateTime? now,
+  }) async {
+    final uid = _verifiedUid(userId);
+    final code = scannedCode.trim();
+    if (code.isEmpty) {
+      throw const TicketRepositoryException('This ticket QR is empty.');
+    }
+
+    try {
+      final doc = await _findMuseumTicketByQr(code);
+      final data = doc.data();
+      if (!doc.exists || data == null) {
+        throw const TicketRepositoryException(
+          'This museum ticket was not found.',
+          code: 'museum-ticket-not-found',
+        );
+      }
+
+      final ticket = MuseumTicket.fromFirestore(doc.id, data);
+      if (ticket.userId != uid) {
+        throw const TicketRepositoryException(
+          'This ticket does not belong to the signed-in account.',
+          code: 'ticket-user-mismatch',
+        );
+      }
+      if (ticket.status != TicketStatus.active) {
+        throw TicketRepositoryException(
+          'This ticket is ${ticket.status.name} and cannot be used.',
+          code: 'ticket-not-active',
+        );
+      }
+
+      final today = _dateOnly(now ?? DateTime.now());
+      final visitDate = _dateOnly(ticket.visitDate);
+      if (visitDate.compareTo(today) < 0) {
+        throw const TicketRepositoryException(
+          'This ticket date has already passed.',
+          code: 'ticket-date-passed',
+        );
+      }
+
+      return ticket;
+    } on FirebaseException catch (e) {
+      throw TicketRepositoryException(_friendlyFirestoreError(e));
+    }
+  }
+
   Future<void> cancelBooking({
     required String userId,
     required String bookingId,
@@ -267,6 +322,39 @@ class TicketRepository {
     );
   }
 
+  Future<DocumentSnapshot<Map<String, dynamic>>> _findMuseumTicketByQr(
+    String code,
+  ) async {
+    DocumentSnapshot<Map<String, dynamic>>? directDoc;
+    if (!code.contains('/')) {
+      directDoc = await _getDoc(
+        _museumTickets.doc(code),
+        _TicketFirestoreOperation(
+          label: 'read museum ticket QR by document id',
+          paths: ['museumTickets/$code'],
+        ),
+      );
+      if (directDoc.exists) return directDoc;
+    }
+
+    for (final field in const ['qr_value', 'qrCodeValue', 'ticketId', 'id']) {
+      final snapshot = await _getQuery(
+        _museumTickets.where(field, isEqualTo: code).limit(1),
+        _TicketFirestoreOperation(
+          label: 'read museum ticket QR by $field',
+          paths: ['museumTickets where $field == scanned QR'],
+        ),
+      );
+      if (snapshot.docs.isNotEmpty) return snapshot.docs.first;
+    }
+
+    if (directDoc != null) return directDoc;
+    throw const TicketRepositoryException(
+      'This museum ticket was not found.',
+      code: 'museum-ticket-not-found',
+    );
+  }
+
   Future<DocumentSnapshot<Map<String, dynamic>>> _ownedLinkedDocForCancellation(
     DocumentReference<Map<String, dynamic>> ref,
     String uid,
@@ -330,7 +418,7 @@ class TicketRepository {
       purchasedAt: now,
       lineItems: draft.museumLineItems,
       bookingId: bookingId,
-      bookingSource: mobileBookingSource,
+      bookingSource: _bookingSource,
       robotTourTicketId: robotTicketId,
     );
   }
@@ -379,7 +467,7 @@ class TicketRepository {
       timeSlot: draft.timeSlot,
       museumTicketId: museumTicketId,
       bookingId: bookingId,
-      bookingSource: mobileBookingSource,
+      bookingSource: _bookingSource,
       selectedInterests: isPersonalized
           ? personalizedConfig.selectedThemes
           : const [],
@@ -401,7 +489,7 @@ class TicketRepository {
   }) {
     return {
       'booking_id': bookingId,
-      'booking_source': mobileBookingSource,
+      'booking_source': _bookingSource,
       'userId': uid,
       'museum_ticket_id': museumTicketId,
       'robot_tour_ticket_id': robotTicketId,
@@ -431,7 +519,7 @@ class TicketRepository {
       'ticketId': ticket.id,
       'userId': ticket.userId,
       'booking_id': ticket.bookingId,
-      'booking_source': mobileBookingSource,
+      'booking_source': _bookingSource,
       'robot_tour_ticket_id': ticket.robotTourTicketId,
       'museum_name': ticket.museumName,
       'visit_date': _dateOnly(ticket.visitDate),
@@ -461,7 +549,7 @@ class TicketRepository {
       'tourTicketId': ticket.id,
       'userId': ticket.userId,
       'booking_id': ticket.bookingId,
-      'booking_source': mobileBookingSource,
+      'booking_source': _bookingSource,
       'museum_ticket_id': ticket.museumTicketId,
       'tour_type': ticket.tourType.name,
       'visit_date': ticket.visitDate == null
@@ -693,8 +781,9 @@ class TicketLoadResult {
 
 class TicketRepositoryException implements Exception {
   final String message;
+  final String? code;
 
-  const TicketRepositoryException(this.message);
+  const TicketRepositoryException(this.message, {this.code});
 
   @override
   String toString() => message;

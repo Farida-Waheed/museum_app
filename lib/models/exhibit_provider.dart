@@ -31,11 +31,12 @@ class ExhibitProvider with ChangeNotifier {
           .collection('exhibits')
           .where('is_active', isEqualTo: true)
           .get();
-      final firestoreExhibits = snapshot.docs
-          .map((doc) => Exhibit.fromFirestore(doc.id, doc.data()))
-          .where((exhibit) => exhibit.nameEn.isNotEmpty)
-          .toList()
-        ..sort((a, b) => a.id.compareTo(b.id));
+      final firestoreExhibits =
+          snapshot.docs
+              .map((doc) => Exhibit.fromFirestore(doc.id, doc.data()))
+              .where((exhibit) => exhibit.nameEn.isNotEmpty)
+              .toList()
+            ..sort((a, b) => a.id.compareTo(b.id));
       _exhibits = firestoreExhibits.isEmpty
           ? await _loadFallbackExhibits()
           : firestoreExhibits;

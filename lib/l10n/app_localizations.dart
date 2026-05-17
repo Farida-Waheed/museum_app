@@ -170,6 +170,12 @@ abstract class AppLocalizations {
   /// **'Ask Horus'**
   String get askTheGuide;
 
+  /// No description provided for @askDuringActiveTourOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'You can ask Horus during an active tour only.'**
+  String get askDuringActiveTourOnly;
+
   /// No description provided for @guideStatus.
   ///
   /// In en, this message translates to:
@@ -260,6 +266,12 @@ abstract class AppLocalizations {
   /// **'Ask about tickets, opening hours, events, exhibits, or directions.'**
   String get moreInfoText;
 
+  /// No description provided for @humanSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Human Support'**
+  String get humanSupport;
+
   /// No description provided for @humanSupportLabel.
   ///
   /// In en, this message translates to:
@@ -349,6 +361,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile'**
   String get profile;
+
+  /// No description provided for @memories.
+  ///
+  /// In en, this message translates to:
+  /// **'Memories'**
+  String get memories;
 
   /// No description provided for @map.
   ///
@@ -662,6 +680,42 @@ abstract class AppLocalizations {
   /// **'This is not a valid Museum Entry QR.'**
   String get qrMuseumInvalidMessage;
 
+  /// No description provided for @qrMuseumSignInRequiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in before verifying a museum entry ticket.'**
+  String get qrMuseumSignInRequiredMessage;
+
+  /// No description provided for @qrMuseumTicketNotFoundMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This museum ticket was not found.'**
+  String get qrMuseumTicketNotFoundMessage;
+
+  /// No description provided for @qrMuseumTicketWrongUserMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This ticket does not belong to the signed-in account.'**
+  String get qrMuseumTicketWrongUserMessage;
+
+  /// No description provided for @qrMuseumTicketInactiveMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This ticket is not active and cannot be used.'**
+  String get qrMuseumTicketInactiveMessage;
+
+  /// No description provided for @qrMuseumTicketExpiredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This ticket date has already passed.'**
+  String get qrMuseumTicketExpiredMessage;
+
+  /// No description provided for @qrMuseumValidationFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to verify this museum ticket. Please try again.'**
+  String get qrMuseumValidationFailedMessage;
+
   /// No description provided for @qrRobotTicketRequiredTitle.
   ///
   /// In en, this message translates to:
@@ -739,6 +793,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Horus-Bot is currently unavailable. Please try another robot or ask museum staff.'**
   String get qrRobotUnavailableMessage;
+
+  /// No description provided for @qrRobotBusyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Horus-Bot is busy'**
+  String get qrRobotBusyTitle;
+
+  /// No description provided for @qrRobotBusyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This Horus-Bot is already paired with another tour. Please scan an available robot or ask museum staff.'**
+  String get qrRobotBusyMessage;
 
   /// No description provided for @qrPairingPermissionDeniedTitle.
   ///
@@ -1705,6 +1771,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search by exhibit name...'**
   String get searchByExhibitName;
+
+  /// No description provided for @tapToViewDetailsAudioGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to view details and audio guide'**
+  String get tapToViewDetailsAudioGuide;
 
   /// No description provided for @noResultsFound.
   ///
@@ -3547,6 +3619,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Buy Tickets'**
   String get myTicketsBuyTickets;
+
+  /// No description provided for @cashPaymentAtCounterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash payment at counter'**
+  String get cashPaymentAtCounterTitle;
+
+  /// No description provided for @cashPaymentAtCounterBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash only for now. Payment status: Pay at counter. Total due at the museum counter: {total}.'**
+  String cashPaymentAtCounterBody(String total);
+
+  /// No description provided for @review.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get review;
+
+  /// No description provided for @confirmBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm booking'**
+  String get confirmBooking;
+
+  /// No description provided for @paymentStatusPayAtCounter.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment status: Pay at counter'**
+  String get paymentStatusPayAtCounter;
+
+  /// No description provided for @egyptianArabic.
+  ///
+  /// In en, this message translates to:
+  /// **'Egyptian Arabic'**
+  String get egyptianArabic;
+
+  /// No description provided for @cancelBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel booking'**
+  String get cancelBooking;
+
+  /// No description provided for @bookingCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking cancelled.'**
+  String get bookingCancelled;
+
+  /// No description provided for @paymentStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment status'**
+  String get paymentStatus;
 
   /// No description provided for @myTicketsOrderCode.
   ///

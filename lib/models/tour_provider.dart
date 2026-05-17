@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import '../core/notifications/notification_trigger_service.dart';
 import '../core/notifications/notification_models.dart';
@@ -10,7 +8,6 @@ import '../widgets/dialogs/branded_permission_dialog.dart';
 import '../models/user_preferences.dart';
 import 'tour_session.dart';
 import 'package:provider/provider.dart';
-import '../services/tour_session_repository.dart';
 
 enum RobotState {
   idle,
@@ -33,12 +30,7 @@ enum FollowModeState { off, on }
 enum ProximityState { near, medium, far }
 
 class TourProvider with ChangeNotifier {
-  final TourSessionRepository _tourSessionRepository;
-  StreamSubscription<TourSession?>? _tourSessionSubscription;
-
-  TourProvider({TourSessionRepository? tourSessionRepository})
-    : _tourSessionRepository =
-          tourSessionRepository ?? TourSessionRepository() {
+  TourProvider() {
     // Don't auto-connect anymore. Connection happens via AppSessionProvider
     // when user explicitly starts a tour after viewing EntryModeScreen.
     // Initialize state as disconnected and not started.
@@ -49,8 +41,6 @@ class TourProvider with ChangeNotifier {
   String? _currentExhibitId;
   String? _activeSessionId;
   String? _connectedRobotId;
-  String? _restoredUserId;
-  bool _isRestoringSession = false;
   double _progress = 0.0;
   final List<String> _visitedExhibitIds = [];
   final List<String> _selectedExhibitIds = [];
@@ -194,7 +184,6 @@ class TourProvider with ChangeNotifier {
     _nextExhibitId = nextExhibitId;
     _connectionState = RobotConnectionState.connected;
     _tourLifecycleState = TourLifecycleState.notStarted;
-    _listenToActiveTourSession();
     setRobotState(
       RobotState.waiting,
       msgEn: 'Horus-Bot is paired and waiting',
@@ -204,106 +193,9 @@ class TourProvider with ChangeNotifier {
   }
 
   Future<TourSession?> restoreActiveSessionForUser(String userId) async {
-    if (userId.isEmpty) return null;
-    if (_isRestoringSession) return null;
-    if (_restoredUserId == userId &&
-        _activeSessionId != null &&
-        _tourLifecycleState != TourLifecycleState.completed) {
-      return null;
-    }
-
-    _isRestoringSession = true;
-    try {
-      final session = await _tourSessionRepository.findLatestRestorableSession(
-        userId,
-      );
-      _restoredUserId = userId;
-      if (session == null) return null;
-      _applyTourSession(session);
-      _listenToActiveTourSession();
-      return session;
-    } finally {
-      _isRestoringSession = false;
-    }
-  }
-
-  void _listenToActiveTourSession() {
-    final sessionId = _activeSessionId;
-    if (sessionId == null || sessionId.isEmpty) return;
-    _tourSessionSubscription?.cancel();
-    _tourSessionSubscription = _tourSessionRepository
-        .watchSession(sessionId)
-        .listen((tourSession) {
-          if (tourSession == null) return;
-          _applyTourSession(tourSession);
-        });
-  }
-
-  void _applyTourSession(TourSession session) {
-    _activeSessionId = session.sessionId;
-    _connectedRobotId = session.robotId;
-    _currentExhibitId = session.currentExhibitId;
-    _nextExhibitId = session.nextExhibitId;
-    _selectedExhibitIds
-      ..clear()
-      ..addAll(session.selectedExhibitIds);
-    _visitedExhibitIds
-      ..clear()
-      ..addAll(session.visitedExhibitIds);
-    _progress = _selectedExhibitIds.isEmpty
-        ? 0
-        : (_visitedExhibitIds.length / _selectedExhibitIds.length).clamp(
-            0.0,
-            1.0,
-          );
-    if (session.userDistanceFromRobot != null) {
-      updateDistanceMeters(session.userDistanceFromRobot!);
-    }
-
-    _connectionState =
-        session.status == 'completed' || session.status == 'cancelled'
-        ? RobotConnectionState.disconnected
-        : RobotConnectionState.connected;
-    _tourLifecycleState = _tourLifecycleFromSession(session.status);
-    _robotState = _robotStateFromSession(session.robotState);
-    notifyListeners();
-  }
-
-  TourLifecycleState _tourLifecycleFromSession(String status) {
-    switch (status) {
-      case 'active':
-        return TourLifecycleState.active;
-      case 'paused':
-        return TourLifecycleState.paused;
-      case 'completed':
-        _stopTourSessionListener();
-        return TourLifecycleState.completed;
-      case 'cancelled':
-        _stopTourSessionListener();
-        return TourLifecycleState.completed;
-      case 'ready':
-      default:
-        return TourLifecycleState.notStarted;
-    }
-  }
-
-  RobotState _robotStateFromSession(String robotState) {
-    switch (robotState) {
-      case 'moving':
-        return RobotState.moving;
-      case 'speaking':
-        return RobotState.speaking;
-      case 'error':
-        return RobotState.disconnected;
-      case 'waiting':
-      default:
-        return RobotState.waiting;
-    }
-  }
-
-  void _stopTourSessionListener() {
-    _tourSessionSubscription?.cancel();
-    _tourSessionSubscription = null;
+    // AppSessionProvider is the canonical Firestore tour-session owner.
+    // Keep this method for legacy callers, but do not open a second listener.
+    return null;
   }
 
   void setTourLifecycleState(
@@ -435,7 +327,6 @@ class TourProvider with ChangeNotifier {
   void completeTour({BuildContext? context}) {
     setTourLifecycleState(TourLifecycleState.completed, context: context);
     if (_activeSessionId != null) {
-      _stopTourSessionListener();
       _connectionState = RobotConnectionState.disconnected;
       notifyListeners();
       return;
@@ -663,11 +554,5 @@ class TourProvider with ChangeNotifier {
       _pendingQuizzes.add(exhibitId);
       notifyListeners();
     }
-  }
-
-  @override
-  void dispose() {
-    _stopTourSessionListener();
-    super.dispose();
   }
 }

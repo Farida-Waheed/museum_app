@@ -15,6 +15,7 @@
   "horusBot": "Horus-Bot",
   "talkToHorusBot": "Ask Horus",
   "askTheGuide": "Ask Horus",
+  "askDuringActiveTourOnly": "You can ask Horus during an active tour only.",
   "guideStatus": "Guide Status",
   "alwaysAvailable": "Always available",
   "discoverStoryBehind": "Discover the story behind everything",
@@ -30,6 +31,7 @@
     "micListening": "Listening... Speak now.",
     "moreInfo": "More info",
     "moreInfoText": "Ask about tickets, opening hours, events, exhibits, or directions.",
+    "humanSupport": "Human Support",
     "humanSupportLabel": "Request live human support",
     "humanSupportAck": "Live human support request received.",
     "humanSupportRequested": "Human support requested",
@@ -45,6 +47,7 @@
     "chatInputHint": "Ask Horus during your live tour.",
   "exploreMuseum": "Explore the museum",
   "profile": "Profile",
+  "memories": "Memories",
   "map": "Map",
   "quiz": "Quiz",
   "liveTour": "Live Tour",
@@ -97,6 +100,12 @@
   "qrEntryVerifiedTitle": "Entry pass verified",
   "qrEntryVerifiedMessage": "Use this QR at the museum gate.",
   "qrMuseumInvalidMessage": "This is not a valid Museum Entry QR.",
+  "qrMuseumSignInRequiredMessage": "Please sign in before verifying a museum entry ticket.",
+  "qrMuseumTicketNotFoundMessage": "This museum ticket was not found.",
+  "qrMuseumTicketWrongUserMessage": "This ticket does not belong to the signed-in account.",
+  "qrMuseumTicketInactiveMessage": "This ticket is not active and cannot be used.",
+  "qrMuseumTicketExpiredMessage": "This ticket date has already passed.",
+  "qrMuseumValidationFailedMessage": "Unable to verify this museum ticket. Please try again.",
   "qrRobotTicketRequiredTitle": "Robot tour ticket required",
   "qrRobotTicketRequiredMessage": "Please buy a robot tour ticket before pairing with Horus-Bot.",
   "qrRobotConnectedTitle": "Horus-Bot connected",
@@ -110,6 +119,8 @@
   "qrRobotNotFoundMessage": "This Horus-Bot is not registered. Please ask museum staff for help.",
   "qrRobotUnavailableTitle": "Horus-Bot unavailable",
   "qrRobotUnavailableMessage": "Horus-Bot is currently unavailable. Please try another robot or ask museum staff.",
+  "qrRobotBusyTitle": "Horus-Bot is busy",
+  "qrRobotBusyMessage": "This Horus-Bot is already paired with another tour. Please scan an available robot or ask museum staff.",
   "qrPairingPermissionDeniedTitle": "Pairing blocked",
   "qrPairingPermissionDeniedMessage": "Firestore rules blocked robot pairing. Allow authenticated users to create their own tourSessions and update robot documents only through a controlled pairing rule or backend.",
   "qrPairingNetworkMessage": "Network error. Please check your connection and scan again.",
@@ -271,6 +282,7 @@
   "ticketsEmptyDesc": "When you buy tickets from the booking screen, they will appear here for entry.",
   "searchExhibits": "Search Exhibits",
   "searchByExhibitName": "Search by exhibit name...",
+  "tapToViewDetailsAudioGuide": "Tap to view details and audio guide",
   "noResultsFound": "No results found",
   "noResultsFoundDesc": "Try a different word or check the spelling.",
   "tapToViewDetailsAndAudioGuide": "Tap to view details and audio guide",
@@ -605,6 +617,22 @@
   "myTicketsEmptyTitle": "No tickets yet",
   "myTicketsEmptyBody": "Buy your museum entry ticket and optional Horus-Bot tour pass to see them here.",
   "myTicketsBuyTickets": "Buy Tickets",
+  "cashPaymentAtCounterTitle": "Cash payment at counter",
+  "cashPaymentAtCounterBody": "Cash only for now. Payment status: Pay at counter. Total due at the museum counter: {total}.",
+  "@cashPaymentAtCounterBody": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "review": "Review",
+  "confirmBooking": "Confirm booking",
+  "paymentStatusPayAtCounter": "Payment status: Pay at counter",
+  "egyptianArabic": "Egyptian Arabic",
+  "cancelBooking": "Cancel booking",
+  "bookingCancelled": "Booking cancelled.",
+  "paymentStatus": "Payment status",
   "myTicketsOrderCode": "Order #{code}",
   "@myTicketsOrderCode": {
     "placeholders": {

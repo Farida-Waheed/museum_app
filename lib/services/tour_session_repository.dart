@@ -53,13 +53,52 @@ class TourSessionRepository {
     required String? nextExhibitId,
     required List<String> visitedExhibitIds,
   }) async {
-    await _updateSession(sessionId, {
-      'status': 'active',
-      'robotState': nextExhibitId == null ? 'waiting' : 'moving',
-      'currentExhibitId': currentExhibitId,
-      'nextExhibitId': nextExhibitId,
-      'visitedExhibitIds': visitedExhibitIds,
-    });
+    try {
+      await _firestore.runTransaction((transaction) async {
+        final sessionRef = _sessionDoc(sessionId);
+        final sessionSnapshot = await transaction.get(sessionRef);
+        final sessionData = sessionSnapshot.data();
+        if (!sessionSnapshot.exists || sessionData == null) {
+          throw const TourSessionRepositoryException(
+            'Tour session was not found.',
+          );
+        }
+        final robotId = _stringValue(sessionData['robotId']);
+        final robotTourTicketId =
+            _stringValue(sessionData['robot_tour_ticket_id']) ??
+            _stringValue(sessionData['robotTourTicketId']);
+        if (robotId == null || robotTourTicketId == null) {
+          throw const TourSessionRepositoryException(
+            'Tour session is missing robot assignment.',
+          );
+        }
+        final selectedExhibits = _stringList(
+          sessionData['selected_exhibits'] ?? sessionData['selectedExhibitIds'],
+        );
+        final currentIndex = _currentIndex(selectedExhibits, currentExhibitId);
+        final now = FieldValue.serverTimestamp();
+
+        transaction.update(sessionRef, {
+          'status': 'active',
+          'current_exhibit_id': currentExhibitId,
+          'current_exhibit_index': currentIndex,
+          'started_at': now,
+          'updated_at': now,
+          'robotState': nextExhibitId == null ? 'waiting' : 'moving',
+          'visitedExhibitIds': visitedExhibitIds,
+        });
+        transaction.update(_robotTourTicketDoc(robotTourTicketId), {
+          'status': 'in_progress',
+          'updated_at': now,
+        });
+        transaction.update(_robotDoc(robotId), {
+          'status': 'in_tour',
+          'updated_at': now,
+        });
+      });
+    } on FirebaseException catch (e) {
+      throw TourSessionRepositoryException(_friendlyError(e));
+    }
   }
 
   Future<void> pauseSession(String sessionId) async {
@@ -76,12 +115,24 @@ class TourSessionRepository {
     required String? nextExhibitId,
     required List<String> visitedExhibitIds,
   }) async {
-    await _updateSession(sessionId, {
-      'currentExhibitId': currentExhibitId,
-      'nextExhibitId': nextExhibitId,
-      'visitedExhibitIds': visitedExhibitIds,
-      'robotState': nextExhibitId == null ? 'waiting' : 'moving',
-    });
+    try {
+      final sessionSnapshot = await _sessionDoc(sessionId).get();
+      final sessionData = sessionSnapshot.data() ?? {};
+      final selectedExhibits = _stringList(
+        sessionData['selected_exhibits'] ?? sessionData['selectedExhibitIds'],
+      );
+      await _updateSession(sessionId, {
+        'current_exhibit_id': currentExhibitId,
+        'current_exhibit_index': _currentIndex(
+          selectedExhibits,
+          currentExhibitId,
+        ),
+        'visitedExhibitIds': visitedExhibitIds,
+        'robotState': nextExhibitId == null ? 'waiting' : 'moving',
+      });
+    } on FirebaseException catch (e) {
+      throw TourSessionRepositoryException(_friendlyError(e));
+    }
   }
 
   Future<void> completeAndReleaseRobot({
@@ -90,17 +141,39 @@ class TourSessionRepository {
   }) async {
     try {
       await _firestore.runTransaction((transaction) async {
-        transaction.update(_sessionDoc(sessionId), {
+        final sessionRef = _sessionDoc(sessionId);
+        final sessionSnapshot = await transaction.get(sessionRef);
+        final sessionData = sessionSnapshot.data();
+        if (!sessionSnapshot.exists || sessionData == null) {
+          throw const TourSessionRepositoryException(
+            'Tour session was not found.',
+          );
+        }
+        final resolvedRobotId =
+            _stringValue(sessionData['robotId']) ?? robotId;
+        final robotTourTicketId =
+            _stringValue(sessionData['robot_tour_ticket_id']) ??
+            _stringValue(sessionData['robotTourTicketId']);
+        final now = FieldValue.serverTimestamp();
+
+        transaction.update(sessionRef, {
           'status': 'completed',
+          'completed_at': now,
+          'updated_at': now,
           'robotState': 'waiting',
-          'completedAt': FieldValue.serverTimestamp(),
-          'updatedAt': FieldValue.serverTimestamp(),
         });
-        transaction.update(_robotDoc(robotId), {
+        if (robotTourTicketId != null) {
+          transaction.update(_robotTourTicketDoc(robotTourTicketId), {
+            'status': 'completed',
+            'updated_at': now,
+          });
+        }
+        transaction.update(_robotDoc(resolvedRobotId), {
           'status': 'available',
-          'activeSessionId': '',
-          'currentUserId': '',
-          'updatedAt': FieldValue.serverTimestamp(),
+          'active_session_id': null,
+          'active_user_id': null,
+          'active_robot_tour_ticket_id': null,
+          'updated_at': now,
         });
       });
     } on FirebaseException catch (e) {
@@ -159,13 +232,18 @@ class TourSessionRepository {
 
     if (event.type == 'arrived_exhibit') {
       final currentExhibitId = _stringValue(event.payload['currentExhibitId']);
-      final nextExhibitId = _nullableString(event.payload['nextExhibitId']);
       final visitedExhibitIds = _stringList(event.payload['visitedExhibitIds']);
       if (currentExhibitId != null) {
-        updates['currentExhibitId'] = currentExhibitId;
-      }
-      if (event.payload.containsKey('nextExhibitId')) {
-        updates['nextExhibitId'] = nextExhibitId;
+        updates['current_exhibit_id'] = currentExhibitId;
+        final sessionSnapshot = await _sessionDoc(sessionId).get();
+        final sessionData = sessionSnapshot.data() ?? {};
+        final selectedExhibits = _stringList(
+          sessionData['selected_exhibits'] ?? sessionData['selectedExhibitIds'],
+        );
+        updates['current_exhibit_index'] = _currentIndex(
+          selectedExhibits,
+          currentExhibitId,
+        );
       }
       if (visitedExhibitIds.isNotEmpty) {
         updates['visitedExhibitIds'] = visitedExhibitIds;
@@ -183,7 +261,7 @@ class TourSessionRepository {
     try {
       await _sessionDoc(
         sessionId,
-      ).update({...updates, 'updatedAt': FieldValue.serverTimestamp()});
+      ).update({...updates, 'updated_at': FieldValue.serverTimestamp()});
     } on FirebaseException catch (e) {
       throw TourSessionRepositoryException(_friendlyError(e));
     }
@@ -197,8 +275,22 @@ class TourSessionRepository {
     return _firestore.collection('robots').doc(robotId);
   }
 
+  DocumentReference<Map<String, dynamic>> _robotTourTicketDoc(
+    String ticketId,
+  ) {
+    return _firestore.collection('robotTourTickets').doc(ticketId);
+  }
+
+  int _currentIndex(List<String> selectedExhibits, String currentExhibitId) {
+    final index = selectedExhibits.indexOf(currentExhibitId);
+    return index < 0 ? 0 : index;
+  }
+
   bool _isRestorableStatus(String status) {
-    return status == 'ready' || status == 'active' || status == 'paused';
+    return status == 'paired' ||
+        status == 'ready' ||
+        status == 'active' ||
+        status == 'paused';
   }
 
   Future<bool> _isRobotStillPairedToSession(TourSession session) async {
@@ -206,8 +298,12 @@ class TourSessionRepository {
     final snapshot = await _robotDoc(session.robotId).get();
     final data = snapshot.data();
     if (!snapshot.exists || data == null) return false;
-    final robotSessionId = _stringValue(data['activeSessionId']);
-    final robotUserId = _stringValue(data['currentUserId']);
+    final robotSessionId =
+        _stringValue(data['active_session_id']) ??
+        _stringValue(data['activeSessionId']);
+    final robotUserId =
+        _stringValue(data['active_user_id']) ??
+        _stringValue(data['currentUserId']);
     final robotStatus = _stringValue(data['status']);
     return robotSessionId == session.sessionId &&
         robotUserId == session.userId &&
@@ -217,12 +313,6 @@ class TourSessionRepository {
 
   String? _stringValue(Object? value) {
     if (value is String && value.trim().isNotEmpty) return value;
-    return null;
-  }
-
-  String? _nullableString(Object? value) {
-    if (value == null) return null;
-    if (value is String) return value.trim().isEmpty ? null : value;
     return null;
   }
 

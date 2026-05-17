@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../core/constants/colors.dart';
 
-import '../../models/user_preferences.dart';
-import '../../models/exhibit_provider.dart';
-import '../../models/exhibit.dart';
 import '../../app/router.dart';
-import '../../widgets/app_menu_shell.dart';
+import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
+import '../../l10n/app_localizations.dart';
+import '../../models/exhibit.dart';
+import '../../models/exhibit_provider.dart';
+import '../../models/user_preferences.dart';
+import '../../widgets/app_menu_shell.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -24,9 +25,7 @@ class _SearchScreenState extends State<SearchScreen> {
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(() {
-      setState(() {}); // just to show/hide clear icon
-    });
+    _searchController.addListener(() => setState(() {}));
   }
 
   @override
@@ -54,6 +53,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
+    final l10n = AppLocalizations.of(context)!;
     final providerExhibits = context.watch<ExhibitProvider>().exhibits;
     if (!identical(_allExhibits, providerExhibits)) {
       _allExhibits = providerExhibits;
@@ -65,68 +65,71 @@ class _SearchScreenState extends State<SearchScreen> {
             }).toList();
     }
 
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-
     return AppMenuShell(
-      title: isArabic ? "البحث في المعروضات" : "Search Exhibits",
-      backgroundColor: AppColors.darkBackground,
-      body: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        children: [
-          // search field
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextField(
-              controller: _searchController,
-              onChanged: _filter,
-              textAlign: isArabic ? TextAlign.right : TextAlign.left,
-              decoration: InputDecoration(
-                prefixIcon: const Icon(
-                  Icons.search,
-                  color: AppColors.primaryGold,
-                ),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                          _filter('');
-                          FocusScope.of(context).unfocus();
-                        },
-                      )
-                    : null,
-                hintText: isArabic
-                    ? "ابحث باسم القطعة..."
-                    : "Search by exhibit name...",
-                hintStyle: AppTextStyles.bodyPrimary(
-                  context,
-                ).copyWith(color: AppColors.helperText),
-                filled: true,
-                fillColor: AppColors.darkSurface,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 16,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(26),
-                  borderSide: BorderSide.none,
+      title: l10n.searchExhibits,
+      backgroundColor: AppColors.cinematicBackground,
+      body: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: AppGradients.screenBackground,
+        ),
+        child: ListView(
+          padding: const EdgeInsetsDirectional.fromSTEB(0, 8, 0, 32),
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: TextField(
+                controller: _searchController,
+                onChanged: _filter,
+                textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(
+                    Icons.search,
+                    color: AppColors.primaryGold,
+                  ),
+                  suffixIcon: _searchController.text.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            _searchController.clear();
+                            _filter('');
+                            FocusScope.of(context).unfocus();
+                          },
+                        )
+                      : null,
+                  hintText: l10n.searchByExhibitName,
+                  hintStyle: AppTextStyles.bodyPrimary(
+                    context,
+                  ).copyWith(color: AppColors.helperText),
+                  filled: true,
+                  fillColor: AppColors.cinematicCard,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 16,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(26),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: 4),
-          if (_allExhibits.isEmpty)
-            const Padding(
-              padding: EdgeInsets.only(top: 40),
-              child: Center(child: CircularProgressIndicator()),
-            )
-          else if (_filteredExhibits.isEmpty &&
-              _searchController.text.isNotEmpty)
-            _buildEmptyState(isArabic, cs)
-          else
-            _buildResultList(prefs, isArabic),
-        ],
+            const SizedBox(height: 4),
+            if (_allExhibits.isEmpty)
+              const Padding(
+                padding: EdgeInsets.only(top: 40),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: AppColors.primaryGold,
+                  ),
+                ),
+              )
+            else if (_filteredExhibits.isEmpty &&
+                _searchController.text.isNotEmpty)
+              _buildEmptyState(l10n)
+            else
+              _buildResultList(prefs, isArabic),
+          ],
+        ),
       ),
     );
   }
@@ -154,22 +157,17 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildEmptyState(bool isArabic, ColorScheme cs) {
+  Widget _buildEmptyState(AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.all(32),
       child: Column(
         children: [
           const Icon(Icons.search_off, size: 56, color: AppColors.primaryGold),
           const SizedBox(height: 16),
-          Text(
-            isArabic ? "لا توجد نتائج" : "No results found",
-            style: AppTextStyles.titleLarge(context),
-          ),
+          Text(l10n.noResultsFound, style: AppTextStyles.titleLarge(context)),
           const SizedBox(height: 8),
           Text(
-            isArabic
-                ? "جرّب كلمة مختلفة أو تحقق من الهجاء."
-                : "Try a different word or check the spelling.",
+            l10n.noResultsFoundDesc,
             textAlign: TextAlign.center,
             style: AppTextStyles.bodyPrimary(
               context,
@@ -196,14 +194,13 @@ class _SearchResultTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final cs = Theme.of(context).colorScheme; // Not needed here
-
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.darkSurface,
+        color: AppColors.cinematicCard,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: AppColors.goldBorder(0.10)),
       ),
       child: InkWell(
         onTap: onTap,
@@ -211,6 +208,7 @@ class _SearchResultTile extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(10),
           child: Row(
+            textDirection: Directionality.of(context),
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
@@ -242,17 +240,17 @@ class _SearchResultTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      isArabic
-                          ? "اضغط لعرض تفاصيل المعروض"
-                          : "Tap to view details and audio guide",
+                      l10n.tapToViewDetailsAudioGuide,
                       style: AppTextStyles.metadata(context),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 4),
-              const Icon(
-                Icons.chevron_right_rounded,
+              Icon(
+                isArabic
+                    ? Icons.chevron_left_rounded
+                    : Icons.chevron_right_rounded,
                 size: 20,
                 color: Colors.white24,
               ),

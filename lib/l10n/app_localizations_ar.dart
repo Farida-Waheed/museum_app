@@ -47,6 +47,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get askTheGuide => 'اسأل حورس';
 
   @override
+  String get askDuringActiveTourOnly => 'يمكنك سؤال حورس أثناء الجولة فقط.';
+
+  @override
   String get guideStatus => 'حالة الدليل';
 
   @override
@@ -92,6 +95,9 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get moreInfoText =>
       'اسأل عن التذاكر، ساعات العمل، الفعاليات، المعروضات أو الاتجاهات.';
+
+  @override
+  String get humanSupport => 'الدعم البشري';
 
   @override
   String get humanSupportLabel => 'طلب دعم بشري مباشر';
@@ -140,6 +146,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profile => 'الملف الشخصي';
+
+  @override
+  String get memories => 'الذكريات';
 
   @override
   String get map => 'الخريطة';
@@ -309,6 +318,29 @@ class AppLocalizationsAr extends AppLocalizations {
   String get qrMuseumInvalidMessage => 'هذا ليس QR صالحًا لدخول المتحف.';
 
   @override
+  String get qrMuseumSignInRequiredMessage =>
+      'يرجى تسجيل الدخول قبل التحقق من تذكرة دخول المتحف.';
+
+  @override
+  String get qrMuseumTicketNotFoundMessage =>
+      'لم يتم العثور على تذكرة المتحف هذه.';
+
+  @override
+  String get qrMuseumTicketWrongUserMessage =>
+      'هذه التذكرة لا تخص الحساب المسجل حاليًا.';
+
+  @override
+  String get qrMuseumTicketInactiveMessage =>
+      'هذه التذكرة غير نشطة ولا يمكن استخدامها.';
+
+  @override
+  String get qrMuseumTicketExpiredMessage => 'تاريخ هذه التذكرة انتهى بالفعل.';
+
+  @override
+  String get qrMuseumValidationFailedMessage =>
+      'تعذر التحقق من تذكرة المتحف. يرجى المحاولة مرة أخرى.';
+
+  @override
   String get qrRobotTicketRequiredTitle => 'تذكرة جولة الروبوت مطلوبة';
 
   @override
@@ -350,6 +382,13 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get qrRobotUnavailableMessage =>
       'Horus-Bot غير متاح حاليًا. يرجى تجربة روبوت آخر أو طلب المساعدة من فريق المتحف.';
+
+  @override
+  String get qrRobotBusyTitle => 'Horus-Bot مشغول';
+
+  @override
+  String get qrRobotBusyMessage =>
+      'هذا الروبوت مقترن بجولة أخرى بالفعل. يرجى مسح روبوت متاح أو طلب المساعدة من فريق المتحف.';
 
   @override
   String get qrPairingPermissionDeniedTitle => 'تم حظر الاقتران';
@@ -855,6 +894,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get searchByExhibitName => 'ابحث باسم المعروض...';
+
+  @override
+  String get tapToViewDetailsAudioGuide => 'اضغط لعرض التفاصيل والدليل الصوتي';
 
   @override
   String get noResultsFound => 'لا توجد نتائج';
@@ -1831,6 +1873,35 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get myTicketsBuyTickets => 'شراء التذاكر';
+
+  @override
+  String get cashPaymentAtCounterTitle => 'الدفع نقدًا عند الشباك';
+
+  @override
+  String cashPaymentAtCounterBody(String total) {
+    return 'الدفع نقدًا فقط حاليًا. حالة الدفع: الدفع عند الشباك. الإجمالي المستحق عند شباك المتحف: $total.';
+  }
+
+  @override
+  String get review => 'مراجعة';
+
+  @override
+  String get confirmBooking => 'تأكيد الحجز';
+
+  @override
+  String get paymentStatusPayAtCounter => 'حالة الدفع: الدفع عند الشباك';
+
+  @override
+  String get egyptianArabic => 'العربية المصرية';
+
+  @override
+  String get cancelBooking => 'إلغاء الحجز';
+
+  @override
+  String get bookingCancelled => 'تم إلغاء الحجز.';
+
+  @override
+  String get paymentStatus => 'حالة الدفع';
 
   @override
   String myTicketsOrderCode(String code) {

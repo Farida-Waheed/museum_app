@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'app_user.dart';
+import 'user_preferences.dart';
 import '../services/auth_service.dart';
 
 /// Authentication state
@@ -14,12 +15,14 @@ enum AuthState { guest, loggedOut, loading, loggedIn, error }
 /// - Error handling
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService;
+  final UserPreferencesModel? _preferences;
 
   AuthState _authState = AuthState.guest;
   AppUser? _currentUser;
   String? _errorMessage;
 
-  AuthProvider(this._authService) {
+  AuthProvider(this._authService, {UserPreferencesModel? preferences})
+    : _preferences = preferences {
     _loadSavedSession();
   }
 
@@ -49,6 +52,7 @@ class AuthProvider extends ChangeNotifier {
         _currentUser = user;
         _authState = AuthState.loggedIn;
         _errorMessage = null;
+        await _restoreLanguageFromAccount(user);
       } else {
         _authState = AuthState.loggedOut;
       }
@@ -77,6 +81,7 @@ class AuthProvider extends ChangeNotifier {
       final user = await _authService.login(email: email, password: password);
       _currentUser = user;
       _authState = AuthState.loggedIn;
+      await _restoreLanguageFromAccount(user);
       notifyListeners();
       return true;
     } catch (e) {
@@ -104,9 +109,11 @@ class AuthProvider extends ChangeNotifier {
         email: email,
         password: password,
         phone: phone,
+        preferredLanguage: _accountLanguageFromPrefs(),
       );
       _currentUser = user;
       _authState = AuthState.loggedIn;
+      await _restoreLanguageFromAccount(user);
       notifyListeners();
       return true;
     } catch (e) {
@@ -139,11 +146,29 @@ class AuthProvider extends ChangeNotifier {
   }
 
   /// Update user profile.
-  Future<void> updateProfile({String? name, String? phone}) async {
+  Future<void> updateProfile({
+    String? fullName,
+    String? displayName,
+    String? phoneNumber,
+    String? nationality,
+    String? preferredLanguage,
+    String? avatarUrl,
+    Map<String, dynamic>? accessibilityDefaults,
+    bool? marketingOptIn,
+  }) async {
     if (_currentUser == null) return;
 
     try {
-      _currentUser = await _authService.updateProfile(name: name, phone: phone);
+      _currentUser = await _authService.updateProfile(
+        fullName: fullName,
+        displayName: displayName,
+        phoneNumber: phoneNumber,
+        nationality: nationality,
+        preferredLanguage: preferredLanguage,
+        avatarUrl: avatarUrl,
+        accessibilityDefaults: accessibilityDefaults,
+        marketingOptIn: marketingOptIn,
+      );
       notifyListeners();
     } catch (e) {
       _errorMessage = _messageFromError(e);
@@ -151,12 +176,31 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Simulate loading account from website
+  /// Sign in to the same Firebase account used by the web app.
   Future<bool> loadWebsiteAccount({
     required String email,
     required String password,
   }) async {
     return await login(email: email, password: password);
+  }
+
+  Future<void> updatePreferredLanguageFromUi(String languageCode) async {
+    if (_currentUser == null) return;
+    await updateProfile(
+      preferredLanguage: AppUser.accountLanguageFromCode(languageCode),
+    );
+  }
+
+  Future<void> _restoreLanguageFromAccount(AppUser user) async {
+    final preferences = _preferences;
+    if (preferences == null) return;
+    await preferences.setLanguage(
+      AppUser.languageCodeFromAccount(user.preferredLanguage),
+    );
+  }
+
+  String _accountLanguageFromPrefs() {
+    return AppUser.accountLanguageFromCode(_preferences?.language ?? 'en');
   }
 
   String _messageFromError(Object error) {

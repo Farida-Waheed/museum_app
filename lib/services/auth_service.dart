@@ -85,11 +85,12 @@ class AuthService {
       await firebaseUser.updateDisplayName(trimmedName);
 
       final user = AppUser(
-        id: firebaseUser.uid,
-        name: trimmedName,
+        uid: firebaseUser.uid,
         email: firebaseUser.email ?? email.trim(),
-        phone: phone,
-        preferredLanguage: preferredLanguage,
+        fullName: trimmedName,
+        displayName: trimmedName,
+        phoneNumber: _nullableTrimmed(phone),
+        preferredLanguage: _normalizedLanguage(preferredLanguage),
         createdAt: DateTime.now(),
       );
 
@@ -131,30 +132,61 @@ class AuthService {
   }
 
   /// Update users/{uid} profile fields.
-  Future<AppUser> updateProfile({String? name, String? phone}) async {
+  Future<AppUser> updateProfile({
+    String? fullName,
+    String? displayName,
+    String? phoneNumber,
+    String? nationality,
+    String? preferredLanguage,
+    String? avatarUrl,
+    Map<String, dynamic>? accessibilityDefaults,
+    bool? marketingOptIn,
+  }) async {
     final firebaseUser = _firebaseAuth.currentUser;
     if (firebaseUser == null) {
       throw const AuthServiceException('No user is logged in.');
     }
 
     try {
-      final updates = <String, dynamic>{
-        'updated_at': FieldValue.serverTimestamp(),
-      };
+      final updates = <String, dynamic>{};
 
-      final trimmedName = name?.trim();
-      if (trimmedName != null && trimmedName.isNotEmpty) {
-        updates['display_name'] = trimmedName;
-        updates['full_name'] = trimmedName;
-        await firebaseUser.updateDisplayName(trimmedName);
+      final trimmedFullName = fullName?.trim();
+      if (trimmedFullName != null && trimmedFullName.isNotEmpty) {
+        updates['full_name'] = trimmedFullName;
       }
 
-      if (phone != null) {
-        final trimmedPhone = phone.trim();
-        updates['phone_number'] = trimmedPhone.isEmpty ? null : trimmedPhone;
+      final trimmedDisplayName = displayName?.trim();
+      if (trimmedDisplayName != null && trimmedDisplayName.isNotEmpty) {
+        updates['display_name'] = trimmedDisplayName;
+        await firebaseUser.updateDisplayName(trimmedDisplayName);
+      } else if (trimmedFullName != null && trimmedFullName.isNotEmpty) {
+        updates['display_name'] = trimmedFullName;
+        await firebaseUser.updateDisplayName(trimmedFullName);
       }
 
-      await _userDoc(firebaseUser.uid).set(updates, SetOptions(merge: true));
+      if (phoneNumber != null) {
+        updates['phone_number'] = _nullableTrimmed(phoneNumber);
+      }
+      if (nationality != null) {
+        updates['nationality'] = _nullableTrimmed(nationality);
+      }
+      if (preferredLanguage != null) {
+        updates['preferred_language'] = _normalizedLanguage(preferredLanguage);
+      }
+      if (avatarUrl != null) {
+        updates['avatar_url'] = _nullableTrimmed(avatarUrl);
+      }
+      if (accessibilityDefaults != null) {
+        updates['accessibility_defaults'] = accessibilityDefaults;
+      }
+      if (marketingOptIn != null) {
+        updates['marketing_opt_in'] = marketingOptIn;
+      }
+
+      if (updates.isNotEmpty) {
+        updates['updated_at'] = FieldValue.serverTimestamp();
+        await _userDoc(firebaseUser.uid).set(updates, SetOptions(merge: true));
+      }
       return await _loadOrCreateUserProfile(firebaseUser);
     } on FirebaseAuthException catch (e) {
       throw AuthServiceException(_friendlyAuthError(e));
@@ -163,10 +195,8 @@ class AuthService {
     }
   }
 
-  /// Simulate loading a website account into the app.
-  ///
-  /// The website and mobile app now share Firebase Auth credentials.
-  Future<AppUser> mockLoadWebsiteAccount({
+  /// Sign in to the same Firebase account used by the web app.
+  Future<AppUser> loadWebsiteAccount({
     required String email,
     required String password,
   }) async {
@@ -219,34 +249,38 @@ class AuthService {
       await _userDoc(firebaseUser.uid).set({
         'uid': firebaseUser.uid,
         'email': firebaseUser.email ?? '',
-        'display_name': data['display_name'] ?? firebaseUser.displayName,
-        'full_name': data['full_name'] ?? firebaseUser.displayName,
-        'phone_number': data['phone_number'] ?? firebaseUser.phoneNumber,
+        'display_name':
+            data['display_name'] ?? data['name'] ?? firebaseUser.displayName,
+        'full_name':
+            data['full_name'] ?? data['name'] ?? firebaseUser.displayName,
+        'phone_number':
+            data['phone_number'] ?? data['phone'] ?? firebaseUser.phoneNumber,
         'nationality': data['nationality'],
-        'preferred_language':
-            _normalizedLanguage(data['preferred_language']) ?? 'english',
+        'preferred_language': _normalizedLanguage(
+          data['preferred_language'] ?? data['preferredLanguage'],
+        ),
         'avatar_url': data['avatar_url'] ?? firebaseUser.photoURL,
         'accessibility_defaults':
             data['accessibility_defaults'] ?? <String, dynamic>{},
         'marketing_opt_in': data['marketing_opt_in'] ?? false,
         'created_at': data['created_at'] ?? FieldValue.serverTimestamp(),
         'last_seen_at': FieldValue.serverTimestamp(),
-        'updated_at': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
-      return AppUser.fromFirestore(
-        {
-          ...data,
-          'uid': firebaseUser.uid,
-        },
-        fallbackUid: firebaseUser.uid,
-      );
+      return AppUser.fromFirestore({
+        ...data,
+        'uid': firebaseUser.uid,
+        'preferred_language': _normalizedLanguage(
+          data['preferred_language'] ?? data['preferredLanguage'],
+        ),
+      }, fallbackUid: firebaseUser.uid);
     }
 
     final user = AppUser(
-      id: firebaseUser.uid,
-      name: firebaseUser.displayName ?? _nameFromEmail(firebaseUser.email),
+      uid: firebaseUser.uid,
       email: firebaseUser.email ?? '',
-      phone: firebaseUser.phoneNumber,
+      fullName: firebaseUser.displayName ?? _nameFromEmail(firebaseUser.email),
+      displayName: firebaseUser.displayName ?? _nameFromEmail(firebaseUser.email),
+      phoneNumber: firebaseUser.phoneNumber,
       preferredLanguage: 'english',
       createdAt: DateTime.now(),
       avatarUrl: firebaseUser.photoURL,
@@ -269,9 +303,9 @@ class AuthService {
         : localPart;
   }
 
-  String? _normalizedLanguage(Object? value) {
+  String _normalizedLanguage(Object? value) {
     final raw = value?.toString().trim();
-    if (raw == null || raw.isEmpty) return null;
+    if (raw == null || raw.isEmpty) return 'english';
     switch (raw.toLowerCase().replaceAll('-', '_')) {
       case 'en':
       case 'english':
@@ -279,11 +313,15 @@ class AuthService {
       case 'ar':
       case 'arabic':
         return 'arabic';
-      case 'egyptian_arabic':
-        return 'egyptian_arabic';
       default:
-        return raw.toLowerCase().replaceAll('-', '_');
+        return 'english';
     }
+  }
+
+  String? _nullableTrimmed(String? value) {
+    final trimmed = value?.trim();
+    if (trimmed == null || trimmed.isEmpty) return null;
+    return trimmed;
   }
 
   String _friendlyAuthError(FirebaseAuthException e) {

@@ -250,6 +250,17 @@ class _SummaryContent extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           _OutlineAction(
+            label: l10n.achievements,
+            onPressed: () =>
+                Navigator.pushNamed(context, AppRoutes.achievements),
+          ),
+          const SizedBox(height: 12),
+          _OutlineAction(
+            label: l10n.feedback,
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.feedback),
+          ),
+          const SizedBox(height: 12),
+          _OutlineAction(
             label: l10n.done,
             onPressed: () =>
                 Navigator.pushReplacementNamed(context, AppRoutes.mainHome),
