@@ -29,6 +29,7 @@ class MyTicketsScreen extends StatefulWidget {
 
 class _MyTicketsScreenState extends State<MyTicketsScreen> {
   String? _loadedUserId;
+  String? _cancellingBookingId;
 
   @override
   void didChangeDependencies() {
@@ -91,8 +92,29 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
   ) {
     final orders = ticketProvider.purchasedTicketSets;
     if (ticketProvider.isLoadingTickets && orders.isEmpty) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppColors.primaryGold),
+      return Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsetsDirectional.fromSTEB(24, 24, 24, 120),
+          child: _GlassCard(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: isArabic
+                  ? CrossAxisAlignment.end
+                  : CrossAxisAlignment.start,
+              children: [
+                const CircularProgressIndicator(color: AppColors.primaryGold),
+                const SizedBox(height: 18),
+                Text(
+                  isArabic ? 'جاري تحميل التذاكر...' : 'Loading tickets...',
+                  textAlign: TextAlign.start,
+                  style: AppTextStyles.bodyPrimary(
+                    context,
+                  ).copyWith(color: AppColors.bodyText, height: 1.45),
+                ),
+              ],
+            ),
+          ),
+        ),
       );
     }
 
@@ -108,7 +130,11 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
     }
 
     if (orders.isEmpty) {
-      return _EmptyTicketsState(l10n: l10n, isArabic: isArabic);
+      return _EmptyTicketsState(
+        l10n: l10n,
+        isArabic: isArabic,
+        showSkippedNotice: ticketProvider.skippedTicketSetCount > 0,
+      );
     }
 
     final sortedOrders = orders.toList()
@@ -133,6 +159,10 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
                 : () => context.read<TicketProvider>().loadUserTickets(userId),
           ),
         ],
+        if (ticketProvider.skippedTicketSetCount > 0) ...[
+          const SizedBox(height: 12),
+          _SkippedBookingsNotice(isArabic: isArabic),
+        ],
         const SizedBox(height: 18),
         ...sortedOrders.map(
           (order) => Padding(
@@ -143,10 +173,70 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
               sessionProvider: sessionProvider,
               l10n: l10n,
               isArabic: isArabic,
+              isCancelling: _cancellingBookingId == order.id,
+              onCancel: () => _confirmAndCancelBooking(
+                context,
+                ticketProvider,
+                order,
+                l10n,
+                isArabic,
+              ),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  Future<void> _confirmAndCancelBooking(
+    BuildContext context,
+    TicketProvider ticketProvider,
+    PurchasedTicketSet order,
+    AppLocalizations l10n,
+    bool isArabic,
+  ) async {
+    if (_cancellingBookingId != null) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => Directionality(
+        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+        child: AlertDialog(
+          backgroundColor: AppColors.cinematicSection,
+          title: Text(isArabic ? 'إلغاء الحجز؟' : 'Cancel booking?'),
+          content: Text(
+            isArabic
+                ? 'سيتم إلغاء تذكرة دخول المتحف وتذكرة جولة Horus-Bot المرتبطة بها.'
+                : 'This will cancel your Museum Entry Ticket and linked Horus-Bot Tour Ticket.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(isArabic ? 'الاحتفاظ بالحجز' : 'Keep booking'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(isArabic ? 'إلغاء الحجز' : 'Cancel booking'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
+
+    setState(() => _cancellingBookingId = order.id);
+    final ok = await context.read<TicketProvider>().cancelBooking(order);
+    if (!context.mounted) return;
+    setState(() => _cancellingBookingId = null);
+
+    final error = context.read<TicketProvider>().ticketError;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          ok
+              ? l10n.bookingCancelled
+              : _friendlyCancellationFailure(error, isArabic),
+        ),
+      ),
     );
   }
 }
@@ -219,55 +309,69 @@ class _AccountRequiredState extends StatelessWidget {
 }
 
 class _EmptyTicketsState extends StatelessWidget {
-  const _EmptyTicketsState({required this.l10n, required this.isArabic});
+  const _EmptyTicketsState({
+    required this.l10n,
+    required this.isArabic,
+    this.showSkippedNotice = false,
+  });
 
   final AppLocalizations l10n;
   final bool isArabic;
+  final bool showSkippedNotice;
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsetsDirectional.fromSTEB(24, 24, 24, 120),
-        child: _GlassCard(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: isArabic
-                ? CrossAxisAlignment.end
-                : CrossAxisAlignment.start,
-            children: [
-              const Icon(
-                Icons.wallet_outlined,
-                color: AppColors.primaryGold,
-                size: 46,
-              ),
-              const SizedBox(height: 18),
-              Text(
-                l10n.myTicketsEmptyTitle,
-                textAlign: TextAlign.start,
-                style: AppTextStyles.displayScreenTitle(
-                  context,
-                ).copyWith(fontSize: 24),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                l10n.myTicketsEmptyBody,
-                textAlign: TextAlign.start,
-                style: AppTextStyles.bodyPrimary(
-                  context,
-                ).copyWith(color: AppColors.bodyText, height: 1.45),
-              ),
-              const SizedBox(height: 22),
-              SizedBox(
-                width: double.infinity,
-                child: _GoldButton(
-                  label: l10n.myTicketsBuyTickets,
-                  onTap: () =>
-                      Navigator.pushNamed(context, AppRoutes.buyTickets),
-                ),
-              ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (showSkippedNotice) ...[
+              _SkippedBookingsNotice(isArabic: isArabic),
+              const SizedBox(height: 12),
             ],
-          ),
+            _GlassCard(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: isArabic
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.wallet_outlined,
+                    color: AppColors.primaryGold,
+                    size: 46,
+                  ),
+                  const SizedBox(height: 18),
+                  Text(
+                    l10n.myTicketsEmptyTitle,
+                    textAlign: TextAlign.start,
+                    style: AppTextStyles.displayScreenTitle(
+                      context,
+                    ).copyWith(fontSize: 24),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    l10n.myTicketsEmptyBody,
+                    textAlign: TextAlign.start,
+                    style: AppTextStyles.bodyPrimary(
+                      context,
+                    ).copyWith(color: AppColors.bodyText, height: 1.45),
+                  ),
+                  const SizedBox(height: 22),
+                  SizedBox(
+                    width: double.infinity,
+                    child: _GoldButton(
+                      label: l10n.myTicketsBuyTickets,
+                      onTap: () =>
+                          Navigator.pushNamed(context, AppRoutes.buyTickets),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -342,6 +446,8 @@ class _OrderCard extends StatelessWidget {
     required this.sessionProvider,
     required this.l10n,
     required this.isArabic,
+    required this.isCancelling,
+    required this.onCancel,
   });
 
   final PurchasedTicketSet order;
@@ -349,6 +455,8 @@ class _OrderCard extends StatelessWidget {
   final AppSessionProvider sessionProvider;
   final AppLocalizations l10n;
   final bool isArabic;
+  final bool isCancelling;
+  final VoidCallback onCancel;
 
   @override
   Widget build(BuildContext context) {
@@ -357,6 +465,13 @@ class _OrderCard extends StatelessWidget {
     final date = museumTicket?.visitDate ?? robotTicket?.visitDate;
     final timeSlot = museumTicket?.timeSlot ?? robotTicket?.timeSlot;
     final formattedDate = _formatDate(date ?? order.purchasedAt, isArabic);
+    final ticketProvider = context.watch<TicketProvider>();
+    final canCancel = ticketProvider.isBookingCancellable(order);
+    final blockedMessage = _cancellationBlockedMessage(
+      ticketProvider,
+      order,
+      isArabic,
+    );
 
     return _GlassCard(
       child: Column(
@@ -390,31 +505,19 @@ class _OrderCard extends StatelessWidget {
               isArabic: isArabic,
             ),
           ],
-          if (museumTicket?.status == TicketStatus.active &&
-              robotTicket?.status == TicketStatus.active) ...[
+          if (canCancel) ...[
             const SizedBox(height: 14),
             SizedBox(
               width: double.infinity,
               child: _OutlineButton(
                 label: l10n.cancelBooking,
-                onTap: () async {
-                  final ok = await context.read<TicketProvider>().cancelBooking(
-                    order,
-                  );
-                  if (!context.mounted) return;
-                  final error = context.read<TicketProvider>().ticketError;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        ok
-                            ? l10n.bookingCancelled
-                            : error ?? 'Unable to cancel this booking.',
-                      ),
-                    ),
-                  );
-                },
+                onTap: onCancel,
+                isLoading: isCancelling,
               ),
             ),
+          ] else if (blockedMessage != null) ...[
+            const SizedBox(height: 14),
+            _MutedText(blockedMessage),
           ],
         ],
       ),
@@ -464,6 +567,46 @@ class _TicketErrorBanner extends StatelessWidget {
             const SizedBox(width: 10),
             TextButton(onPressed: onRetry, child: Text(l10n.retry)),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+class _SkippedBookingsNotice extends StatelessWidget {
+  const _SkippedBookingsNotice({required this.isArabic});
+
+  final bool isArabic;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.primaryGold.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.goldBorder(0.28)),
+      ),
+      child: Row(
+        textDirection: Directionality.of(context),
+        children: [
+          const Icon(
+            Icons.info_outline_rounded,
+            color: AppColors.primaryGold,
+            size: 20,
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              isArabic
+                  ? 'تعذر عرض بعض الحجوزات القديمة.'
+                  : 'Some older bookings could not be displayed.',
+              textAlign: TextAlign.start,
+              style: AppTextStyles.metadata(
+                context,
+              ).copyWith(color: AppColors.bodyText, height: 1.35),
+            ),
+          ),
         ],
       ),
     );
@@ -1244,28 +1387,42 @@ class _GoldButton extends StatelessWidget {
 }
 
 class _OutlineButton extends StatelessWidget {
-  const _OutlineButton({required this.label, required this.onTap});
+  const _OutlineButton({
+    required this.label,
+    required this.onTap,
+    this.isLoading = false,
+  });
 
   final String label;
   final VoidCallback onTap;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      onPressed: onTap,
+      onPressed: isLoading ? null : onTap,
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.primaryGold,
         side: const BorderSide(color: AppColors.primaryGold),
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
-      child: Text(
-        label,
-        overflow: TextOverflow.ellipsis,
-        style: AppTextStyles.buttonLabel(
-          context,
-        ).copyWith(color: AppColors.primaryGold),
-      ),
+      child: isLoading
+          ? const SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppColors.primaryGold,
+              ),
+            )
+          : Text(
+              label,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.buttonLabel(
+                context,
+              ).copyWith(color: AppColors.primaryGold),
+            ),
     );
   }
 }
@@ -1429,24 +1586,92 @@ String _shortCode(String id) {
 }
 
 String _ticketStatusLabel(AppLocalizations l10n, TicketStatus status) {
+  final isArabic = l10n.localeName == 'ar';
   switch (status) {
     case TicketStatus.pending:
-      return l10n.pending;
+      return isArabic ? '\u0642\u064a\u062f \u0627\u0644\u062a\u062c\u0647\u064a\u0632' : 'Preparing';
     case TicketStatus.active:
-      return l10n.active;
+      return isArabic ? '\u0646\u0634\u0637' : 'Active';
     case TicketStatus.paired:
-      return l10n.localeName == 'ar' ? 'مقترنة' : 'Paired';
+      return isArabic ? '\u062a\u0645 \u0631\u0628\u0637 \u0627\u0644\u0631\u0648\u0628\u0648\u062a' : 'Paired';
     case TicketStatus.in_progress:
-      return l10n.localeName == 'ar' ? 'جارية' : 'In progress';
+      return isArabic ? '\u0627\u0644\u062c\u0648\u0644\u0629 \u0627\u0644\u0645\u0628\u0627\u0634\u0631\u0629 \u062c\u0627\u0631\u064a\u0629' : 'In Progress';
     case TicketStatus.completed:
-      return l10n.localeName == 'ar' ? 'مكتملة' : 'Completed';
+      return isArabic ? '\u0645\u0643\u062a\u0645\u0644' : 'Completed';
     case TicketStatus.used:
-      return l10n.myTicketsUsed;
+      return isArabic ? '\u0645\u0633\u062a\u062e\u062f\u0645\u0629' : 'Used';
     case TicketStatus.expired:
-      return l10n.expired;
+      return isArabic ? '\u0645\u0646\u062a\u0647\u064a\u0629' : 'Expired';
     case TicketStatus.cancelled:
-      return l10n.myTicketsCancelled;
+      return isArabic ? '\u0645\u0644\u063a\u0627\u0629' : 'Cancelled';
   }
+}
+
+String _cancellationDeadlineMessage(bool isArabic) {
+  return isArabic
+      ? '\u064a\u0645\u0643\u0646\u0643 \u0625\u0644\u063a\u0627\u0621 \u0627\u0644\u062d\u062c\u0632 \u062d\u062a\u0649 24 \u0633\u0627\u0639\u0629 \u0642\u0628\u0644 \u0645\u0648\u0639\u062f \u0627\u0644\u0632\u064a\u0627\u0631\u0629.'
+      : 'Cancellation is available up to 24 hours before your visit.';
+}
+
+String? _cancellationBlockedMessage(
+  TicketProvider ticketProvider,
+  PurchasedTicketSet order,
+  bool isArabic,
+) {
+  final museumTicket = order.museumTicket;
+  final robotTicket = order.robotTourTicket;
+  if (museumTicket == null || robotTicket == null) return null;
+  if (museumTicket.status == TicketStatus.expired ||
+      robotTicket.status == TicketStatus.expired) {
+    return isArabic
+        ? '\u0627\u0646\u062a\u0647\u0649 \u0645\u0648\u0639\u062f \u0647\u0630\u0647 \u0627\u0644\u062a\u0630\u0643\u0631\u0629\u060c \u0648\u0644\u0645 \u064a\u0639\u062f \u0627\u0644\u0625\u0644\u063a\u0627\u0621 \u0645\u062a\u0627\u062d\u0627\u064b.'
+        : 'This ticket has expired, so cancellation is no longer available.';
+  }
+  if (robotTicket.status == TicketStatus.paired) {
+    return isArabic
+        ? '\u0644\u0627 \u064a\u0645\u0643\u0646 \u0625\u0644\u063a\u0627\u0621 \u0627\u0644\u062d\u062c\u0632 \u0628\u0639\u062f \u0631\u0628\u0637 \u0627\u0644\u0631\u0648\u0628\u0648\u062a.'
+        : 'Cancellation is unavailable after Robot Pairing.';
+  }
+  if (robotTicket.status == TicketStatus.in_progress) {
+    return isArabic
+        ? '\u0644\u0627 \u064a\u0645\u0643\u0646 \u0625\u0644\u063a\u0627\u0621 \u0627\u0644\u062d\u062c\u0632 \u0628\u0639\u062f \u0628\u062f\u0621 \u0627\u0644\u062c\u0648\u0644\u0629 \u0627\u0644\u0645\u0628\u0627\u0634\u0631\u0629.'
+        : 'Cancellation is unavailable after the Live Tour starts.';
+  }
+  if (robotTicket.status == TicketStatus.completed) {
+    return isArabic
+        ? '\u0627\u0643\u062a\u0645\u0644\u062a \u0647\u0630\u0647 \u0627\u0644\u062c\u0648\u0644\u0629\u060c \u0648\u0644\u0645 \u064a\u0639\u062f \u0627\u0644\u0625\u0644\u063a\u0627\u0621 \u0645\u062a\u0627\u062d\u0627\u064b.'
+        : 'This tour is complete, so cancellation is no longer available.';
+  }
+  if (museumTicket.status == TicketStatus.cancelled ||
+      robotTicket.status == TicketStatus.cancelled) {
+    return null;
+  }
+  if (museumTicket.status == TicketStatus.used) {
+    return isArabic
+        ? '\u062a\u0645 \u0627\u0633\u062a\u062e\u062f\u0627\u0645 \u062a\u0630\u0643\u0631\u0629 \u062f\u062e\u0648\u0644 \u0627\u0644\u0645\u062a\u062d\u0641\u060c \u0648\u0644\u0645 \u064a\u0639\u062f \u0627\u0644\u0625\u0644\u063a\u0627\u0621 \u0645\u062a\u0627\u062d\u0627\u064b.'
+        : 'This Museum Entry Ticket has already been used.';
+  }
+  if (museumTicket.status == TicketStatus.active &&
+      robotTicket.status == TicketStatus.active &&
+      ticketProvider.isWithinCancellationDeadline(order)) {
+    return _cancellationDeadlineMessage(isArabic);
+  }
+  return null;
+}
+
+String _friendlyCancellationFailure(String? error, bool isArabic) {
+  if (error == _cancellationDeadlineMessage(false) ||
+      error == _cancellationDeadlineMessage(true)) {
+    return _cancellationDeadlineMessage(isArabic);
+  }
+  if (error != null && error.toLowerCase().contains('connection issue')) {
+    return isArabic
+        ? '\u062d\u062f\u062b\u062a \u0645\u0634\u0643\u0644\u0629 \u0641\u064a \u0627\u0644\u0627\u062a\u0635\u0627\u0644. \u064a\u0631\u062c\u0649 \u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0646 \u0627\u0644\u0625\u0646\u062a\u0631\u0646\u062a \u0648\u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.'
+        : 'Connection issue. Please check your internet connection and try again.';
+  }
+  return isArabic
+      ? '\u062d\u062f\u062b \u062e\u0637\u0623 \u0645\u0627. \u064a\u0631\u062c\u0649 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.'
+      : 'Something went wrong. Please try again.';
 }
 
 String _tourTypeLabel(AppLocalizations l10n, RobotTourType tourType) {

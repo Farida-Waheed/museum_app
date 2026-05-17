@@ -659,13 +659,13 @@ abstract class AppLocalizations {
   /// No description provided for @qrRobotPairingSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Scan the physical Horus-Bot QR when you arrive. Your robot tour pass proves eligibility, but pairing is a separate scan.'**
+  /// **'Scan the physical Horus-Bot QR when you arrive. Your Horus-Bot Tour Ticket proves eligibility, but Robot Pairing is a separate scan.'**
   String get qrRobotPairingSubtitle;
 
   /// No description provided for @qrEntryVerifiedTitle.
   ///
   /// In en, this message translates to:
-  /// **'Entry pass verified'**
+  /// **'Museum Entry Ticket verified'**
   String get qrEntryVerifiedTitle;
 
   /// No description provided for @qrEntryVerifiedMessage.
@@ -815,13 +815,13 @@ abstract class AppLocalizations {
   /// No description provided for @qrPairingPermissionDeniedMessage.
   ///
   /// In en, this message translates to:
-  /// **'Firestore rules blocked robot pairing. Allow authenticated users to create their own tourSessions and update robot documents only through a controlled pairing rule or backend.'**
+  /// **'This content is currently unavailable.'**
   String get qrPairingPermissionDeniedMessage;
 
   /// No description provided for @qrPairingNetworkMessage.
   ///
   /// In en, this message translates to:
-  /// **'Network error. Please check your connection and scan again.'**
+  /// **'Connection issue. Please check your internet connection and try again.'**
   String get qrPairingNetworkMessage;
 
   /// No description provided for @qrPairingUnknownMessage.
@@ -2351,7 +2351,7 @@ abstract class AppLocalizations {
   /// No description provided for @retry.
   ///
   /// In en, this message translates to:
-  /// **'RETRY'**
+  /// **'Try again'**
   String get retry;
 
   /// No description provided for @doneButton.
@@ -3101,7 +3101,7 @@ abstract class AppLocalizations {
   /// No description provided for @ticketsMuseumEntrySubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Select visitor categories and quantities for the museum gate pass.'**
+  /// **'Select visitor categories and quantities for the Museum Entry Ticket.'**
   String get ticketsMuseumEntrySubtitle;
 
   /// No description provided for @ticketsRobotTourTitle.
@@ -3587,7 +3587,7 @@ abstract class AppLocalizations {
   /// No description provided for @myTicketsWalletSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Your museum entry passes, robot tour eligibility, and order details are saved here.'**
+  /// **'Your Museum Entry Ticket, Horus-Bot Tour Ticket, and booking details are saved here.'**
   String get myTicketsWalletSubtitle;
 
   /// No description provided for @myTicketsSignInTitle.
@@ -3611,7 +3611,7 @@ abstract class AppLocalizations {
   /// No description provided for @myTicketsEmptyBody.
   ///
   /// In en, this message translates to:
-  /// **'Buy your museum entry ticket and optional Horus-Bot tour pass to see them here.'**
+  /// **'Buy your Museum Entry Ticket and optional Horus-Bot Tour Ticket to see them here.'**
   String get myTicketsEmptyBody;
 
   /// No description provided for @myTicketsBuyTickets.
@@ -3731,7 +3731,7 @@ abstract class AppLocalizations {
   /// No description provided for @myTicketsMuseumGateCode.
   ///
   /// In en, this message translates to:
-  /// **'Museum gate pass code'**
+  /// **'Museum Entry Ticket code'**
   String get myTicketsMuseumGateCode;
 
   /// No description provided for @myTicketsMuseumQrExplanation.
@@ -3761,7 +3761,7 @@ abstract class AppLocalizations {
   /// No description provided for @myTicketsRobotPassCode.
   ///
   /// In en, this message translates to:
-  /// **'Robot tour pass code'**
+  /// **'Horus-Bot Tour Ticket code'**
   String get myTicketsRobotPassCode;
 
   /// No description provided for @myTicketsRobotPairingSeparate.
@@ -3779,7 +3779,7 @@ abstract class AppLocalizations {
   /// No description provided for @myTicketsNoPreferencesSaved.
   ///
   /// In en, this message translates to:
-  /// **'No personalization details were saved with this pass.'**
+  /// **'No personalization details were saved with this ticket.'**
   String get myTicketsNoPreferencesSaved;
 
   /// No description provided for @myTicketsPreferencesSummary.

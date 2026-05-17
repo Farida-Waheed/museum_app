@@ -24,6 +24,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   String? _loadedUserId;
+  bool _isLoggingOut = false;
 
   @override
   void didChangeDependencies() {
@@ -40,6 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _confirmSignOut(BuildContext context, bool isArabic) async {
+    if (_isLoggingOut) return;
     final authProvider = context.read<AuthProvider>();
     final userId = authProvider.currentUser?.id;
     final ok = await showDialog<bool>(
@@ -80,14 +82,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (ok != true || !context.mounted) return;
 
-    if (userId != null && userId.isNotEmpty) {
-      context.read<TicketProvider>().clearUserTickets(userId);
+    setState(() => _isLoggingOut = true);
+    var loggedOut = false;
+    try {
+      if (userId != null && userId.isNotEmpty) {
+        context.read<TicketProvider>().clearUserTickets(userId);
+      }
+      context.read<app_session.AppSessionProvider>().resetSession();
+      await context.read<RobotMqttService>().disconnect();
+      loggedOut = await authProvider.logout();
+    } finally {
+      if (mounted) setState(() => _isLoggingOut = false);
     }
-    context.read<app_session.AppSessionProvider>().resetSession();
-    await context.read<RobotMqttService>().disconnect();
-    await authProvider.logout();
 
     if (!context.mounted) return;
+    if (!loggedOut) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_genericFailureMessage(isArabic))),
+      );
+      return;
+    }
     Navigator.pushNamedAndRemoveUntil(
       context,
       AppRoutes.login,
@@ -109,6 +123,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final avatarController = TextEditingController(text: user.avatarUrl ?? '');
     var language = user.preferredLanguage == 'arabic' ? 'arabic' : 'english';
     var marketingOptIn = user.marketingOptIn;
+    var isSaving = false;
 
     final saved = await showDialog<bool>(
       context: context,
@@ -150,7 +165,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       keyboardType: TextInputType.url,
                     ),
                     DropdownButtonFormField<String>(
-                      value: language,
+                      initialValue: language,
                       dropdownColor: AppColors.cinematicElevated,
                       decoration: _profileInputDecoration(
                         isArabic ? 'لغة الواجهة' : 'UI language',
@@ -189,12 +204,49 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               actions: [
                 TextButton(
-                  onPressed: () => Navigator.pop(dialogContext, false),
+                  onPressed: isSaving
+                      ? null
+                      : () => Navigator.pop(dialogContext, false),
                   child: Text(isArabic ? 'إلغاء' : 'Cancel'),
                 ),
                 FilledButton(
-                  onPressed: () => Navigator.pop(dialogContext, true),
-                  child: Text(isArabic ? 'حفظ' : 'Save'),
+                  onPressed: isSaving
+                      ? null
+                      : () async {
+                          setDialogState(() => isSaving = true);
+                          final ok = await authProvider.updateProfile(
+                            fullName: fullNameController.text,
+                            displayName: displayNameController.text,
+                            phoneNumber: phoneController.text,
+                            nationality: nationalityController.text,
+                            preferredLanguage: language,
+                            avatarUrl: avatarController.text,
+                            marketingOptIn: marketingOptIn,
+                          );
+                          if (!dialogContext.mounted) return;
+                          setDialogState(() => isSaving = false);
+                          if (ok) {
+                            Navigator.pop(dialogContext, true);
+                            return;
+                          }
+                          ScaffoldMessenger.of(dialogContext).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                _profileUpdateFailureMessage(isArabic),
+                              ),
+                            ),
+                          );
+                        },
+                  child: isSaving
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.darkInk,
+                          ),
+                        )
+                      : Text(isArabic ? '\u062d\u0641\u0638' : 'Save'),
                 ),
               ],
             );
@@ -205,18 +257,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (saved != true || !context.mounted) return;
 
-    await authProvider.updateProfile(
-      fullName: fullNameController.text,
-      displayName: displayNameController.text,
-      phoneNumber: phoneController.text,
-      nationality: nationalityController.text,
-      preferredLanguage: language,
-      avatarUrl: avatarController.text,
-      marketingOptIn: marketingOptIn,
-    );
-    if (!context.mounted) return;
     await context.read<UserPreferencesModel>().setLanguage(
       language == 'arabic' ? 'ar' : 'en',
+    );
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(_profileUpdatedMessage(isArabic))),
     );
   }
 
@@ -244,6 +290,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: ListView(
               padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 120),
               children: [
+                if (authProvider.isLoading && user == null) ...[
+                  _ProfileStateCard(
+                    icon: Icons.account_circle_outlined,
+                    title: isArabic
+                        ? '\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a...'
+                        : 'Loading profile...',
+                    message: '',
+                    isLoading: true,
+                    isArabic: isArabic,
+                  ),
+                  const SizedBox(height: 18),
+                ],
+                if (authProvider.hasError && user == null) ...[
+                  _ProfileStateCard(
+                    icon: Icons.info_outline_rounded,
+                    title: _profileLoadFailureMessage(isArabic),
+                    message: _connectionIssueMessage(isArabic),
+                    buttonLabel: isArabic
+                        ? '\u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629'
+                        : 'Try again',
+                    onPressed: () =>
+                        context.read<AuthProvider>().retryProfileLoad(),
+                    isArabic: isArabic,
+                  ),
+                  const SizedBox(height: 18),
+                ],
                 _ProfileHeader(
                   name: user?.name ?? l10n.guestVisitor,
                   email:
@@ -267,7 +339,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _InfoCard(
                   rows: [
                     _InfoRow(
-                      label: isArabic ? 'اللغة المفضلة' : 'Preferred language',
+                      label: isArabic ? 'لغة الواجهة' : 'UI language',
                       value: _languageName(
                         user?.preferredLanguage ?? prefs.language,
                         isArabic,
@@ -278,10 +350,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         label: isArabic ? 'الجنسية' : 'Nationality',
                         value: user!.nationality!,
                       ),
-                    _InfoRow(
-                      label: isArabic ? 'عدد الزيارات' : 'Visit count',
-                      value: '${user?.visitCount ?? 0}',
-                    ),
                   ],
                 ),
                 const SizedBox(height: 18),
@@ -308,7 +376,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   title: l10n.myTickets,
                   subtitle: isArabic
                       ? 'تذاكر الدخول وجولات Horus-Bot'
-                      : 'Entry passes and Horus-Bot tours',
+                      : 'Museum Entry Tickets and Horus-Bot Tour Tickets',
                   onTap: () =>
                       Navigator.pushNamed(context, AppRoutes.myTickets),
                 ),
@@ -394,8 +462,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 SizedBox(
                   height: 56,
                   child: TextButton.icon(
-                    onPressed: () => _confirmSignOut(context, isArabic),
-                    icon: const Icon(Icons.logout_rounded),
+                    onPressed: _isLoggingOut
+                        ? null
+                        : () => _confirmSignOut(context, isArabic),
+                    icon: _isLoggingOut
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: AppColors.alertRed,
+                            ),
+                          )
+                        : const Icon(Icons.logout_rounded),
                     label: Text(isArabic ? 'تسجيل الخروج' : 'Sign out'),
                     style: TextButton.styleFrom(
                       foregroundColor: AppColors.alertRed,
@@ -470,6 +549,84 @@ class _ProfileHeader extends StatelessWidget {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileStateCard extends StatelessWidget {
+  const _ProfileStateCard({
+    required this.icon,
+    required this.title,
+    required this.message,
+    required this.isArabic,
+    this.buttonLabel,
+    this.onPressed,
+    this.isLoading = false,
+  });
+
+  final IconData icon;
+  final String title;
+  final String message;
+  final bool isArabic;
+  final String? buttonLabel;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: AppDecorations.secondaryGlassCard(radius: 20),
+      child: Column(
+        crossAxisAlignment: isArabic
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
+        children: [
+          Row(
+            textDirection: Directionality.of(context),
+            children: [
+              isLoading
+                  ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.primaryGold,
+                      ),
+                    )
+                  : Icon(icon, color: AppColors.primaryGold),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  title,
+                  textAlign: TextAlign.start,
+                  style: AppTextStyles.bodyPrimary(context).copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          if (message.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              message,
+              textAlign: TextAlign.start,
+              style: AppTextStyles.metadata(
+                context,
+              ).copyWith(color: AppColors.neutralMedium),
+            ),
+          ],
+          if (buttonLabel != null && onPressed != null) ...[
+            const SizedBox(height: 14),
+            FilledButton(
+              onPressed: onPressed,
+              child: Text(buttonLabel!),
+            ),
+          ],
         ],
       ),
     );
@@ -801,6 +958,36 @@ class _ActionTile extends StatelessWidget {
       ),
     );
   }
+}
+
+String _connectionIssueMessage(bool isArabic) {
+  return isArabic
+      ? '\u062d\u062f\u062b\u062a \u0645\u0634\u0643\u0644\u0629 \u0641\u064a \u0627\u0644\u0627\u062a\u0635\u0627\u0644. \u064a\u0631\u062c\u0649 \u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0646 \u0627\u0644\u0625\u0646\u062a\u0631\u0646\u062a \u0648\u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.'
+      : 'Connection issue. Please check your internet connection and try again.';
+}
+
+String _genericFailureMessage(bool isArabic) {
+  return isArabic
+      ? '\u062d\u062f\u062b \u062e\u0637\u0623 \u0645\u0627. \u064a\u0631\u062c\u0649 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.'
+      : 'Something went wrong. Please try again.';
+}
+
+String _profileLoadFailureMessage(bool isArabic) {
+  return isArabic
+      ? '\u062a\u0639\u0630\u0631 \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a.'
+      : 'We could not load your profile.';
+}
+
+String _profileUpdatedMessage(bool isArabic) {
+  return isArabic
+      ? '\u062a\u0645 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a.'
+      : 'Profile updated.';
+}
+
+String _profileUpdateFailureMessage(bool isArabic) {
+  return isArabic
+      ? '\u062a\u0639\u0630\u0631 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a.'
+      : 'We could not update your profile.';
 }
 
 String _languageName(String languageCode, bool isArabic) {

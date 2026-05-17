@@ -396,9 +396,23 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                           if (v == null) return;
                           await prefs.setLanguage(v);
                           if (!context.mounted) return;
-                          await context
+                          final synced = await context
                               .read<AuthProvider>()
                               .updatePreferredLanguageFromUi(v);
+                          if (!synced && context.mounted) {
+                            final isArabic =
+                                Localizations.localeOf(context).languageCode ==
+                                'ar';
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  isArabic
+                                      ? '\u062a\u0645 \u062a\u063a\u064a\u064a\u0631 \u0627\u0644\u0644\u063a\u0629\u060c \u0644\u0643\u0646 \u062a\u0639\u0630\u0631 \u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a.'
+                                      : 'Language changed, but we could not update your profile.',
+                                ),
+                              ),
+                            );
+                          }
                         },
                         items: [
                           DropdownMenuItem(

@@ -22,6 +22,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   late final TextEditingController _passwordController;
   late final TextEditingController _confirmPasswordController;
   late final TextEditingController _phoneController;
+  late final TextEditingController _nationalityController;
+  String _preferredLanguage = 'english';
+  bool _languageInitialized = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
@@ -34,6 +37,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordController = TextEditingController();
     _confirmPasswordController = TextEditingController();
     _phoneController = TextEditingController();
+    _nationalityController = TextEditingController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_languageInitialized) return;
+    _preferredLanguage =
+        Localizations.localeOf(context).languageCode == 'ar'
+            ? 'arabic'
+            : 'english';
+    _languageInitialized = true;
   }
 
   @override
@@ -43,6 +58,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _phoneController.dispose();
+    _nationalityController.dispose();
     super.dispose();
   }
 
@@ -79,6 +95,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       phone: _phoneController.text.isEmpty
           ? null
           : _phoneController.text.trim(),
+      nationality: _nationalityController.text.isEmpty
+          ? null
+          : _nationalityController.text.trim(),
+      preferredLanguage: _preferredLanguage,
     );
 
     if (!mounted) return;
@@ -164,7 +184,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 const SizedBox(height: 10),
                                 Text(
                                   isArabic
-                                      ? 'احفظ التذاكر والتفضيلات ووصول جولتك مع حورس-بوت.'
+                                      ? 'احفظ تذاكرك وتفضيلاتك ووصول جولتك مع Horus-Bot.'
                                       : 'Save tickets, preferences, and your Horus-Bot tour access.',
                                   textAlign: TextAlign.center,
                                   style: AppTextStyles.premiumBody(
@@ -199,6 +219,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             keyboardType: TextInputType.phone,
                             icon: Icons.phone_outlined,
                             isArabic: isArabic,
+                          ),
+                          const SizedBox(height: 16),
+                          _GlassField(
+                            controller: _nationalityController,
+                            label: isArabic
+                                ? 'الجنسية (اختياري)'
+                                : 'Nationality (optional)',
+                            hintText: isArabic ? 'مثال: مصري' : 'e.g. Egyptian',
+                            keyboardType: TextInputType.text,
+                            icon: Icons.flag_outlined,
+                            isArabic: isArabic,
+                          ),
+                          const SizedBox(height: 16),
+                          _LanguageSelector(
+                            value: _preferredLanguage,
+                            isArabic: isArabic,
+                            onChanged: (value) {
+                              setState(() {
+                                _preferredLanguage =
+                                    value == 'arabic' ? 'arabic' : 'english';
+                              });
+                            },
                           ),
                           const SizedBox(height: 16),
                           _GlassField(
@@ -372,6 +414,73 @@ class _GlassField extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _LanguageSelector extends StatelessWidget {
+  const _LanguageSelector({
+    required this.value,
+    required this.isArabic,
+    required this.onChanged,
+  });
+
+  final String value;
+  final bool isArabic;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<String>(
+      initialValue: value == 'arabic' ? 'arabic' : 'english',
+      dropdownColor: AppColors.panelGlassBase,
+      iconEnabledColor: AppColors.softGold,
+      style: AppTextStyles.premiumBody(
+        context,
+      ).copyWith(color: AppColors.whiteTitle),
+      decoration: InputDecoration(
+        labelText: isArabic ? 'لغة الواجهة' : 'UI language',
+        labelStyle: AppTextStyles.premiumMutedBody(
+          context,
+        ).copyWith(color: AppColors.bodyText),
+        prefixIcon: const Icon(
+          Icons.language_outlined,
+          color: AppColors.softGold,
+          size: 20,
+        ),
+        filled: true,
+        fillColor: AppColors.panelGlassBase.withValues(alpha: 0.70),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 18,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide(color: AppColors.goldBorder(0.18)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: BorderSide(color: AppColors.goldBorder(0.18)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(18),
+          borderSide: const BorderSide(
+            color: AppColors.primaryGold,
+            width: 1.1,
+          ),
+        ),
+      ),
+      items: [
+        DropdownMenuItem(
+          value: 'english',
+          child: Text(isArabic ? 'الإنجليزية' : 'English'),
+        ),
+        DropdownMenuItem(
+          value: 'arabic',
+          child: Text(isArabic ? 'العربية' : 'Arabic'),
+        ),
+      ],
+      onChanged: (next) => onChanged(next == 'arabic' ? 'arabic' : 'english'),
     );
   }
 }

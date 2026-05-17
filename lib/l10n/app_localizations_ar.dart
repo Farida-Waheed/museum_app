@@ -395,15 +395,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get qrPairingPermissionDeniedMessage =>
-      'قواعد Firestore منعت الاقتران. اسمح للمستخدمين المسجلين بإنشاء tourSessions الخاصة بهم وتحديث مستندات الروبوت من خلال قاعدة اقتران مضبوطة أو من خلال خادم وسيط.';
+      'هذا المحتوى غير متاح حالياً.';
 
   @override
   String get qrPairingNetworkMessage =>
-      'حدث خطأ في الشبكة. تحقق من الاتصال ثم امسح الرمز مرة أخرى.';
+      'حدثت مشكلة في الاتصال. يرجى التحقق من الإنترنت والمحاولة مرة أخرى.';
 
   @override
   String get qrPairingUnknownMessage =>
-      'فشل الاقتران بالروبوت. يرجى المحاولة مرة أخرى.';
+      'حدث خطأ ما. يرجى المحاولة مرة أخرى.';
 
   @override
   String get simulateRobotScan => 'محاكاة مسح الروبوت';
@@ -1201,7 +1201,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get retry => 'إعادة محاولة';
+  String get retry => 'إعادة المحاولة';
 
   @override
   String get doneButton => 'تم';

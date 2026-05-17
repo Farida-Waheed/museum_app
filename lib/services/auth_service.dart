@@ -63,6 +63,7 @@ class AuthService {
     required String email,
     required String password,
     String? phone,
+    String? nationality,
     String preferredLanguage = 'english',
   }) async {
     try {
@@ -90,6 +91,7 @@ class AuthService {
         fullName: trimmedName,
         displayName: trimmedName,
         phoneNumber: _nullableTrimmed(phone),
+        nationality: _nullableTrimmed(nationality),
         preferredLanguage: _normalizedLanguage(preferredLanguage),
         createdAt: DateTime.now(),
       );
@@ -338,7 +340,7 @@ class AuthService {
       case 'invalid-email':
         return 'Please enter a valid email address.';
       case 'network-request-failed':
-        return 'Network error. Please check your connection and try again.';
+        return 'Connection issue. Please check your internet connection and try again.';
       case 'user-disabled':
         return 'This account has been disabled.';
       default:
@@ -351,9 +353,9 @@ class AuthService {
       case 'unavailable':
       case 'deadline-exceeded':
       case 'network-request-failed':
-        return 'Network error. Please check your connection and try again.';
+        return 'Connection issue. Please check your internet connection and try again.';
       case 'permission-denied':
-        return 'You do not have permission to update this profile.';
+        return 'This content is currently unavailable.';
       default:
         return 'Something went wrong. Please try again.';
     }

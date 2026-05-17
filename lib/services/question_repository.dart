@@ -88,14 +88,14 @@ class QuestionRepository {
 
   String _friendlyError(FirebaseException e) {
     if (e.code == 'permission-denied') {
-      return 'Firestore rules blocked this question. Please check question create/read permissions.';
+      return 'This content is currently unavailable.';
     }
     if (e.code == 'unavailable' ||
         e.code == 'deadline-exceeded' ||
         e.code == 'network-request-failed') {
-      return 'Network error. Your local chat still works.';
+      return 'Connection issue. Please check your internet connection and try again.';
     }
-    return 'Unable to send this question to Horus right now.';
+    return 'Something went wrong. Please try again.';
   }
 }
 

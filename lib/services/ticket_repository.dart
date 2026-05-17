@@ -106,6 +106,7 @@ class TicketRepository {
       );
       final museumTickets = <MuseumTicket>[];
       final robotTickets = <RobotTourTicket>[];
+      var skippedBookingCount = 0;
 
       for (final bookingDoc in bookingSnapshot.docs) {
         final booking = bookingDoc.data();
@@ -116,6 +117,7 @@ class TicketRepository {
         final robotTicketId = _stringValue(booking['robot_tour_ticket_id']);
 
         if (museumTicketId == null || robotTicketId == null) {
+          skippedBookingCount++;
           developer.log(
             'Skipping legacy/incomplete booking in My Tickets: '
             'booking_id=$bookingId; booking_source=$bookingSource; '
@@ -133,7 +135,27 @@ class TicketRepository {
             paths: ['museumTickets/$museumTicketId'],
           ),
         );
-        if (museumDoc.exists && museumDoc.data() != null) {
+        final hasMuseumDoc = museumDoc.exists && museumDoc.data() != null;
+        final robotDoc = await _getDoc(
+          _robotTourTickets.doc(robotTicketId),
+          _TicketFirestoreOperation(
+            label: 'read linked robot tour ticket',
+            paths: ['robotTourTickets/$robotTicketId'],
+          ),
+        );
+        final hasRobotDoc = robotDoc.exists && robotDoc.data() != null;
+        if (!hasMuseumDoc || !hasRobotDoc) {
+          skippedBookingCount++;
+          developer.log(
+            'Skipping incomplete booking in My Tickets: '
+            'booking_id=$bookingId; booking_source=$bookingSource; '
+            'has_museum_ticket=$hasMuseumDoc; has_robot_tour_ticket=$hasRobotDoc',
+            name: 'TicketRepository',
+          );
+          continue;
+        }
+
+        if (hasMuseumDoc) {
           museumTickets.add(
             MuseumTicket.fromFirestore(museumDoc.id, {
               ...museumDoc.data()!,
@@ -144,14 +166,7 @@ class TicketRepository {
           );
         }
 
-        final robotDoc = await _getDoc(
-          _robotTourTickets.doc(robotTicketId),
-          _TicketFirestoreOperation(
-            label: 'read linked robot tour ticket',
-            paths: ['robotTourTickets/$robotTicketId'],
-          ),
-        );
-        if (robotDoc.exists && robotDoc.data() != null) {
+        if (hasRobotDoc) {
           robotTickets.add(
             RobotTourTicket.fromFirestore(robotDoc.id, {
               ...robotDoc.data()!,
@@ -166,6 +181,7 @@ class TicketRepository {
       return TicketLoadResult(
         museumTickets: museumTickets,
         robotTourTickets: robotTickets,
+        skippedBookingCount: skippedBookingCount,
       );
     } on FirebaseException catch (e) {
       throw TicketRepositoryException(_friendlyFirestoreError(e));
@@ -233,6 +249,11 @@ class TicketRepository {
     try {
       final bookingDoc = await _bookingDocForCancellation(bookingId, uid);
       final booking = bookingDoc.data()!;
+      if (_stringValue(booking['status']) != TicketStatus.active.name) {
+        throw const TicketRepositoryException(
+          'Unable to cancel this booking.',
+        );
+      }
       final resolvedBookingId = bookingDoc.id;
       final bookingSource = _stringValue(booking['booking_source']);
       final resolvedMuseumTicketId =
@@ -249,6 +270,11 @@ class TicketRepository {
         _robotTourTickets.doc(resolvedRobotTicketId),
         uid,
         'robot tour ticket',
+      );
+      _validateCancellationEligibility(
+        booking: booking,
+        museumTicket: museumDoc.data()!,
+        robotTicket: robotDoc.data()!,
       );
       final museumRef = museumDoc.reference;
       final robotRef = robotDoc.reference;
@@ -381,6 +407,79 @@ class TicketRepository {
       );
     }
     return doc;
+  }
+
+  void _validateCancellationEligibility({
+    required Map<String, dynamic> booking,
+    required Map<String, dynamic> museumTicket,
+    required Map<String, dynamic> robotTicket,
+  }) {
+    final museumStatus = _stringValue(museumTicket['status']);
+    if (museumStatus == TicketStatus.used.name ||
+        museumStatus == TicketStatus.cancelled.name ||
+        museumStatus == TicketStatus.expired.name) {
+      throw const TicketRepositoryException(
+        'Unable to cancel this booking.',
+      );
+    }
+
+    final robotStatus = _stringValue(robotTicket['status']);
+    if (robotStatus == TicketStatus.paired.name ||
+        robotStatus == TicketStatus.in_progress.name ||
+        robotStatus == TicketStatus.completed.name ||
+        robotStatus == TicketStatus.cancelled.name ||
+        robotStatus == TicketStatus.expired.name) {
+      throw const TicketRepositoryException(
+        'Unable to cancel this booking.',
+      );
+    }
+
+    final startsAt = _visitStartsAt(booking);
+    if (startsAt == null ||
+        startsAt.difference(DateTime.now()) <= const Duration(hours: 24)) {
+      throw const TicketRepositoryException(
+        'Cancellation is available up to 24 hours before your visit.',
+      );
+    }
+  }
+
+  DateTime? _visitStartsAt(Map<String, dynamic> booking) {
+    final date = _stringValue(booking['visit_date']);
+    if (date == null) return null;
+    final parsedDate = DateTime.tryParse(date);
+    if (parsedDate == null) return null;
+    final time = _timeFromSlot(_stringValue(booking['visit_time']) ?? '');
+    if (time == null) {
+      return DateTime(parsedDate.year, parsedDate.month, parsedDate.day);
+    }
+    return DateTime(
+      parsedDate.year,
+      parsedDate.month,
+      parsedDate.day,
+      time.$1,
+      time.$2,
+    );
+  }
+
+  (int, int)? _timeFromSlot(String value) {
+    final raw = value.trim();
+    if (raw.isEmpty) return null;
+    final start = raw.contains(' - ') ? raw.split(' - ').first.trim() : raw;
+    final normalized = start.toUpperCase();
+    final amPm = RegExp(
+      r'^(\d{1,2}):(\d{2})\s*(AM|PM)$',
+    ).firstMatch(normalized);
+    if (amPm != null) {
+      var hour = int.parse(amPm.group(1)!);
+      final minute = int.parse(amPm.group(2)!);
+      final period = amPm.group(3)!;
+      if (period == 'PM' && hour != 12) hour += 12;
+      if (period == 'AM' && hour == 12) hour = 0;
+      return (hour, minute);
+    }
+    final match = RegExp(r'^(\d{1,2}):(\d{2})').firstMatch(start);
+    if (match == null) return null;
+    return (int.parse(match.group(1)!), int.parse(match.group(2)!));
   }
 
   String _verifiedUid(String userId) {
@@ -727,15 +826,13 @@ class TicketRepository {
   String _friendlyFirestoreError(FirebaseException e) {
     switch (e.code) {
       case 'permission-denied':
-        return 'You do not have permission to access these tickets. ${e.message ?? ''}'
-            .trim();
+        return 'This content is currently unavailable.';
       case 'unavailable':
       case 'deadline-exceeded':
       case 'network-request-failed':
-        return 'Network error. Please check your connection and try again.';
+        return 'Connection issue. Please check your internet connection and try again.';
       default:
-        return 'Ticket service is unavailable. Please try again. '
-            'Firestore ${e.code}: ${e.message ?? 'no details'}';
+        return 'Something went wrong. Please try again.';
     }
   }
 }
@@ -772,10 +869,12 @@ class TicketCheckoutResult {
 class TicketLoadResult {
   final List<MuseumTicket> museumTickets;
   final List<RobotTourTicket> robotTourTickets;
+  final int skippedBookingCount;
 
   const TicketLoadResult({
     required this.museumTickets,
     required this.robotTourTickets,
+    this.skippedBookingCount = 0,
   });
 }
 

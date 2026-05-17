@@ -20,6 +20,8 @@ class AuthProvider extends ChangeNotifier {
   AuthState _authState = AuthState.guest;
   AppUser? _currentUser;
   String? _errorMessage;
+  bool _isUpdatingProfile = false;
+  bool _isLoggingOut = false;
 
   AuthProvider(this._authService, {UserPreferencesModel? preferences})
     : _preferences = preferences {
@@ -34,6 +36,8 @@ class AuthProvider extends ChangeNotifier {
   AppUser? get currentUser => _currentUser;
   String? get errorMessage => _errorMessage;
   String? get error => _errorMessage;
+  bool get isUpdatingProfile => _isUpdatingProfile;
+  bool get isLoggingOut => _isLoggingOut;
 
   bool get isLoggedIn => _authState == AuthState.loggedIn;
   bool get isGuest => _authState == AuthState.guest;
@@ -46,6 +50,7 @@ class AuthProvider extends ChangeNotifier {
 
   /// Load current Firebase Auth session on app startup.
   Future<void> _loadSavedSession() async {
+    _authState = AuthState.loading;
     try {
       final user = await _authService.restoreCurrentUser();
       if (user != null) {
@@ -61,6 +66,13 @@ class AuthProvider extends ChangeNotifier {
       _errorMessage = _messageFromError(e);
     }
     notifyListeners();
+  }
+
+  Future<void> retryProfileLoad() async {
+    _authState = AuthState.loading;
+    _errorMessage = null;
+    notifyListeners();
+    await _loadSavedSession();
   }
 
   /// Continue as guest (no account)
@@ -98,6 +110,8 @@ class AuthProvider extends ChangeNotifier {
     required String email,
     required String password,
     String? phone,
+    String? nationality,
+    String? preferredLanguage,
   }) async {
     _authState = AuthState.loading;
     _errorMessage = null;
@@ -109,7 +123,8 @@ class AuthProvider extends ChangeNotifier {
         email: email,
         password: password,
         phone: phone,
-        preferredLanguage: _accountLanguageFromPrefs(),
+        nationality: nationality,
+        preferredLanguage: preferredLanguage ?? _accountLanguageFromPrefs(),
       );
       _currentUser = user;
       _authState = AuthState.loggedIn;
@@ -125,16 +140,25 @@ class AuthProvider extends ChangeNotifier {
   }
 
   /// Log out current user
-  Future<void> logout() async {
+  Future<bool> logout() async {
+    if (_isLoggingOut) return false;
+    _isLoggingOut = true;
+    _errorMessage = null;
+    notifyListeners();
     try {
       await _authService.logout();
       _currentUser = null;
       _authState = AuthState.loggedOut;
       _errorMessage = null;
       notifyListeners();
+      return true;
     } catch (e) {
       _authState = AuthState.error;
       _errorMessage = _messageFromError(e);
+      notifyListeners();
+      return false;
+    } finally {
+      _isLoggingOut = false;
       notifyListeners();
     }
   }
@@ -146,7 +170,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   /// Update user profile.
-  Future<void> updateProfile({
+  Future<bool> updateProfile({
     String? fullName,
     String? displayName,
     String? phoneNumber,
@@ -156,8 +180,12 @@ class AuthProvider extends ChangeNotifier {
     Map<String, dynamic>? accessibilityDefaults,
     bool? marketingOptIn,
   }) async {
-    if (_currentUser == null) return;
+    if (_currentUser == null) return false;
+    if (_isUpdatingProfile) return false;
 
+    _isUpdatingProfile = true;
+    _errorMessage = null;
+    notifyListeners();
     try {
       _currentUser = await _authService.updateProfile(
         fullName: fullName,
@@ -170,8 +198,13 @@ class AuthProvider extends ChangeNotifier {
         marketingOptIn: marketingOptIn,
       );
       notifyListeners();
+      return true;
     } catch (e) {
       _errorMessage = _messageFromError(e);
+      notifyListeners();
+      return false;
+    } finally {
+      _isUpdatingProfile = false;
       notifyListeners();
     }
   }
@@ -184,9 +217,9 @@ class AuthProvider extends ChangeNotifier {
     return await login(email: email, password: password);
   }
 
-  Future<void> updatePreferredLanguageFromUi(String languageCode) async {
-    if (_currentUser == null) return;
-    await updateProfile(
+  Future<bool> updatePreferredLanguageFromUi(String languageCode) async {
+    if (_currentUser == null) return true;
+    return updateProfile(
       preferredLanguage: AppUser.accountLanguageFromCode(languageCode),
     );
   }

@@ -53,11 +53,11 @@ class MemoriesScreen extends StatelessWidget {
                       return _StateMessage(
                         icon: Icons.wifi_off_rounded,
                         title: isArabic
-                            ? 'تعذر تحميل الذكريات'
-                            : 'Could not load memories',
+                            ? 'حدثت مشكلة في الاتصال. يرجى التحقق من الإنترنت والمحاولة مرة أخرى.'
+                            : 'Connection issue. Please check your internet connection and try again.',
                         body: isArabic
-                            ? 'تحقق من الاتصال وحاول مرة أخرى.'
-                            : 'Check your connection and try again.',
+                            ? 'حدث خطأ ما. يرجى المحاولة مرة أخرى.'
+                            : 'Something went wrong. Please try again.',
                       );
                     }
 

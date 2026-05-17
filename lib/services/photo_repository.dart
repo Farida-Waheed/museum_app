@@ -100,14 +100,14 @@ class PhotoRepository {
 
   String _friendlyError(FirebaseException e) {
     if (e.code == 'permission-denied') {
-      return 'You do not have permission to access these memories.';
+      return 'This content is currently unavailable.';
     }
     if (e.code == 'unavailable' ||
         e.code == 'deadline-exceeded' ||
         e.code == 'network-request-failed') {
-      return 'Network error. Please check your connection.';
+      return 'Connection issue. Please check your internet connection and try again.';
     }
-    return 'Unable to sync tour memories.';
+    return 'Something went wrong. Please try again.';
   }
 }
 

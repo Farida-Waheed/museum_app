@@ -169,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   const SizedBox(height: 10),
                                   Text(
                                     isArabic
-                                        ? 'سجل الدخول لمتابعة تجربة حورس-بوت داخل المتحف.'
+                                        ? 'سجل الدخول لمتابعة تجربة Horus-Bot داخل المتحف.'
                                         : 'Log in to continue your Horus-Bot museum experience.',
                                     textAlign: TextAlign.center,
                                     style: AppTextStyles.premiumBody(context)

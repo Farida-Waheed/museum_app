@@ -323,14 +323,14 @@ class TourSessionRepository {
 
   String _friendlyError(FirebaseException e) {
     if (e.code == 'permission-denied') {
-      return 'Firestore rules blocked the tour session update. For ending a tour, allow the paired user to update their tourSessions/{sessionId} to completed and release robots/{robotId} from paired to available.';
+      return 'This content is currently unavailable.';
     }
     if (e.code == 'unavailable' ||
         e.code == 'deadline-exceeded' ||
         e.code == 'network-request-failed') {
-      return 'Network error. Please check your connection and try again.';
+      return 'Connection issue. Please check your internet connection and try again.';
     }
-    return 'Unable to sync the tour session. Please try again.';
+    return 'Something went wrong. Please try again.';
   }
 }
 

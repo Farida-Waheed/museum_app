@@ -81,6 +81,7 @@ class _TicketScreenState extends State<TicketScreen> {
     required TicketProvider ticketProvider,
     required AppLocalizations l10n,
   }) async {
+    if (ticketProvider.isCheckingOut) return;
     if (!authProvider.isLoggedIn || authProvider.currentUser == null) {
       ScaffoldMessenger.of(
         context,
@@ -90,6 +91,19 @@ class _TicketScreenState extends State<TicketScreen> {
     if (!ticketProvider.currentOrderDraft.hasMuseumEntry) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.ticketsSelectMuseumEntryFirst)),
+      );
+      return;
+    }
+    final draft = ticketProvider.currentOrderDraft;
+    if (draft.visitDate.isBefore(_todayDate())) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_dateTimeRequiredMessage(_isArabic(context)))),
+      );
+      return;
+    }
+    if (draft.timeSlot.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_dateTimeRequiredMessage(_isArabic(context)))),
       );
       return;
     }
@@ -116,16 +130,16 @@ class _TicketScreenState extends State<TicketScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            ticketProvider.ticketError ?? l10n.ticketsSelectMuseumEntryFirst,
+            _friendlyBookingFailure(
+              ticketProvider.ticketError,
+              _isArabic(context),
+            ),
           ),
         ),
       );
       return;
     }
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(l10n.ticketsPurchaseComplete)));
-    Navigator.pushReplacementNamed(context, AppRoutes.myTickets);
+    await _showBookingSuccess(context: context, isArabic: _isArabic(context));
   }
 
   Future<bool> _confirmCashPayment({
@@ -163,6 +177,49 @@ class _TicketScreenState extends State<TicketScreen> {
       },
     );
     return result ?? false;
+  }
+
+  Future<void> _showBookingSuccess({
+    required BuildContext context,
+    required bool isArabic,
+  }) async {
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => Directionality(
+        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+        child: AlertDialog(
+          backgroundColor: AppColors.cinematicCard,
+          title: Text(
+            isArabic
+                ? '\u062a\u0645 \u062a\u0623\u0643\u064a\u062f \u0627\u0644\u062d\u062c\u0632'
+                : 'Booking confirmed',
+          ),
+          content: Text(
+            isArabic
+                ? '\u062a\u0645 \u062a\u0623\u0643\u064a\u062f \u0627\u0644\u062d\u062c\u0632. \u064a\u0631\u062c\u0649 \u0627\u0644\u062f\u0641\u0639 \u0639\u0646\u062f \u0634\u0628\u0627\u0643 \u0627\u0644\u0645\u062a\u062d\u0641. \u062a\u0630\u0627\u0643\u0631\u0643 \u0645\u062a\u0627\u062d\u0629 \u0627\u0644\u0622\u0646 \u0641\u064a \u062a\u0630\u0627\u0643\u0631\u064a.'
+                : 'Booking confirmed. Please pay at the museum counter. Your tickets are now available in My Tickets.',
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                Navigator.pushReplacementNamed(context, AppRoutes.myTickets);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryGold,
+                foregroundColor: AppColors.darkInk,
+              ),
+              child: Text(
+                isArabic
+                    ? '\u0639\u0631\u0636 \u062a\u0630\u0627\u0643\u0631\u064a'
+                    : 'Open My Tickets',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -330,6 +387,9 @@ class _TicketScreenState extends State<TicketScreen> {
                     warnings: _recommendedRouteWarnings,
                     isArabic: isArabic,
                   ),
+                ] else ...[
+                  const SizedBox(height: 18),
+                  _RecommendedRoutesLoadingCard(isArabic: isArabic),
                 ],
                 const SizedBox(height: 18),
                 _VisitDetailsCard(
@@ -860,13 +920,61 @@ class _RecommendedRoutesFallbackCard extends StatelessWidget {
           ? '\u0627\u0644\u0645\u0633\u0627\u0631\u0627\u062a \u0627\u0644\u0645\u0642\u062a\u0631\u062d\u0629'
           : 'Recommended Routes',
       subtitle: isArabic
-          ? '\u062a\u0639\u0630\u0631 \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0633\u0627\u0631\u0627\u062a \u0627\u0644\u0645\u0642\u062a\u0631\u062d\u0629. \u0631\u0627\u062c\u0639 \u0633\u062c\u0644 \u0627\u0644\u062a\u0637\u0628\u064a\u0642 \u0644\u0644\u062a\u0641\u0627\u0635\u064a\u0644.'
-          : 'Recommended routes could not be loaded. Check the app log for details.',
+          ? '\u0627\u0644\u0645\u0633\u0627\u0631\u0627\u062a \u0627\u0644\u0645\u0642\u062a\u0631\u062d\u0629 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629 \u062d\u0627\u0644\u064a\u0627\u064b.'
+          : 'Recommended routes are currently unavailable.',
       isArabic: isArabic,
       child: _RouteSummary(
         text: warnings.isEmpty
-            ? 'Recommended routes list is empty.'
-            : warnings.take(2).join(' | '),
+            ? (isArabic
+                ? '\u064a\u062a\u0645 \u0639\u0631\u0636 \u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0645\u062a\u0627\u062d \u0627\u0644\u0645\u062d\u0641\u0648\u0638.'
+                : 'Showing available saved content.')
+            : (isArabic
+                ? '\u064a\u062a\u0645 \u0639\u0631\u0636 \u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0645\u062a\u0627\u062d \u0627\u0644\u0645\u062d\u0641\u0648\u0638.'
+                : 'Showing available saved content.'),
+      ),
+    );
+  }
+}
+
+class _RecommendedRoutesLoadingCard extends StatelessWidget {
+  const _RecommendedRoutesLoadingCard({required this.isArabic});
+
+  final bool isArabic;
+
+  @override
+  Widget build(BuildContext context) {
+    return _SectionCard(
+      title: isArabic
+          ? '\u0627\u0644\u0645\u0633\u0627\u0631\u0627\u062a \u0627\u0644\u0645\u0642\u062a\u0631\u062d\u0629'
+          : 'Recommended Routes',
+      subtitle: isArabic
+          ? '\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0633\u0627\u0631\u0627\u062a...'
+          : 'Loading recommended routes...',
+      isArabic: isArabic,
+      child: Row(
+        textDirection: Directionality.of(context),
+        children: [
+          const SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: AppColors.primaryGold,
+            ),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              isArabic
+                  ? '\u064a\u062a\u0645 \u062a\u062d\u0636\u064a\u0631 \u062e\u064a\u0627\u0631\u0627\u062a \u0627\u0644\u062c\u0648\u0644\u0629.'
+                  : 'Preparing available tour options.',
+              textAlign: TextAlign.start,
+              style: AppTextStyles.metadata(
+                context,
+              ).copyWith(color: AppColors.bodyText),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1098,8 +1206,11 @@ class _StickyCheckoutBar extends StatelessWidget {
               width: 160,
               child: _GoldButton(
                 label: ticketProvider.isCheckingOut
-                    ? '${l10n.ticketsCheckout}...'
+                    ? (Localizations.localeOf(context).languageCode == 'ar'
+                          ? '\u062c\u0627\u0631\u064a \u0625\u0646\u0634\u0627\u0621 \u0627\u0644\u062d\u062c\u0632...'
+                          : 'Creating booking...')
                     : l10n.ticketsCheckout,
+                isLoading: ticketProvider.isCheckingOut,
                 onTap: ticketProvider.isCheckingOut
                     ? () {}
                     : ticketProvider.canCheckoutDraft
@@ -1482,26 +1593,54 @@ class _SummaryLine extends StatelessWidget {
 }
 
 class _GoldButton extends StatelessWidget {
-  const _GoldButton({required this.label, required this.onTap});
+  const _GoldButton({
+    required this.label,
+    required this.onTap,
+    this.isLoading = false,
+  });
 
   final String label;
   final VoidCallback onTap;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: onTap,
+      onPressed: isLoading ? null : onTap,
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.primaryGold,
         foregroundColor: AppColors.darkInk,
         padding: const EdgeInsets.symmetric(vertical: 14),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
-      child: Text(
-        label,
-        overflow: TextOverflow.ellipsis,
-        style: AppTextStyles.buttonLabel(context),
-      ),
+      child: isLoading
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.darkInk,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    label,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.buttonLabel(context),
+                  ),
+                ),
+              ],
+            )
+          : Text(
+              label,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.buttonLabel(context),
+            ),
     );
   }
 }
@@ -1534,6 +1673,32 @@ class _OutlineActionButton extends StatelessWidget {
 }
 
 String _money(double value) => '${value.toStringAsFixed(2)} EGP';
+
+bool _isArabic(BuildContext context) =>
+    Localizations.localeOf(context).languageCode == 'ar';
+
+DateTime _todayDate() {
+  final now = DateTime.now();
+  return DateTime(now.year, now.month, now.day);
+}
+
+String _dateTimeRequiredMessage(bool isArabic) {
+  return isArabic
+      ? '\u064a\u0631\u062c\u0649 \u0627\u062e\u062a\u064a\u0627\u0631 \u062a\u0627\u0631\u064a\u062e \u0648\u0648\u0642\u062a \u0635\u0627\u0644\u062d\u064a\u0646.'
+      : 'Please choose a valid date and time.';
+}
+
+String _friendlyBookingFailure(String? error, bool isArabic) {
+  final lower = error?.toLowerCase() ?? '';
+  if (lower.contains('connection issue') || lower.contains('network')) {
+    return isArabic
+        ? '\u062d\u062f\u062b\u062a \u0645\u0634\u0643\u0644\u0629 \u0641\u064a \u0627\u0644\u0627\u062a\u0635\u0627\u0644. \u064a\u0631\u062c\u0649 \u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0646 \u0627\u0644\u0625\u0646\u062a\u0631\u0646\u062a \u0648\u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.'
+        : 'Connection issue. Please check your internet connection and try again.';
+  }
+  return isArabic
+      ? '\u062a\u0639\u0630\u0631 \u0625\u062a\u0645\u0627\u0645 \u0627\u0644\u062d\u062c\u0632. \u064a\u0631\u062c\u0649 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.'
+      : 'We could not complete your booking. Please try again.';
+}
 
 String _localizedTimeSlot(String slot, bool isArabic) {
   switch (slot) {

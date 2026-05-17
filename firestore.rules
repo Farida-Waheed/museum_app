@@ -23,12 +23,27 @@ service cloud.firestore {
         && request.resource.data.status == 'active';
     }
 
-    function ownedCancelUpdate() {
+    function ownedCancelUpdateBase() {
       return ownsExisting()
         && ownsIncoming()
         && request.resource.data.diff(resource.data).affectedKeys()
           .hasOnly(['status', 'updated_at', 'cancelled_at'])
         && request.resource.data.status == 'cancelled';
+    }
+
+    function ownedBookingCancelUpdate() {
+      return ownedCancelUpdateBase()
+        && resource.data.status == 'active';
+    }
+
+    function ownedMuseumTicketCancelUpdate() {
+      return ownedCancelUpdateBase()
+        && !(resource.data.status in ['used', 'cancelled', 'expired']);
+    }
+
+    function ownedRobotTourTicketCancelUpdate() {
+      return ownedCancelUpdateBase()
+        && !(resource.data.status in ['paired', 'in_progress', 'completed', 'cancelled', 'expired']);
     }
 
     function activeOwnedMuseumTicket(ticketId) {
@@ -238,21 +253,21 @@ service cloud.firestore {
     match /bookings/{bookingId} {
       allow read: if ownsExisting();
       allow create: if bookingContractCreateValid();
-      allow update: if ownedCancelUpdate();
+      allow update: if ownedBookingCancelUpdate();
       allow delete: if false;
     }
 
     match /museumTickets/{ticketId} {
       allow read: if ownsExisting();
       allow create: if bookingContractCreateValid();
-      allow update: if ownedCancelUpdate();
+      allow update: if ownedMuseumTicketCancelUpdate();
       allow delete: if false;
     }
 
     match /robotTourTickets/{ticketId} {
       allow read: if ownsExisting();
       allow create: if bookingContractCreateValid();
-      allow update: if ownedCancelUpdate()
+      allow update: if ownedRobotTourTicketCancelUpdate()
         || validRobotTourTicketPairUpdate(ticketId)
         || validRobotTourTicketStartUpdate(ticketId)
         || validRobotTourTicketCompleteUpdate(ticketId);

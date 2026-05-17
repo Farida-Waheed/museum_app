@@ -22,6 +22,7 @@ class TicketProvider with ChangeNotifier {
   bool _isLoadingTickets = false;
   bool _isCheckingOut = false;
   String? _ticketError;
+  int _skippedTicketSetCount = 0;
 
   TicketProvider({TicketRepository? ticketRepository})
     : _ticketRepository = ticketRepository ?? TicketRepository();
@@ -39,6 +40,7 @@ class TicketProvider with ChangeNotifier {
   bool get isLoadingTickets => _isLoadingTickets;
   bool get isCheckingOut => _isCheckingOut;
   String? get ticketError => _ticketError;
+  int get skippedTicketSetCount => _skippedTicketSetCount;
 
   // Computed getters
   bool get hasMuseumTicket =>
@@ -333,6 +335,7 @@ class TicketProvider with ChangeNotifier {
   Future<PurchasedTicketSet?> checkoutFromDraft({
     required String userId,
   }) async {
+    if (_isCheckingOut) return null;
     if (!canCheckoutDraft) return null;
     if (userId.trim().isEmpty) {
       _ticketError = 'Please sign in to buy tickets.';
@@ -383,11 +386,11 @@ class TicketProvider with ChangeNotifier {
       resetOrderDraft();
       return purchasedSet;
     } on TicketRepositoryException catch (e) {
-      _ticketError = e.message;
+      _ticketError = _bookingErrorMessage(e.message);
       notifyListeners();
       return null;
     } catch (_) {
-      _ticketError = 'Unable to save your tickets. Please try again.';
+      _ticketError = 'We could not complete your booking. Please try again.';
       notifyListeners();
       return null;
     } finally {
@@ -405,6 +408,7 @@ class TicketProvider with ChangeNotifier {
 
     _isLoadingTickets = true;
     _ticketError = null;
+    _skippedTicketSetCount = 0;
     notifyListeners();
 
     try {
@@ -415,11 +419,16 @@ class TicketProvider with ChangeNotifier {
       _robotTourTickets
         ..removeWhere((ticket) => ticket.userId == userId)
         ..addAll(result.robotTourTickets);
-      _rebuildPurchasedSetsForUser(userId);
+      _rebuildPurchasedSetsForUser(
+        userId,
+        skippedBookingCount: result.skippedBookingCount,
+      );
     } on TicketRepositoryException catch (e) {
-      _ticketError = e.message;
+      _skippedTicketSetCount = 0;
+      _ticketError = _ticketsErrorMessage(e.message);
     } catch (_) {
-      _ticketError = 'Unable to load tickets. Showing saved tickets if any.';
+      _skippedTicketSetCount = 0;
+      _ticketError = 'We could not load your tickets. Showing available saved content.';
     } finally {
       _isLoadingTickets = false;
       notifyListeners();
@@ -427,6 +436,7 @@ class TicketProvider with ChangeNotifier {
   }
 
   Future<bool> cancelBooking(PurchasedTicketSet set) async {
+    _ticketError = null;
     final bookingId =
         set.museumTicket?.bookingId ?? set.robotTourTicket?.bookingId ?? set.id;
     final museumTicketId = set.museumTicket?.id;
@@ -439,6 +449,13 @@ class TicketProvider with ChangeNotifier {
         museumTicketId == null ||
         robotTourTicketId == null) {
       _ticketError = 'Unable to cancel this booking.';
+      notifyListeners();
+      return false;
+    }
+    if (!isBookingCancellable(set)) {
+      _ticketError = isWithinCancellationDeadline(set)
+          ? 'Cancellation is available up to 24 hours before your visit.'
+          : 'Unable to cancel this booking.';
       notifyListeners();
       return false;
     }
@@ -464,17 +481,96 @@ class TicketProvider with ChangeNotifier {
         set.robotTourTicket!.copyWith(status: TicketStatus.cancelled),
       );
       _rebuildPurchasedSetsForUser(set.userId);
+      _ticketError = null;
       notifyListeners();
       return true;
     } on TicketRepositoryException catch (e) {
       debugPrint('Ticket cancellation failed: ${e.message}');
-      _ticketError = e.message;
+      _ticketError = _ticketsErrorMessage(e.message);
     } catch (e) {
       debugPrint('Ticket cancellation failed unexpectedly: $e');
-      _ticketError = 'Unable to cancel this booking. Please try again. $e';
+      _ticketError = 'Something went wrong. Please try again.';
     }
     notifyListeners();
     return false;
+  }
+
+  String _bookingErrorMessage(String message) {
+    if (_isNetworkMessage(message)) {
+      return 'Connection issue. Please check your internet connection and try again.';
+    }
+    if (message == 'Please sign in to buy tickets.') return message;
+    return 'We could not complete your booking. Please try again.';
+  }
+
+  String _ticketsErrorMessage(String message) {
+    if (_isNetworkMessage(message)) {
+      return 'Connection issue. Please check your internet connection and try again.';
+    }
+    if (message == 'Cancellation is available up to 24 hours before your visit.') {
+      return message;
+    }
+    if (message == 'Please sign in to view tickets.') return message;
+    return 'We could not load your tickets.';
+  }
+
+  bool _isNetworkMessage(String message) {
+    final lower = message.toLowerCase();
+    return lower.contains('connection issue') || lower.contains('network');
+  }
+
+  bool isBookingCancellable(PurchasedTicketSet set) {
+    final museumTicket = set.museumTicket;
+    final robotTicket = set.robotTourTicket;
+    if (museumTicket == null || robotTicket == null) return false;
+    if (museumTicket.status == TicketStatus.used ||
+        museumTicket.status == TicketStatus.cancelled ||
+        museumTicket.status == TicketStatus.expired) {
+      return false;
+    }
+    if (robotTicket.status == TicketStatus.paired ||
+        robotTicket.status == TicketStatus.in_progress ||
+        robotTicket.status == TicketStatus.completed ||
+        robotTicket.status == TicketStatus.cancelled ||
+        robotTicket.status == TicketStatus.expired) {
+      return false;
+    }
+    return !isWithinCancellationDeadline(set);
+  }
+
+  bool isWithinCancellationDeadline(PurchasedTicketSet set) {
+    final startsAt = _visitStartsAt(set);
+    if (startsAt == null) return true;
+    return startsAt.difference(DateTime.now()) <= const Duration(hours: 24);
+  }
+
+  DateTime? _visitStartsAt(PurchasedTicketSet set) {
+    final date = set.museumTicket?.visitDate ?? set.robotTourTicket?.visitDate;
+    if (date == null) return null;
+    final rawTime =
+        set.museumTicket?.timeSlot ?? set.robotTourTicket?.timeSlot ?? '';
+    final time = _timeFromSlot(rawTime);
+    if (time == null) return DateTime(date.year, date.month, date.day);
+    return DateTime(date.year, date.month, date.day, time.$1, time.$2);
+  }
+
+  (int, int)? _timeFromSlot(String value) {
+    final raw = value.trim();
+    if (raw.isEmpty) return null;
+    final start = raw.contains(' - ') ? raw.split(' - ').first.trim() : raw;
+    final normalized = start.toUpperCase();
+    final amPm = RegExp(r'^(\d{1,2}):(\d{2})\s*(AM|PM)$').firstMatch(normalized);
+    if (amPm != null) {
+      var hour = int.parse(amPm.group(1)!);
+      final minute = int.parse(amPm.group(2)!);
+      final period = amPm.group(3)!;
+      if (period == 'PM' && hour != 12) hour += 12;
+      if (period == 'AM' && hour == 12) hour = 0;
+      return (hour, minute);
+    }
+    final match = RegExp(r'^(\d{1,2}):(\d{2})').firstMatch(start);
+    if (match == null) return null;
+    return (int.parse(match.group(1)!), int.parse(match.group(2)!));
   }
 
   MuseumTicket _createMuseumTicketFromDraft({
@@ -621,9 +717,13 @@ class TicketProvider with ChangeNotifier {
     }
   }
 
-  void _rebuildPurchasedSetsForUser(String userId) {
+  void _rebuildPurchasedSetsForUser(
+    String userId, {
+    int skippedBookingCount = 0,
+  }) {
     _purchasedTicketSets.removeWhere((set) => set.userId == userId);
     _payments.removeWhere((payment) => payment.userId == userId);
+    var skippedCount = skippedBookingCount;
 
     final userMuseumTickets = _museumTickets
         .where((ticket) => ticket.userId == userId)
@@ -636,7 +736,10 @@ class TicketProvider with ChangeNotifier {
 
     for (final museumTicket in userMuseumTickets) {
       final robotTicket = _matchingRobotTicket(museumTicket, userRobotTickets);
-      if (robotTicket == null) continue;
+      if (robotTicket == null) {
+        skippedCount++;
+        continue;
+      }
       final payment = _paymentForTickets(userId, museumTicket, robotTicket);
       _payments.add(payment);
       _purchasedTicketSets.add(
@@ -651,6 +754,7 @@ class TicketProvider with ChangeNotifier {
         ),
       );
     }
+    _skippedTicketSetCount = skippedCount;
 
     // Final QA uses complete shared bookings only. Legacy/order-only or
     // orphaned ticket docs are intentionally hidden from My Tickets.
@@ -819,6 +923,7 @@ class TicketProvider with ChangeNotifier {
     _robotTourTickets.removeWhere((t) => t.userId == userId);
     _payments.removeWhere((p) => p.userId == userId);
     _purchasedTicketSets.removeWhere((set) => set.userId == userId);
+    _skippedTicketSetCount = 0;
     notifyListeners();
   }
 

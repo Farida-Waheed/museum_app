@@ -308,10 +308,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get qrRobotPairingSubtitle =>
-      'Scan the physical Horus-Bot QR when you arrive. Your robot tour pass proves eligibility, but pairing is a separate scan.';
+      'Scan the physical Horus-Bot QR when you arrive. Your Horus-Bot Tour Ticket proves eligibility, but Robot Pairing is a separate scan.';
 
   @override
-  String get qrEntryVerifiedTitle => 'Entry pass verified';
+  String get qrEntryVerifiedTitle => 'Museum Entry Ticket verified';
 
   @override
   String get qrEntryVerifiedMessage => 'Use this QR at the museum gate.';
@@ -399,11 +399,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get qrPairingPermissionDeniedMessage =>
-      'Firestore rules blocked robot pairing. Allow authenticated users to create their own tourSessions and update robot documents only through a controlled pairing rule or backend.';
+      'This content is currently unavailable.';
 
   @override
   String get qrPairingNetworkMessage =>
-      'Network error. Please check your connection and scan again.';
+      'Connection issue. Please check your internet connection and try again.';
 
   @override
   String get qrPairingUnknownMessage =>
@@ -1217,7 +1217,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get retry => 'RETRY';
+  String get retry => 'Try again';
 
   @override
   String get doneButton => 'DONE';
@@ -1611,7 +1611,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ticketsMuseumEntrySubtitle =>
-      'Select visitor categories and quantities for the museum gate pass.';
+      'Select visitor categories and quantities for the Museum Entry Ticket.';
 
   @override
   String get ticketsRobotTourTitle => 'Horus-Bot Tour';
@@ -1876,7 +1876,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get myTicketsWalletSubtitle =>
-      'Your museum entry passes, robot tour eligibility, and order details are saved here.';
+      'Your Museum Entry Ticket, Horus-Bot Tour Ticket, and booking details are saved here.';
 
   @override
   String get myTicketsSignInTitle => 'Sign in to view your tickets';
@@ -1890,7 +1890,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get myTicketsEmptyBody =>
-      'Buy your museum entry ticket and optional Horus-Bot tour pass to see them here.';
+      'Buy your Museum Entry Ticket and optional Horus-Bot Tour Ticket to see them here.';
 
   @override
   String get myTicketsBuyTickets => 'Buy Tickets';
@@ -1954,7 +1954,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myTicketsNoCategoryBreakdown => 'No category breakdown saved.';
 
   @override
-  String get myTicketsMuseumGateCode => 'Museum gate pass code';
+  String get myTicketsMuseumGateCode => 'Museum Entry Ticket code';
 
   @override
   String get myTicketsMuseumQrExplanation =>
@@ -1970,7 +1970,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myTicketsRobotPassTitle => 'Horus-Bot Robot Tour Ticket';
 
   @override
-  String get myTicketsRobotPassCode => 'Robot tour pass code';
+  String get myTicketsRobotPassCode => 'Horus-Bot Tour Ticket code';
 
   @override
   String get myTicketsRobotPairingSeparate =>
@@ -1982,7 +1982,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get myTicketsNoPreferencesSaved =>
-      'No personalization details were saved with this pass.';
+      'No personalization details were saved with this ticket.';
 
   @override
   String get myTicketsPreferencesSummary => 'Preferences summary';
