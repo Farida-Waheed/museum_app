@@ -63,6 +63,21 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
       _showValidation(l10n.tourCustomizeSelectExhibitError);
       return;
     }
+    final availableExhibitIds = context
+        .read<ExhibitProvider>()
+        .exhibits
+        .map((exhibit) => exhibit.id)
+        .toSet();
+    if (availableExhibitIds.isEmpty ||
+        !_selectedExhibitIds.every(availableExhibitIds.contains)) {
+      final isArabic = l10n.localeName == 'ar';
+      _showValidation(
+        isArabic
+            ? '\u0645\u0639\u0644\u0648\u0645\u0627\u062a \u0627\u0644\u0645\u0639\u0631\u0648\u0636\u0627\u062a \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629 \u062d\u0627\u0644\u064a\u0627\u064b.'
+            : 'Exhibit information is currently unavailable.',
+      );
+      return;
+    }
     if (_durationMinutes == null) {
       _showValidation(l10n.tourCustomizeDurationError);
       return;
@@ -134,19 +149,13 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                     _ExhibitSelectionCard(
                       l10n: l10n,
                       exhibits: exhibits,
+                      isLoading: exhibitProvider.isLoading,
+                      error: exhibitProvider.error,
                       selectedIds: _selectedExhibitIds,
                       isArabic: isArabic,
                       onToggle: (id) =>
                           _toggleSetValue(_selectedExhibitIds, id),
                     ),
-                    if (exhibitProvider.isLoading) ...[
-                      const SizedBox(height: 10),
-                      const Center(
-                        child: CircularProgressIndicator(
-                          color: AppColors.primaryGold,
-                        ),
-                      ),
-                    ],
                     const SizedBox(height: 18),
                     _ChipSectionCard(
                       title: l10n.tourCustomizeThemesTitle,
@@ -355,6 +364,8 @@ class _ExhibitSelectionCard extends StatelessWidget {
   const _ExhibitSelectionCard({
     required this.l10n,
     required this.exhibits,
+    required this.isLoading,
+    required this.error,
     required this.selectedIds,
     required this.isArabic,
     required this.onToggle,
@@ -362,6 +373,8 @@ class _ExhibitSelectionCard extends StatelessWidget {
 
   final AppLocalizations l10n;
   final List<Exhibit> exhibits;
+  final bool isLoading;
+  final String? error;
   final Set<String> selectedIds;
   final bool isArabic;
   final ValueChanged<String> onToggle;
@@ -374,7 +387,30 @@ class _ExhibitSelectionCard extends StatelessWidget {
       subtitle: l10n.tourCustomizeExhibitsSubtitle,
       isArabic: isArabic,
       child: Column(
-        children: exhibits.map((exhibit) {
+        children: [
+          if (isLoading && exhibits.isEmpty)
+            _InlineStateMessage(
+              isArabic: isArabic,
+              isLoading: true,
+              text: isArabic
+                  ? '\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0639\u0631\u0648\u0636\u0627\u062a...'
+                  : 'Loading exhibits...',
+            )
+          else if (exhibits.isEmpty)
+            _InlineStateMessage(
+              isArabic: isArabic,
+              text: isArabic
+                  ? '\u0645\u0639\u0644\u0648\u0645\u0627\u062a \u0627\u0644\u0645\u0639\u0631\u0648\u0636\u0627\u062a \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629 \u062d\u0627\u0644\u064a\u0627\u064b.'
+                  : 'Exhibit information is currently unavailable.',
+            )
+          else if (error != null)
+            _InlineStateMessage(
+              isArabic: isArabic,
+              text: isArabic
+                  ? '\u064a\u062a\u0645 \u0639\u0631\u0636 \u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0645\u062a\u0627\u062d \u0627\u0644\u0645\u062d\u0641\u0648\u0638.'
+                  : 'Showing available saved content.',
+            ),
+          ...exhibits.map((exhibit) {
           final selected = selectedIds.contains(exhibit.id);
           final title = _safeLocalizedText(
             exhibit.getName(lang),
@@ -391,7 +427,64 @@ class _ExhibitSelectionCard extends StatelessWidget {
             selected: selected,
             onTap: () => onToggle(exhibit.id),
           );
-        }).toList(),
+        }),
+        ],
+      ),
+    );
+  }
+}
+
+class _InlineStateMessage extends StatelessWidget {
+  const _InlineStateMessage({
+    required this.isArabic,
+    required this.text,
+    this.isLoading = false,
+  });
+
+  final bool isArabic;
+  final String text;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsetsDirectional.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.secondaryGlass(0.30),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.goldBorder(0.12)),
+      ),
+      child: Row(
+        textDirection: Directionality.of(context),
+        children: [
+          if (isLoading)
+            const SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppColors.primaryGold,
+              ),
+            )
+          else
+            const Icon(
+              Icons.info_outline_rounded,
+              color: AppColors.primaryGold,
+              size: 18,
+            ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              text,
+              textAlign: TextAlign.start,
+              style: AppTextStyles.metadata(
+                context,
+              ).copyWith(color: AppColors.neutralMedium),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -271,24 +271,24 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get connectedReady =>
-      'تم الاتصال وجاهز. يمكن لـ Horus-Bot بدء الجولة الآن.';
+      'اكتمل ربط الروبوت. يمكن لـ Horus-Bot بدء الجولة المباشرة الآن.';
 
   @override
   String get museumTicketInRobotMode =>
-      'تذكرة المتحف هذه غير صالحة لاتصال الروبوت.';
+      'تذكرة دخول المتحف هذه غير صالحة لربط الروبوت.';
 
   @override
   String get notHorusBotQr => 'هذا الرمز ليس رمز QR لحوروس-بوت.';
 
   @override
-  String get connectToHorusBot => 'الاتصال بـ Horus-Bot';
+  String get connectToHorusBot => 'ربط الروبوت';
 
   @override
   String get scanMuseumEntryTicket => 'مسح تذكرة دخول المتحف';
 
   @override
   String get scanRobotQrSubtitle =>
-      'ضع رمز QR الخاص بالروبوت داخل الإطار للاتصال.';
+      'ضع رمز QR الفعلي على الروبوت داخل الإطار للربط.';
 
   @override
   String get scanMuseumQrSubtitle =>
@@ -406,10 +406,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'حدث خطأ ما. يرجى المحاولة مرة أخرى.';
 
   @override
-  String get simulateRobotScan => 'محاكاة مسح الروبوت';
+  String get simulateRobotScan => 'اختبار ربط الروبوت';
 
   @override
-  String get prototypeOnly => 'نموذج تجريبي فقط';
+  String get prototypeOnly => 'للاختبار فقط';
 
   @override
   String get audioGuide => 'وضع الدليل الصوتي';
@@ -717,7 +717,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get liveTourReconnectSubtitle =>
-      'امسح رمز QR الخاص بالروبوت مرة أخرى لمتابعة جولتك الإرشادية.';
+      'امسح رمز QR الفعلي على الروبوت مرة أخرى لمتابعة الجولة المباشرة.';
 
   @override
   String get liveTourPausedDesc => 'جولتك متوقفة حاليًا. استأنف للمتابعة.';
@@ -1583,7 +1583,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get ticketsLoginRequired =>
-      'سجل الدخول أو أنشئ حسابًا قبل إتمام الحجز.';
+      'سجل الدخول أو أنشئ حسابًا قبل إنشاء الحجز.';
 
   @override
   String get ticketsVisitDetails => 'تفاصيل الزيارة';
@@ -1800,7 +1800,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get disabled => 'غير مفعل';
 
   @override
-  String get ticketsOrderSummaryTitle => 'ملخص الطلب';
+  String get ticketsOrderSummaryTitle => 'ملخص الحجز';
 
   @override
   String get ticketsMuseumSubtotal => 'مجموع المتحف';
@@ -1810,21 +1810,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get ticketsMockCheckoutNote =>
-      'دفع تجريبي للنموذج الأولي. ستُضاف المدفوعات والمزامنة الخلفية لاحقًا.';
+      'الدفع الإلكتروني غير متاح لهذا الحجز. يرجى الدفع عند الشباك عند الوصول.';
 
   @override
-  String get ticketsCheckout => 'إتمام الحجز';
+  String get ticketsCheckout => 'إنشاء الحجز';
 
   @override
   String get ticketsSelectMuseumEntryFirst =>
-      'اختر تذكرة دخول واحدة على الأقل قبل إتمام الحجز.';
+      'اختر تذكرة دخول متحف واحدة على الأقل قبل إنشاء الحجز.';
 
   @override
   String get ticketsCompletePersonalizedTourFirst =>
-      'خصّص جولتك واحفظها قبل إتمام الحجز.';
+      'خصّص جولتك واحفظها قبل إنشاء الحجز.';
 
   @override
-  String get ticketsPurchaseComplete => 'اكتمل الشراء. تم حفظ تذاكرك.';
+  String get ticketsPurchaseComplete => 'تم تأكيد الحجز. تم حفظ تذاكرك.';
 
   @override
   String get ticketId => 'معرّف التذكرة';
@@ -1845,17 +1845,17 @@ class AppLocalizationsAr extends AppLocalizations {
   String get includedFeatures => 'المميزات المشمولة';
 
   @override
-  String get startTourSetup => 'إعداد الجولة';
+  String get startTourSetup => 'ربط الروبوت';
 
   @override
-  String get scanQrOnRobot => 'امسح رمز QR الموجود على روبوت حورس-بوت للاتصال';
+  String get scanQrOnRobot => 'امسح رمز QR الفعلي على الروبوت للربط';
 
   @override
   String get myTicketsWalletTitle => 'تذاكري';
 
   @override
   String get myTicketsWalletSubtitle =>
-      'تذاكر دخول المتحف، وأهلية جولة الروبوت، وتفاصيل الطلب محفوظة هنا.';
+      'تذكرة دخول المتحف، وتذكرة جولة Horus-Bot، وتفاصيل الحجز محفوظة هنا.';
 
   @override
   String get myTicketsSignInTitle => 'سجّل الدخول لعرض تذاكرك';
@@ -1905,7 +1905,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String myTicketsOrderCode(String code) {
-    return 'طلب #$code';
+    return 'حجز #$code';
   }
 
   @override
@@ -2111,7 +2111,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get homeConnectTourSubtitle =>
-      'اتصل بـ Horus-Bot لبدء جولتك الإرشادية.';
+      'اربط الروبوت لبدء الجولة المباشرة.';
 
   @override
   String get homeConnectedLabel => 'متصل بـ Horus-Bot';
@@ -2316,7 +2316,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mapReconnectToHorus => 'إعادة الاتصال بـ Horus-Bot';
 
   @override
-  String get mapConnectToHorus => 'اتصل بـ Horus-Bot';
+  String get mapConnectToHorus => 'ربط الروبوت';
 
   @override
   String get mapFollowingHorus => 'أنت تتابع Horus-Bot';
@@ -2396,7 +2396,7 @@ class AppLocalizationsAr extends AppLocalizations {
       'أعد الاتصال عند الحاجة، أو واصل استكشاف المعروضات بحرية.';
 
   @override
-  String get mapConnectForTourTitle => 'اتصل بـ Horus-Bot لبدء الجولة';
+  String get mapConnectForTourTitle => 'ربط الروبوت للجولة المباشرة';
 
   @override
   String get mapConnectForTourSubtitle =>

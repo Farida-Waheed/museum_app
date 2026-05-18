@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart' show debugPrint;
 
 import '../models/tour_photo.dart';
 
@@ -57,12 +58,14 @@ class PhotoRepository {
 
     final doc = _photos.doc();
     final storageRef = _storage.ref('tourPhotos/$sessionId/${doc.id}.jpg');
+    var uploaded = false;
 
     try {
       await storageRef.putData(
         bytes,
         SettableMetadata(contentType: 'image/jpeg'),
       );
+      uploaded = true;
       final url = await storageRef.getDownloadURL();
       final photo = TourPhoto(
         photoId: doc.id,
@@ -78,7 +81,20 @@ class PhotoRepository {
       await doc.set(photo.toCreateFirestore());
       return photo;
     } on FirebaseException catch (e) {
+      if (uploaded) {
+        await _deleteUploadedObjectQuietly(storageRef);
+      }
       throw PhotoRepositoryException(_friendlyError(e));
+    }
+  }
+
+  Future<void> _deleteUploadedObjectQuietly(Reference storageRef) async {
+    try {
+      await storageRef.delete();
+    } on FirebaseException catch (e) {
+      debugPrint('Photo cleanup skipped: ${e.code} ${e.message ?? ''}');
+    } catch (e) {
+      debugPrint('Photo cleanup skipped: $e');
     }
   }
 

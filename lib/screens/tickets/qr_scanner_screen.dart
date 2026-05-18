@@ -364,7 +364,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: Text(
-                'Robot pairing is available only in the mobile app.',
+                'Robot Pairing is available only in the mobile app.',
                 textAlign: TextAlign.center,
                 style: AppTextStyles.displaySectionTitle(
                   context,

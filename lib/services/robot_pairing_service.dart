@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../models/museum_ticket.dart';
 import '../models/robot_tour_ticket.dart';
 import '../models/ticket_order.dart';
 
@@ -192,7 +193,7 @@ class RobotPairingService {
   Future<_PairableRobotTicket?> _selectPairableRobotTourTicket(
     String userId, {
     String? preferredTicketId,
-  ) async {
+  }) async {
     final snapshot = await _firestore
         .collection('robotTourTickets')
         .where('userId', isEqualTo: userId)
@@ -231,10 +232,7 @@ class RobotPairingService {
     return tickets.first;
   }
 
-  bool _isUnpairedActiveRobotTicket(
-    Map<String, dynamic> data,
-    String userId,
-  ) {
+  bool _isUnpairedActiveRobotTicket(Map<String, dynamic> data, String userId) {
     return data['userId'] == userId &&
         data['status'] == TicketStatus.active.name &&
         _stringValue(data['paired_robot_id']) == null &&

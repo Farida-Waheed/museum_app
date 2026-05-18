@@ -7,6 +7,8 @@ enum TicketStatus {
   pending,
   active,
   paired,
+  // Wire value used by shared Firestore ticket contracts.
+  // ignore: constant_identifier_names
   in_progress,
   completed,
   used,

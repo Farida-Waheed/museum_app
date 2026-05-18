@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'museum_ticket.dart';
 import 'recommended_route.dart';
@@ -280,6 +281,7 @@ class TicketProvider with ChangeNotifier {
   }
 
   PurchasedTicketSet? mockCheckoutFromDraft({required String userId}) {
+    if (!kDebugMode) return null;
     if (!canCheckoutDraft) return null;
 
     final now = DateTime.now();
@@ -428,7 +430,8 @@ class TicketProvider with ChangeNotifier {
       _ticketError = _ticketsErrorMessage(e.message);
     } catch (_) {
       _skippedTicketSetCount = 0;
-      _ticketError = 'We could not load your tickets. Showing available saved content.';
+      _ticketError =
+          'We could not load your tickets. Showing available saved content.';
     } finally {
       _isLoadingTickets = false;
       notifyListeners();
@@ -507,7 +510,8 @@ class TicketProvider with ChangeNotifier {
     if (_isNetworkMessage(message)) {
       return 'Connection issue. Please check your internet connection and try again.';
     }
-    if (message == 'Cancellation is available up to 24 hours before your visit.') {
+    if (message ==
+        'Cancellation is available up to 24 hours before your visit.') {
       return message;
     }
     if (message == 'Please sign in to view tickets.') return message;
@@ -559,7 +563,9 @@ class TicketProvider with ChangeNotifier {
     if (raw.isEmpty) return null;
     final start = raw.contains(' - ') ? raw.split(' - ').first.trim() : raw;
     final normalized = start.toUpperCase();
-    final amPm = RegExp(r'^(\d{1,2}):(\d{2})\s*(AM|PM)$').firstMatch(normalized);
+    final amPm = RegExp(
+      r'^(\d{1,2}):(\d{2})\s*(AM|PM)$',
+    ).firstMatch(normalized);
     if (amPm != null) {
       var hour = int.parse(amPm.group(1)!);
       final minute = int.parse(amPm.group(2)!);
@@ -836,6 +842,7 @@ class TicketProvider with ChangeNotifier {
     required String timeSlot,
     required int visitorCount,
   }) {
+    if (!kDebugMode) return;
     final now = DateTime.now();
     final orderId = 'ORD-${now.millisecondsSinceEpoch}';
     final ticketIds = <String>[];
@@ -929,6 +936,7 @@ class TicketProvider with ChangeNotifier {
 
   /// Load mock tickets for a user (for development)
   void loadMockUserTickets(String userId) {
+    if (!kDebugMode) return;
     clearUserTickets(userId);
 
     final now = DateTime.now();

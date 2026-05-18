@@ -599,13 +599,13 @@ abstract class AppLocalizations {
   /// No description provided for @connectedReady.
   ///
   /// In en, this message translates to:
-  /// **'Connected and ready. Your Horus-Bot can now start the tour.'**
+  /// **'Robot Pairing complete. Your Horus-Bot can now start the Live Tour.'**
   String get connectedReady;
 
   /// No description provided for @museumTicketInRobotMode.
   ///
   /// In en, this message translates to:
-  /// **'This museum ticket is not valid for robot connection.'**
+  /// **'This Museum Entry Ticket is not valid for Robot Pairing.'**
   String get museumTicketInRobotMode;
 
   /// No description provided for @notHorusBotQr.
@@ -617,7 +617,7 @@ abstract class AppLocalizations {
   /// No description provided for @connectToHorusBot.
   ///
   /// In en, this message translates to:
-  /// **'Connect to Horus-Bot'**
+  /// **'Pair Robot'**
   String get connectToHorusBot;
 
   /// No description provided for @scanMuseumEntryTicket.
@@ -629,7 +629,7 @@ abstract class AppLocalizations {
   /// No description provided for @scanRobotQrSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Hold the robot QR code inside the frame to connect.'**
+  /// **'Hold the Physical Robot QR inside the frame to pair.'**
   String get scanRobotQrSubtitle;
 
   /// No description provided for @scanMuseumQrSubtitle.
@@ -827,19 +827,19 @@ abstract class AppLocalizations {
   /// No description provided for @qrPairingUnknownMessage.
   ///
   /// In en, this message translates to:
-  /// **'Robot pairing failed. Please try again.'**
+  /// **'Robot Pairing failed. Please try again.'**
   String get qrPairingUnknownMessage;
 
   /// No description provided for @simulateRobotScan.
   ///
   /// In en, this message translates to:
-  /// **'Simulate Robot Scan'**
+  /// **'Test Robot Pairing'**
   String get simulateRobotScan;
 
   /// No description provided for @prototypeOnly.
   ///
   /// In en, this message translates to:
-  /// **'Prototype only'**
+  /// **'Testing only'**
   String get prototypeOnly;
 
   /// No description provided for @audioGuide.
@@ -1703,7 +1703,7 @@ abstract class AppLocalizations {
   /// No description provided for @reservedTickets.
   ///
   /// In en, this message translates to:
-  /// **'Reserved {tickets} ticket(s) for {date}.'**
+  /// **'Booked {tickets} ticket(s) for {date}.'**
   String reservedTickets(Object date, Object tickets);
 
   /// No description provided for @viewMyTickets.
@@ -3083,7 +3083,7 @@ abstract class AppLocalizations {
   /// No description provided for @ticketsLoginRequired.
   ///
   /// In en, this message translates to:
-  /// **'Log in or create an account before checkout.'**
+  /// **'Log in or create an account before creating a booking.'**
   String get ticketsLoginRequired;
 
   /// No description provided for @ticketsVisitDetails.
@@ -3485,7 +3485,7 @@ abstract class AppLocalizations {
   /// No description provided for @ticketsOrderSummaryTitle.
   ///
   /// In en, this message translates to:
-  /// **'Order Summary'**
+  /// **'Booking Summary'**
   String get ticketsOrderSummaryTitle;
 
   /// No description provided for @ticketsMuseumSubtotal.
@@ -3503,31 +3503,31 @@ abstract class AppLocalizations {
   /// No description provided for @ticketsMockCheckoutNote.
   ///
   /// In en, this message translates to:
-  /// **'Cash only for now. Pay at the museum counter when you arrive.'**
+  /// **'Online payment is not available for this booking. Please Pay at Counter when you arrive.'**
   String get ticketsMockCheckoutNote;
 
   /// No description provided for @ticketsCheckout.
   ///
   /// In en, this message translates to:
-  /// **'Checkout'**
+  /// **'Create Booking'**
   String get ticketsCheckout;
 
   /// No description provided for @ticketsSelectMuseumEntryFirst.
   ///
   /// In en, this message translates to:
-  /// **'Select at least one museum entry ticket before checkout.'**
+  /// **'Select at least one Museum Entry Ticket before creating a booking.'**
   String get ticketsSelectMuseumEntryFirst;
 
   /// No description provided for @ticketsCompletePersonalizedTourFirst.
   ///
   /// In en, this message translates to:
-  /// **'Customize and save your personalized tour before checkout.'**
+  /// **'Customize and save your personalized tour before creating a booking.'**
   String get ticketsCompletePersonalizedTourFirst;
 
   /// No description provided for @ticketsPurchaseComplete.
   ///
   /// In en, this message translates to:
-  /// **'Purchase complete. Your tickets were saved.'**
+  /// **'Booking confirmed. Your tickets were saved.'**
   String get ticketsPurchaseComplete;
 
   /// No description provided for @ticketId.
@@ -3575,7 +3575,7 @@ abstract class AppLocalizations {
   /// No description provided for @scanQrOnRobot.
   ///
   /// In en, this message translates to:
-  /// **'Scan the QR on the physical Horus-Bot robot to connect'**
+  /// **'Scan the Physical Robot QR to pair'**
   String get scanQrOnRobot;
 
   /// No description provided for @myTicketsWalletTitle.
@@ -3677,7 +3677,7 @@ abstract class AppLocalizations {
   /// No description provided for @myTicketsOrderCode.
   ///
   /// In en, this message translates to:
-  /// **'Order #{code}'**
+  /// **'Booking #{code}'**
   String myTicketsOrderCode(String code);
 
   /// No description provided for @myTicketsNotAvailable.
@@ -3767,7 +3767,7 @@ abstract class AppLocalizations {
   /// No description provided for @myTicketsRobotPairingSeparate.
   ///
   /// In en, this message translates to:
-  /// **'Robot pairing happens later inside the mobile app by scanning the physical robot QR.'**
+  /// **'Robot Pairing happens later inside the mobile app by scanning the Physical Robot QR.'**
   String get myTicketsRobotPairingSeparate;
 
   /// No description provided for @myTicketsPhysicalRobotQrNote.
@@ -4061,7 +4061,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeConnectTourSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Connect to Horus-Bot to start your guided tour.'**
+  /// **'Pair Robot to start your Live Tour.'**
   String get homeConnectTourSubtitle;
 
   /// No description provided for @homeConnectedLabel.
@@ -4433,7 +4433,7 @@ abstract class AppLocalizations {
   /// No description provided for @mapConnectToHorus.
   ///
   /// In en, this message translates to:
-  /// **'Connect to Horus-Bot'**
+  /// **'Pair Robot'**
   String get mapConnectToHorus;
 
   /// No description provided for @mapFollowingHorus.
@@ -4583,7 +4583,7 @@ abstract class AppLocalizations {
   /// No description provided for @mapConnectForTourTitle.
   ///
   /// In en, this message translates to:
-  /// **'Connect to Horus-Bot for your tour'**
+  /// **'Pair Robot for your Live Tour'**
   String get mapConnectForTourTitle;
 
   /// No description provided for @mapConnectForTourSubtitle.

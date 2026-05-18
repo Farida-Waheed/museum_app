@@ -273,24 +273,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get connectedReady =>
-      'Connected and ready. Your Horus-Bot can now start the tour.';
+      'Robot Pairing complete. Your Horus-Bot can now start the Live Tour.';
 
   @override
   String get museumTicketInRobotMode =>
-      'This museum ticket is not valid for robot connection.';
+      'This Museum Entry Ticket is not valid for Robot Pairing.';
 
   @override
   String get notHorusBotQr => 'This QR code is not a Horus-Bot robot code.';
 
   @override
-  String get connectToHorusBot => 'Connect to Horus-Bot';
+  String get connectToHorusBot => 'Pair Robot';
 
   @override
   String get scanMuseumEntryTicket => 'Scan Museum Entry Ticket';
 
   @override
   String get scanRobotQrSubtitle =>
-      'Hold the robot QR code inside the frame to connect.';
+      'Hold the Physical Robot QR inside the frame to pair.';
 
   @override
   String get scanMuseumQrSubtitle =>
@@ -407,13 +407,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get qrPairingUnknownMessage =>
-      'Robot pairing failed. Please try again.';
+      'Robot Pairing failed. Please try again.';
 
   @override
-  String get simulateRobotScan => 'Simulate Robot Scan';
+  String get simulateRobotScan => 'Test Robot Pairing';
 
   @override
-  String get prototypeOnly => 'Prototype only';
+  String get prototypeOnly => 'Testing only';
 
   @override
   String get audioGuide => 'Audio Guide Mode';
@@ -725,7 +725,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get liveTourReconnectSubtitle =>
-      'Scan the robot QR code again to continue your guided tour.';
+      'Scan the Physical Robot QR again to continue your Live Tour.';
 
   @override
   String get liveTourPausedDesc =>
@@ -867,7 +867,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String reservedTickets(Object date, Object tickets) {
-    return 'Reserved $tickets ticket(s) for $date.';
+    return 'Booked $tickets ticket(s) for $date.';
   }
 
   @override
@@ -1601,7 +1601,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ticketsLoginRequired =>
-      'Log in or create an account before checkout.';
+      'Log in or create an account before creating a booking.';
 
   @override
   String get ticketsVisitDetails => 'Visit Details';
@@ -1819,7 +1819,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get disabled => 'Disabled';
 
   @override
-  String get ticketsOrderSummaryTitle => 'Order Summary';
+  String get ticketsOrderSummaryTitle => 'Booking Summary';
 
   @override
   String get ticketsMuseumSubtotal => 'Museum subtotal';
@@ -1829,22 +1829,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ticketsMockCheckoutNote =>
-      'Cash only for now. Pay at the museum counter when you arrive.';
+      'Online payment is not available for this booking. Please Pay at Counter when you arrive.';
 
   @override
-  String get ticketsCheckout => 'Checkout';
+  String get ticketsCheckout => 'Create Booking';
 
   @override
   String get ticketsSelectMuseumEntryFirst =>
-      'Select at least one museum entry ticket before checkout.';
+      'Select at least one Museum Entry Ticket before creating a booking.';
 
   @override
   String get ticketsCompletePersonalizedTourFirst =>
-      'Customize and save your personalized tour before checkout.';
+      'Customize and save your personalized tour before creating a booking.';
 
   @override
   String get ticketsPurchaseComplete =>
-      'Purchase complete. Your tickets were saved.';
+      'Booking confirmed. Your tickets were saved.';
 
   @override
   String get ticketId => 'Ticket ID';
@@ -1865,11 +1865,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get includedFeatures => 'Included Features';
 
   @override
-  String get startTourSetup => 'Start Tour Setup';
+  String get startTourSetup => 'Pair Robot';
 
   @override
   String get scanQrOnRobot =>
-      'Scan the QR on the physical Horus-Bot robot to connect';
+      'Scan the Physical Robot QR to pair';
 
   @override
   String get myTicketsWalletTitle => 'My Tickets';
@@ -1926,7 +1926,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String myTicketsOrderCode(String code) {
-    return 'Order #$code';
+    return 'Booking #$code';
   }
 
   @override
@@ -1974,7 +1974,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get myTicketsRobotPairingSeparate =>
-      'Robot pairing happens later inside the mobile app by scanning the physical robot QR.';
+      'Robot Pairing happens later inside the mobile app by scanning the Physical Robot QR.';
 
   @override
   String get myTicketsPhysicalRobotQrNote =>
@@ -2134,7 +2134,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeConnectTourSubtitle =>
-      'Connect to Horus-Bot to start your guided tour.';
+      'Pair Robot to start your Live Tour.';
 
   @override
   String get homeConnectedLabel => 'CONNECTED TO HORUS-BOT';
@@ -2347,7 +2347,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapReconnectToHorus => 'Reconnect to Horus-Bot';
 
   @override
-  String get mapConnectToHorus => 'Connect to Horus-Bot';
+  String get mapConnectToHorus => 'Pair Robot';
 
   @override
   String get mapFollowingHorus => 'Following Horus-Bot';
@@ -2426,7 +2426,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Reconnect when needed, or keep exploring exhibits freely.';
 
   @override
-  String get mapConnectForTourTitle => 'Connect to Horus-Bot for your tour';
+  String get mapConnectForTourTitle => 'Pair Robot for your Live Tour';
 
   @override
   String get mapConnectForTourSubtitle =>

@@ -20,6 +20,7 @@ class ExhibitListScreen extends StatelessWidget {
     final exhibits = exhibitProvider.exhibits;
     final prefs = Provider.of<UserPreferencesModel>(context);
     final l10n = AppLocalizations.of(context)!;
+    final isArabic = prefs.language == 'ar';
 
     return AppMenuShell(
       title: l10n.exhibits.toUpperCase(),
@@ -33,14 +34,35 @@ class ExhibitListScreen extends StatelessWidget {
         ),
       ],
       body: exhibitProvider.isLoading && exhibits.isEmpty
-          ? const Center(
-              child: CircularProgressIndicator(color: AppColors.primaryGold),
+          ? _ExhibitStateCard(
+              isArabic: isArabic,
+              title: isArabic
+                  ? '\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0639\u0631\u0648\u0636\u0627\u062a...'
+                  : 'Loading exhibits...',
+              isLoading: true,
+            )
+          : exhibits.isEmpty
+          ? _ExhibitStateCard(
+              isArabic: isArabic,
+              title: isArabic
+                  ? '\u0645\u0639\u0644\u0648\u0645\u0627\u062a \u0627\u0644\u0645\u0639\u0631\u0648\u0636\u0627\u062a \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629 \u062d\u0627\u0644\u064a\u0627\u064b.'
+                  : 'Exhibit information is currently unavailable.',
+              buttonLabel: isArabic
+                  ? '\u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629'
+                  : 'Try again',
+              onPressed: () => context.read<ExhibitProvider>().loadExhibits(),
             )
           : ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              itemCount: exhibits.length,
+              itemCount: exhibits.length + (exhibitProvider.error == null ? 0 : 1),
               itemBuilder: (context, index) {
-                final exhibit = exhibits[index];
+                if (exhibitProvider.error != null && index == 0) {
+                  return _SavedContentBanner(isArabic: isArabic);
+                }
+                final exhibitIndex = exhibitProvider.error == null
+                    ? index
+                    : index - 1;
+                final exhibit = exhibits[exhibitIndex];
                 return _ExhibitListTile(
                   exhibit: exhibit,
                   prefs: prefs,
@@ -149,6 +171,128 @@ class _ExhibitListTile extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ExhibitStateCard extends StatelessWidget {
+  const _ExhibitStateCard({
+    required this.isArabic,
+    required this.title,
+    this.buttonLabel,
+    this.onPressed,
+    this.isLoading = false,
+  });
+
+  final bool isArabic;
+  final String title;
+  final String? buttonLabel;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: AppColors.darkSurface,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.darkDivider),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: isArabic
+                ? CrossAxisAlignment.end
+                : CrossAxisAlignment.start,
+            children: [
+              Row(
+                textDirection: Directionality.of(context),
+                children: [
+                  if (isLoading)
+                    const SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.primaryGold,
+                      ),
+                    )
+                  else
+                    const Icon(
+                      Icons.museum_outlined,
+                      color: AppColors.primaryGold,
+                    ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      title,
+                      textAlign: TextAlign.start,
+                      style: AppTextStyles.bodyPrimary(context).copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              if (buttonLabel != null && onPressed != null) ...[
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: onPressed,
+                  child: Text(buttonLabel!),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SavedContentBanner extends StatelessWidget {
+  const _SavedContentBanner({required this.isArabic});
+
+  final bool isArabic;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.primaryGold.withOpacity(0.10),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.primaryGold.withOpacity(0.24)),
+        ),
+        child: Row(
+          textDirection: Directionality.of(context),
+          children: [
+            const Icon(
+              Icons.info_outline_rounded,
+              color: AppColors.primaryGold,
+              size: 20,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                isArabic
+                    ? '\u064a\u062a\u0645 \u0639\u0631\u0636 \u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0645\u062a\u0627\u062d \u0627\u0644\u0645\u062d\u0641\u0648\u0638.'
+                    : 'Showing available saved content.',
+                textAlign: TextAlign.start,
+                style: AppTextStyles.metadata(
+                  context,
+                ).copyWith(color: AppColors.neutralMedium),
+              ),
+            ),
+          ],
         ),
       ),
     );

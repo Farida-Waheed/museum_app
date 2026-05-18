@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'quiz.dart';
 import 'tour_session.dart';
@@ -556,6 +557,7 @@ class AppSessionProvider with ChangeNotifier {
   /// Simulate robot connection (for demo/prototype)
   /// Sets state as if robot QR was successfully scanned
   void simulateRobotConnection() {
+    if (!kDebugMode) return;
     _robotConnectionState = RobotConnectionState.connected;
     _tourLifecycleState = TourLifecycleState.active;
     _robotActivityState = RobotActivityState.waiting;

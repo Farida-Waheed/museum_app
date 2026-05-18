@@ -30,8 +30,12 @@ class RecommendedRoutesService {
               .toList()
             ..sort((a, b) => a.routeOrder.compareTo(b.routeOrder));
       final warnings = validate(routes: routes, exhibits: exhibits);
+      final invalidRouteIds = _invalidRouteIds(warnings);
+      final validRoutes = routes
+          .where((route) => !invalidRouteIds.contains(route.id))
+          .toList(growable: false);
 
-      return RecommendedRouteLoadResult(routes: routes, warnings: warnings);
+      return RecommendedRouteLoadResult(routes: validRoutes, warnings: warnings);
     } catch (error) {
       return RecommendedRouteLoadResult(
         routes: const [],
@@ -83,5 +87,18 @@ class RecommendedRoutesService {
     }
 
     return warnings;
+  }
+
+  Set<String> _invalidRouteIds(List<String> warnings) {
+    final ids = <String>{};
+    for (final warning in warnings) {
+      if (!warning.contains(': invalid artifact id') &&
+          !warning.contains(': unknown artifact id')) {
+        continue;
+      }
+      final separator = warning.indexOf(':');
+      if (separator > 0) ids.add(warning.substring(0, separator));
+    }
+    return ids;
   }
 }

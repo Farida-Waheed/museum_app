@@ -861,6 +861,11 @@ class _RobotConfigSummary extends StatelessWidget {
       final selectedExhibitIds = _newBookingExhibitIds(
         config.selectedExhibitIds,
       );
+      final selectedExhibitNames = _exhibitNamesOrNull(
+        exhibits,
+        selectedExhibitIds,
+        isArabic ? 'ar' : 'en',
+      );
       return Column(
         crossAxisAlignment: isArabic
             ? CrossAxisAlignment.end
@@ -875,11 +880,8 @@ class _RobotConfigSummary extends StatelessWidget {
           if (selectedExhibitIds.isNotEmpty)
             _BreakdownLine(
               label: l10n.exhibits,
-              value: _exhibitNames(
-                exhibits,
-                selectedExhibitIds,
-                isArabic ? 'ar' : 'en',
-              ),
+              value: selectedExhibitNames ??
+                  _legacyRouteUnavailableMessage(isArabic),
             ),
           _BreakdownLine(
             label: l10n.myTicketsThemes,
@@ -921,6 +923,11 @@ class _RobotConfigSummary extends StatelessWidget {
     final routeExhibitIds = _newBookingExhibitIds(
       config?.routeExhibitIds ?? ticket.selectedArtifactIds ?? const [],
     );
+    final routeExhibitNames = _exhibitNamesOrNull(
+      exhibits,
+      routeExhibitIds,
+      isArabic ? 'ar' : 'en',
+    );
     return Column(
       crossAxisAlignment: isArabic
           ? CrossAxisAlignment.end
@@ -944,11 +951,8 @@ class _RobotConfigSummary extends StatelessWidget {
         if (routeExhibitIds.isNotEmpty)
           _BreakdownLine(
             label: l10n.exhibits,
-            value: _exhibitNames(
-              exhibits,
-              routeExhibitIds,
-              isArabic ? 'ar' : 'en',
-            ),
+            value: routeExhibitNames ??
+                _legacyRouteUnavailableMessage(isArabic),
           ),
       ],
     );
@@ -1730,10 +1734,22 @@ String? _routeTitle(RobotTourTicket ticket, bool isArabic) {
   return title;
 }
 
-String _exhibitNames(List<Exhibit> exhibits, List<String> ids, String lang) {
+String? _exhibitNamesOrNull(List<Exhibit> exhibits, List<String> ids, String lang) {
   if (ids.isEmpty) return '';
   final byId = {for (final exhibit in exhibits) exhibit.id: exhibit};
-  return ids.map((id) => byId[id]?.getName(lang) ?? id).join(' \u2022 ');
+  final names = <String>[];
+  for (final id in ids) {
+    final exhibit = byId[id];
+    if (exhibit == null) return null;
+    names.add(exhibit.getName(lang));
+  }
+  return names.join(' \u2022 ');
+}
+
+String _legacyRouteUnavailableMessage(bool isArabic) {
+  return isArabic
+      ? '\u062a\u0641\u0627\u0635\u064a\u0644 \u0627\u0644\u0645\u0633\u0627\u0631 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629 \u0644\u0647\u0630\u0647 \u0627\u0644\u062a\u0630\u0643\u0631\u0629 \u0627\u0644\u0642\u062f\u064a\u0645\u0629.'
+      : 'Route details unavailable for this older ticket.';
 }
 
 String _themeLabel(AppLocalizations l10n, String id) {

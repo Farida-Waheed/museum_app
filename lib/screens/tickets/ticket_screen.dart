@@ -107,6 +107,23 @@ class _TicketScreenState extends State<TicketScreen> {
       );
       return;
     }
+    if (draft.robotTourType == RobotTourType.standard) {
+      if (!_recommendedRoutesLoaded) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(_routesLoadingMessage(_isArabic(context)))),
+        );
+        return;
+      }
+      final hasStandardRoute = _recommendedRoutes.any(
+        (route) => route.id == 'horus_highlights' && route.artifactIds.isNotEmpty,
+      );
+      if (!hasStandardRoute) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(_routesUnavailableMessage(_isArabic(context)))),
+        );
+        return;
+      }
+    }
     if (!ticketProvider.isPersonalizedDraftComplete) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.ticketsCompletePersonalizedTourFirst)),
@@ -1003,7 +1020,7 @@ class _NarrationLanguageCard extends StatelessWidget {
       title: l10n.language,
       subtitle: isArabic
           ? '\u0627\u062e\u062a\u0631 \u0644\u063a\u0629 \u0627\u0644\u0633\u0631\u062f \u0642\u0628\u0644 \u062a\u062e\u0635\u064a\u0635 \u0627\u0644\u062c\u0648\u0644\u0629 \u0623\u0648 \u062a\u0623\u0643\u064a\u062f\u0647\u0627.'
-          : 'Choose the tour narration language before personalization or checkout.',
+          : 'Choose the tour narration language before personalization or creating a booking.',
       isArabic: isArabic,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1686,6 +1703,18 @@ String _dateTimeRequiredMessage(bool isArabic) {
   return isArabic
       ? '\u064a\u0631\u062c\u0649 \u0627\u062e\u062a\u064a\u0627\u0631 \u062a\u0627\u0631\u064a\u062e \u0648\u0648\u0642\u062a \u0635\u0627\u0644\u062d\u064a\u0646.'
       : 'Please choose a valid date and time.';
+}
+
+String _routesLoadingMessage(bool isArabic) {
+  return isArabic
+      ? '\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0633\u0627\u0631\u0627\u062a...'
+      : 'Loading recommended routes...';
+}
+
+String _routesUnavailableMessage(bool isArabic) {
+  return isArabic
+      ? '\u0627\u0644\u0645\u0633\u0627\u0631\u0627\u062a \u0627\u0644\u0645\u0642\u062a\u0631\u062d\u0629 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629 \u062d\u0627\u0644\u064a\u0627\u064b.'
+      : 'Recommended routes are currently unavailable.';
 }
 
 String _friendlyBookingFailure(String? error, bool isArabic) {

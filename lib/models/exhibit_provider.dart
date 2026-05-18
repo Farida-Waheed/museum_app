@@ -12,7 +12,7 @@ class ExhibitProvider with ChangeNotifier {
 
   ExhibitProvider({FirebaseFirestore? firestore})
     : _firestore = firestore ?? FirebaseFirestore.instance {
-    _loadExhibits();
+    loadExhibits();
   }
 
   List<Exhibit> get exhibits => _exhibits;
@@ -21,7 +21,7 @@ class ExhibitProvider with ChangeNotifier {
   List<Exhibit> get bookmarkedExhibits =>
       _exhibits.where((e) => _bookmarkedIds.contains(e.id)).toList();
 
-  Future<void> _loadExhibits() async {
+  Future<void> loadExhibits() async {
     _isLoading = true;
     _error = null;
     notifyListeners();
@@ -40,11 +40,14 @@ class ExhibitProvider with ChangeNotifier {
       _exhibits = firestoreExhibits.isEmpty
           ? await _loadFallbackExhibits()
           : firestoreExhibits;
+      if (firestoreExhibits.isEmpty && _exhibits.isNotEmpty) {
+        _error = 'Showing available saved content.';
+      }
     } on FirebaseException catch (e) {
       debugPrint('Exhibit load failed: ${e.code} ${e.message ?? ''}');
       _error = e.code == 'permission-denied'
           ? 'This content is currently unavailable.'
-          : 'Exhibit information is currently unavailable. Showing available saved content.';
+          : 'Showing available saved content.';
       _exhibits = await _loadFallbackExhibits();
     } finally {
       _isLoading = false;
