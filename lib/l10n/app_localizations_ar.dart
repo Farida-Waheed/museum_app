@@ -394,16 +394,14 @@ class AppLocalizationsAr extends AppLocalizations {
   String get qrPairingPermissionDeniedTitle => 'تم حظر الاقتران';
 
   @override
-  String get qrPairingPermissionDeniedMessage =>
-      'هذا المحتوى غير متاح حالياً.';
+  String get qrPairingPermissionDeniedMessage => 'هذا المحتوى غير متاح حالياً.';
 
   @override
   String get qrPairingNetworkMessage =>
       'حدثت مشكلة في الاتصال. يرجى التحقق من الإنترنت والمحاولة مرة أخرى.';
 
   @override
-  String get qrPairingUnknownMessage =>
-      'حدث خطأ ما. يرجى المحاولة مرة أخرى.';
+  String get qrPairingUnknownMessage => 'حدث خطأ ما. يرجى المحاولة مرة أخرى.';
 
   @override
   String get simulateRobotScan => 'اختبار ربط الروبوت';
@@ -2110,8 +2108,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeMuseumTicketReadyTitle => 'تذكرة المتحف جاهزة';
 
   @override
-  String get homeConnectTourSubtitle =>
-      'اربط الروبوت لبدء الجولة المباشرة.';
+  String get homeConnectTourSubtitle => 'اربط الروبوت لبدء الجولة المباشرة.';
 
   @override
   String get homeConnectedLabel => 'متصل بـ Horus-Bot';

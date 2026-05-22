@@ -407,7 +407,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get qrPairingUnknownMessage =>
-      'Robot Pairing failed. Please try again.';
+      'Something went wrong. Please try again.';
 
   @override
   String get simulateRobotScan => 'Test Robot Pairing';
@@ -1868,8 +1868,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startTourSetup => 'Pair Robot';
 
   @override
-  String get scanQrOnRobot =>
-      'Scan the Physical Robot QR to pair';
+  String get scanQrOnRobot => 'Scan the Physical Robot QR to pair';
 
   @override
   String get myTicketsWalletTitle => 'My Tickets';
@@ -2133,8 +2132,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeMuseumTicketReadyTitle => 'Museum ticket ready';
 
   @override
-  String get homeConnectTourSubtitle =>
-      'Pair Robot to start your Live Tour.';
+  String get homeConnectTourSubtitle => 'Pair Robot to start your Live Tour.';
 
   @override
   String get homeConnectedLabel => 'CONNECTED TO HORUS-BOT';

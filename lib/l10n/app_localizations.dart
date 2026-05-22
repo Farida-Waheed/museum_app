@@ -827,7 +827,7 @@ abstract class AppLocalizations {
   /// No description provided for @qrPairingUnknownMessage.
   ///
   /// In en, this message translates to:
-  /// **'Robot Pairing failed. Please try again.'**
+  /// **'Something went wrong. Please try again.'**
   String get qrPairingUnknownMessage;
 
   /// No description provided for @simulateRobotScan.
@@ -1439,7 +1439,7 @@ abstract class AppLocalizations {
   /// No description provided for @liveTourReconnectSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Scan the robot QR code again to continue your guided tour.'**
+  /// **'Scan the Physical Robot QR again to continue your Live Tour.'**
   String get liveTourReconnectSubtitle;
 
   /// No description provided for @liveTourPausedDesc.
@@ -3569,7 +3569,7 @@ abstract class AppLocalizations {
   /// No description provided for @startTourSetup.
   ///
   /// In en, this message translates to:
-  /// **'Start Tour Setup'**
+  /// **'Pair Robot'**
   String get startTourSetup;
 
   /// No description provided for @scanQrOnRobot.
