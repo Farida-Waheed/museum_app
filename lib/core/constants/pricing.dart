@@ -1,5 +1,6 @@
 class BookingPricing {
   static const String currency = 'EGP';
+  static const int maxVisitorsPerBooking = 10;
 
   static const double egyptianAdult = 200;
   static const double egyptianStudent = 100;

@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import '../models/museum_ticket.dart';
 import '../models/robot_tour_ticket.dart';
 import '../models/ticket_order.dart';
+import '../core/constants/pricing.dart';
 
 class TicketRepository {
   TicketRepository({FirebaseFirestore? firestore, FirebaseAuth? firebaseAuth})
@@ -36,6 +37,38 @@ class TicketRepository {
     required TicketOrderDraft draft,
   }) async {
     final uid = _verifiedUid(userId);
+    if (draft.visitorCount < 1 ||
+        draft.visitorCount > BookingPricing.maxVisitorsPerBooking) {
+      throw TicketRepositoryException(
+        'Each Horus-Bot booking can include up to ${BookingPricing.maxVisitorsPerBooking} visitors.',
+      );
+    }
+    if (!draft.isVisitTimeFuture()) {
+      throw const TicketRepositoryException(
+        'Please choose a future visit time.',
+      );
+    }
+    if (draft.robotTourType == RobotTourType.standard &&
+        (draft.recommendedRouteId?.trim().isNotEmpty != true ||
+            (draft.standardTourConfig?.routeExhibitIds.isEmpty ?? true))) {
+      throw const TicketRepositoryException(
+        'Choose a recommended route for the standard tour.',
+      );
+    }
+    if (draft.robotTourType == RobotTourType.personalized &&
+        (draft.personalizedTourConfig?.selectedExhibitIds.isEmpty ?? true)) {
+      throw const TicketRepositoryException(
+        'Choose at least one exhibit for your personalized tour.',
+      );
+    }
+    final narrationLanguage = draft.robotTourType == RobotTourType.personalized
+        ? draft.personalizedTourConfig?.languageCode
+        : draft.standardTourConfig?.languageCode;
+    if (!TourNarrationLanguage.isSupported(narrationLanguage)) {
+      throw const TicketRepositoryException(
+        'Choose a supported tour language.',
+      );
+    }
     final now = DateTime.now();
 
     try {
@@ -573,9 +606,9 @@ class TicketRepository {
       selectedArtifactIds: isPersonalized
           ? personalizedConfig.selectedExhibitIds
           : standardConfig.routeExhibitIds,
-      routeId: draft.recommendedRouteId,
-      routeTitleEn: draft.recommendedRouteTitleEn,
-      routeTitleAr: draft.recommendedRouteTitleAr,
+      routeId: isPersonalized ? null : draft.recommendedRouteId,
+      routeTitleEn: isPersonalized ? null : draft.recommendedRouteTitleEn,
+      routeTitleAr: isPersonalized ? null : draft.recommendedRouteTitleAr,
     );
   }
 
@@ -726,18 +759,7 @@ class TicketRepository {
   }
 
   String _normalizedLanguage(String languageCode) {
-    switch (languageCode.trim().toLowerCase().replaceAll('-', '_')) {
-      case 'en':
-      case 'english':
-        return 'english';
-      case 'ar':
-      case 'arabic':
-        return 'arabic';
-      case 'egyptian_arabic':
-        return 'egyptian_arabic';
-      default:
-        return languageCode.trim().toLowerCase().replaceAll('-', '_');
-    }
+    return TourNarrationLanguage.normalize(languageCode) ?? 'english';
   }
 
   String _slotStart(String slot) {

@@ -452,19 +452,7 @@ class RobotTourTicket {
   }
 
   static String? _languageCode(String? value) {
-    if (value == null) return null;
-    switch (value.toLowerCase().replaceAll('-', '_')) {
-      case 'en':
-      case 'english':
-        return 'english';
-      case 'ar':
-      case 'arabic':
-        return 'arabic';
-      case 'egyptian_arabic':
-        return 'egyptian_arabic';
-      default:
-        return value.toLowerCase().replaceAll('-', '_');
-    }
+    return TourNarrationLanguage.normalize(value);
   }
 
   static TicketStatus _statusValue(Object? value) {

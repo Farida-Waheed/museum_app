@@ -62,6 +62,7 @@ class TicketProvider with ChangeNotifier {
   double get robotTourSubtotal => _currentOrderDraft.robotTourSubtotal;
   double get orderTotal => _currentOrderDraft.total;
   int get draftVisitorCount => _currentOrderDraft.visitorCount;
+  bool get isDraftWithinVisitorLimit => _currentOrderDraft.isWithinVisitorLimit;
   bool get isPersonalizedDraftComplete {
     if (_currentOrderDraft.robotTourType != RobotTourType.personalized) {
       return true;
@@ -74,9 +75,22 @@ class TicketProvider with ChangeNotifier {
         config.languageCode.trim().isNotEmpty;
   }
 
+  bool get isStandardDraftComplete {
+    if (_currentOrderDraft.robotTourType != RobotTourType.standard) {
+      return true;
+    }
+
+    final config = _currentOrderDraft.standardTourConfig;
+    return _currentOrderDraft.recommendedRouteId?.trim().isNotEmpty == true &&
+        config != null &&
+        config.routeExhibitIds.isNotEmpty;
+  }
+
   bool get canCheckoutDraft =>
       _currentOrderDraft.hasMuseumEntry &&
+      isDraftWithinVisitorLimit &&
       _currentOrderDraft.hasRobotTour &&
+      isStandardDraftComplete &&
       isPersonalizedDraftComplete;
 
   MuseumTicket? get latestMuseumTicket {
@@ -110,6 +124,12 @@ class TicketProvider with ChangeNotifier {
   int quantityForCategory(String categoryId) =>
       lineItemForCategory(categoryId)?.quantity ?? 0;
 
+  bool canIncrementVisitorCategory(String categoryId) {
+    final category = categoryById(categoryId);
+    return category != null &&
+        draftVisitorCount < BookingPricing.maxVisitorsPerBooking;
+  }
+
   void resetOrderDraft() {
     _currentOrderDraft = TicketOrderDraft.initial();
     _tourLanguageTouched = false;
@@ -127,6 +147,12 @@ class TicketProvider with ChangeNotifier {
   }
 
   void incrementVisitorCategory(String categoryId) {
+    if (!canIncrementVisitorCategory(categoryId)) {
+      _ticketError =
+          'Each Horus-Bot booking can include up to ${BookingPricing.maxVisitorsPerBooking} visitors.';
+      notifyListeners();
+      return;
+    }
     setVisitorCategoryQuantity(categoryId, quantityForCategory(categoryId) + 1);
   }
 
@@ -140,6 +166,16 @@ class TicketProvider with ChangeNotifier {
     if (category == null) return;
 
     final safeQuantity = quantity < 0 ? 0 : quantity;
+    final currentQuantity = quantityForCategory(categoryId);
+    final nextVisitorCount =
+        _currentOrderDraft.visitorCount - currentQuantity + safeQuantity;
+    if (nextVisitorCount > BookingPricing.maxVisitorsPerBooking) {
+      _ticketError =
+          'Each Horus-Bot booking can include up to ${BookingPricing.maxVisitorsPerBooking} visitors.';
+      notifyListeners();
+      return;
+    }
+
     final updatedItems = <MuseumTicketLineItem>[];
     var didUpdateExisting = false;
 
@@ -167,6 +203,7 @@ class TicketProvider with ChangeNotifier {
     _currentOrderDraft = _currentOrderDraft.copyWith(
       museumLineItems: updatedItems,
     );
+    _ticketError = null;
     notifyListeners();
   }
 
@@ -178,6 +215,8 @@ class TicketProvider with ChangeNotifier {
               languageCode:
                   _currentOrderDraft.standardTourConfig?.languageCode ??
                   StandardTourConfig.defaultConfig.languageCode,
+              routeName: '',
+              routeExhibitIds: const [],
             )
           : _currentOrderDraft.standardTourConfig,
       personalizedTourConfig: tourType == RobotTourType.personalized
@@ -203,43 +242,18 @@ class TicketProvider with ChangeNotifier {
         ? (currentLanguage ?? StandardTourConfig.defaultConfig.languageCode)
         : route.recommendedLanguage;
 
-    if (route.id == 'horus_highlights') {
-      _currentOrderDraft = _currentOrderDraft.copyWith(
-        robotTourType: RobotTourType.standard,
-        standardTourConfig: StandardTourConfig(
-          durationMinutes: route.durationMin,
-          languageCode: languageCode,
-          routeName: route.titleEn,
-          routeExhibitIds: artifactIds,
-        ),
-        recommendedRouteId: route.id,
-        recommendedRouteTitleEn: route.titleEn,
-        recommendedRouteTitleAr: route.titleAr,
-      );
-    } else {
-      final existing =
-          _currentOrderDraft.personalizedTourConfig ??
-          PersonalizedTourConfig.defaultConfig;
-      _currentOrderDraft = _currentOrderDraft.copyWith(
-        robotTourType: RobotTourType.personalized,
-        personalizedTourConfig: existing.copyWith(
-          selectedExhibitIds: artifactIds,
-          selectedThemes: route.theme.trim().isEmpty
-              ? route.recommendedFor
-              : [route.theme],
-          durationMinutes: route.durationMin,
-          languageCode: languageCode,
-          visitorMode: route.kidsFriendly
-              ? VisitorMode.kidsFamily
-              : existing.visitorMode,
-          pace: _paceFromRecommendedRoute(route.pace),
-          photoSpotsEnabled: route.photoSpots,
-        ),
-        recommendedRouteId: route.id,
-        recommendedRouteTitleEn: route.titleEn,
-        recommendedRouteTitleAr: route.titleAr,
-      );
-    }
+    _currentOrderDraft = _currentOrderDraft.copyWith(
+      robotTourType: RobotTourType.standard,
+      standardTourConfig: StandardTourConfig(
+        durationMinutes: route.durationMin,
+        languageCode: languageCode,
+        routeName: route.titleEn,
+        routeExhibitIds: artifactIds,
+      ),
+      recommendedRouteId: route.id,
+      recommendedRouteTitleEn: route.titleEn,
+      recommendedRouteTitleAr: route.titleAr,
+    );
     notifyListeners();
   }
 
@@ -254,7 +268,12 @@ class TicketProvider with ChangeNotifier {
   }
 
   void updateTourLanguage(String languageCode) {
-    final normalized = languageCode.trim().toLowerCase().replaceAll('-', '_');
+    final normalized = TourNarrationLanguage.normalize(languageCode);
+    if (normalized == null) {
+      _ticketError = 'Choose a supported tour language.';
+      notifyListeners();
+      return;
+    }
     _tourLanguageTouched = true;
     final standardConfig =
         _currentOrderDraft.standardTourConfig ??
@@ -282,6 +301,32 @@ class TicketProvider with ChangeNotifier {
 
   PurchasedTicketSet? mockCheckoutFromDraft({required String userId}) {
     if (!kDebugMode) return null;
+    if (_currentOrderDraft.visitorCount > BookingPricing.maxVisitorsPerBooking) {
+      _ticketError =
+          'Each Horus-Bot booking can include up to ${BookingPricing.maxVisitorsPerBooking} visitors.';
+      notifyListeners();
+      return null;
+    }
+    if (!_currentOrderDraft.isVisitTimeFuture()) {
+      _ticketError = 'Please choose a future visit time.';
+      notifyListeners();
+      return null;
+    }
+    if (!isStandardDraftComplete) {
+      _ticketError = 'Choose a recommended route for the standard tour.';
+      notifyListeners();
+      return null;
+    }
+    if (!_hasSupportedTourLanguage) {
+      _ticketError = 'Choose a supported tour language.';
+      notifyListeners();
+      return null;
+    }
+    if (!isPersonalizedDraftComplete) {
+      _ticketError = 'Choose at least one exhibit for your personalized tour.';
+      notifyListeners();
+      return null;
+    }
     if (!canCheckoutDraft) return null;
 
     final now = DateTime.now();
@@ -338,6 +383,32 @@ class TicketProvider with ChangeNotifier {
     required String userId,
   }) async {
     if (_isCheckingOut) return null;
+    if (_currentOrderDraft.visitorCount > BookingPricing.maxVisitorsPerBooking) {
+      _ticketError =
+          'Each Horus-Bot booking can include up to ${BookingPricing.maxVisitorsPerBooking} visitors.';
+      notifyListeners();
+      return null;
+    }
+    if (!_currentOrderDraft.isVisitTimeFuture()) {
+      _ticketError = 'Please choose a future visit time.';
+      notifyListeners();
+      return null;
+    }
+    if (!isStandardDraftComplete) {
+      _ticketError = 'Choose a recommended route for the standard tour.';
+      notifyListeners();
+      return null;
+    }
+    if (!_hasSupportedTourLanguage) {
+      _ticketError = 'Choose a supported tour language.';
+      notifyListeners();
+      return null;
+    }
+    if (!isPersonalizedDraftComplete) {
+      _ticketError = 'Choose at least one exhibit for your personalized tour.';
+      notifyListeners();
+      return null;
+    }
     if (!canCheckoutDraft) return null;
     if (userId.trim().isEmpty) {
       _ticketError = 'Please sign in to buy tickets.';
@@ -502,6 +573,19 @@ class TicketProvider with ChangeNotifier {
     if (_isNetworkMessage(message)) {
       return 'Connection issue. Please check your internet connection and try again.';
     }
+    if (message.contains('Horus-Bot booking') ||
+        message.contains('${BookingPricing.maxVisitorsPerBooking} visitors')) {
+      return message;
+    }
+    if (message == 'Please choose a future visit time.' ||
+        message == 'This time has already passed. Please choose a later time.') {
+      return message;
+    }
+    if (message == 'Choose a recommended route for the standard tour.' ||
+        message == 'Choose at least one exhibit for your personalized tour.' ||
+        message == 'Choose a supported tour language.') {
+      return message;
+    }
     if (message == 'Please sign in to buy tickets.') return message;
     return 'We could not complete your booking. Please try again.';
   }
@@ -644,9 +728,13 @@ class TicketProvider with ChangeNotifier {
       museumTicketId: museumTicketId,
       orderId: orderId,
       qrCodeValue: 'TKT-ROBOT-$orderId',
-      routeId: _currentOrderDraft.recommendedRouteId,
-      routeTitleEn: _currentOrderDraft.recommendedRouteTitleEn,
-      routeTitleAr: _currentOrderDraft.recommendedRouteTitleAr,
+      routeId: isPersonalized ? null : _currentOrderDraft.recommendedRouteId,
+      routeTitleEn: isPersonalized
+          ? null
+          : _currentOrderDraft.recommendedRouteTitleEn,
+      routeTitleAr: isPersonalized
+          ? null
+          : _currentOrderDraft.recommendedRouteTitleAr,
       selectedInterests: isPersonalized
           ? personalizedConfig.selectedThemes
           : null,
@@ -689,11 +777,12 @@ class TicketProvider with ChangeNotifier {
     }
   }
 
-  TourPace _paceFromRecommendedRoute(String pace) {
-    return TourPace.values.firstWhere(
-      (value) => value.name == pace.trim().toLowerCase(),
-      orElse: () => TourPace.normal,
-    );
+  bool get _hasSupportedTourLanguage {
+    final draft = _currentOrderDraft;
+    final language = draft.robotTourType == RobotTourType.personalized
+        ? draft.personalizedTourConfig?.languageCode
+        : draft.standardTourConfig?.languageCode;
+    return TourNarrationLanguage.isSupported(language);
   }
 
   void _upsertMuseumTicket(MuseumTicket ticket) {

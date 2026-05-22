@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../../app/router.dart';
 import '../../core/constants/colors.dart';
+import '../../core/constants/pricing.dart';
 import '../../core/constants/text_styles.dart';
 import '../../l10n/app_localizations.dart';
 import '../../models/auth_provider.dart';
@@ -68,11 +69,21 @@ class _TicketScreenState extends State<TicketScreen> {
     final picked = await showDatePicker(
       context: context,
       initialDate: ticketProvider.currentOrderDraft.visitDate,
-      firstDate: DateTime.now(),
+      firstDate: _todayDate(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
     if (picked != null) {
       ticketProvider.updateVisitDate(picked);
+      if (!_isFutureVisitSlot(picked, ticketProvider.currentOrderDraft.timeSlot)) {
+        String? nextSlot;
+        for (final slot in _timeSlots) {
+          if (_isFutureVisitSlot(picked, slot)) {
+            nextSlot = slot;
+            break;
+          }
+        }
+        if (nextSlot != null) ticketProvider.updateTimeSlot(nextSlot);
+      }
     }
   }
 
@@ -95,9 +106,15 @@ class _TicketScreenState extends State<TicketScreen> {
       return;
     }
     final draft = ticketProvider.currentOrderDraft;
-    if (draft.visitDate.isBefore(_todayDate())) {
+    if (draft.visitorCount > BookingPricing.maxVisitorsPerBooking) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_dateTimeRequiredMessage(_isArabic(context)))),
+        SnackBar(content: Text(_visitorLimitMessage(_isArabic(context)))),
+      );
+      return;
+    }
+    if (!draft.isVisitTimeFuture()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_visitTimeValidationMessage(draft, _isArabic(context)))),
       );
       return;
     }
@@ -114,19 +131,29 @@ class _TicketScreenState extends State<TicketScreen> {
         );
         return;
       }
-      final hasStandardRoute = _recommendedRoutes.any(
-        (route) => route.id == 'horus_highlights' && route.artifactIds.isNotEmpty,
-      );
-      if (!hasStandardRoute) {
+      if (!ticketProvider.isStandardDraftComplete) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(_routesUnavailableMessage(_isArabic(context)))),
+          SnackBar(
+            content: Text(_standardRouteRequiredMessage(_isArabic(context))),
+          ),
         );
         return;
       }
     }
     if (!ticketProvider.isPersonalizedDraftComplete) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.ticketsCompletePersonalizedTourFirst)),
+        SnackBar(
+          content: Text(_personalizedExhibitRequiredMessage(_isArabic(context))),
+        ),
+      );
+      return;
+    }
+    final narrationLanguage = draft.robotTourType == RobotTourType.personalized
+        ? draft.personalizedTourConfig?.languageCode
+        : draft.standardTourConfig?.languageCode;
+    if (!TourNarrationLanguage.isSupported(narrationLanguage)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_unsupportedTourLanguageMessage(_isArabic(context)))),
       );
       return;
     }
@@ -390,7 +417,8 @@ class _TicketScreenState extends State<TicketScreen> {
                   ticketProvider: ticketProvider,
                   isArabic: isArabic,
                 ),
-                if (_recommendedRoutes.isNotEmpty) ...[
+                if (draft.robotTourType == RobotTourType.standard &&
+                    _recommendedRoutes.isNotEmpty) ...[
                   const SizedBox(height: 18),
                   _RecommendedRoutesCard(
                     routes: _recommendedRoutes,
@@ -398,13 +426,14 @@ class _TicketScreenState extends State<TicketScreen> {
                     onRouteSelected: ticketProvider.selectRecommendedRoute,
                     isArabic: isArabic,
                   ),
-                ] else if (_recommendedRoutesLoaded) ...[
+                ] else if (draft.robotTourType == RobotTourType.standard &&
+                    _recommendedRoutesLoaded) ...[
                   const SizedBox(height: 18),
                   _RecommendedRoutesFallbackCard(
                     warnings: _recommendedRouteWarnings,
                     isArabic: isArabic,
                   ),
-                ] else ...[
+                ] else if (draft.robotTourType == RobotTourType.standard) ...[
                   const SizedBox(height: 18),
                   _RecommendedRoutesLoadingCard(isArabic: isArabic),
                 ],
@@ -412,6 +441,7 @@ class _TicketScreenState extends State<TicketScreen> {
                 _VisitDetailsCard(
                   l10n: l10n,
                   formattedDate: formattedDate,
+                  selectedDate: draft.visitDate,
                   selectedTimeSlot: draft.timeSlot,
                   timeSlots: _timeSlots,
                   onDateTap: () => _selectDate(ticketProvider),
@@ -610,6 +640,7 @@ class _VisitDetailsCard extends StatelessWidget {
   const _VisitDetailsCard({
     required this.l10n,
     required this.formattedDate,
+    required this.selectedDate,
     required this.selectedTimeSlot,
     required this.timeSlots,
     required this.onDateTap,
@@ -619,6 +650,7 @@ class _VisitDetailsCard extends StatelessWidget {
 
   final AppLocalizations l10n;
   final String formattedDate;
+  final DateTime selectedDate;
   final String selectedTimeSlot;
   final List<String> timeSlots;
   final VoidCallback onDateTap;
@@ -627,6 +659,9 @@ class _VisitDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final noRemainingSlotsToday =
+        _isToday(selectedDate) &&
+        !timeSlots.any((slot) => _isFutureVisitSlot(selectedDate, slot));
     return _SectionCard(
       title: l10n.ticketsVisitDetails,
       isArabic: isArabic,
@@ -649,14 +684,42 @@ class _VisitDetailsCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
+          if (noRemainingSlotsToday) ...[
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Text(
+                _noRemainingVisitTimesMessage(isArabic),
+                style: AppTextStyles.metadata(
+                  context,
+                ).copyWith(color: AppColors.neutralMedium),
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: timeSlots.map((slot) {
+              final isAvailable = _isFutureVisitSlot(selectedDate, slot);
               return _ChoicePill(
                 label: _localizedTimeSlot(slot, isArabic),
-                selected: slot == selectedTimeSlot,
-                onTap: () => onTimeSlotChanged(slot),
+                selected: slot == selectedTimeSlot && isAvailable,
+                enabled: isAvailable,
+                onTap: () {
+                  if (!isAvailable) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          _isToday(selectedDate)
+                              ? _pastVisitTimeMessage(isArabic)
+                              : _futureVisitTimeMessage(isArabic),
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+                  onTimeSlotChanged(slot);
+                },
               );
             }).toList(),
           ),
@@ -679,21 +742,45 @@ class _MuseumEntryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final canAddVisitor =
+        ticketProvider.draftVisitorCount < BookingPricing.maxVisitorsPerBooking;
     return _SectionCard(
       title: l10n.ticketsMuseumEntryTitle,
       subtitle: l10n.ticketsMuseumEntrySubtitle,
       isArabic: isArabic,
       child: Column(
-        children: ticketProvider.visitorCategories.map((category) {
-          final quantity = ticketProvider.quantityForCategory(category.id);
-          return _CategoryQuantityRow(
-            category: category,
-            quantity: quantity,
-            languageCode: isArabic ? 'ar' : 'en',
-            onMinus: () => ticketProvider.decrementVisitorCategory(category.id),
-            onPlus: () => ticketProvider.incrementVisitorCategory(category.id),
-          );
-        }).toList(),
+        children: [
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: Text(
+              _visitorLimitHelper(isArabic),
+              style: AppTextStyles.metadata(
+                context,
+              ).copyWith(color: AppColors.primaryGold),
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...ticketProvider.visitorCategories.map((category) {
+            final quantity = ticketProvider.quantityForCategory(category.id);
+            return _CategoryQuantityRow(
+              category: category,
+              quantity: quantity,
+              languageCode: isArabic ? 'ar' : 'en',
+              canAdd: canAddVisitor,
+              onMinus: () =>
+                  ticketProvider.decrementVisitorCategory(category.id),
+              onPlus: () {
+                if (!ticketProvider.canIncrementVisitorCategory(category.id)) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(_visitorLimitMessage(isArabic))),
+                  );
+                  return;
+                }
+                ticketProvider.incrementVisitorCategory(category.id);
+              },
+            );
+          }),
+        ],
       ),
     );
   }
@@ -704,6 +791,7 @@ class _CategoryQuantityRow extends StatelessWidget {
     required this.category,
     required this.quantity,
     required this.languageCode,
+    required this.canAdd,
     required this.onMinus,
     required this.onPlus,
   });
@@ -711,6 +799,7 @@ class _CategoryQuantityRow extends StatelessWidget {
   final VisitorTicketCategory category;
   final int quantity;
   final String languageCode;
+  final bool canAdd;
   final VoidCallback onMinus;
   final VoidCallback onPlus;
 
@@ -767,7 +856,11 @@ class _CategoryQuantityRow extends StatelessWidget {
               ).copyWith(fontWeight: FontWeight.w800),
             ),
           ),
-          _RoundIconButton(icon: Icons.add_rounded, onTap: onPlus),
+          _RoundIconButton(
+            icon: Icons.add_rounded,
+            onTap: onPlus,
+            enabled: canAdd,
+          ),
         ],
       ),
     );
@@ -1030,21 +1123,12 @@ class _NarrationLanguageCard extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              _ChoicePill(
-                label: l10n.ticketsEnglish,
-                selected: languageCode == 'english',
-                onTap: () => ticketProvider.updateTourLanguage('english'),
-              ),
-              _ChoicePill(
-                label: l10n.ticketsArabic,
-                selected: languageCode == 'arabic',
-                onTap: () => ticketProvider.updateTourLanguage('arabic'),
-              ),
-              _ChoicePill(
-                label: l10n.egyptianArabic,
-                selected: languageCode == 'egyptian_arabic',
-                onTap: () =>
-                    ticketProvider.updateTourLanguage('egyptian_arabic'),
+              ...TourNarrationLanguage.values.map(
+                (language) => _ChoicePill(
+                  label: TourNarrationLanguage.label(language, isArabic),
+                  selected: languageCode == language,
+                  onTap: () => ticketProvider.updateTourLanguage(language),
+                ),
               ),
             ],
           ),
@@ -1380,11 +1464,13 @@ class _ChoicePill extends StatelessWidget {
     required this.label,
     required this.selected,
     required this.onTap,
+    this.enabled = true,
   });
 
   final String label;
   final bool selected;
   final VoidCallback onTap;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -1407,7 +1493,11 @@ class _ChoicePill extends StatelessWidget {
         child: Text(
           label,
           style: AppTextStyles.metadata(context).copyWith(
-            color: selected ? AppColors.primaryGold : AppColors.bodyText,
+            color: !enabled
+                ? AppColors.neutralMedium.withValues(alpha: 0.65)
+                : selected
+                    ? AppColors.primaryGold
+                    : AppColors.bodyText,
             fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
           ),
         ),
@@ -1417,10 +1507,15 @@ class _ChoicePill extends StatelessWidget {
 }
 
 class _RoundIconButton extends StatelessWidget {
-  const _RoundIconButton({required this.icon, required this.onTap});
+  const _RoundIconButton({
+    required this.icon,
+    required this.onTap,
+    this.enabled = true,
+  });
 
   final IconData icon;
   final VoidCallback onTap;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -1435,7 +1530,13 @@ class _RoundIconButton extends StatelessWidget {
           shape: BoxShape.circle,
           border: Border.all(color: AppColors.goldBorder(0.18)),
         ),
-        child: Icon(icon, color: AppColors.primaryGold, size: 18),
+        child: Icon(
+          icon,
+          color: enabled
+              ? AppColors.primaryGold
+              : AppColors.primaryGold.withOpacity(0.45),
+          size: 18,
+        ),
       ),
     );
   }
@@ -1705,6 +1806,47 @@ String _dateTimeRequiredMessage(bool isArabic) {
       : 'Please choose a valid date and time.';
 }
 
+bool _isToday(DateTime date) {
+  final today = _todayDate();
+  return date.year == today.year &&
+      date.month == today.month &&
+      date.day == today.day;
+}
+
+bool _isFutureVisitSlot(DateTime date, String slot) {
+  final startsAt = visitDateTimeFromParts(date, slot);
+  return startsAt != null && startsAt.isAfter(DateTime.now());
+}
+
+String _futureVisitTimeMessage(bool isArabic) {
+  return isArabic
+      ? 'يرجى اختيار وقت زيارة قادم.'
+      : 'Please choose a future visit time.';
+}
+
+String _pastVisitTimeMessage(bool isArabic) {
+  return isArabic
+      ? 'هذا الوقت قد مر بالفعل. يرجى اختيار وقت لاحق.'
+      : 'This time has already passed. Please choose a later time.';
+}
+
+String _noRemainingVisitTimesMessage(bool isArabic) {
+  return isArabic
+      ? 'لا توجد مواعيد زيارة متاحة اليوم. يرجى اختيار تاريخ آخر.'
+      : 'No remaining visit times are available today. Please choose another date.';
+}
+
+String _visitTimeValidationMessage(TicketOrderDraft draft, bool isArabic) {
+  final allTodaySlotsPassed =
+      _isToday(draft.visitDate) &&
+      !_TicketScreenState._timeSlots.any(
+        (slot) => _isFutureVisitSlot(draft.visitDate, slot),
+      );
+  if (allTodaySlotsPassed) return _noRemainingVisitTimesMessage(isArabic);
+  if (_isToday(draft.visitDate)) return _pastVisitTimeMessage(isArabic);
+  return _futureVisitTimeMessage(isArabic);
+}
+
 String _routesLoadingMessage(bool isArabic) {
   return isArabic
       ? '\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0633\u0627\u0631\u0627\u062a...'
@@ -1715,6 +1857,36 @@ String _routesUnavailableMessage(bool isArabic) {
   return isArabic
       ? '\u0627\u0644\u0645\u0633\u0627\u0631\u0627\u062a \u0627\u0644\u0645\u0642\u062a\u0631\u062d\u0629 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629 \u062d\u0627\u0644\u064a\u0627\u064b.'
       : 'Recommended routes are currently unavailable.';
+}
+
+String _standardRouteRequiredMessage(bool isArabic) {
+  return isArabic
+      ? 'اختر مساراً مقترحاً للجولة القياسية.'
+      : 'Choose a recommended route for the standard tour.';
+}
+
+String _personalizedExhibitRequiredMessage(bool isArabic) {
+  return isArabic
+      ? 'اختر معروضاً واحداً على الأقل لجولتك المخصصة.'
+      : 'Choose at least one exhibit for your personalized tour.';
+}
+
+String _unsupportedTourLanguageMessage(bool isArabic) {
+  return isArabic
+      ? 'اختر لغة جولة مدعومة.'
+      : 'Choose a supported tour language.';
+}
+
+String _visitorLimitMessage(bool isArabic) {
+  return isArabic
+      ? 'يمكن أن يشمل حجز Horus-Bot حتى ${BookingPricing.maxVisitorsPerBooking} زوار فقط.'
+      : 'Each Horus-Bot booking can include up to ${BookingPricing.maxVisitorsPerBooking} visitors.';
+}
+
+String _visitorLimitHelper(bool isArabic) {
+  return isArabic
+      ? 'الحد الأقصى ${BookingPricing.maxVisitorsPerBooking} زوار لكل حجز.'
+      : 'Maximum ${BookingPricing.maxVisitorsPerBooking} visitors per booking.';
 }
 
 String _friendlyBookingFailure(String? error, bool isArabic) {

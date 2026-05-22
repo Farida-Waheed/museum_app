@@ -1690,15 +1690,7 @@ String _tourTypeLabel(AppLocalizations l10n, RobotTourType tourType) {
 }
 
 String _languageLabel(AppLocalizations l10n, String languageCode) {
-  switch (languageCode.toLowerCase().replaceAll('-', '_')) {
-    case 'ar':
-    case 'arabic':
-      return l10n.ticketsArabic;
-    case 'egyptian_arabic':
-      return l10n.egyptianArabic;
-    default:
-      return l10n.ticketsEnglish;
-  }
+  return TourNarrationLanguage.label(languageCode, l10n.localeName == 'ar');
 }
 
 String _localizedTimeSlot(String slot, bool isArabic) {

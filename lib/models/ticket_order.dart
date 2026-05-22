@@ -9,6 +9,66 @@ enum VisitorAgeGroup { adult, student, child }
 
 enum RobotTourType { none, standard, personalized }
 
+class TourNarrationLanguage {
+  static const List<String> values = [
+    'english',
+    'arabic',
+    'egyptian_arabic',
+    'french',
+    'german',
+    'spanish',
+    'italian',
+    'korean',
+    'chinese',
+    'japanese',
+    'other',
+  ];
+
+  static String? normalize(String? value) {
+    final normalized = value?.trim().toLowerCase().replaceAll('-', '_');
+    if (normalized == null || normalized.isEmpty) return null;
+    switch (normalized) {
+      case 'en':
+        return 'english';
+      case 'ar':
+        return 'arabic';
+      default:
+        return values.contains(normalized) ? normalized : null;
+    }
+  }
+
+  static bool isSupported(String? value) => normalize(value) != null;
+
+  static String label(String? value, bool isArabic) {
+    switch (normalize(value)) {
+      case 'english':
+        return isArabic ? 'الإنجليزية' : 'English';
+      case 'arabic':
+        return isArabic ? 'العربية' : 'Arabic';
+      case 'egyptian_arabic':
+        return isArabic ? 'العربية المصرية' : 'Egyptian Arabic';
+      case 'french':
+        return isArabic ? 'الفرنسية' : 'French';
+      case 'german':
+        return isArabic ? 'الألمانية' : 'German';
+      case 'spanish':
+        return isArabic ? 'الإسبانية' : 'Spanish';
+      case 'italian':
+        return isArabic ? 'الإيطالية' : 'Italian';
+      case 'korean':
+        return isArabic ? 'الكورية' : 'Korean';
+      case 'chinese':
+        return isArabic ? 'الصينية' : 'Chinese';
+      case 'japanese':
+        return isArabic ? 'اليابانية' : 'Japanese';
+      case 'other':
+        return isArabic ? 'أخرى' : 'Other';
+      default:
+        return isArabic ? 'اللغة المختارة' : 'Selected language';
+    }
+  }
+}
+
 enum VisitorMode { adult, student, kidsFamily, disabledVisitor }
 
 enum TourPace { relaxed, normal, fast }
@@ -370,20 +430,7 @@ List<String> _stringList(Object? value) {
 }
 
 String? _normalizeLanguage(Object? value) {
-  final raw = value?.toString().trim();
-  if (raw == null || raw.isEmpty) return null;
-  switch (raw.toLowerCase().replaceAll('-', '_')) {
-    case 'en':
-    case 'english':
-      return 'english';
-    case 'ar':
-    case 'arabic':
-      return 'arabic';
-    case 'egyptian_arabic':
-      return 'egyptian_arabic';
-    default:
-      return raw.toLowerCase().replaceAll('-', '_');
-  }
+  return TourNarrationLanguage.normalize(value?.toString());
 }
 
 class TicketOrderDraft {
@@ -416,6 +463,16 @@ class TicketOrderDraft {
       museumLineItems.fold(0, (total, item) => total + item.quantity);
 
   bool get hasMuseumEntry => visitorCount > 0;
+
+  bool get isWithinVisitorLimit =>
+      visitorCount <= BookingPricing.maxVisitorsPerBooking;
+
+  DateTime? get visitStartsAt => visitDateTimeFromParts(visitDate, timeSlot);
+
+  bool isVisitTimeFuture([DateTime? now]) {
+    final startsAt = visitStartsAt;
+    return startsAt != null && startsAt.isAfter(now ?? DateTime.now());
+  }
 
   bool get hasRobotTour => robotTourType != RobotTourType.none;
 
@@ -521,6 +578,33 @@ class TicketOrderDraft {
       personalizedTourConfig: PersonalizedTourConfig.defaultConfig,
     );
   }
+}
+
+DateTime? visitDateTimeFromParts(DateTime date, String timeSlot) {
+  final time = timeFromSlot(timeSlot);
+  if (time == null) return null;
+  return DateTime(date.year, date.month, date.day, time.$1, time.$2);
+}
+
+(int, int)? timeFromSlot(String value) {
+  final raw = value.trim();
+  if (raw.isEmpty) return null;
+  final start = raw.contains(' - ') ? raw.split(' - ').first.trim() : raw;
+  final normalized = start.toUpperCase();
+  final amPm = RegExp(
+    r'^(\d{1,2}):(\d{2})\s*(AM|PM)$',
+  ).firstMatch(normalized);
+  if (amPm != null) {
+    var hour = int.parse(amPm.group(1)!);
+    final minute = int.parse(amPm.group(2)!);
+    final period = amPm.group(3)!;
+    if (period == 'PM' && hour != 12) hour += 12;
+    if (period == 'AM' && hour == 12) hour = 0;
+    return (hour, minute);
+  }
+  final match = RegExp(r'^(\d{1,2}):(\d{2})').firstMatch(start);
+  if (match == null) return null;
+  return (int.parse(match.group(1)!), int.parse(match.group(2)!));
 }
 
 class PurchasedTicketSet {

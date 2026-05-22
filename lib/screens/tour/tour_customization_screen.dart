@@ -178,7 +178,7 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                     const SizedBox(height: 18),
                     _SingleChoiceSection<String>(
                       title: l10n.language,
-                      options: const ['english', 'arabic', 'egyptian_arabic'],
+                      options: TourNarrationLanguage.values,
                       selected: _languageCode,
                       labelFor: (value) => _languageLabel(l10n, value),
                       onSelected: (value) =>
@@ -315,14 +315,7 @@ String _paceLabel(AppLocalizations l10n, TourPace pace) {
 }
 
 String _languageLabel(AppLocalizations l10n, String languageCode) {
-  switch (languageCode.toLowerCase().replaceAll('-', '_')) {
-    case 'arabic':
-      return l10n.ticketsArabic;
-    case 'egyptian_arabic':
-      return l10n.egyptianArabic;
-    default:
-      return l10n.ticketsEnglish;
-  }
+  return TourNarrationLanguage.label(languageCode, l10n.localeName == 'ar');
 }
 
 class _IntroCard extends StatelessWidget {
