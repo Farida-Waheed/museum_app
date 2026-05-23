@@ -13,7 +13,6 @@ class TourNarrationLanguage {
   static const List<String> values = [
     'english',
     'arabic',
-    'egyptian_arabic',
     'french',
     'german',
     'spanish',
@@ -39,37 +38,47 @@ class TourNarrationLanguage {
 
   static bool isSupported(String? value) => normalize(value) != null;
 
-  static String label(String? value, bool isArabic) {
+  static String label(String? value, bool isArabic, {String? otherText}) {
+    if (normalize(value) == 'other' && otherText?.trim().isNotEmpty == true) {
+      return isArabic ? '\u0644\u063a\u0629 \u0623\u062e\u0631\u0649: ${otherText!.trim()}' : 'Other: ${otherText!.trim()}';
+    }
     switch (normalize(value)) {
       case 'english':
-        return isArabic ? 'الإنجليزية' : 'English';
+        return isArabic ? '\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629' : 'English';
       case 'arabic':
-        return isArabic ? 'العربية' : 'Arabic';
-      case 'egyptian_arabic':
-        return isArabic ? 'العربية المصرية' : 'Egyptian Arabic';
+        return isArabic ? '\u0627\u0644\u0639\u0631\u0628\u064a\u0629' : 'Arabic';
       case 'french':
-        return isArabic ? 'الفرنسية' : 'French';
+        return isArabic ? '\u0627\u0644\u0641\u0631\u0646\u0633\u064a\u0629' : 'French';
       case 'german':
-        return isArabic ? 'الألمانية' : 'German';
+        return isArabic ? '\u0627\u0644\u0623\u0644\u0645\u0627\u0646\u064a\u0629' : 'German';
       case 'spanish':
-        return isArabic ? 'الإسبانية' : 'Spanish';
+        return isArabic ? '\u0627\u0644\u0625\u0633\u0628\u0627\u0646\u064a\u0629' : 'Spanish';
       case 'italian':
-        return isArabic ? 'الإيطالية' : 'Italian';
+        return isArabic ? '\u0627\u0644\u0625\u064a\u0637\u0627\u0644\u064a\u0629' : 'Italian';
       case 'korean':
-        return isArabic ? 'الكورية' : 'Korean';
+        return isArabic ? '\u0627\u0644\u0643\u0648\u0631\u064a\u0629' : 'Korean';
       case 'chinese':
-        return isArabic ? 'الصينية' : 'Chinese';
+        return isArabic ? '\u0627\u0644\u0635\u064a\u0646\u064a\u0629' : 'Chinese';
       case 'japanese':
-        return isArabic ? 'اليابانية' : 'Japanese';
+        return isArabic ? '\u0627\u0644\u064a\u0627\u0628\u0627\u0646\u064a\u0629' : 'Japanese';
       case 'other':
-        return isArabic ? 'أخرى' : 'Other';
+        return isArabic ? '\u0644\u063a\u0629 \u0623\u062e\u0631\u0649' : 'Other';
       default:
-        return isArabic ? 'اللغة المختارة' : 'Selected language';
+        return isArabic ? '\u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u0645\u062e\u062a\u0627\u0631\u0629' : 'Selected language';
     }
   }
 }
 
-enum VisitorMode { adult, student, kidsFamily, disabledVisitor }
+int maxExhibitsForDuration(int? durationMinutes) {
+  final duration = durationMinutes ?? 45;
+  if (duration <= 30) return 4;
+  if (duration <= 45) return 6;
+  if (duration <= 50) return 7;
+  if (duration <= 60) return 8;
+  return 12;
+}
+
+enum VisitorMode { adult, student, disabledVisitor }
 
 enum TourPace { relaxed, normal, fast }
 
@@ -273,12 +282,14 @@ class StandardTourConfig {
 
   final int durationMinutes;
   final String languageCode;
+  final String? languageOther;
   final String routeName;
   final List<String> routeExhibitIds;
 
   const StandardTourConfig({
     required this.durationMinutes,
     required this.languageCode,
+    this.languageOther,
     required this.routeName,
     required this.routeExhibitIds,
   });
@@ -286,12 +297,14 @@ class StandardTourConfig {
   StandardTourConfig copyWith({
     int? durationMinutes,
     String? languageCode,
+    String? languageOther,
     String? routeName,
     List<String>? routeExhibitIds,
   }) {
     return StandardTourConfig(
       durationMinutes: durationMinutes ?? this.durationMinutes,
       languageCode: languageCode ?? this.languageCode,
+      languageOther: languageOther ?? this.languageOther,
       routeName: routeName ?? this.routeName,
       routeExhibitIds: routeExhibitIds ?? this.routeExhibitIds,
     );
@@ -301,6 +314,7 @@ class StandardTourConfig {
     return {
       'durationMinutes': durationMinutes,
       'languageCode': languageCode,
+      'languageOther': languageOther,
       'routeName': routeName,
       'routeExhibitIds': routeExhibitIds,
     };
@@ -310,6 +324,7 @@ class StandardTourConfig {
     return StandardTourConfig(
       durationMinutes: _intValue(json['durationMinutes']) ?? 45,
       languageCode: _normalizeLanguage(json['languageCode']) ?? 'english',
+      languageOther: _stringValue(json['languageOther'] ?? json['preferred_language_other']),
       routeName: json['routeName'] as String? ?? defaultConfig.routeName,
       routeExhibitIds: _stringList(json['routeExhibitIds']),
     );
@@ -318,6 +333,7 @@ class StandardTourConfig {
   static const StandardTourConfig defaultConfig = StandardTourConfig(
     durationMinutes: 45,
     languageCode: 'english',
+    languageOther: null,
     routeName: 'Horus-Bot Highlights Route',
     routeExhibitIds: officialRouteExhibitIds,
   );
@@ -328,22 +344,22 @@ class PersonalizedTourConfig {
   final List<String> selectedThemes;
   final int durationMinutes;
   final String languageCode;
+  final String? languageOther;
   final List<String> accessibilityNeeds;
   final VisitorMode visitorMode;
   final TourPace pace;
   final bool photoSpotsEnabled;
-  final bool avoidCrowds;
 
   const PersonalizedTourConfig({
     required this.selectedExhibitIds,
     required this.selectedThemes,
     required this.durationMinutes,
     required this.languageCode,
+    this.languageOther,
     required this.accessibilityNeeds,
     required this.visitorMode,
     required this.pace,
     required this.photoSpotsEnabled,
-    required this.avoidCrowds,
   });
 
   PersonalizedTourConfig copyWith({
@@ -351,22 +367,22 @@ class PersonalizedTourConfig {
     List<String>? selectedThemes,
     int? durationMinutes,
     String? languageCode,
+    String? languageOther,
     List<String>? accessibilityNeeds,
     VisitorMode? visitorMode,
     TourPace? pace,
     bool? photoSpotsEnabled,
-    bool? avoidCrowds,
   }) {
     return PersonalizedTourConfig(
       selectedExhibitIds: selectedExhibitIds ?? this.selectedExhibitIds,
       selectedThemes: selectedThemes ?? this.selectedThemes,
       durationMinutes: durationMinutes ?? this.durationMinutes,
       languageCode: languageCode ?? this.languageCode,
+      languageOther: languageOther ?? this.languageOther,
       accessibilityNeeds: accessibilityNeeds ?? this.accessibilityNeeds,
       visitorMode: visitorMode ?? this.visitorMode,
       pace: pace ?? this.pace,
       photoSpotsEnabled: photoSpotsEnabled ?? this.photoSpotsEnabled,
-      avoidCrowds: avoidCrowds ?? this.avoidCrowds,
     );
   }
 
@@ -376,11 +392,11 @@ class PersonalizedTourConfig {
       'selectedThemes': selectedThemes,
       'durationMinutes': durationMinutes,
       'languageCode': languageCode,
+      'languageOther': languageOther,
       'accessibilityNeeds': accessibilityNeeds,
       'visitorMode': visitorMode.name,
       'pace': pace.name,
       'photoSpotsEnabled': photoSpotsEnabled,
-      'avoidCrowds': avoidCrowds,
     };
   }
 
@@ -390,6 +406,7 @@ class PersonalizedTourConfig {
       selectedThemes: _stringList(json['selectedThemes']),
       durationMinutes: _intValue(json['durationMinutes']) ?? 45,
       languageCode: _normalizeLanguage(json['languageCode']) ?? 'english',
+      languageOther: _stringValue(json['languageOther'] ?? json['preferred_language_other']),
       accessibilityNeeds: _stringList(json['accessibilityNeeds']),
       visitorMode: VisitorMode.values.firstWhere(
         (value) => value.name == json['visitorMode'],
@@ -400,7 +417,6 @@ class PersonalizedTourConfig {
         orElse: () => TourPace.normal,
       ),
       photoSpotsEnabled: json['photoSpotsEnabled'] as bool? ?? false,
-      avoidCrowds: json['avoidCrowds'] as bool? ?? false,
     );
   }
 
@@ -409,11 +425,11 @@ class PersonalizedTourConfig {
     selectedThemes: [],
     durationMinutes: 45,
     languageCode: 'english',
+    languageOther: null,
     accessibilityNeeds: [],
     visitorMode: VisitorMode.adult,
     pace: TourPace.normal,
     photoSpotsEnabled: false,
-    avoidCrowds: false,
   );
 }
 
@@ -431,6 +447,11 @@ List<String> _stringList(Object? value) {
 
 String? _normalizeLanguage(Object? value) {
   return TourNarrationLanguage.normalize(value?.toString());
+}
+
+String? _stringValue(Object? value) {
+  if (value is String && value.trim().isNotEmpty) return value.trim();
+  return null;
 }
 
 class TicketOrderDraft {
@@ -637,4 +658,80 @@ class PurchasedTicketSet {
       'totalAmount': totalAmount,
     };
   }
+}
+
+enum TicketSetDisplayStatus {
+  active,
+  paired,
+  inProgress,
+  completed,
+  used,
+  cancelled,
+  expired,
+  pending,
+  partial,
+}
+
+TicketSetDisplayStatus deriveTicketSetDisplayStatus(PurchasedTicketSet set) {
+  final museumStatus = set.museumTicket?.status;
+  final robotStatus = set.robotTourTicket?.status;
+
+  if (museumStatus == TicketStatus.cancelled &&
+      robotStatus == TicketStatus.cancelled) {
+    return TicketSetDisplayStatus.cancelled;
+  }
+  if (museumStatus == TicketStatus.expired ||
+      robotStatus == TicketStatus.expired) {
+    return TicketSetDisplayStatus.expired;
+  }
+  if (robotStatus == TicketStatus.in_progress) {
+    return TicketSetDisplayStatus.inProgress;
+  }
+  if (robotStatus == TicketStatus.paired) {
+    return TicketSetDisplayStatus.paired;
+  }
+  if (robotStatus == TicketStatus.completed) {
+    return TicketSetDisplayStatus.completed;
+  }
+  if (museumStatus == TicketStatus.used) {
+    return TicketSetDisplayStatus.used;
+  }
+  if (museumStatus == TicketStatus.active &&
+      robotStatus == TicketStatus.active) {
+    return TicketSetDisplayStatus.active;
+  }
+  if (museumStatus == TicketStatus.pending ||
+      robotStatus == TicketStatus.pending) {
+    return TicketSetDisplayStatus.pending;
+  }
+
+  return TicketSetDisplayStatus.partial;
+}
+
+int ticketSetStatusPriority(TicketSetDisplayStatus status) {
+  switch (status) {
+    case TicketSetDisplayStatus.active:
+      return 1;
+    case TicketSetDisplayStatus.paired:
+      return 2;
+    case TicketSetDisplayStatus.inProgress:
+      return 3;
+    case TicketSetDisplayStatus.completed:
+    case TicketSetDisplayStatus.used:
+      return 4;
+    case TicketSetDisplayStatus.cancelled:
+    case TicketSetDisplayStatus.expired:
+      return 5;
+    case TicketSetDisplayStatus.pending:
+    case TicketSetDisplayStatus.partial:
+      return 6;
+  }
+}
+
+int comparePurchasedTicketSets(PurchasedTicketSet a, PurchasedTicketSet b) {
+  final priorityDiff =
+      ticketSetStatusPriority(deriveTicketSetDisplayStatus(a)) -
+      ticketSetStatusPriority(deriveTicketSetDisplayStatus(b));
+  if (priorityDiff != 0) return priorityDiff;
+  return b.purchasedAt.compareTo(a.purchasedAt);
 }

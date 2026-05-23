@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart' hide TextDirection;
@@ -32,8 +34,35 @@ class _TicketScreenState extends State<TicketScreen> {
       RecommendedRoutesService();
   List<RecommendedRoute> _recommendedRoutes = const [];
   List<String> _recommendedRouteWarnings = const [];
+  final ScrollController _scrollController = ScrollController();
+  Timer? _slotRefreshTimer;
   bool _recommendedRoutesLoaded = false;
   String? _recommendedRoutesExhibitKey;
+
+  @override
+  void initState() {
+    super.initState();
+    _slotRefreshTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (!mounted) return;
+      _repairSelectedTimeSlot(context.read<TicketProvider>());
+    });
+  }
+
+  @override
+  void dispose() {
+    _slotRefreshTimer?.cancel();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _jumpToBookingTop() {
+    if (!_scrollController.hasClients) return;
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOutCubic,
+    );
+  }
 
   @override
   void didChangeDependencies() {
@@ -43,6 +72,18 @@ class _TicketScreenState extends State<TicketScreen> {
     if (exhibitKey == _recommendedRoutesExhibitKey) return;
     _recommendedRoutesExhibitKey = exhibitKey;
     _loadRecommendedRoutes(exhibits);
+  }
+
+
+  void _repairSelectedTimeSlot(TicketProvider ticketProvider) {
+    final draft = ticketProvider.currentOrderDraft;
+    if (_isFutureVisitSlot(draft.visitDate, draft.timeSlot)) return;
+    for (final slot in _timeSlots) {
+      if (_isFutureVisitSlot(draft.visitDate, slot)) {
+        ticketProvider.updateTimeSlot(slot);
+        return;
+      }
+    }
   }
 
   Future<void> _loadRecommendedRoutes(Iterable<Exhibit> exhibits) async {
@@ -83,6 +124,7 @@ class _TicketScreenState extends State<TicketScreen> {
           }
         }
         if (nextSlot != null) ticketProvider.updateTimeSlot(nextSlot);
+        _jumpToBookingTop();
       }
     }
   }
@@ -154,6 +196,16 @@ class _TicketScreenState extends State<TicketScreen> {
     if (!TourNarrationLanguage.isSupported(narrationLanguage)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(_unsupportedTourLanguageMessage(_isArabic(context)))),
+      );
+      return;
+    }
+    final narrationLanguageOther = draft.robotTourType == RobotTourType.personalized
+        ? draft.personalizedTourConfig?.languageOther
+        : draft.standardTourConfig?.languageOther;
+    if (narrationLanguage == 'other' &&
+        narrationLanguageOther?.trim().isNotEmpty != true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_preferredLanguageRequiredMessage(_isArabic(context)))),
       );
       return;
     }
@@ -397,6 +449,7 @@ class _TicketScreenState extends State<TicketScreen> {
         children: [
           Expanded(
             child: ListView(
+              controller: _scrollController,
               padding: EdgeInsetsDirectional.fromSTEB(
                 20,
                 MediaQuery.paddingOf(context).top + 92,
@@ -445,7 +498,10 @@ class _TicketScreenState extends State<TicketScreen> {
                   selectedTimeSlot: draft.timeSlot,
                   timeSlots: _timeSlots,
                   onDateTap: () => _selectDate(ticketProvider),
-                  onTimeSlotChanged: ticketProvider.updateTimeSlot,
+                  onTimeSlotChanged: (slot) {
+                    ticketProvider.updateTimeSlot(slot);
+                    _jumpToBookingTop();
+                  },
                   isArabic: isArabic,
                 ),
                 const SizedBox(height: 18),
@@ -703,6 +759,11 @@ class _VisitDetailsCard extends StatelessWidget {
               final isAvailable = _isFutureVisitSlot(selectedDate, slot);
               return _ChoicePill(
                 label: _localizedTimeSlot(slot, isArabic),
+                detailLabel: !isAvailable
+                    ? (_isToday(selectedDate)
+                          ? (isArabic ? '\u0645\u0631\u0651' : 'Passed')
+                          : (isArabic ? '\u063a\u064a\u0631 \u0645\u062a\u0627\u062d' : 'Unavailable'))
+                    : null,
                 selected: slot == selectedTimeSlot && isAvailable,
                 enabled: isAvailable,
                 onTap: () {
@@ -1109,6 +1170,9 @@ class _NarrationLanguageCard extends StatelessWidget {
               PersonalizedTourConfig.defaultConfig.languageCode)
         : (draft.standardTourConfig?.languageCode ??
               StandardTourConfig.defaultConfig.languageCode);
+    final languageOther = draft.robotTourType == RobotTourType.personalized
+        ? draft.personalizedTourConfig?.languageOther
+        : draft.standardTourConfig?.languageOther;
     return _SectionCard(
       title: l10n.language,
       subtitle: isArabic
@@ -1132,6 +1196,27 @@ class _NarrationLanguageCard extends StatelessWidget {
               ),
             ],
           ),
+          if (languageCode == 'other') ...[
+            const SizedBox(height: 12),
+            TextFormField(
+              initialValue: languageOther ?? '',
+              onChanged: ticketProvider.updateTourLanguageOther,
+              style: AppTextStyles.bodyPrimary(context).copyWith(color: AppColors.whiteTitle),
+              decoration: InputDecoration(
+                labelText: isArabic
+                    ? '\u0644\u063a\u0629 \u0623\u062e\u0631\u0649'
+                    : 'Other language',
+                hintText: isArabic
+                    ? '\u0627\u0643\u062a\u0628 \u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u062a\u064a \u062a\u0641\u0636\u0644\u0647\u0627'
+                    : 'Type your preferred language',
+                filled: true,
+                fillColor: AppColors.cinematicCard.withValues(alpha: 0.48),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+              ),
+            ),
+          ],
           if (draft.robotTourType == RobotTourType.standard) ...[
             const SizedBox(height: 16),
             _ConfigLabel(l10n.duration),
@@ -1465,12 +1550,14 @@ class _ChoicePill extends StatelessWidget {
     required this.selected,
     required this.onTap,
     this.enabled = true,
+    this.detailLabel,
   });
 
   final String label;
   final bool selected;
   final VoidCallback onTap;
   final bool enabled;
+  final String? detailLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -1480,26 +1567,47 @@ class _ChoicePill extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
         decoration: BoxDecoration(
-          color: selected
-              ? AppColors.primaryGold.withValues(alpha: 0.18)
-              : AppColors.secondaryGlass(0.30),
+          color: !enabled
+              ? AppColors.secondaryGlass(0.18)
+              : selected
+                  ? AppColors.primaryGold.withValues(alpha: 0.18)
+                  : AppColors.secondaryGlass(0.30),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: selected
-                ? AppColors.primaryGold
-                : AppColors.goldBorder(0.12),
-          ),
-        ),
-        child: Text(
-          label,
-          style: AppTextStyles.metadata(context).copyWith(
             color: !enabled
-                ? AppColors.neutralMedium.withValues(alpha: 0.65)
+                ? AppColors.goldBorder(0.08)
                 : selected
                     ? AppColors.primaryGold
-                    : AppColors.bodyText,
-            fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
+                    : AppColors.goldBorder(0.12),
           ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: AppTextStyles.metadata(context).copyWith(
+                color: !enabled
+                    ? AppColors.neutralMedium.withValues(alpha: 0.65)
+                    : selected
+                        ? AppColors.primaryGold
+                        : AppColors.bodyText,
+                fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
+                decoration: !enabled ? TextDecoration.lineThrough : null,
+              ),
+            ),
+            if (detailLabel != null) ...[
+              const SizedBox(height: 2),
+              Text(
+                detailLabel!,
+                style: AppTextStyles.metadata(context).copyWith(
+                  color: AppColors.neutralMedium.withValues(alpha: 0.70),
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
@@ -1534,7 +1642,7 @@ class _RoundIconButton extends StatelessWidget {
           icon,
           color: enabled
               ? AppColors.primaryGold
-              : AppColors.primaryGold.withOpacity(0.45),
+              : AppColors.primaryGold.withValues(alpha: 0.45),
           size: 18,
         ),
       ),
@@ -1853,12 +1961,6 @@ String _routesLoadingMessage(bool isArabic) {
       : 'Loading recommended routes...';
 }
 
-String _routesUnavailableMessage(bool isArabic) {
-  return isArabic
-      ? '\u0627\u0644\u0645\u0633\u0627\u0631\u0627\u062a \u0627\u0644\u0645\u0642\u062a\u0631\u062d\u0629 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629 \u062d\u0627\u0644\u064a\u0627\u064b.'
-      : 'Recommended routes are currently unavailable.';
-}
-
 String _standardRouteRequiredMessage(bool isArabic) {
   return isArabic
       ? 'اختر مساراً مقترحاً للجولة القياسية.'
@@ -1891,6 +1993,9 @@ String _visitorLimitHelper(bool isArabic) {
 
 String _friendlyBookingFailure(String? error, bool isArabic) {
   final lower = error?.toLowerCase() ?? '';
+  if (lower.contains('please type your preferred language')) {
+    return _preferredLanguageRequiredMessage(isArabic);
+  }
   if (lower.contains('connection issue') || lower.contains('network')) {
     return isArabic
         ? '\u062d\u062f\u062b\u062a \u0645\u0634\u0643\u0644\u0629 \u0641\u064a \u0627\u0644\u0627\u062a\u0635\u0627\u0644. \u064a\u0631\u062c\u0649 \u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0646 \u0627\u0644\u0625\u0646\u062a\u0631\u0646\u062a \u0648\u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.'
@@ -1901,6 +2006,11 @@ String _friendlyBookingFailure(String? error, bool isArabic) {
       : 'We could not complete your booking. Please try again.';
 }
 
+String _preferredLanguageRequiredMessage(bool isArabic) {
+  return isArabic
+      ? '\u064a\u0631\u062c\u0649 \u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u062a\u064a \u062a\u0641\u0636\u0644\u0647\u0627.'
+      : 'Please type your preferred language.';
+}
 String _localizedTimeSlot(String slot, bool isArabic) {
   switch (slot) {
     case '09:00':

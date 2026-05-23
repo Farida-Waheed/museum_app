@@ -55,11 +55,30 @@ class TicketRepository {
         'Choose a recommended route for the standard tour.',
       );
     }
+    final standardConfig = draft.standardTourConfig;
+    if (draft.robotTourType == RobotTourType.standard &&
+        standardConfig != null &&
+        standardConfig.routeExhibitIds.length >
+            maxExhibitsForDuration(standardConfig.durationMinutes)) {
+      throw const TicketRepositoryException(
+        'This route needs a longer tour duration.',
+      );
+    }
     if (draft.robotTourType == RobotTourType.personalized &&
         (draft.personalizedTourConfig?.selectedExhibitIds.isEmpty ?? true)) {
       throw const TicketRepositoryException(
         'Choose at least one exhibit for your personalized tour.',
       );
+    }
+    final personalizedConfig = draft.personalizedTourConfig;
+    if (draft.robotTourType == RobotTourType.personalized &&
+        personalizedConfig != null) {
+      final max = maxExhibitsForDuration(personalizedConfig.durationMinutes);
+      if (personalizedConfig.selectedExhibitIds.length > max) {
+        throw TicketRepositoryException(
+          'This duration supports up to $max exhibits. Choose a longer duration to add more.',
+        );
+      }
     }
     final narrationLanguage = draft.robotTourType == RobotTourType.personalized
         ? draft.personalizedTourConfig?.languageCode
@@ -68,6 +87,13 @@ class TicketRepository {
       throw const TicketRepositoryException(
         'Choose a supported tour language.',
       );
+    }
+    final narrationLanguageOther = draft.robotTourType == RobotTourType.personalized
+        ? draft.personalizedTourConfig?.languageOther
+        : draft.standardTourConfig?.languageOther;
+    if (narrationLanguage == 'other' &&
+        narrationLanguageOther?.trim().isNotEmpty != true) {
+      throw const TicketRepositoryException('Please type your preferred language.');
     }
     final now = DateTime.now();
 
@@ -146,6 +172,7 @@ class TicketRepository {
         final bookingId = bookingDoc.id;
         final bookingSource =
             _stringValue(booking['booking_source']) ?? mobileBookingSource;
+        final bookingStatus = _stringValue(booking['status']);
         final museumTicketId = _stringValue(booking['museum_ticket_id']);
         final robotTicketId = _stringValue(booking['robot_tour_ticket_id']);
 
@@ -189,9 +216,13 @@ class TicketRepository {
         }
 
         if (hasMuseumDoc) {
+          final museumData = Map<String, dynamic>.from(museumDoc.data()!);
+          if (bookingStatus == TicketStatus.cancelled.name) {
+            museumData['status'] = TicketStatus.cancelled.name;
+          }
           museumTickets.add(
             MuseumTicket.fromFirestore(museumDoc.id, {
-              ...museumDoc.data()!,
+              ...museumData,
               'booking_id': bookingId,
               'booking_source': bookingSource,
               'robot_tour_ticket_id': robotTicketId,
@@ -200,9 +231,13 @@ class TicketRepository {
         }
 
         if (hasRobotDoc) {
+          final robotData = Map<String, dynamic>.from(robotDoc.data()!);
+          if (bookingStatus == TicketStatus.cancelled.name) {
+            robotData['status'] = TicketStatus.cancelled.name;
+          }
           robotTickets.add(
             RobotTourTicket.fromFirestore(robotDoc.id, {
-              ...robotDoc.data()!,
+              ...robotData,
               'booking_id': bookingId,
               'booking_source': bookingSource,
               'museum_ticket_id': museumTicketId,
@@ -575,6 +610,9 @@ class TicketRepository {
     final languageCode = isPersonalized
         ? personalizedConfig.languageCode
         : standardConfig.languageCode;
+    final languageOther = isPersonalized
+        ? personalizedConfig.languageOther
+        : standardConfig.languageOther;
 
     return RobotTourTicket(
       id: robotTicketId,
@@ -585,6 +623,7 @@ class TicketRepository {
           : 'Standard Horus-Bot Tour',
       durationMinutes: duration,
       languageCode: languageCode,
+      languageOther: languageCode == 'other' ? languageOther : null,
       includedFeatures: _robotFeaturesForDraft(tourType),
       price: draft.robotTourSubtotal,
       currency: 'EGP',
@@ -692,6 +731,9 @@ class TicketRepository {
           : _slotStart(ticket.timeSlot!),
       'tour_duration_min': ticket.durationMinutes,
       'preferred_language': _normalizedLanguage(ticket.languageCode),
+      'preferred_language_other': ticket.languageCode == 'other'
+          ? ticket.languageOther?.trim()
+          : null,
       'pace': personalized?.pace.name ?? TourPace.normal.name,
       'interests':
           personalized?.selectedThemes ??
@@ -702,7 +744,6 @@ class TicketRepository {
           ticket.selectedArtifactIds ??
           (ticket.standardTourConfig?.routeExhibitIds ?? const <String>[]),
       'accessibility': personalized?.accessibilityNeeds ?? const <String>[],
-      'kids_mode': personalized?.visitorMode == VisitorMode.kidsFamily,
       'photo_spots': personalized?.photoSpotsEnabled ?? false,
       'notes': null,
       'route_id': ticket.routeId,

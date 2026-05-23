@@ -1714,12 +1714,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tourCustomizePhotoSpotsSubtitle =>
       'Include recommended places for photos during the tour.';
 
-  @override
-  String get tourCustomizeAvoidCrowdsTitle => 'Avoid crowded areas';
 
-  @override
-  String get tourCustomizeAvoidCrowdsSubtitle =>
-      'Prefer quieter paths when the museum route allows it.';
 
   @override
   String get tourCustomizeSummaryTitle => 'Personalized tour summary';
@@ -1797,8 +1792,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get tourVisitorStudents => 'Students';
 
-  @override
-  String get tourVisitorKidsFamily => 'Kids and family';
 
   @override
   String get tourVisitorDisabled => 'Disabled visitors';
@@ -1910,9 +1903,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentStatusPayAtCounter => 'Payment status: Pay at counter';
-
-  @override
-  String get egyptianArabic => 'Egyptian Arabic';
 
   @override
   String get cancelBooking => 'Cancel booking';

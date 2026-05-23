@@ -33,8 +33,11 @@ class TicketProvider with ChangeNotifier {
   List<RobotTourTicket> get robotTourTickets =>
       List.unmodifiable(_robotTourTickets);
   List<PaymentRecord> get payments => List.unmodifiable(_payments);
-  List<PurchasedTicketSet> get purchasedTicketSets =>
-      List.unmodifiable(_purchasedTicketSets);
+  List<PurchasedTicketSet> get purchasedTicketSets {
+    final sorted = _purchasedTicketSets.toList()
+      ..sort(comparePurchasedTicketSets);
+    return List.unmodifiable(sorted);
+  }
   TicketOrderDraft get currentOrderDraft => _currentOrderDraft;
   List<VisitorTicketCategory> get visitorCategories =>
       VisitorTicketCategory.defaults;
@@ -71,8 +74,12 @@ class TicketProvider with ChangeNotifier {
     final config = _currentOrderDraft.personalizedTourConfig;
     return config != null &&
         config.selectedExhibitIds.isNotEmpty &&
+        config.selectedExhibitIds.length <=
+            maxExhibitsForDuration(config.durationMinutes) &&
         config.durationMinutes > 0 &&
-        config.languageCode.trim().isNotEmpty;
+        config.languageCode.trim().isNotEmpty &&
+        (config.languageCode != 'other' ||
+            config.languageOther?.trim().isNotEmpty == true);
   }
 
   bool get isStandardDraftComplete {
@@ -83,7 +90,11 @@ class TicketProvider with ChangeNotifier {
     final config = _currentOrderDraft.standardTourConfig;
     return _currentOrderDraft.recommendedRouteId?.trim().isNotEmpty == true &&
         config != null &&
-        config.routeExhibitIds.isNotEmpty;
+        config.routeExhibitIds.isNotEmpty &&
+        config.routeExhibitIds.length <=
+            maxExhibitsForDuration(config.durationMinutes) &&
+        (config.languageCode != 'other' ||
+            config.languageOther?.trim().isNotEmpty == true);
   }
 
   bool get canCheckoutDraft =>
@@ -215,6 +226,7 @@ class TicketProvider with ChangeNotifier {
               languageCode:
                   _currentOrderDraft.standardTourConfig?.languageCode ??
                   StandardTourConfig.defaultConfig.languageCode,
+              languageOther: _currentOrderDraft.standardTourConfig?.languageOther,
               routeName: '',
               routeExhibitIds: const [],
             )
@@ -233,6 +245,11 @@ class TicketProvider with ChangeNotifier {
         .where((id) => RegExp(r'^artifact_\d{3}$').hasMatch(id))
         .toList(growable: false);
     if (artifactIds.isEmpty) return;
+    if (artifactIds.length > maxExhibitsForDuration(route.durationMin)) {
+      _ticketError = 'This route needs a longer tour duration.';
+      notifyListeners();
+      return;
+    }
 
     final currentLanguage =
         _currentOrderDraft.robotTourType == RobotTourType.personalized
@@ -240,13 +257,17 @@ class TicketProvider with ChangeNotifier {
         : _currentOrderDraft.standardTourConfig?.languageCode;
     final languageCode = _tourLanguageTouched
         ? (currentLanguage ?? StandardTourConfig.defaultConfig.languageCode)
-        : route.recommendedLanguage;
+        : (TourNarrationLanguage.normalize(route.recommendedLanguage) ??
+              StandardTourConfig.defaultConfig.languageCode);
 
     _currentOrderDraft = _currentOrderDraft.copyWith(
       robotTourType: RobotTourType.standard,
       standardTourConfig: StandardTourConfig(
         durationMinutes: route.durationMin,
         languageCode: languageCode,
+        languageOther: languageCode == 'other'
+            ? _currentOrderDraft.standardTourConfig?.languageOther
+            : null,
         routeName: route.titleEn,
         routeExhibitIds: artifactIds,
       ),
@@ -283,14 +304,37 @@ class TicketProvider with ChangeNotifier {
         PersonalizedTourConfig.defaultConfig;
 
     _currentOrderDraft = _currentOrderDraft.copyWith(
-      standardTourConfig: standardConfig.copyWith(languageCode: normalized),
+      standardTourConfig: standardConfig.copyWith(
+        languageCode: normalized,
+        languageOther: normalized == 'other' ? standardConfig.languageOther : null,
+      ),
       personalizedTourConfig: personalizedConfig.copyWith(
         languageCode: normalized,
+        languageOther: normalized == 'other' ? personalizedConfig.languageOther : null,
       ),
     );
     notifyListeners();
   }
 
+  void updateTourLanguageOther(String value) {
+    final trimmed = value.trim();
+    final standardConfig =
+        _currentOrderDraft.standardTourConfig ??
+        StandardTourConfig.defaultConfig;
+    final personalizedConfig =
+        _currentOrderDraft.personalizedTourConfig ??
+        PersonalizedTourConfig.defaultConfig;
+
+    _currentOrderDraft = _currentOrderDraft.copyWith(
+      standardTourConfig: standardConfig.copyWith(
+        languageOther: standardConfig.languageCode == 'other' ? trimmed : null,
+      ),
+      personalizedTourConfig: personalizedConfig.copyWith(
+        languageOther: personalizedConfig.languageCode == 'other' ? trimmed : null,
+      ),
+    );
+    notifyListeners();
+  }
   void updatePersonalizedTourConfig(PersonalizedTourConfig config) {
     _currentOrderDraft = _currentOrderDraft.copyWith(
       personalizedTourConfig: config,
@@ -313,7 +357,7 @@ class TicketProvider with ChangeNotifier {
       return null;
     }
     if (!isStandardDraftComplete) {
-      _ticketError = 'Choose a recommended route for the standard tour.';
+      _ticketError = _standardDraftErrorMessage();
       notifyListeners();
       return null;
     }
@@ -323,7 +367,7 @@ class TicketProvider with ChangeNotifier {
       return null;
     }
     if (!isPersonalizedDraftComplete) {
-      _ticketError = 'Choose at least one exhibit for your personalized tour.';
+      _ticketError = _personalizedDraftErrorMessage();
       notifyListeners();
       return null;
     }
@@ -375,6 +419,7 @@ class TicketProvider with ChangeNotifier {
       totalAmount: draft.total,
     );
     _purchasedTicketSets.add(purchasedSet);
+    _purchasedTicketSets.sort(comparePurchasedTicketSets);
     resetOrderDraft();
     return purchasedSet;
   }
@@ -395,7 +440,7 @@ class TicketProvider with ChangeNotifier {
       return null;
     }
     if (!isStandardDraftComplete) {
-      _ticketError = 'Choose a recommended route for the standard tour.';
+      _ticketError = _standardDraftErrorMessage();
       notifyListeners();
       return null;
     }
@@ -405,7 +450,7 @@ class TicketProvider with ChangeNotifier {
       return null;
     }
     if (!isPersonalizedDraftComplete) {
-      _ticketError = 'Choose at least one exhibit for your personalized tour.';
+      _ticketError = _personalizedDraftErrorMessage();
       notifyListeners();
       return null;
     }
@@ -456,6 +501,7 @@ class TicketProvider with ChangeNotifier {
         totalAmount: draft.total,
       );
       _upsertPurchasedTicketSet(purchasedSet);
+      _purchasedTicketSets.sort(comparePurchasedTicketSets);
       resetOrderDraft();
       return purchasedSet;
     } on TicketRepositoryException catch (e) {
@@ -583,7 +629,10 @@ class TicketProvider with ChangeNotifier {
     }
     if (message == 'Choose a recommended route for the standard tour.' ||
         message == 'Choose at least one exhibit for your personalized tour.' ||
-        message == 'Choose a supported tour language.') {
+        message == 'Choose a supported tour language.' ||
+        message == 'This route needs a longer tour duration.' ||
+        message == 'Please type your preferred language.' ||
+        message.contains('This duration supports up to')) {
       return message;
     }
     if (message == 'Please sign in to buy tickets.') return message;
@@ -705,6 +754,9 @@ class TicketProvider with ChangeNotifier {
     final languageCode = isPersonalized
         ? personalizedConfig.languageCode
         : standardConfig.languageCode;
+    final languageOther = isPersonalized
+        ? personalizedConfig.languageOther
+        : standardConfig.languageOther;
 
     return RobotTourTicket(
       id: 'RT-${now.millisecondsSinceEpoch}',
@@ -715,6 +767,7 @@ class TicketProvider with ChangeNotifier {
           : 'Standard Horus-Bot Tour',
       durationMinutes: duration,
       languageCode: languageCode,
+      languageOther: languageCode == 'other' ? languageOther : null,
       includedFeatures: _robotFeaturesForDraft(),
       price: _currentOrderDraft.robotTourSubtotal,
       currency: 'EGP',
@@ -782,7 +835,47 @@ class TicketProvider with ChangeNotifier {
     final language = draft.robotTourType == RobotTourType.personalized
         ? draft.personalizedTourConfig?.languageCode
         : draft.standardTourConfig?.languageCode;
-    return TourNarrationLanguage.isSupported(language);
+    if (!TourNarrationLanguage.isSupported(language)) return false;
+    if (language == 'other') {
+      final other = draft.robotTourType == RobotTourType.personalized
+          ? draft.personalizedTourConfig?.languageOther
+          : draft.standardTourConfig?.languageOther;
+      return other?.trim().isNotEmpty == true;
+    }
+    return true;
+  }
+
+  String _standardDraftErrorMessage() {
+    final config = _currentOrderDraft.standardTourConfig;
+    if (_currentOrderDraft.recommendedRouteId?.trim().isNotEmpty != true ||
+        config == null ||
+        config.routeExhibitIds.isEmpty) {
+      return 'Choose a recommended route for the standard tour.';
+    }
+    if (config.routeExhibitIds.length >
+        maxExhibitsForDuration(config.durationMinutes)) {
+      return 'This route needs a longer tour duration.';
+    }
+    if (config.languageCode == 'other' &&
+        config.languageOther?.trim().isNotEmpty != true) {
+      return 'Please type your preferred language.';
+    }
+    return 'Choose a recommended route for the standard tour.';
+  }
+
+  String _personalizedDraftErrorMessage() {
+    final config = _currentOrderDraft.personalizedTourConfig;
+    if (config == null || config.selectedExhibitIds.isEmpty) {
+      return 'Choose at least one exhibit for your personalized tour.';
+    }
+    final max = maxExhibitsForDuration(config.durationMinutes);
+    if (config.selectedExhibitIds.length > max) {
+      return 'This duration supports up to $max exhibits. Choose a longer duration to add more.';
+    }
+    if (config.languageCode == 'other' && config.languageOther?.trim().isNotEmpty != true) {
+      return 'Please type your preferred language.';
+    }
+    return 'Choose at least one exhibit for your personalized tour.';
   }
 
   void _upsertMuseumTicket(MuseumTicket ticket) {
@@ -850,6 +943,7 @@ class TicketProvider with ChangeNotifier {
       );
     }
     _skippedTicketSetCount = skippedCount;
+    _purchasedTicketSets.sort(comparePurchasedTicketSets);
 
     // Final QA uses complete shared bookings only. Legacy/order-only or
     // orphaned ticket docs are intentionally hidden from My Tickets.
@@ -1009,6 +1103,7 @@ class TicketProvider with ChangeNotifier {
         totalAmount: payment.amount,
       ),
     );
+    _purchasedTicketSets.sort(comparePurchasedTicketSets);
 
     notifyListeners();
   }
@@ -1112,6 +1207,7 @@ class TicketProvider with ChangeNotifier {
         totalAmount: payment.amount,
       ),
     );
+    _purchasedTicketSets.sort(comparePurchasedTicketSets);
 
     notifyListeners();
   }

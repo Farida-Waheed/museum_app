@@ -30,6 +30,7 @@ class MyTicketsScreen extends StatefulWidget {
 class _MyTicketsScreenState extends State<MyTicketsScreen> {
   String? _loadedUserId;
   String? _cancellingBookingId;
+  final Set<String> _expandedTicketSetIds = {};
 
   @override
   void didChangeDependencies() {
@@ -137,9 +138,6 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
       );
     }
 
-    final sortedOrders = orders.toList()
-      ..sort((a, b) => b.purchasedAt.compareTo(a.purchasedAt));
-
     return ListView(
       padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 120),
       children: [
@@ -164,7 +162,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
           _SkippedBookingsNotice(isArabic: isArabic),
         ],
         const SizedBox(height: 18),
-        ...sortedOrders.map(
+        ...orders.map(
           (order) => Padding(
             padding: const EdgeInsetsDirectional.only(bottom: 18),
             child: _OrderCard(
@@ -173,7 +171,17 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
               sessionProvider: sessionProvider,
               l10n: l10n,
               isArabic: isArabic,
+              isExpanded: _expandedTicketSetIds.contains(order.id),
               isCancelling: _cancellingBookingId == order.id,
+              onToggleExpanded: () {
+                setState(() {
+                  if (_expandedTicketSetIds.contains(order.id)) {
+                    _expandedTicketSetIds.remove(order.id);
+                  } else {
+                    _expandedTicketSetIds.add(order.id);
+                  }
+                });
+              },
               onCancel: () => _confirmAndCancelBooking(
                 context,
                 ticketProvider,
@@ -446,7 +454,9 @@ class _OrderCard extends StatelessWidget {
     required this.sessionProvider,
     required this.l10n,
     required this.isArabic,
+    required this.isExpanded,
     required this.isCancelling,
+    required this.onToggleExpanded,
     required this.onCancel,
   });
 
@@ -455,7 +465,9 @@ class _OrderCard extends StatelessWidget {
   final AppSessionProvider sessionProvider;
   final AppLocalizations l10n;
   final bool isArabic;
+  final bool isExpanded;
   final bool isCancelling;
+  final VoidCallback onToggleExpanded;
   final VoidCallback onCancel;
 
   @override
@@ -488,36 +500,48 @@ class _OrderCard extends StatelessWidget {
             l10n: l10n,
             isArabic: isArabic,
           ),
-          const SizedBox(height: 16),
-          if (museumTicket != null)
-            _MuseumPassCard(
-              ticket: museumTicket,
-              l10n: l10n,
-              isArabic: isArabic,
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: _OutlineButton(
+              label: isExpanded
+                  ? (isArabic ? '\u0625\u062e\u0641\u0627\u0621 \u0627\u0644\u062a\u0641\u0627\u0635\u064a\u0644' : 'Hide details')
+                  : (isArabic ? '\u0639\u0631\u0636 \u0627\u0644\u062a\u0641\u0627\u0635\u064a\u0644' : 'View details'),
+              onTap: onToggleExpanded,
             ),
-          if (robotTicket != null) ...[
-            const SizedBox(height: 14),
-            _RobotPassCard(
-              ticket: robotTicket,
-              exhibits: exhibits,
-              sessionProvider: sessionProvider,
-              l10n: l10n,
-              isArabic: isArabic,
-            ),
-          ],
-          if (canCancel) ...[
-            const SizedBox(height: 14),
-            SizedBox(
-              width: double.infinity,
-              child: _OutlineButton(
-                label: l10n.cancelBooking,
-                onTap: onCancel,
-                isLoading: isCancelling,
+          ),
+          if (isExpanded) ...[
+            const SizedBox(height: 16),
+            if (museumTicket != null)
+              _MuseumPassCard(
+                ticket: museumTicket,
+                l10n: l10n,
+                isArabic: isArabic,
               ),
-            ),
-          ] else if (blockedMessage != null) ...[
-            const SizedBox(height: 14),
-            _MutedText(blockedMessage),
+            if (robotTicket != null) ...[
+              const SizedBox(height: 14),
+              _RobotPassCard(
+                ticket: robotTicket,
+                exhibits: exhibits,
+                sessionProvider: sessionProvider,
+                l10n: l10n,
+                isArabic: isArabic,
+              ),
+            ],
+            if (canCancel) ...[
+              const SizedBox(height: 14),
+              SizedBox(
+                width: double.infinity,
+                child: _OutlineButton(
+                  label: l10n.cancelBooking,
+                  onTap: onCancel,
+                  isLoading: isCancelling,
+                ),
+              ),
+            ] else if (blockedMessage != null) ...[
+              const SizedBox(height: 14),
+              _MutedText(blockedMessage),
+            ],
           ],
         ],
       ),
@@ -630,6 +654,10 @@ class _OrderHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final museumName =
+        order.museumTicket?.museumName ?? 'The Egyptian Museum';
+    final tourType = order.robotTourTicket?.tourType ?? RobotTourType.standard;
+    final visitors = order.museumTicket?.visitorCount ?? 0;
     return Column(
       crossAxisAlignment: Directionality.of(context) == TextDirection.rtl
           ? CrossAxisAlignment.end
@@ -648,13 +676,20 @@ class _OrderHeader extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                l10n.myTicketsOrderCode(_shortCode(order.id)),
+                museumName,
                 textAlign: TextAlign.start,
                 style: AppTextStyles.displaySectionTitle(
                   context,
                 ).copyWith(color: AppColors.softGold),
               ),
             ),
+            _StatusPill(
+              label: _ticketSetDisplayStatusLabel(
+                l10n,
+                deriveTicketSetDisplayStatus(order),
+              ),
+            ),
+            const SizedBox(width: 8),
             _StatusPill(
               label: _paymentStatusLabel(l10n, order.paymentRecord.status),
             ),
@@ -665,15 +700,9 @@ class _OrderHeader extends StatelessWidget {
           items: [
             _InfoItem(l10n.visitDate, visitDate),
             _InfoItem(l10n.timeSlot, timeSlot),
+            _InfoItem(l10n.tourType, _tourTypeLabel(l10n, tourType)),
             _InfoItem(l10n.myTicketsTotalPaid, _money(order.totalAmount)),
-            _InfoItem(
-              l10n.paymentStatus,
-              _paymentStatusLabel(l10n, order.paymentRecord.status),
-            ),
-            _InfoItem(
-              l10n.myTicketsPurchasedAt,
-              _formatDate(order.purchasedAt, false),
-            ),
+            _InfoItem(l10n.myTicketsTotalVisitors, '$visitors'),
           ],
         ),
       ],
@@ -799,7 +828,7 @@ class _RobotPassCard extends StatelessWidget {
               ),
               _InfoItem(
                 l10n.language,
-                _languageLabel(l10n, ticket.languageCode),
+                _languageLabel(l10n, ticket.languageCode, otherText: ticket.languageOther),
               ),
               _InfoItem(l10n.status, _ticketStatusLabel(l10n, ticket.status)),
               _InfoItem(
@@ -910,10 +939,6 @@ class _RobotConfigSummary extends StatelessWidget {
           _BreakdownLine(
             label: l10n.myTicketsPhotoSpots,
             value: config.photoSpotsEnabled ? l10n.enabled : l10n.disabled,
-          ),
-          _BreakdownLine(
-            label: l10n.myTicketsAvoidCrowds,
-            value: config.avoidCrowds ? l10n.enabled : l10n.disabled,
           ),
         ],
       );
@@ -1611,6 +1636,35 @@ String _ticketStatusLabel(AppLocalizations l10n, TicketStatus status) {
   }
 }
 
+String _ticketSetDisplayStatusLabel(
+  AppLocalizations l10n,
+  TicketSetDisplayStatus status,
+) {
+  final isArabic = l10n.localeName == 'ar';
+  switch (status) {
+    case TicketSetDisplayStatus.active:
+      return isArabic ? '\u0646\u0634\u0637' : 'Active';
+    case TicketSetDisplayStatus.paired:
+      return isArabic ? '\u062c\u0627\u0647\u0632 \u0644\u0644\u0628\u062f\u0621' : 'Ready to start';
+    case TicketSetDisplayStatus.inProgress:
+      return isArabic ? '\u0642\u064a\u062f \u0627\u0644\u062a\u0646\u0641\u064a\u0630' : 'In progress';
+    case TicketSetDisplayStatus.completed:
+      return isArabic ? '\u0645\u0643\u062a\u0645\u0644' : 'Completed';
+    case TicketSetDisplayStatus.used:
+      return isArabic ? '\u0645\u0633\u062a\u062e\u062f\u0645' : 'Used';
+    case TicketSetDisplayStatus.cancelled:
+      return isArabic ? '\u0645\u0644\u063a\u0649' : 'Cancelled';
+    case TicketSetDisplayStatus.expired:
+      return isArabic ? '\u0645\u0646\u062a\u0647\u064a' : 'Expired';
+    case TicketSetDisplayStatus.pending:
+      return isArabic ? '\u0642\u064a\u062f \u0627\u0644\u062a\u062c\u0647\u064a\u0632' : 'Preparing';
+    case TicketSetDisplayStatus.partial:
+      return isArabic
+          ? '\u062a\u0645 \u062a\u062d\u062f\u064a\u062b\u0647 \u062c\u0632\u0626\u064a\u0627\u064b'
+          : 'Partially updated';
+  }
+}
+
 String _cancellationDeadlineMessage(bool isArabic) {
   return isArabic
       ? '\u064a\u0645\u0643\u0646\u0643 \u0625\u0644\u063a\u0627\u0621 \u0627\u0644\u062d\u062c\u0632 \u062d\u062a\u0649 24 \u0633\u0627\u0639\u0629 \u0642\u0628\u0644 \u0645\u0648\u0639\u062f \u0627\u0644\u0632\u064a\u0627\u0631\u0629.'
@@ -1689,8 +1743,12 @@ String _tourTypeLabel(AppLocalizations l10n, RobotTourType tourType) {
   }
 }
 
-String _languageLabel(AppLocalizations l10n, String languageCode) {
-  return TourNarrationLanguage.label(languageCode, l10n.localeName == 'ar');
+String _languageLabel(AppLocalizations l10n, String languageCode, {String? otherText}) {
+  return TourNarrationLanguage.label(
+    languageCode,
+    l10n.localeName == 'ar',
+    otherText: otherText,
+  );
 }
 
 String _localizedTimeSlot(String slot, bool isArabic) {
@@ -1788,8 +1846,6 @@ String _visitorModeLabel(AppLocalizations l10n, VisitorMode mode) {
       return l10n.tourVisitorAdults;
     case VisitorMode.student:
       return l10n.tourVisitorStudents;
-    case VisitorMode.kidsFamily:
-      return l10n.tourVisitorKidsFamily;
     case VisitorMode.disabledVisitor:
       return l10n.tourVisitorDisabled;
   }

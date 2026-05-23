@@ -1693,12 +1693,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tourCustomizePhotoSpotsSubtitle =>
       'أضف أماكن موصى بها للتصوير أثناء الجولة.';
 
-  @override
-  String get tourCustomizeAvoidCrowdsTitle => 'تجنب المناطق المزدحمة';
 
-  @override
-  String get tourCustomizeAvoidCrowdsSubtitle =>
-      'فضّل المسارات الأهدأ عندما يسمح مسار المتحف بذلك.';
 
   @override
   String get tourCustomizeSummaryTitle => 'ملخص الجولة المخصصة';
@@ -1776,8 +1771,6 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get tourVisitorStudents => 'طلاب';
 
-  @override
-  String get tourVisitorKidsFamily => 'أطفال وعائلة';
 
   @override
   String get tourVisitorDisabled => 'زوار من ذوي الإعاقة';
@@ -1888,9 +1881,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get paymentStatusPayAtCounter => 'حالة الدفع: الدفع عند الشباك';
-
-  @override
-  String get egyptianArabic => 'العربية المصرية';
 
   @override
   String get cancelBooking => 'إلغاء الحجز';

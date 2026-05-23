@@ -112,4 +112,10 @@ class HomeSnapshot {
 
   bool get hasAnyTicket => hasValidMuseumTicket || hasRobotTourTicket;
   bool get shouldShowStats => hasActiveTour || isTourPaused || isTourCompleted;
+
+  bool get isGuest => !isLoggedIn;
+  bool get isLoggedInWithoutTickets => isLoggedIn && !hasAnyTicket;
+  bool get isTicketReady => isLoggedIn && hasAnyTicket && !isRobotConnected &&
+      !hasActiveTour && !isTourPaused && !isTourCompleted;
+  bool get isActiveTourState => isLoggedIn && (hasActiveTour || isTourPaused);
 }

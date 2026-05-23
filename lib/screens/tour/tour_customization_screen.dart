@@ -26,10 +26,10 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
 
   int? _durationMinutes;
   String? _languageCode;
+  String _languageOther = '';
   VisitorMode? _visitorMode;
   TourPace? _pace;
   bool _photoSpotsEnabled = true;
-  bool _avoidCrowds = false;
 
   @override
   void initState() {
@@ -42,13 +42,19 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
     _accessibilityNeeds.addAll(config.accessibilityNeeds);
     _durationMinutes = config.durationMinutes;
     _languageCode = config.languageCode;
+    _languageOther = config.languageOther ?? '';
     _visitorMode = config.visitorMode;
     _pace = config.pace;
     _photoSpotsEnabled = config.photoSpotsEnabled;
-    _avoidCrowds = config.avoidCrowds;
   }
 
   void _toggleSetValue(Set<String> target, String value) {
+    if (target == _selectedExhibitIds &&
+        !target.contains(value) &&
+        target.length >= maxExhibitsForDuration(_durationMinutes)) {
+      _showValidation(_durationLimitMessage(maxExhibitsForDuration(_durationMinutes)));
+      return;
+    }
     setState(() {
       if (target.contains(value)) {
         target.remove(value);
@@ -82,8 +88,17 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
       _showValidation(l10n.tourCustomizeDurationError);
       return;
     }
+    final maxExhibits = maxExhibitsForDuration(_durationMinutes);
+    if (_selectedExhibitIds.length > maxExhibits) {
+      _showValidation(_durationLimitMessage(maxExhibits));
+      return;
+    }
     if (_languageCode == null) {
       _showValidation(l10n.tourCustomizeLanguageError);
+      return;
+    }
+    if (_languageCode == 'other' && _languageOther.trim().isEmpty) {
+      _showValidation(_preferredLanguageRequiredMessage());
       return;
     }
     if (_visitorMode == null) {
@@ -100,11 +115,11 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
       selectedThemes: _selectedThemes.toList(),
       durationMinutes: _durationMinutes!,
       languageCode: _languageCode!,
+      languageOther: _languageCode == 'other' ? _languageOther.trim() : null,
       accessibilityNeeds: _accessibilityNeeds.toList(),
       visitorMode: _visitorMode!,
       pace: _pace!,
       photoSpotsEnabled: _photoSpotsEnabled,
-      avoidCrowds: _avoidCrowds,
     );
     context.read<TicketProvider>().updatePersonalizedTourConfig(config);
     Navigator.pop(context);
@@ -114,6 +129,35 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  String _durationLimitMessage(int max) {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    return isArabic
+        ? 'تدعم هذه المدة حتى $max معروضات. اختر مدة أطول لإضافة المزيد.'
+        : 'This duration supports up to $max exhibits. Choose a longer duration to add more.';
+  }
+
+  String _durationOverLimitWarning() {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    return isArabic
+        ? '??? ????? ??????? ???? ??? ???? ?? ??? ?????. ???? ??? ????????? ?? ???? ??? ????.'
+        : 'You selected more exhibits than this duration supports. Remove some exhibits or choose a longer duration.';
+  }
+
+  String _selectedExhibitsHelper() {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final max = maxExhibitsForDuration(_durationMinutes);
+    return isArabic
+        ? '?? ?????? ${_selectedExhibitIds.length}/$max ??????? ???? ?????.'
+        : 'Selected ${_selectedExhibitIds.length}/$max exhibits for this duration.';
+  }
+
+  String _preferredLanguageRequiredMessage() {
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    return isArabic
+        ? '???? ????? ????? ???? ??????.'
+        : 'Please type your preferred language.';
   }
 
   @override
@@ -152,6 +196,8 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                       isLoading: exhibitProvider.isLoading,
                       error: exhibitProvider.error,
                       selectedIds: _selectedExhibitIds,
+                      maxSelected: maxExhibitsForDuration(_durationMinutes),
+                      helperText: _selectedExhibitsHelper(),
                       isArabic: isArabic,
                       onToggle: (id) =>
                           _toggleSetValue(_selectedExhibitIds, id),
@@ -168,23 +214,53 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                     const SizedBox(height: 18),
                     _SingleChoiceSection<int>(
                       title: l10n.duration,
-                      options: const [45, 60, 90, 120],
+                      options: const [30, 45, 50, 60, 90, 120],
                       selected: _durationMinutes,
                       labelFor: (value) => l10n.ticketsDurationValue(value),
                       onSelected: (value) =>
                           setState(() => _durationMinutes = value),
                       isArabic: isArabic,
                     ),
+                    if (_selectedExhibitIds.length >
+                        maxExhibitsForDuration(_durationMinutes)) ...[
+                      const SizedBox(height: 8),
+                      _MutedText(_durationOverLimitWarning()),
+                    ],
                     const SizedBox(height: 18),
                     _SingleChoiceSection<String>(
                       title: l10n.language,
                       options: TourNarrationLanguage.values,
                       selected: _languageCode,
                       labelFor: (value) => _languageLabel(l10n, value),
-                      onSelected: (value) =>
-                          setState(() => _languageCode = value),
+                      onSelected: (value) => setState(() {
+                        _languageCode = value;
+                        if (value != 'other') _languageOther = '';
+                      }),
                       isArabic: isArabic,
                     ),
+                    if (_languageCode == 'other') ...[
+                      const SizedBox(height: 10),
+                      TextFormField(
+                        initialValue: _languageOther,
+                        onChanged: (value) => _languageOther = value,
+                        style: AppTextStyles.bodyPrimary(context).copyWith(
+                          color: AppColors.whiteTitle,
+                        ),
+                        decoration: InputDecoration(
+                          labelText: isArabic
+                              ? '\u0644\u063a\u0629 \u0623\u062e\u0631\u0649'
+                              : 'Other language',
+                          hintText: isArabic
+                              ? '\u0627\u0643\u062a\u0628 \u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u062a\u064a \u062a\u0641\u0636\u0644\u0647\u0627'
+                              : 'Type your preferred language',
+                          filled: true,
+                          fillColor: AppColors.cinematicCard.withValues(alpha: 0.48),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 18),
                     _ChipSectionCard(
                       title: l10n.tourCustomizeAccessibilityTitle,
@@ -224,15 +300,6 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                       isArabic: isArabic,
                     ),
                     const SizedBox(height: 18),
-                    _PreferenceSwitchCard(
-                      title: l10n.tourCustomizeAvoidCrowdsTitle,
-                      subtitle: l10n.tourCustomizeAvoidCrowdsSubtitle,
-                      value: _avoidCrowds,
-                      onChanged: (value) =>
-                          setState(() => _avoidCrowds = value),
-                      isArabic: isArabic,
-                    ),
-                    const SizedBox(height: 18),
                     _SummaryCard(
                       l10n: l10n,
                       exhibitCount: _selectedExhibitIds.length,
@@ -242,7 +309,6 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                       visitorMode: _visitorMode,
                       pace: _pace,
                       photoSpotsEnabled: _photoSpotsEnabled,
-                      avoidCrowds: _avoidCrowds,
                       isArabic: isArabic,
                     ),
                   ],
@@ -296,8 +362,6 @@ String _visitorModeLabel(AppLocalizations l10n, VisitorMode mode) {
       return l10n.tourVisitorAdults;
     case VisitorMode.student:
       return l10n.tourVisitorStudents;
-    case VisitorMode.kidsFamily:
-      return l10n.tourVisitorKidsFamily;
     case VisitorMode.disabledVisitor:
       return l10n.tourVisitorDisabled;
   }
@@ -360,6 +424,8 @@ class _ExhibitSelectionCard extends StatelessWidget {
     required this.isLoading,
     required this.error,
     required this.selectedIds,
+    required this.maxSelected,
+    required this.helperText,
     required this.isArabic,
     required this.onToggle,
   });
@@ -369,6 +435,8 @@ class _ExhibitSelectionCard extends StatelessWidget {
   final bool isLoading;
   final String? error;
   final Set<String> selectedIds;
+  final int maxSelected;
+  final String helperText;
   final bool isArabic;
   final ValueChanged<String> onToggle;
 
@@ -380,7 +448,10 @@ class _ExhibitSelectionCard extends StatelessWidget {
       subtitle: l10n.tourCustomizeExhibitsSubtitle,
       isArabic: isArabic,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          _MutedText(helperText),
+          const SizedBox(height: 10),
           if (isLoading && exhibits.isEmpty)
             _InlineStateMessage(
               isArabic: isArabic,
@@ -405,6 +476,7 @@ class _ExhibitSelectionCard extends StatelessWidget {
             ),
           ...exhibits.map((exhibit) {
           final selected = selectedIds.contains(exhibit.id);
+          final disabled = !selected && selectedIds.length >= maxSelected;
           final title = _safeLocalizedText(
             exhibit.getName(lang),
             exhibit.nameEn,
@@ -418,6 +490,7 @@ class _ExhibitSelectionCard extends StatelessWidget {
             subtitle: subtitle,
             imageAsset: exhibit.imageAsset,
             selected: selected,
+            disabled: disabled,
             onTap: () => onToggle(exhibit.id),
           );
         }),
@@ -489,6 +562,7 @@ class _SelectableExhibitTile extends StatelessWidget {
     required this.subtitle,
     required this.imageAsset,
     required this.selected,
+    this.disabled = false,
     required this.onTap,
   });
 
@@ -496,6 +570,7 @@ class _SelectableExhibitTile extends StatelessWidget {
   final String subtitle;
   final String imageAsset;
   final bool selected;
+  final bool disabled;
   final VoidCallback onTap;
 
   @override
@@ -503,23 +578,29 @@ class _SelectableExhibitTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsetsDirectional.only(bottom: 10),
       child: InkWell(
-        onTap: onTap,
+        onTap: disabled ? null : onTap,
         borderRadius: BorderRadius.circular(18),
         child: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: selected
                 ? AppColors.primaryGold.withValues(alpha: 0.13)
-                : AppColors.secondaryGlass(0.30),
+                : disabled
+                    ? AppColors.secondaryGlass(0.18)
+                    : AppColors.secondaryGlass(0.30),
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
               color: selected
                   ? AppColors.primaryGold
-                  : AppColors.goldBorder(0.12),
+                  : disabled
+                      ? AppColors.goldBorder(0.08)
+                      : AppColors.goldBorder(0.12),
             ),
           ),
-          child: Row(
-            textDirection: Directionality.of(context),
+          child: Opacity(
+            opacity: disabled ? 0.52 : 1,
+            child: Row(
+              textDirection: Directionality.of(context),
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
@@ -572,13 +653,31 @@ class _SelectableExhibitTile extends StatelessWidget {
               Icon(
                 selected
                     ? Icons.check_circle_rounded
-                    : Icons.radio_button_unchecked_rounded,
+                    : disabled
+                        ? Icons.lock_outline_rounded
+                        : Icons.radio_button_unchecked_rounded,
                 color: selected ? AppColors.primaryGold : AppColors.bodyText,
               ),
             ],
           ),
+          ),
         ),
       ),
+    );
+  }
+}
+
+class _MutedText extends StatelessWidget {
+  const _MutedText(this.text);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      text,
+      textAlign: TextAlign.start,
+      style: AppTextStyles.metadata(context).copyWith(color: AppColors.bodyText),
     );
   }
 }
@@ -724,7 +823,6 @@ class _SummaryCard extends StatelessWidget {
     required this.visitorMode,
     required this.pace,
     required this.photoSpotsEnabled,
-    required this.avoidCrowds,
     required this.isArabic,
   });
 
@@ -736,7 +834,6 @@ class _SummaryCard extends StatelessWidget {
   final VisitorMode? visitorMode;
   final TourPace? pace;
   final bool photoSpotsEnabled;
-  final bool avoidCrowds;
   final bool isArabic;
 
   @override
@@ -781,10 +878,6 @@ class _SummaryCard extends StatelessWidget {
           _SummaryLine(
             label: l10n.tourCustomizePhotoSpotsTitle,
             value: photoSpotsEnabled ? l10n.enabled : l10n.disabled,
-          ),
-          _SummaryLine(
-            label: l10n.tourCustomizeAvoidCrowdsTitle,
-            value: avoidCrowds ? l10n.enabled : l10n.disabled,
           ),
         ],
       ),

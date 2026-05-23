@@ -3278,18 +3278,6 @@ abstract class AppLocalizations {
   /// **'Include recommended places for photos during the tour.'**
   String get tourCustomizePhotoSpotsSubtitle;
 
-  /// No description provided for @tourCustomizeAvoidCrowdsTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Avoid crowded areas'**
-  String get tourCustomizeAvoidCrowdsTitle;
-
-  /// No description provided for @tourCustomizeAvoidCrowdsSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Prefer quieter paths when the museum route allows it.'**
-  String get tourCustomizeAvoidCrowdsSubtitle;
-
   /// No description provided for @tourCustomizeSummaryTitle.
   ///
   /// In en, this message translates to:
@@ -3439,12 +3427,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Students'**
   String get tourVisitorStudents;
-
-  /// No description provided for @tourVisitorKidsFamily.
-  ///
-  /// In en, this message translates to:
-  /// **'Kids and family'**
-  String get tourVisitorKidsFamily;
 
   /// No description provided for @tourVisitorDisabled.
   ///
@@ -3649,12 +3631,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Payment status: Pay at counter'**
   String get paymentStatusPayAtCounter;
-
-  /// No description provided for @egyptianArabic.
-  ///
-  /// In en, this message translates to:
-  /// **'Egyptian Arabic'**
-  String get egyptianArabic;
 
   /// No description provided for @cancelBooking.
   ///

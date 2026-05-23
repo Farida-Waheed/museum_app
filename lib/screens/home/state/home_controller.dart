@@ -18,6 +18,7 @@ class HomeController {
     required TourProvider tourProvider,
     required List<Exhibit> exhibits,
     required String lang,
+    required int didYouKnowIndex,
   }) {
     final hasSessionTourContext =
         sessionProvider.isRobotConnected ||
@@ -65,7 +66,13 @@ class HomeController {
       lang: lang,
       preferredExhibitId: currentExhibit?.id,
     );
-    final didYouKnowText = demoService.getDidYouKnow(lang);
+    final didYouKnowText = _buildDidYouKnow(
+      exhibits: exhibits,
+      lang: lang,
+      index: didYouKnowIndex,
+      currentExhibit: hasSessionTourContext ? currentExhibit : null,
+      activeTour: hasActiveTour || isPaused,
+    );
     final smallUpdateCard = demoService.getMuseumUpdate(lang);
     final mapPreview = demoService.getMapPreview(
       isRobotConnected: connected,
@@ -183,5 +190,46 @@ class HomeController {
       case HomeRobotStatus.error:
         return lang == 'ar' ? 'خطأ' : 'Error';
     }
+  }
+
+  String _buildDidYouKnow({
+    required List<Exhibit> exhibits,
+    required String lang,
+    required int index,
+    Exhibit? currentExhibit,
+    bool activeTour = false,
+  }) {
+    if (exhibits.isEmpty) {
+      return demoService.getDidYouKnow(lang);
+    }
+
+    final exhibit = activeTour && currentExhibit != null
+        ? currentExhibit
+        : exhibits[index % exhibits.length];
+    final description = exhibit.getDescription(lang).trim();
+    if (description.isEmpty) {
+      return demoService.getDidYouKnow(lang);
+    }
+
+    final sentences = description
+        .split(RegExp(r'(?<=[.!?؟])\s+'))
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty)
+        .toList();
+
+    if (sentences.isEmpty) {
+      return demoService.getDidYouKnow(lang);
+    }
+
+    var fact = sentences.first;
+
+    if (fact.length > 120) {
+      fact = fact.substring(0, 120).trimRight();
+      if (!fact.endsWith('.')) fact += '...';
+    } else if (!fact.endsWith('.')) {
+      fact += '.';
+    }
+
+    return fact;
   }
 }

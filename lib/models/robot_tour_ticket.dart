@@ -11,6 +11,7 @@ class RobotTourTicket {
   final String packageName;
   final int durationMinutes;
   final String languageCode;
+  final String? languageOther;
   final List<String> includedFeatures;
   final double price;
   final String currency;
@@ -41,6 +42,7 @@ class RobotTourTicket {
     required this.packageName,
     required this.durationMinutes,
     required this.languageCode,
+    this.languageOther,
     required this.includedFeatures,
     required this.price,
     required this.currency,
@@ -71,6 +73,7 @@ class RobotTourTicket {
     String? packageName,
     int? durationMinutes,
     String? languageCode,
+    String? languageOther,
     List<String>? includedFeatures,
     double? price,
     String? currency,
@@ -99,6 +102,7 @@ class RobotTourTicket {
       packageName: packageName ?? this.packageName,
       durationMinutes: durationMinutes ?? this.durationMinutes,
       languageCode: languageCode ?? this.languageCode,
+      languageOther: languageOther ?? this.languageOther,
       includedFeatures: includedFeatures ?? this.includedFeatures,
       price: price ?? this.price,
       currency: currency ?? this.currency,
@@ -132,6 +136,7 @@ class RobotTourTicket {
       'packageName': packageName,
       'durationMinutes': durationMinutes,
       'languageCode': languageCode,
+      'languageOther': languageOther,
       'includedFeatures': includedFeatures,
       'price': price,
       'currency': currency,
@@ -169,7 +174,9 @@ class RobotTourTicket {
       'tour_duration': durationMinutes,
       'durationMinutes': durationMinutes,
       'preferred_language': languageCode,
+      'preferred_language_other': languageOther,
       'languageCode': languageCode,
+      'languageOther': languageOther,
       'includedFeatures': includedFeatures,
       'price': price,
       'currency': currency,
@@ -196,6 +203,7 @@ class RobotTourTicket {
       packageName: json['packageName'] as String,
       durationMinutes: json['durationMinutes'] as int,
       languageCode: json['languageCode'] as String,
+      languageOther: json['languageOther'] as String? ?? json['preferred_language_other'] as String?,
       includedFeatures: List<String>.from(json['includedFeatures'] as List),
       price: (json['price'] as num).toDouble(),
       currency: json['currency'] as String,
@@ -271,16 +279,19 @@ class RobotTourTicket {
               _stringValue(json['preferred_language']),
         ) ??
         'english';
+    final languageOther = _stringValue(json['languageOther']) ?? _stringValue(json['preferred_language_other']);
     final standardConfig = _standardConfigFromFirestore(
       json,
       duration,
       language,
+      languageOther,
       selectedExhibitIds,
     );
     final personalizedConfig = _personalizedConfigFromFirestore(
       json,
       duration,
       language,
+      languageOther,
       selectedExhibitIds,
       interests,
       accessibility,
@@ -300,6 +311,7 @@ class RobotTourTicket {
               : 'Standard Horus-Bot Tour'),
       durationMinutes: duration,
       languageCode: language,
+      languageOther: language == 'other' ? languageOther : null,
       includedFeatures: _stringList(json['includedFeatures']),
       price:
           _doubleValue(json['price']) ?? _doubleValue(json['total_price']) ?? 0,
@@ -348,6 +360,7 @@ class RobotTourTicket {
     Map<String, dynamic> json,
     int duration,
     String language,
+    String? languageOther,
     List<String> selectedExhibitIds,
   ) {
     final rawConfig =
@@ -359,6 +372,7 @@ class RobotTourTicket {
     return StandardTourConfig(
       durationMinutes: duration,
       languageCode: language,
+      languageOther: language == 'other' ? languageOther : null,
       routeName:
           _stringValue(json['routeName']) ??
           _stringValue(json['route_name']) ??
@@ -373,6 +387,7 @@ class RobotTourTicket {
     Map<String, dynamic> json,
     int duration,
     String language,
+    String? languageOther,
     List<String> selectedExhibitIds,
     List<String> interests,
     List<String> accessibility,
@@ -390,6 +405,7 @@ class RobotTourTicket {
       selectedThemes: interests,
       durationMinutes: duration,
       languageCode: language,
+      languageOther: language == 'other' ? languageOther : null,
       accessibilityNeeds: accessibility,
       visitorMode: _visitorModeValue(
         json['visitorMode'] ?? json['visitor_mode'],
@@ -402,8 +418,6 @@ class RobotTourTicket {
                 json['photo_spots'],
           ) ??
           false,
-      avoidCrowds:
-          _boolValue(json['avoidCrowds'] ?? json['avoid_crowds']) ?? false,
     );
   }
 
