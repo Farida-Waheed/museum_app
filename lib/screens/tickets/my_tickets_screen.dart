@@ -31,6 +31,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
   String? _loadedUserId;
   String? _cancellingBookingId;
   final Set<String> _expandedTicketSetIds = {};
+  bool _showPastAndCancelled = false;
 
   @override
   void didChangeDependencies() {
@@ -92,6 +93,10 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
     String? userId,
   ) {
     final orders = ticketProvider.purchasedTicketSets;
+    final activeOrders = orders.where(_isCurrentTicketSet).toList();
+    final pastOrders = orders
+        .where((order) => !_isCurrentTicketSet(order))
+        .toList();
     if (ticketProvider.isLoadingTickets && orders.isEmpty) {
       return Center(
         child: SingleChildScrollView(
@@ -162,7 +167,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
           _SkippedBookingsNotice(isArabic: isArabic),
         ],
         const SizedBox(height: 18),
-        ...orders.map(
+        ...activeOrders.map(
           (order) => Padding(
             padding: const EdgeInsetsDirectional.only(bottom: 18),
             child: _OrderCard(
@@ -192,6 +197,65 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
             ),
           ),
         ),
+        if (pastOrders.isNotEmpty) ...[
+          TextButton(
+            style: TextButton.styleFrom(
+              alignment: isArabic
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft,
+              foregroundColor: AppColors.bodyText,
+              padding: const EdgeInsetsDirectional.symmetric(
+                horizontal: 6,
+                vertical: 8,
+              ),
+            ),
+            onPressed: () {
+              setState(() {
+                _showPastAndCancelled = !_showPastAndCancelled;
+              });
+            },
+            child: Text(
+              _showPastAndCancelled
+                  ? (isArabic
+                        ? 'إخفاء السابقة والملغاة'
+                        : 'Hide past & cancelled')
+                  : (isArabic
+                        ? 'عرض السابقة والملغاة'
+                        : 'View past & cancelled'),
+            ),
+          ),
+          if (_showPastAndCancelled)
+            ...pastOrders.map(
+              (order) => Padding(
+                padding: const EdgeInsetsDirectional.only(bottom: 18),
+                child: _OrderCard(
+                  order: order,
+                  exhibits: exhibits,
+                  sessionProvider: sessionProvider,
+                  l10n: l10n,
+                  isArabic: isArabic,
+                  isExpanded: _expandedTicketSetIds.contains(order.id),
+                  isCancelling: _cancellingBookingId == order.id,
+                  onToggleExpanded: () {
+                    setState(() {
+                      if (_expandedTicketSetIds.contains(order.id)) {
+                        _expandedTicketSetIds.remove(order.id);
+                      } else {
+                        _expandedTicketSetIds.add(order.id);
+                      }
+                    });
+                  },
+                  onCancel: () => _confirmAndCancelBooking(
+                    context,
+                    ticketProvider,
+                    order,
+                    l10n,
+                    isArabic,
+                  ),
+                ),
+              ),
+            ),
+        ],
       ],
     );
   }
@@ -246,6 +310,22 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
         ),
       ),
     );
+  }
+}
+
+bool _isCurrentTicketSet(PurchasedTicketSet order) {
+  switch (deriveTicketSetDisplayStatus(order)) {
+    case TicketSetDisplayStatus.active:
+    case TicketSetDisplayStatus.paired:
+    case TicketSetDisplayStatus.inProgress:
+      return true;
+    case TicketSetDisplayStatus.completed:
+    case TicketSetDisplayStatus.used:
+    case TicketSetDisplayStatus.cancelled:
+    case TicketSetDisplayStatus.expired:
+    case TicketSetDisplayStatus.pending:
+    case TicketSetDisplayStatus.partial:
+      return false;
   }
 }
 
@@ -505,8 +585,12 @@ class _OrderCard extends StatelessWidget {
             width: double.infinity,
             child: _OutlineButton(
               label: isExpanded
-                  ? (isArabic ? '\u0625\u062e\u0641\u0627\u0621 \u0627\u0644\u062a\u0641\u0627\u0635\u064a\u0644' : 'Hide details')
-                  : (isArabic ? '\u0639\u0631\u0636 \u0627\u0644\u062a\u0641\u0627\u0635\u064a\u0644' : 'View details'),
+                  ? (isArabic
+                        ? '\u0625\u062e\u0641\u0627\u0621 \u0627\u0644\u062a\u0641\u0627\u0635\u064a\u0644'
+                        : 'Hide details')
+                  : (isArabic
+                        ? '\u0639\u0631\u0636 \u0627\u0644\u062a\u0641\u0627\u0635\u064a\u0644'
+                        : 'View details'),
               onTap: onToggleExpanded,
             ),
           ),
@@ -654,8 +738,7 @@ class _OrderHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final museumName =
-        order.museumTicket?.museumName ?? 'The Egyptian Museum';
+    final museumName = order.museumTicket?.museumName ?? 'The Egyptian Museum';
     final tourType = order.robotTourTicket?.tourType ?? RobotTourType.standard;
     final visitors = order.museumTicket?.visitorCount ?? 0;
     return Column(
@@ -663,7 +746,11 @@ class _OrderHeader extends StatelessWidget {
           ? CrossAxisAlignment.end
           : CrossAxisAlignment.start,
       children: [
-        _SectionLabel(isArabic ? '\u0645\u0644\u062e\u0635 \u0627\u0644\u062d\u062c\u0632' : 'Booking summary'),
+        _SectionLabel(
+          isArabic
+              ? '\u0645\u0644\u062e\u0635 \u0627\u0644\u062d\u062c\u0632'
+              : 'Booking summary',
+        ),
         const SizedBox(height: 10),
         Row(
           textDirection: Directionality.of(context),
@@ -828,7 +915,11 @@ class _RobotPassCard extends StatelessWidget {
               ),
               _InfoItem(
                 l10n.language,
-                _languageLabel(l10n, ticket.languageCode, otherText: ticket.languageOther),
+                _languageLabel(
+                  l10n,
+                  ticket.languageCode,
+                  otherText: ticket.languageOther,
+                ),
               ),
               _InfoItem(l10n.status, _ticketStatusLabel(l10n, ticket.status)),
               _InfoItem(
@@ -909,7 +1000,8 @@ class _RobotConfigSummary extends StatelessWidget {
           if (selectedExhibitIds.isNotEmpty)
             _BreakdownLine(
               label: l10n.exhibits,
-              value: selectedExhibitNames ??
+              value:
+                  selectedExhibitNames ??
                   _legacyRouteUnavailableMessage(isArabic),
             ),
           _BreakdownLine(
@@ -976,8 +1068,8 @@ class _RobotConfigSummary extends StatelessWidget {
         if (routeExhibitIds.isNotEmpty)
           _BreakdownLine(
             label: l10n.exhibits,
-            value: routeExhibitNames ??
-                _legacyRouteUnavailableMessage(isArabic),
+            value:
+                routeExhibitNames ?? _legacyRouteUnavailableMessage(isArabic),
           ),
       ],
     );
@@ -1618,13 +1710,19 @@ String _ticketStatusLabel(AppLocalizations l10n, TicketStatus status) {
   final isArabic = l10n.localeName == 'ar';
   switch (status) {
     case TicketStatus.pending:
-      return isArabic ? '\u0642\u064a\u062f \u0627\u0644\u062a\u062c\u0647\u064a\u0632' : 'Preparing';
+      return isArabic
+          ? '\u0642\u064a\u062f \u0627\u0644\u062a\u062c\u0647\u064a\u0632'
+          : 'Preparing';
     case TicketStatus.active:
       return isArabic ? '\u0646\u0634\u0637' : 'Active';
     case TicketStatus.paired:
-      return isArabic ? '\u062a\u0645 \u0631\u0628\u0637 \u0627\u0644\u0631\u0648\u0628\u0648\u062a' : 'Paired';
+      return isArabic
+          ? '\u062a\u0645 \u0631\u0628\u0637 \u0627\u0644\u0631\u0648\u0628\u0648\u062a'
+          : 'Paired';
     case TicketStatus.in_progress:
-      return isArabic ? '\u0627\u0644\u062c\u0648\u0644\u0629 \u0627\u0644\u0645\u0628\u0627\u0634\u0631\u0629 \u062c\u0627\u0631\u064a\u0629' : 'In Progress';
+      return isArabic
+          ? '\u0627\u0644\u062c\u0648\u0644\u0629 \u0627\u0644\u0645\u0628\u0627\u0634\u0631\u0629 \u062c\u0627\u0631\u064a\u0629'
+          : 'In Progress';
     case TicketStatus.completed:
       return isArabic ? '\u0645\u0643\u062a\u0645\u0644' : 'Completed';
     case TicketStatus.used:
@@ -1645,9 +1743,13 @@ String _ticketSetDisplayStatusLabel(
     case TicketSetDisplayStatus.active:
       return isArabic ? '\u0646\u0634\u0637' : 'Active';
     case TicketSetDisplayStatus.paired:
-      return isArabic ? '\u062c\u0627\u0647\u0632 \u0644\u0644\u0628\u062f\u0621' : 'Ready to start';
+      return isArabic
+          ? '\u062c\u0627\u0647\u0632 \u0644\u0644\u0628\u062f\u0621'
+          : 'Ready to start';
     case TicketSetDisplayStatus.inProgress:
-      return isArabic ? '\u0642\u064a\u062f \u0627\u0644\u062a\u0646\u0641\u064a\u0630' : 'In progress';
+      return isArabic
+          ? '\u0642\u064a\u062f \u0627\u0644\u062a\u0646\u0641\u064a\u0630'
+          : 'In progress';
     case TicketSetDisplayStatus.completed:
       return isArabic ? '\u0645\u0643\u062a\u0645\u0644' : 'Completed';
     case TicketSetDisplayStatus.used:
@@ -1657,7 +1759,9 @@ String _ticketSetDisplayStatusLabel(
     case TicketSetDisplayStatus.expired:
       return isArabic ? '\u0645\u0646\u062a\u0647\u064a' : 'Expired';
     case TicketSetDisplayStatus.pending:
-      return isArabic ? '\u0642\u064a\u062f \u0627\u0644\u062a\u062c\u0647\u064a\u0632' : 'Preparing';
+      return isArabic
+          ? '\u0642\u064a\u062f \u0627\u0644\u062a\u062c\u0647\u064a\u0632'
+          : 'Preparing';
     case TicketSetDisplayStatus.partial:
       return isArabic
           ? '\u062a\u0645 \u062a\u062d\u062f\u064a\u062b\u0647 \u062c\u0632\u0626\u064a\u0627\u064b'
@@ -1743,7 +1847,11 @@ String _tourTypeLabel(AppLocalizations l10n, RobotTourType tourType) {
   }
 }
 
-String _languageLabel(AppLocalizations l10n, String languageCode, {String? otherText}) {
+String _languageLabel(
+  AppLocalizations l10n,
+  String languageCode, {
+  String? otherText,
+}) {
   return TourNarrationLanguage.label(
     languageCode,
     l10n.localeName == 'ar',
@@ -1784,7 +1892,11 @@ String? _routeTitle(RobotTourTicket ticket, bool isArabic) {
   return title;
 }
 
-String? _exhibitNamesOrNull(List<Exhibit> exhibits, List<String> ids, String lang) {
+String? _exhibitNamesOrNull(
+  List<Exhibit> exhibits,
+  List<String> ids,
+  String lang,
+) {
   if (ids.isEmpty) return '';
   final byId = {for (final exhibit in exhibits) exhibit.id: exhibit};
   final names = <String>[];

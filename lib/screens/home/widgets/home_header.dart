@@ -142,7 +142,7 @@ class _HeaderBrand extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Image.asset('assets/icons/ankh.png', width: 18, height: 18),
+        Image.asset('assets/icons/horus_eye.png', width: 18, height: 18),
         const SizedBox(width: 8),
         Text(
           'HORUS-BOT',

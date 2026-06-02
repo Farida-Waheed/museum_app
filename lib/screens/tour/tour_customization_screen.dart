@@ -21,14 +21,11 @@ class TourCustomizationScreen extends StatefulWidget {
 
 class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
   final Set<String> _selectedExhibitIds = {};
-  final Set<String> _selectedThemes = {};
-  final Set<String> _accessibilityNeeds = {};
 
   int? _durationMinutes;
   String? _languageCode;
   String _languageOther = '';
   VisitorMode? _visitorMode;
-  TourPace? _pace;
   bool _photoSpotsEnabled = true;
 
   @override
@@ -38,13 +35,10 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
     final config =
         draft.personalizedTourConfig ?? PersonalizedTourConfig.defaultConfig;
     _selectedExhibitIds.addAll(config.selectedExhibitIds);
-    _selectedThemes.addAll(config.selectedThemes);
-    _accessibilityNeeds.addAll(config.accessibilityNeeds);
     _durationMinutes = config.durationMinutes;
     _languageCode = config.languageCode;
     _languageOther = config.languageOther ?? '';
     _visitorMode = config.visitorMode;
-    _pace = config.pace;
     _photoSpotsEnabled = config.photoSpotsEnabled;
   }
 
@@ -52,7 +46,9 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
     if (target == _selectedExhibitIds &&
         !target.contains(value) &&
         target.length >= maxExhibitsForDuration(_durationMinutes)) {
-      _showValidation(_durationLimitMessage(maxExhibitsForDuration(_durationMinutes)));
+      _showValidation(
+        _durationLimitMessage(maxExhibitsForDuration(_durationMinutes)),
+      );
       return;
     }
     setState(() {
@@ -105,20 +101,15 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
       _showValidation(l10n.tourCustomizeVisitorModeError);
       return;
     }
-    if (_pace == null) {
-      _showValidation(l10n.tourCustomizePaceError);
-      return;
-    }
-
     final config = PersonalizedTourConfig(
       selectedExhibitIds: _selectedExhibitIds.toList(),
-      selectedThemes: _selectedThemes.toList(),
+      selectedThemes: const [],
       durationMinutes: _durationMinutes!,
       languageCode: _languageCode!,
       languageOther: _languageCode == 'other' ? _languageOther.trim() : null,
-      accessibilityNeeds: _accessibilityNeeds.toList(),
+      accessibilityNeeds: const [],
       visitorMode: _visitorMode!,
-      pace: _pace!,
+      pace: TourPace.normal,
       photoSpotsEnabled: _photoSpotsEnabled,
     );
     context.read<TicketProvider>().updatePersonalizedTourConfig(config);
@@ -141,7 +132,7 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
   String _durationOverLimitWarning() {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     return isArabic
-        ? '??? ????? ??????? ???? ??? ???? ?? ??? ?????. ???? ??? ????????? ?? ???? ??? ????.'
+        ? 'لقد اخترت معروضات أكثر مما تدعمه هذه المدة. أزل بعض المعروضات أو اختر مدة أطول.'
         : 'You selected more exhibits than this duration supports. Remove some exhibits or choose a longer duration.';
   }
 
@@ -149,14 +140,14 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final max = maxExhibitsForDuration(_durationMinutes);
     return isArabic
-        ? '?? ?????? ${_selectedExhibitIds.length}/$max ??????? ???? ?????.'
+        ? 'تم اختيار ${_selectedExhibitIds.length}/$max معروضات لهذه المدة.'
         : 'Selected ${_selectedExhibitIds.length}/$max exhibits for this duration.';
   }
 
   String _preferredLanguageRequiredMessage() {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     return isArabic
-        ? '???? ????? ????? ???? ??????.'
+        ? 'يرجى كتابة اللغة التي تفضلها.'
         : 'Please type your preferred language.';
   }
 
@@ -203,15 +194,6 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                           _toggleSetValue(_selectedExhibitIds, id),
                     ),
                     const SizedBox(height: 18),
-                    _ChipSectionCard(
-                      title: l10n.tourCustomizeThemesTitle,
-                      subtitle: l10n.tourCustomizeThemesSubtitle,
-                      options: _themeOptions(l10n),
-                      selectedIds: _selectedThemes,
-                      isArabic: isArabic,
-                      onToggle: (id) => _toggleSetValue(_selectedThemes, id),
-                    ),
-                    const SizedBox(height: 18),
                     _SingleChoiceSection<int>(
                       title: l10n.duration,
                       options: const [30, 45, 50, 60, 90, 120],
@@ -243,9 +225,9 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                       TextFormField(
                         initialValue: _languageOther,
                         onChanged: (value) => _languageOther = value,
-                        style: AppTextStyles.bodyPrimary(context).copyWith(
-                          color: AppColors.whiteTitle,
-                        ),
+                        style: AppTextStyles.bodyPrimary(
+                          context,
+                        ).copyWith(color: AppColors.whiteTitle),
                         decoration: InputDecoration(
                           labelText: isArabic
                               ? '\u0644\u063a\u0629 \u0623\u062e\u0631\u0649'
@@ -254,23 +236,15 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                               ? '\u0627\u0643\u062a\u0628 \u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u062a\u064a \u062a\u0641\u0636\u0644\u0647\u0627'
                               : 'Type your preferred language',
                           filled: true,
-                          fillColor: AppColors.cinematicCard.withValues(alpha: 0.48),
+                          fillColor: AppColors.cinematicCard.withValues(
+                            alpha: 0.48,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
                         ),
                       ),
                     ],
-                    const SizedBox(height: 18),
-                    _ChipSectionCard(
-                      title: l10n.tourCustomizeAccessibilityTitle,
-                      subtitle: l10n.tourCustomizeAccessibilitySubtitle,
-                      options: _accessibilityOptions(l10n),
-                      selectedIds: _accessibilityNeeds,
-                      isArabic: isArabic,
-                      onToggle: (id) =>
-                          _toggleSetValue(_accessibilityNeeds, id),
-                    ),
                     const SizedBox(height: 18),
                     _SingleChoiceSection<VisitorMode>(
                       title: l10n.tourCustomizeVisitorModeTitle,
@@ -281,16 +255,6 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                           setState(() => _visitorMode = value),
                       isArabic: isArabic,
                     ),
-                    const SizedBox(height: 18),
-                    _SingleChoiceSection<TourPace>(
-                      title: l10n.tourCustomizePaceTitle,
-                      options: TourPace.values,
-                      selected: _pace,
-                      labelFor: (pace) => _paceLabel(l10n, pace),
-                      onSelected: (value) => setState(() => _pace = value),
-                      isArabic: isArabic,
-                    ),
-                    const SizedBox(height: 18),
                     _PreferenceSwitchCard(
                       title: l10n.tourCustomizePhotoSpotsTitle,
                       subtitle: l10n.tourCustomizePhotoSpotsSubtitle,
@@ -303,11 +267,9 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                     _SummaryCard(
                       l10n: l10n,
                       exhibitCount: _selectedExhibitIds.length,
-                      themeCount: _selectedThemes.length,
                       durationMinutes: _durationMinutes,
                       languageCode: _languageCode,
                       visitorMode: _visitorMode,
-                      pace: _pace,
                       photoSpotsEnabled: _photoSpotsEnabled,
                       isArabic: isArabic,
                     ),
@@ -323,38 +285,12 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
   }
 }
 
-class _OptionItem {
-  const _OptionItem({required this.id, required this.label});
-
-  final String id;
-  final String label;
-}
-
 String _safeLocalizedText(String localizedValue, String fallbackValue) {
   final looksCorrupted = RegExp(
     r'[\u00D8\u00D9\u00C2\u00E2]',
   ).hasMatch(localizedValue);
   return looksCorrupted ? fallbackValue : localizedValue;
 }
-
-List<_OptionItem> _themeOptions(AppLocalizations l10n) => [
-  _OptionItem(id: 'ancient-kings', label: l10n.tourThemeAncientKings),
-  _OptionItem(id: 'daily-life', label: l10n.tourThemeDailyLife),
-  _OptionItem(id: 'mummies', label: l10n.tourThemeMummies),
-  _OptionItem(id: 'symbols', label: l10n.tourThemeSymbols),
-  _OptionItem(id: 'architecture', label: l10n.tourThemeArchitecture),
-  _OptionItem(id: 'hidden-stories', label: l10n.tourThemeHiddenStories),
-  _OptionItem(id: 'photo-highlights', label: l10n.tourThemePhotoHighlights),
-];
-
-List<_OptionItem> _accessibilityOptions(AppLocalizations l10n) => [
-  _OptionItem(id: 'step-free', label: l10n.tourAccessStepFree),
-  _OptionItem(id: 'fewer-stairs', label: l10n.tourAccessFewerStairs),
-  _OptionItem(id: 'seating-breaks', label: l10n.tourAccessSeatingBreaks),
-  _OptionItem(id: 'slower-narration', label: l10n.tourAccessSlowNarration),
-  _OptionItem(id: 'high-contrast', label: l10n.tourAccessHighContrast),
-  _OptionItem(id: 'audio-first', label: l10n.tourAccessAudioFirst),
-];
 
 String _visitorModeLabel(AppLocalizations l10n, VisitorMode mode) {
   switch (mode) {
@@ -364,17 +300,6 @@ String _visitorModeLabel(AppLocalizations l10n, VisitorMode mode) {
       return l10n.tourVisitorStudents;
     case VisitorMode.disabledVisitor:
       return l10n.tourVisitorDisabled;
-  }
-}
-
-String _paceLabel(AppLocalizations l10n, TourPace pace) {
-  switch (pace) {
-    case TourPace.relaxed:
-      return l10n.tourPaceRelaxed;
-    case TourPace.normal:
-      return l10n.tourPaceNormal;
-    case TourPace.fast:
-      return l10n.tourPaceFast;
   }
 }
 
@@ -475,25 +400,25 @@ class _ExhibitSelectionCard extends StatelessWidget {
                   : 'Showing available saved content.',
             ),
           ...exhibits.map((exhibit) {
-          final selected = selectedIds.contains(exhibit.id);
-          final disabled = !selected && selectedIds.length >= maxSelected;
-          final title = _safeLocalizedText(
-            exhibit.getName(lang),
-            exhibit.nameEn,
-          );
-          final subtitle = _safeLocalizedText(
-            exhibit.getDescription(lang),
-            exhibit.descriptionEn,
-          );
-          return _SelectableExhibitTile(
-            title: title,
-            subtitle: subtitle,
-            imageAsset: exhibit.imageAsset,
-            selected: selected,
-            disabled: disabled,
-            onTap: () => onToggle(exhibit.id),
-          );
-        }),
+            final selected = selectedIds.contains(exhibit.id);
+            final disabled = !selected && selectedIds.length >= maxSelected;
+            final title = _safeLocalizedText(
+              exhibit.getName(lang),
+              exhibit.nameEn,
+            );
+            final subtitle = _safeLocalizedText(
+              exhibit.getDescription(lang),
+              exhibit.descriptionEn,
+            );
+            return _SelectableExhibitTile(
+              title: title,
+              subtitle: subtitle,
+              imageAsset: exhibit.imageAsset,
+              selected: selected,
+              disabled: disabled,
+              onTap: () => onToggle(exhibit.id),
+            );
+          }),
         ],
       ),
     );
@@ -586,80 +511,80 @@ class _SelectableExhibitTile extends StatelessWidget {
             color: selected
                 ? AppColors.primaryGold.withValues(alpha: 0.13)
                 : disabled
-                    ? AppColors.secondaryGlass(0.18)
-                    : AppColors.secondaryGlass(0.30),
+                ? AppColors.secondaryGlass(0.18)
+                : AppColors.secondaryGlass(0.30),
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
               color: selected
                   ? AppColors.primaryGold
                   : disabled
-                      ? AppColors.goldBorder(0.08)
-                      : AppColors.goldBorder(0.12),
+                  ? AppColors.goldBorder(0.08)
+                  : AppColors.goldBorder(0.12),
             ),
           ),
           child: Opacity(
             opacity: disabled ? 0.52 : 1,
             child: Row(
               textDirection: Directionality.of(context),
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.asset(
-                  imageAsset,
-                  width: 58,
-                  height: 58,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.asset(
+                    imageAsset,
                     width: 58,
                     height: 58,
-                    color: AppColors.secondaryGlass(0.4),
-                    child: const Icon(
-                      Icons.museum_outlined,
-                      color: AppColors.primaryGold,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      width: 58,
+                      height: 58,
+                      color: AppColors.secondaryGlass(0.4),
+                      child: const Icon(
+                        Icons.museum_outlined,
+                        color: AppColors.primaryGold,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment:
-                      Directionality.of(context) == TextDirection.rtl
-                      ? CrossAxisAlignment.end
-                      : CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.bodyPrimary(
-                        context,
-                      ).copyWith(fontWeight: FontWeight.w800),
-                      textAlign: TextAlign.start,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyles.metadata(
-                        context,
-                      ).copyWith(color: AppColors.neutralMedium),
-                      textAlign: TextAlign.start,
-                    ),
-                  ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment:
+                        Directionality.of(context) == TextDirection.rtl
+                        ? CrossAxisAlignment.end
+                        : CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.bodyPrimary(
+                          context,
+                        ).copyWith(fontWeight: FontWeight.w800),
+                        textAlign: TextAlign.start,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.metadata(
+                          context,
+                        ).copyWith(color: AppColors.neutralMedium),
+                        textAlign: TextAlign.start,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Icon(
-                selected
-                    ? Icons.check_circle_rounded
-                    : disabled
-                        ? Icons.lock_outline_rounded
-                        : Icons.radio_button_unchecked_rounded,
-                color: selected ? AppColors.primaryGold : AppColors.bodyText,
-              ),
-            ],
-          ),
+                Icon(
+                  selected
+                      ? Icons.check_circle_rounded
+                      : disabled
+                      ? Icons.lock_outline_rounded
+                      : Icons.radio_button_unchecked_rounded,
+                  color: selected ? AppColors.primaryGold : AppColors.bodyText,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -677,45 +602,9 @@ class _MutedText extends StatelessWidget {
     return Text(
       text,
       textAlign: TextAlign.start,
-      style: AppTextStyles.metadata(context).copyWith(color: AppColors.bodyText),
-    );
-  }
-}
-
-class _ChipSectionCard extends StatelessWidget {
-  const _ChipSectionCard({
-    required this.title,
-    required this.subtitle,
-    required this.options,
-    required this.selectedIds,
-    required this.isArabic,
-    required this.onToggle,
-  });
-
-  final String title;
-  final String subtitle;
-  final List<_OptionItem> options;
-  final Set<String> selectedIds;
-  final bool isArabic;
-  final ValueChanged<String> onToggle;
-
-  @override
-  Widget build(BuildContext context) {
-    return _SectionCard(
-      title: title,
-      subtitle: subtitle,
-      isArabic: isArabic,
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: options.map((option) {
-          return _ChoicePill(
-            label: option.label,
-            selected: selectedIds.contains(option.id),
-            onTap: () => onToggle(option.id),
-          );
-        }).toList(),
-      ),
+      style: AppTextStyles.metadata(
+        context,
+      ).copyWith(color: AppColors.bodyText),
     );
   }
 }
@@ -817,22 +706,18 @@ class _SummaryCard extends StatelessWidget {
   const _SummaryCard({
     required this.l10n,
     required this.exhibitCount,
-    required this.themeCount,
     required this.durationMinutes,
     required this.languageCode,
     required this.visitorMode,
-    required this.pace,
     required this.photoSpotsEnabled,
     required this.isArabic,
   });
 
   final AppLocalizations l10n;
   final int exhibitCount;
-  final int themeCount;
   final int? durationMinutes;
   final String? languageCode;
   final VisitorMode? visitorMode;
-  final TourPace? pace;
   final bool photoSpotsEnabled;
   final bool isArabic;
 
@@ -846,10 +731,6 @@ class _SummaryCard extends StatelessWidget {
           _SummaryLine(
             label: l10n.tourCustomizeSelectedExhibits,
             value: '$exhibitCount',
-          ),
-          _SummaryLine(
-            label: l10n.tourCustomizeSelectedThemes,
-            value: '$themeCount',
           ),
           _SummaryLine(
             label: l10n.duration,
@@ -868,12 +749,6 @@ class _SummaryCard extends StatelessWidget {
             value: visitorMode == null
                 ? l10n.tourCustomizeNotSelected
                 : _visitorModeLabel(l10n, visitorMode!),
-          ),
-          _SummaryLine(
-            label: l10n.tourCustomizePaceTitle,
-            value: pace == null
-                ? l10n.tourCustomizeNotSelected
-                : _paceLabel(l10n, pace!),
           ),
           _SummaryLine(
             label: l10n.tourCustomizePhotoSpotsTitle,

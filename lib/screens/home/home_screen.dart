@@ -700,7 +700,7 @@ class _HomeScreenState extends State<HomeScreen> {
           : 'Follow Horus through your live tour.';
     }
     if (snapshot.isLoggedIn) {
-      return l10n.homeWelcomeUser(snapshot.userName);
+      return l10n.homeWelcomeUser;
     }
     return l10n.homeGuestSubtitle;
   }

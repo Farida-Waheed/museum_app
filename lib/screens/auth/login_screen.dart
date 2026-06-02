@@ -137,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: Column(
                                 children: [
                                   Image.asset(
-                                    'assets/icons/ankh.png',
+                                    'assets/icons/horus_eye.png',
                                     width: 28,
                                     height: 28,
                                   ),

@@ -1766,7 +1766,7 @@ class _LiveTourHeader extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Image.asset(
-                          'assets/icons/ankh.png',
+                          'assets/icons/horus_eye.png',
                           width: 18,
                           height: 18,
                         ),

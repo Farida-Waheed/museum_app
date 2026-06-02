@@ -3800,12 +3800,6 @@ abstract class AppLocalizations {
   /// **'Photo spots'**
   String get myTicketsPhotoSpots;
 
-  /// No description provided for @myTicketsAvoidCrowds.
-  ///
-  /// In en, this message translates to:
-  /// **'Avoid crowds'**
-  String get myTicketsAvoidCrowds;
-
   /// No description provided for @myTicketsRouteSummary.
   ///
   /// In en, this message translates to:
@@ -3899,13 +3893,13 @@ abstract class AppLocalizations {
   /// No description provided for @homeWelcomeUser.
   ///
   /// In en, this message translates to:
-  /// **'Welcome {name}, follow Horus through the museum.'**
-  String homeWelcomeUser(Object name);
+  /// **'Your museum companion is ready.'**
+  String get homeWelcomeUser;
 
   /// No description provided for @homeGuestSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Guest visit mode - follow Horus through the museum.'**
+  /// **'Plan your visit before you arrive.'**
   String get homeGuestSubtitle;
 
   /// No description provided for @homeReadyLabel.

@@ -74,7 +74,6 @@ class _TicketScreenState extends State<TicketScreen> {
     _loadRecommendedRoutes(exhibits);
   }
 
-
   void _repairSelectedTimeSlot(TicketProvider ticketProvider) {
     final draft = ticketProvider.currentOrderDraft;
     if (_isFutureVisitSlot(draft.visitDate, draft.timeSlot)) return;
@@ -115,7 +114,10 @@ class _TicketScreenState extends State<TicketScreen> {
     );
     if (picked != null) {
       ticketProvider.updateVisitDate(picked);
-      if (!_isFutureVisitSlot(picked, ticketProvider.currentOrderDraft.timeSlot)) {
+      if (!_isFutureVisitSlot(
+        picked,
+        ticketProvider.currentOrderDraft.timeSlot,
+      )) {
         String? nextSlot;
         for (final slot in _timeSlots) {
           if (_isFutureVisitSlot(picked, slot)) {
@@ -156,7 +158,9 @@ class _TicketScreenState extends State<TicketScreen> {
     }
     if (!draft.isVisitTimeFuture()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_visitTimeValidationMessage(draft, _isArabic(context)))),
+        SnackBar(
+          content: Text(_visitTimeValidationMessage(draft, _isArabic(context))),
+        ),
       );
       return;
     }
@@ -185,7 +189,9 @@ class _TicketScreenState extends State<TicketScreen> {
     if (!ticketProvider.isPersonalizedDraftComplete) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(_personalizedExhibitRequiredMessage(_isArabic(context))),
+          content: Text(
+            _personalizedExhibitRequiredMessage(_isArabic(context)),
+          ),
         ),
       );
       return;
@@ -195,17 +201,22 @@ class _TicketScreenState extends State<TicketScreen> {
         : draft.standardTourConfig?.languageCode;
     if (!TourNarrationLanguage.isSupported(narrationLanguage)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_unsupportedTourLanguageMessage(_isArabic(context)))),
+        SnackBar(
+          content: Text(_unsupportedTourLanguageMessage(_isArabic(context))),
+        ),
       );
       return;
     }
-    final narrationLanguageOther = draft.robotTourType == RobotTourType.personalized
+    final narrationLanguageOther =
+        draft.robotTourType == RobotTourType.personalized
         ? draft.personalizedTourConfig?.languageOther
         : draft.standardTourConfig?.languageOther;
     if (narrationLanguage == 'other' &&
         narrationLanguageOther?.trim().isNotEmpty != true) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_preferredLanguageRequiredMessage(_isArabic(context)))),
+        SnackBar(
+          content: Text(_preferredLanguageRequiredMessage(_isArabic(context))),
+        ),
       );
       return;
     }
@@ -610,7 +621,7 @@ class _TicketsHeaderBrand extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Image.asset('assets/icons/ankh.png', width: 18, height: 18),
+        Image.asset('assets/icons/horus_eye.png', width: 18, height: 18),
         const SizedBox(width: 8),
         Text(
           'HORUS-BOT',
@@ -762,7 +773,9 @@ class _VisitDetailsCard extends StatelessWidget {
                 detailLabel: !isAvailable
                     ? (_isToday(selectedDate)
                           ? (isArabic ? '\u0645\u0631\u0651' : 'Passed')
-                          : (isArabic ? '\u063a\u064a\u0631 \u0645\u062a\u0627\u062d' : 'Unavailable'))
+                          : (isArabic
+                                ? '\u063a\u064a\u0631 \u0645\u062a\u0627\u062d'
+                                : 'Unavailable'))
                     : null,
                 selected: slot == selectedTimeSlot && isAvailable,
                 enabled: isAvailable,
@@ -1097,11 +1110,11 @@ class _RecommendedRoutesFallbackCard extends StatelessWidget {
       child: _RouteSummary(
         text: warnings.isEmpty
             ? (isArabic
-                ? '\u064a\u062a\u0645 \u0639\u0631\u0636 \u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0645\u062a\u0627\u062d \u0627\u0644\u0645\u062d\u0641\u0648\u0638.'
-                : 'Showing available saved content.')
+                  ? '\u064a\u062a\u0645 \u0639\u0631\u0636 \u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0645\u062a\u0627\u062d \u0627\u0644\u0645\u062d\u0641\u0648\u0638.'
+                  : 'Showing available saved content.')
             : (isArabic
-                ? '\u064a\u062a\u0645 \u0639\u0631\u0636 \u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0645\u062a\u0627\u062d \u0627\u0644\u0645\u062d\u0641\u0648\u0638.'
-                : 'Showing available saved content.'),
+                  ? '\u064a\u062a\u0645 \u0639\u0631\u0636 \u0627\u0644\u0645\u062d\u062a\u0648\u0649 \u0627\u0644\u0645\u062a\u0627\u062d \u0627\u0644\u0645\u062d\u0641\u0648\u0638.'
+                  : 'Showing available saved content.'),
       ),
     );
   }
@@ -1201,7 +1214,9 @@ class _NarrationLanguageCard extends StatelessWidget {
             TextFormField(
               initialValue: languageOther ?? '',
               onChanged: ticketProvider.updateTourLanguageOther,
-              style: AppTextStyles.bodyPrimary(context).copyWith(color: AppColors.whiteTitle),
+              style: AppTextStyles.bodyPrimary(
+                context,
+              ).copyWith(color: AppColors.whiteTitle),
               decoration: InputDecoration(
                 labelText: isArabic
                     ? '\u0644\u063a\u0629 \u0623\u062e\u0631\u0649'
@@ -1525,6 +1540,8 @@ class _TapRow extends StatelessWidget {
                   Text(
                     value,
                     textAlign: TextAlign.start,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.bodyPrimary(
                       context,
                     ).copyWith(fontWeight: FontWeight.w700),
@@ -1532,10 +1549,13 @@ class _TapRow extends StatelessWidget {
                 ],
               ),
             ),
-            const Icon(
-              Icons.edit_calendar_outlined,
-              color: AppColors.softGold,
-              size: 18,
+            const Padding(
+              padding: EdgeInsetsDirectional.only(start: 8),
+              child: Icon(
+                Icons.edit_calendar_outlined,
+                color: AppColors.softGold,
+                size: 18,
+              ),
             ),
           ],
         ),
@@ -1564,53 +1584,94 @@ class _ChoicePill extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-        decoration: BoxDecoration(
-          color: !enabled
-              ? AppColors.secondaryGlass(0.18)
-              : selected
-                  ? AppColors.primaryGold.withValues(alpha: 0.18)
-                  : AppColors.secondaryGlass(0.30),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
+      child: CustomPaint(
+        foregroundPainter: !enabled
+            ? _DashedRRectPainter(
+                color: AppColors.neutralMedium.withValues(alpha: 0.45),
+                radius: 16,
+              )
+            : null,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+          decoration: BoxDecoration(
             color: !enabled
-                ? AppColors.goldBorder(0.08)
+                ? AppColors.secondaryGlass(0.18)
                 : selected
-                    ? AppColors.primaryGold
-                    : AppColors.goldBorder(0.12),
-          ),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: AppTextStyles.metadata(context).copyWith(
-                color: !enabled
-                    ? AppColors.neutralMedium.withValues(alpha: 0.65)
-                    : selected
-                        ? AppColors.primaryGold
-                        : AppColors.bodyText,
-                fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
-                decoration: !enabled ? TextDecoration.lineThrough : null,
-              ),
+                ? AppColors.primaryGold.withValues(alpha: 0.18)
+                : AppColors.secondaryGlass(0.30),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: !enabled
+                  ? Colors.transparent
+                  : selected
+                  ? AppColors.primaryGold
+                  : AppColors.goldBorder(0.12),
             ),
-            if (detailLabel != null) ...[
-              const SizedBox(height: 2),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
               Text(
-                detailLabel!,
+                label,
                 style: AppTextStyles.metadata(context).copyWith(
-                  color: AppColors.neutralMedium.withValues(alpha: 0.70),
-                  fontSize: 10,
-                  fontWeight: FontWeight.w700,
+                  color: !enabled
+                      ? AppColors.neutralMedium.withValues(alpha: 0.65)
+                      : selected
+                      ? AppColors.primaryGold
+                      : AppColors.bodyText,
+                  fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
+                  decoration: !enabled ? TextDecoration.lineThrough : null,
                 ),
               ),
+              if (detailLabel != null) ...[
+                const SizedBox(height: 2),
+                Text(
+                  detailLabel!,
+                  style: AppTextStyles.metadata(context).copyWith(
+                    color: AppColors.neutralMedium.withValues(alpha: 0.70),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
+  }
+}
+
+class _DashedRRectPainter extends CustomPainter {
+  const _DashedRRectPainter({required this.color, required this.radius});
+
+  final Color color;
+  final double radius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rect = Offset.zero & size;
+    final path = Path()
+      ..addRRect(
+        RRect.fromRectAndRadius(rect.deflate(0.5), Radius.circular(radius)),
+      );
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.2;
+    for (final metric in path.computeMetrics()) {
+      var distance = 0.0;
+      while (distance < metric.length) {
+        final next = (distance + 5).clamp(0.0, metric.length);
+        canvas.drawPath(metric.extractPath(distance, next), paint);
+        distance += 9;
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _DashedRRectPainter oldDelegate) {
+    return color != oldDelegate.color || radius != oldDelegate.radius;
   }
 }
 
@@ -2011,6 +2072,7 @@ String _preferredLanguageRequiredMessage(bool isArabic) {
       ? '\u064a\u0631\u062c\u0649 \u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u062a\u064a \u062a\u0641\u0636\u0644\u0647\u0627.'
       : 'Please type your preferred language.';
 }
+
 String _localizedTimeSlot(String slot, bool isArabic) {
   switch (slot) {
     case '09:00':

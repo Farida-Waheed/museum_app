@@ -88,12 +88,15 @@ class TicketRepository {
         'Choose a supported tour language.',
       );
     }
-    final narrationLanguageOther = draft.robotTourType == RobotTourType.personalized
+    final narrationLanguageOther =
+        draft.robotTourType == RobotTourType.personalized
         ? draft.personalizedTourConfig?.languageOther
         : draft.standardTourConfig?.languageOther;
     if (narrationLanguage == 'other' &&
         narrationLanguageOther?.trim().isNotEmpty != true) {
-      throw const TicketRepositoryException('Please type your preferred language.');
+      throw const TicketRepositoryException(
+        'Please type your preferred language.',
+      );
     }
     final now = DateTime.now();
 
@@ -318,9 +321,7 @@ class TicketRepository {
       final bookingDoc = await _bookingDocForCancellation(bookingId, uid);
       final booking = bookingDoc.data()!;
       if (_stringValue(booking['status']) != TicketStatus.active.name) {
-        throw const TicketRepositoryException(
-          'Unable to cancel this booking.',
-        );
+        throw const TicketRepositoryException('Unable to cancel this booking.');
       }
       final resolvedBookingId = bookingDoc.id;
       final bookingSource = _stringValue(booking['booking_source']);
@@ -486,9 +487,7 @@ class TicketRepository {
     if (museumStatus == TicketStatus.used.name ||
         museumStatus == TicketStatus.cancelled.name ||
         museumStatus == TicketStatus.expired.name) {
-      throw const TicketRepositoryException(
-        'Unable to cancel this booking.',
-      );
+      throw const TicketRepositoryException('Unable to cancel this booking.');
     }
 
     final robotStatus = _stringValue(robotTicket['status']);
@@ -497,9 +496,7 @@ class TicketRepository {
         robotStatus == TicketStatus.completed.name ||
         robotStatus == TicketStatus.cancelled.name ||
         robotStatus == TicketStatus.expired.name) {
-      throw const TicketRepositoryException(
-        'Unable to cancel this booking.',
-      );
+      throw const TicketRepositoryException('Unable to cancel this booking.');
     }
 
     final startsAt = _visitStartsAt(booking);
@@ -734,16 +731,10 @@ class TicketRepository {
       'preferred_language_other': ticket.languageCode == 'other'
           ? ticket.languageOther?.trim()
           : null,
-      'pace': personalized?.pace.name ?? TourPace.normal.name,
-      'interests':
-          personalized?.selectedThemes ??
-          ticket.selectedInterests ??
-          const <String>[],
       'selected_exhibits':
           personalized?.selectedExhibitIds ??
           ticket.selectedArtifactIds ??
           (ticket.standardTourConfig?.routeExhibitIds ?? const <String>[]),
-      'accessibility': personalized?.accessibilityNeeds ?? const <String>[],
       'photo_spots': personalized?.photoSpotsEnabled ?? false,
       'notes': null,
       'route_id': ticket.routeId,

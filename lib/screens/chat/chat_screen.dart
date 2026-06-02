@@ -294,7 +294,7 @@ class ChatBubble extends StatelessWidget {
               color: AppColors.primaryGold,
             )
           : Image.asset(
-              "assets/icons/ankh.png",
+              "assets/icons/horus_eye.png",
               width: 16,
               height: 16,
               color: isDark ? Colors.white70 : Colors.black54,
@@ -1086,7 +1086,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     if (widget.isPopup) {
       return PremiumDialog(
         title: l10n.askTheGuide,
-        icon: Image.asset("assets/icons/ankh.png", width: 24, height: 24),
+        icon: Image.asset("assets/icons/horus_eye.png", width: 24, height: 24),
         content: SizedBox(
           height: MediaQuery.of(context).size.height * 0.65,
           child: contentWithFloatingHelper,

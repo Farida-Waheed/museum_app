@@ -94,7 +94,7 @@ class MockDataService {
     'History',
     'Statues',
     'Mummies',
-    'Kids-friendly',
+    'Easy highlights',
   ];
 
   // -------------------------
@@ -196,8 +196,8 @@ class MockDataService {
       isLive: true,
     ),
     MockEvent(
-      titleEn: 'Kids Workshop: Scribe School',
-      titleAr: 'ورشة أطفال: مدرسة الكاتب',
+      titleEn: 'Scribe School Workshop',
+      titleAr: 'ورشة مدرسة الكاتب',
       dateTime: DateTime.now().add(const Duration(hours: 1)),
       locationEn: 'Education Wing',
       locationAr: 'جناح التعليم',

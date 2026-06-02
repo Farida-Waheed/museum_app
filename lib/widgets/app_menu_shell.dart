@@ -82,7 +82,7 @@ class _SideMenu extends StatelessWidget {
                         Row(
                           children: [
                             Image.asset(
-                              'assets/icons/ankh.png',
+                              'assets/icons/horus_eye.png',
                               width: 32,
                               height: 32,
                             ),
@@ -446,7 +446,7 @@ class AppMenuShellState extends State<AppMenuShell>
                                 title: Row(
                                   children: [
                                     Image.asset(
-                                      'assets/icons/ankh.png',
+                                      'assets/icons/horus_eye.png',
                                       width: 26,
                                       height: 26,
                                     ),

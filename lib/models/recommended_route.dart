@@ -8,7 +8,6 @@ class RecommendedRoute {
   final List<String> recommendedFor;
   final int durationMin;
   final String pace;
-  final bool kidsFriendly;
   final bool photoSpots;
   final String coverImage;
   final List<String> artifactIds;
@@ -26,7 +25,6 @@ class RecommendedRoute {
     required this.recommendedFor,
     required this.durationMin,
     required this.pace,
-    required this.kidsFriendly,
     required this.photoSpots,
     required this.coverImage,
     required this.artifactIds,
@@ -46,7 +44,6 @@ class RecommendedRoute {
       recommendedFor: _stringList(json['recommended_for']),
       durationMin: _intValue(json['duration_min']),
       pace: _stringValue(json['pace']),
-      kidsFriendly: json['kids_friendly'] == true,
       photoSpots: json['photo_spots'] == true,
       coverImage: _stringValue(json['cover_image']),
       artifactIds: _stringList(json['artifact_ids']),

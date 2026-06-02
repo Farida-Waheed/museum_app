@@ -1693,8 +1693,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get tourCustomizePhotoSpotsSubtitle =>
       'أضف أماكن موصى بها للتصوير أثناء الجولة.';
 
-
-
   @override
   String get tourCustomizeSummaryTitle => 'ملخص الجولة المخصصة';
 
@@ -1770,7 +1768,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get tourVisitorStudents => 'طلاب';
-
 
   @override
   String get tourVisitorDisabled => 'زوار من ذوي الإعاقة';
@@ -1973,9 +1970,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get myTicketsPhotoSpots => 'نقاط التصوير';
 
   @override
-  String get myTicketsAvoidCrowds => 'تجنب الازدحام';
-
-  @override
   String get myTicketsRouteSummary => 'ملخص المسار';
 
   @override
@@ -2021,12 +2015,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeExploreWithHorus => 'استكشف مع حورس';
 
   @override
-  String homeWelcomeUser(Object name) {
-    return 'مرحبًا $name، اتبع حورس داخل المتحف.';
-  }
+  String get homeWelcomeUser => 'رفيقك في المتحف جاهز.';
 
   @override
-  String get homeGuestSubtitle => 'وضع الزائر - اتبع حورس داخل المتحف.';
+  String get homeGuestSubtitle => 'خطط لزيارتك قبل القدوم.';
 
   @override
   String get homeReadyLabel => 'جاهز للاستكشاف؟';

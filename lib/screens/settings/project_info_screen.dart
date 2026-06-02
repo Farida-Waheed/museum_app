@@ -75,7 +75,7 @@ class _ProjectInfoScreenState extends State<ProjectInfoScreen> {
                   child: Column(
                     children: [
                       Image.asset(
-                        "assets/icons/ankh.png",
+                        "assets/icons/horus_eye.png",
                         width: 64,
                         height: 64,
                       ),

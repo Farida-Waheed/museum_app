@@ -1714,8 +1714,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tourCustomizePhotoSpotsSubtitle =>
       'Include recommended places for photos during the tour.';
 
-
-
   @override
   String get tourCustomizeSummaryTitle => 'Personalized tour summary';
 
@@ -1791,7 +1789,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tourVisitorStudents => 'Students';
-
 
   @override
   String get tourVisitorDisabled => 'Disabled visitors';
@@ -1995,9 +1992,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myTicketsPhotoSpots => 'Photo spots';
 
   @override
-  String get myTicketsAvoidCrowds => 'Avoid crowds';
-
-  @override
   String get myTicketsRouteSummary => 'Route summary';
 
   @override
@@ -2043,13 +2037,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeExploreWithHorus => 'Explore With Horus';
 
   @override
-  String homeWelcomeUser(Object name) {
-    return 'Welcome $name, follow Horus through the museum.';
-  }
+  String get homeWelcomeUser => 'Your museum companion is ready.';
 
   @override
-  String get homeGuestSubtitle =>
-      'Guest visit mode - follow Horus through the museum.';
+  String get homeGuestSubtitle => 'Plan your visit before you arrive.';
 
   @override
   String get homeReadyLabel => 'READY TO EXPLORE?';

@@ -80,7 +80,7 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Image.asset(
-                                  'assets/icons/ankh.png',
+                                  'assets/icons/horus_eye.png',
                                   width: 24,
                                   height: 24,
                                 ),

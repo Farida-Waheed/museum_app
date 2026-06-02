@@ -223,10 +223,10 @@ class HomeController {
 
     var fact = sentences.first;
 
-    if (fact.length > 120) {
-      fact = fact.substring(0, 120).trimRight();
+    if (fact.length > 110) {
+      fact = fact.substring(0, 110).trimRight();
       if (!fact.endsWith('.')) fact += '...';
-    } else if (!fact.endsWith('.')) {
+    } else if (!fact.endsWith('.') && !fact.endsWith('...')) {
       fact += '.';
     }
 
