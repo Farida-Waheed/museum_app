@@ -73,7 +73,7 @@ class HomeController {
       currentExhibit: hasSessionTourContext ? currentExhibit : null,
       activeTour: hasActiveTour || isPaused,
     );
-    final smallUpdateCard = demoService.getMuseumUpdate(lang);
+    const String? smallUpdateCard = null;
     final mapPreview = demoService.getMapPreview(
       isRobotConnected: connected,
       hasActiveTour: hasActiveTour,
@@ -94,8 +94,8 @@ class HomeController {
       connectedRobotName: 'Horus-Bot',
       robotStatus: robotStatus,
       robotStatusLabel: _robotStatusLabel(lang, robotStatus),
-      robotBatteryPercent: connected ? 87 : null,
-      lastRobotSyncTime: connected ? DateTime.now() : null,
+      robotBatteryPercent: null,
+      lastRobotSyncTime: sessionProvider.lastRobotEventAt,
       hasActiveTour: hasActiveTour,
       isTourPaused: isPaused,
       isTourCompleted: isCompleted,
@@ -174,6 +174,24 @@ class HomeController {
   }
 
   String _robotStatusLabel(String lang, HomeRobotStatus status) {
+    if (lang == 'ar') {
+      switch (status) {
+        case HomeRobotStatus.disconnected:
+          return 'غير متصل';
+        case HomeRobotStatus.connected:
+          return 'متصل';
+        case HomeRobotStatus.speaking:
+          return 'يتحدث';
+        case HomeRobotStatus.moving:
+          return 'يتحرك';
+        case HomeRobotStatus.waiting:
+          return 'في الانتظار';
+        case HomeRobotStatus.paused:
+          return 'متوقف مؤقتا';
+        case HomeRobotStatus.error:
+          return 'خطأ';
+      }
+    }
     switch (status) {
       case HomeRobotStatus.disconnected:
         return lang == 'ar' ? 'غير متصل' : 'Disconnected';
@@ -199,17 +217,13 @@ class HomeController {
     Exhibit? currentExhibit,
     bool activeTour = false,
   }) {
-    if (exhibits.isEmpty) {
-      return demoService.getDidYouKnow(lang);
-    }
+    if (exhibits.isEmpty) return '';
 
     final exhibit = activeTour && currentExhibit != null
         ? currentExhibit
         : exhibits[index % exhibits.length];
     final description = exhibit.getDescription(lang).trim();
-    if (description.isEmpty) {
-      return demoService.getDidYouKnow(lang);
-    }
+    if (description.isEmpty) return '';
 
     final sentences = description
         .split(RegExp(r'(?<=[.!?؟])\s+'))
@@ -217,9 +231,7 @@ class HomeController {
         .where((s) => s.isNotEmpty)
         .toList();
 
-    if (sentences.isEmpty) {
-      return demoService.getDidYouKnow(lang);
-    }
+    if (sentences.isEmpty) return '';
 
     var fact = sentences.first;
 

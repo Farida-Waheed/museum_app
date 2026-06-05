@@ -76,6 +76,16 @@ class RobotPairingService {
             RobotPairingFailureCode.robotTourTicketRequired,
           );
         }
+        final museumTicketRef = _firestore
+            .collection('museumTickets')
+            .doc(museumTicketId);
+        final museumTicketSnapshot = await transaction.get(museumTicketRef);
+        if (!museumTicketSnapshot.exists ||
+            !_isActiveMuseumTicket(museumTicketSnapshot.data(), userId)) {
+          throw const RobotPairingException(
+            RobotPairingFailureCode.robotTourTicketRequired,
+          );
+        }
 
         final robotSnapshot = await transaction.get(robotRef);
         if (!robotSnapshot.exists) {
@@ -234,9 +244,33 @@ class RobotPairingService {
 
   bool _isUnpairedActiveRobotTicket(Map<String, dynamic> data, String userId) {
     return data['userId'] == userId &&
-        data['status'] == TicketStatus.active.name &&
+        _isUsableStatus(data['status']) &&
+        !_isPastVisitDate(data['visit_date'] ?? data['visitDate']) &&
         _stringValue(data['paired_robot_id']) == null &&
         _stringValue(data['session_id']) == null;
+  }
+
+  bool _isActiveMuseumTicket(Map<String, dynamic>? data, String userId) {
+    if (data == null) return false;
+    return data['userId'] == userId &&
+        _isUsableStatus(data['status']) &&
+        !_isPastVisitDate(data['visit_date'] ?? data['visitDate']);
+  }
+
+  bool _isUsableStatus(Object? value) {
+    final status = value?.toString().trim().toLowerCase().replaceAll('-', '_');
+    return status == TicketStatus.active.name ||
+        status == 'valid' ||
+        status == 'confirmed';
+  }
+
+  bool _isPastVisitDate(Object? value) {
+    final date = _dateValue(value);
+    if (date == null) return false;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final visitDay = DateTime(date.year, date.month, date.day);
+    return visitDay.isBefore(today);
   }
 
   DateTime _tourStartValue(_PairableRobotTicket pairable) {
@@ -288,6 +322,13 @@ class RobotPairingService {
   bool? _boolValue(Object? value) {
     if (value is bool) return value;
     if (value is String) return bool.tryParse(value);
+    return null;
+  }
+
+  DateTime? _dateValue(Object? value) {
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
+    if (value is String) return DateTime.tryParse(value);
     return null;
   }
 }

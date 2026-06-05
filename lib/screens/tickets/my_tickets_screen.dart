@@ -1731,6 +1731,14 @@ String _ticketStatusLabel(AppLocalizations l10n, TicketStatus status) {
       return isArabic ? '\u0645\u0646\u062a\u0647\u064a\u0629' : 'Expired';
     case TicketStatus.cancelled:
       return isArabic ? '\u0645\u0644\u063a\u0627\u0629' : 'Cancelled';
+    case TicketStatus.declined:
+      return isArabic ? '\u0645\u0631\u0641\u0648\u0636\u0629' : 'Declined';
+    case TicketStatus.archived:
+      return isArabic ? '\u0645\u0624\u0631\u0634\u0641\u0629' : 'Archived';
+    case TicketStatus.inactive:
+      return isArabic
+          ? '\u063a\u064a\u0631 \u0646\u0634\u0637\u0629'
+          : 'Inactive';
   }
 }
 

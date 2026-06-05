@@ -14,6 +14,9 @@ enum TicketStatus {
   used,
   expired,
   cancelled,
+  declined,
+  archived,
+  inactive,
 }
 
 /// Museum entry ticket model
@@ -293,10 +296,37 @@ class MuseumTicket {
   }
 
   static TicketStatus _statusValue(Object? value) {
-    final status = value?.toString();
-    return TicketStatus.values.firstWhere(
-      (entry) => entry.name == status,
-      orElse: () => TicketStatus.active,
-    );
+    final status = value?.toString().trim().toLowerCase().replaceAll('-', '_');
+    switch (status) {
+      case 'active':
+      case 'valid':
+      case 'confirmed':
+        return TicketStatus.active;
+      case 'paired':
+        return TicketStatus.paired;
+      case 'in_progress':
+      case 'inprogress':
+        return TicketStatus.in_progress;
+      case 'completed':
+        return TicketStatus.completed;
+      case 'used':
+        return TicketStatus.used;
+      case 'expired':
+        return TicketStatus.expired;
+      case 'cancelled':
+      case 'canceled':
+        return TicketStatus.cancelled;
+      case 'declined':
+      case 'rejected':
+        return TicketStatus.declined;
+      case 'archived':
+        return TicketStatus.archived;
+      case 'inactive':
+      case 'disabled':
+        return TicketStatus.inactive;
+      case 'pending':
+      default:
+        return TicketStatus.pending;
+    }
   }
 }

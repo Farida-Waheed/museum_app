@@ -315,7 +315,7 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    if (!snapshot.hasAnyTicket) {
+    if (!snapshot.hasCompleteTicketBundle) {
       return (
         label: l10n.homeReadyLabel,
         title: l10n.homeReadyTitle,
@@ -387,18 +387,6 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     }
 
-    if (snapshot.hasValidMuseumTicket &&
-        !snapshot.hasRobotTourTicket &&
-        !snapshot.isRobotConnected) {
-      return (
-        label: l10n.homeMuseumTicketReadyLabel,
-        title: l10n.homeMuseumTicketReadyTitle,
-        subtitle: l10n.startMyTourDescription,
-        icon: Icons.confirmation_number_outlined,
-        onTap: () => Navigator.pushNamed(context, AppRoutes.tickets),
-      );
-    }
-
     if (snapshot.hasRobotTourEligibility && !snapshot.isRobotConnected) {
       return (
         label: l10n.homeMuseumTicketReadyLabel,
@@ -454,25 +442,6 @@ class _HomeScreenState extends State<HomeScreen> {
       return l10n.homeSyncedMinutesAgo(elapsed.inMinutes);
     }
     return l10n.homeSyncedHoursAgo(elapsed.inHours);
-  }
-
-  String _primaryActionLabel(HomeSnapshot snapshot, AppLocalizations l10n) {
-    if (!snapshot.isLoggedIn) {
-      return l10n.login;
-    }
-    if (snapshot.robotStatus == HomeRobotStatus.error) {
-      return l10n.homeReconnectAction;
-    }
-    if (snapshot.isTourPaused) {
-      return l10n.homeResumeTourAction;
-    }
-    if (snapshot.hasActiveTour || snapshot.isTourCompleted) {
-      return l10n.homeContinueTourAction;
-    }
-    if (snapshot.hasRobotTourEligibility && !snapshot.isRobotConnected) {
-      return l10n.homeScanRobotQr;
-    }
-    return l10n.startMyTour;
   }
 
   List<HomeQuickActionItem> _buildQuickActions(
@@ -603,11 +572,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _ticketStatusLine(HomeSnapshot snapshot, AppLocalizations l10n) {
-    if (!snapshot.hasAnyTicket) {
+    if (!snapshot.hasCompleteTicketBundle) {
       return l10n.homeNoTicketsYet;
-    }
-    if (snapshot.hasValidMuseumTicket && !snapshot.hasRobotTourTicket) {
-      return l10n.homeMuseumTicketReadyTitle;
     }
     if (snapshot.hasValidMuseumTicket && snapshot.hasRobotTourTicket) {
       return l10n.homeMuseumAndRobotTicketsReady;
@@ -692,17 +658,26 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  String _heroSubtitle(HomeSnapshot snapshot, AppLocalizations l10n) {
+  String _heroSubtitle(HomeSnapshot snapshot) {
+    final language = Localizations.localeOf(context).languageCode;
     if (snapshot.isActiveTourState) {
-      final language = Localizations.localeOf(context).languageCode;
       return language == 'ar'
-          ? 'تابع حورس خلال جولتك المباشرة.'
-          : 'Follow Horus through your live tour.';
+          ? 'اتبع حورس خلال جولتك المباشرة في المتحف.'
+          : 'Follow Horus through your live museum tour.';
+    }
+    if (snapshot.isTicketReady) {
+      return language == 'ar'
+          ? 'جولتك مع Horus-Bot جاهزة.'
+          : 'Your Horus-Bot tour is ready.';
     }
     if (snapshot.isLoggedIn) {
-      return l10n.homeWelcomeUser;
+      return language == 'ar'
+          ? 'مرحبا، ${snapshot.userName}. جهز زيارتك مع Horus-Bot.'
+          : 'Welcome, ${snapshot.userName}. Prepare your Horus-Bot visit.';
     }
-    return l10n.homeGuestSubtitle;
+    return language == 'ar'
+        ? 'خطط لرحلتك في المتحف قبل الزيارة.'
+        : 'Plan your museum journey before your visit.';
   }
 
   ({
@@ -748,10 +723,14 @@ class _HomeScreenState extends State<HomeScreen> {
       title: l10n.homePlanVisitTitle,
       subtitle: l10n.homePlanVisitSubtitle,
       statusLine: _ticketStatusLine(snapshot, l10n),
-      primaryLabel: l10n.tickets,
-      secondaryLabel: _primaryActionLabel(snapshot, l10n),
-      onPrimary: () => _openTickets(context, snapshot),
-      onSecondary: () => _openTourFlow(context, snapshot),
+      primaryLabel: snapshot.isLoggedIn ? l10n.buyTickets : l10n.login,
+      secondaryLabel: snapshot.isLoggedIn ? l10n.tourPlanner : l10n.buyTickets,
+      onPrimary: () => snapshot.isLoggedIn
+          ? Navigator.pushNamed(context, AppRoutes.buyTickets)
+          : Navigator.pushNamed(context, AppRoutes.login),
+      onSecondary: () => snapshot.isLoggedIn
+          ? Navigator.pushNamed(context, AppRoutes.tourPlanner)
+          : Navigator.pushNamed(context, AppRoutes.buyTickets),
     );
   }
 
@@ -766,9 +745,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final status = _statusModel(context, snapshot, isArabic);
     final heroHeight = MediaQuery.sizeOf(context).height * 0.56;
     final contextualArtifact = _contextualArtifact(snapshot, l10n);
-    final canShowRobotQr = snapshot.isLoggedIn &&
-        (snapshot.hasRobotTourEligibility ||
-            snapshot.robotStatus == HomeRobotStatus.error);
+    final canShowRobotQr =
+        snapshot.isTicketReady || snapshot.robotStatus == HomeRobotStatus.error;
 
     final quickActions = _buildQuickActions(snapshot, l10n, isArabic);
     final primaryCard = _primaryActionCardModel(
@@ -813,7 +791,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             _HeroSection(
                               height: heroHeight,
                               title: l10n.homeExploreWithHorus,
-                              subtitle: _heroSubtitle(snapshot, l10n),
+                              subtitle: _heroSubtitle(snapshot),
                               isArabic: isArabic,
                               scrollController: _scrollController,
                             ),
@@ -905,17 +883,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(height: 24),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.screenHorizontal,
+                      if (snapshot.didYouKnowText.trim().isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.screenHorizontal,
+                          ),
+                          child: HomeInfoCard(
+                            title: l10n.didYouKnow,
+                            body: snapshot.didYouKnowText,
+                            icon: Icons.auto_awesome_rounded,
+                            bodyColor: AppColors.whiteTitle,
+                          ),
                         ),
-                        child: HomeInfoCard(
-                          title: l10n.didYouKnow,
-                          body: snapshot.didYouKnowText,
-                          icon: Icons.auto_awesome_rounded,
-                          bodyColor: AppColors.whiteTitle,
-                        ),
-                      ),
                       if (snapshot.smallUpdateCard != null) ...[
                         const SizedBox(height: 16),
                         Padding(

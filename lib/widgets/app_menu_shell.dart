@@ -371,13 +371,22 @@ class AppMenuShellState extends State<AppMenuShell>
   }
 
   void _goPush(String route) {
-    closeMenu();
+    _forceCloseMenu();
     Navigator.pushNamed(context, route);
   }
 
   void _goReplace(String route) {
-    closeMenu();
+    _forceCloseMenu();
     Navigator.pushNamedAndRemoveUntil(context, route, (r) => false);
+  }
+
+  void _forceCloseMenu() {
+    _menuController.value = 0;
+    if (_isMenuOpen) {
+      setState(() {
+        _isMenuOpen = false;
+      });
+    }
   }
 
   @override
@@ -512,16 +521,17 @@ class AppMenuShellState extends State<AppMenuShell>
                     ),
                   ),
                 ),
-              Transform.translate(
-                offset: Offset(menuDx, 0),
-                child: _SideMenu(
-                  isArabic: isArabic,
-                  onClose: closeMenu,
-                  onPush: _goPush,
-                  onReplace: _goReplace,
-                  currentRoute: currentRoute,
+              if (v > 0)
+                Transform.translate(
+                  offset: Offset(menuDx, 0),
+                  child: _SideMenu(
+                    isArabic: isArabic,
+                    onClose: closeMenu,
+                    onPush: _goPush,
+                    onReplace: _goReplace,
+                    currentRoute: currentRoute,
+                  ),
                 ),
-              ),
             ],
           );
         },

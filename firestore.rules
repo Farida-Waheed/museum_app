@@ -38,12 +38,16 @@ service cloud.firestore {
 
     function ownedMuseumTicketCancelUpdate() {
       return ownedCancelUpdateBase()
-        && !(resource.data.status in ['used', 'cancelled', 'expired']);
+        && !(resource.data.status in ['used', 'cancelled', 'canceled', 'declined', 'rejected', 'archived', 'inactive', 'disabled', 'expired']);
     }
 
     function ownedRobotTourTicketCancelUpdate() {
       return ownedCancelUpdateBase()
-        && !(resource.data.status in ['paired', 'in_progress', 'completed', 'cancelled', 'expired']);
+        && !(resource.data.status in ['paired', 'in_progress', 'completed', 'cancelled', 'canceled', 'declined', 'rejected', 'archived', 'inactive', 'disabled', 'expired']);
+    }
+
+    function usableTicketStatus(status) {
+      return status in ['active', 'valid', 'confirmed'];
     }
 
     function activeOwnedMuseumTicket(ticketId) {
@@ -51,7 +55,7 @@ service cloud.firestore {
         && ticketId is string
         && exists(/databases/$(database)/documents/museumTickets/$(ticketId))
         && get(/databases/$(database)/documents/museumTickets/$(ticketId)).data.userId == request.auth.uid
-        && get(/databases/$(database)/documents/museumTickets/$(ticketId)).data.status == 'active';
+        && usableTicketStatus(get(/databases/$(database)/documents/museumTickets/$(ticketId)).data.status);
     }
 
     function activeOwnedRobotTourTicket(ticketId) {
@@ -59,7 +63,7 @@ service cloud.firestore {
         && ticketId is string
         && exists(/databases/$(database)/documents/robotTourTickets/$(ticketId))
         && get(/databases/$(database)/documents/robotTourTickets/$(ticketId)).data.userId == request.auth.uid
-        && get(/databases/$(database)/documents/robotTourTickets/$(ticketId)).data.status == 'active';
+        && usableTicketStatus(get(/databases/$(database)/documents/robotTourTickets/$(ticketId)).data.status);
     }
 
     function validTourSessionCreate(sessionId) {
@@ -172,7 +176,7 @@ service cloud.firestore {
     function validRobotTourTicketPairUpdate(ticketId) {
       return ownsExisting()
         && ownsIncoming()
-        && resource.data.status == 'active'
+        && usableTicketStatus(resource.data.status)
         && unpairedExistingTicket()
         && request.resource.data.diff(resource.data).affectedKeys()
           .hasOnly(['status', 'paired_robot_id', 'session_id', 'paired_at', 'updated_at'])

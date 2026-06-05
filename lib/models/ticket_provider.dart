@@ -38,6 +38,7 @@ class TicketProvider with ChangeNotifier {
       ..sort(comparePurchasedTicketSets);
     return List.unmodifiable(sorted);
   }
+
   TicketOrderDraft get currentOrderDraft => _currentOrderDraft;
   List<VisitorTicketCategory> get visitorCategories =>
       VisitorTicketCategory.defaults;
@@ -47,10 +48,9 @@ class TicketProvider with ChangeNotifier {
   int get skippedTicketSetCount => _skippedTicketSetCount;
 
   // Computed getters
-  bool get hasMuseumTicket =>
-      _museumTickets.any((t) => t.status == TicketStatus.active);
+  bool get hasMuseumTicket => _museumTickets.any(_isUsableMuseumTicket);
   bool get hasRobotTourTicket =>
-      _robotTourTickets.any((t) => t.status == TicketStatus.active);
+      _robotTourTickets.any(_isPairableRobotTourTicket);
   bool get hasTickets => hasMuseumTicket || hasRobotTourTicket;
 
   /// Canonical entitlement checks used across Home/Map/Live Tour and ticket flow.
@@ -116,6 +116,23 @@ class TicketProvider with ChangeNotifier {
     return _robotTourTickets.reduce(
       (a, b) => a.purchasedAt.isAfter(b.purchasedAt) ? a : b,
     );
+  }
+
+  bool _isUsableMuseumTicket(MuseumTicket ticket) {
+    return ticket.status == TicketStatus.active &&
+        !_isVisitDateExpired(ticket.visitDate);
+  }
+
+  bool _isPairableRobotTourTicket(RobotTourTicket ticket) {
+    return ticket.status == TicketStatus.active &&
+        (ticket.visitDate == null || !_isVisitDateExpired(ticket.visitDate!));
+  }
+
+  bool _isVisitDateExpired(DateTime visitDate) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final ticketDay = DateTime(visitDate.year, visitDate.month, visitDate.day);
+    return ticketDay.isBefore(today);
   }
 
   VisitorTicketCategory? categoryById(String categoryId) {
@@ -226,7 +243,8 @@ class TicketProvider with ChangeNotifier {
               languageCode:
                   _currentOrderDraft.standardTourConfig?.languageCode ??
                   StandardTourConfig.defaultConfig.languageCode,
-              languageOther: _currentOrderDraft.standardTourConfig?.languageOther,
+              languageOther:
+                  _currentOrderDraft.standardTourConfig?.languageOther,
               routeName: '',
               routeExhibitIds: const [],
             )
@@ -306,11 +324,15 @@ class TicketProvider with ChangeNotifier {
     _currentOrderDraft = _currentOrderDraft.copyWith(
       standardTourConfig: standardConfig.copyWith(
         languageCode: normalized,
-        languageOther: normalized == 'other' ? standardConfig.languageOther : null,
+        languageOther: normalized == 'other'
+            ? standardConfig.languageOther
+            : null,
       ),
       personalizedTourConfig: personalizedConfig.copyWith(
         languageCode: normalized,
-        languageOther: normalized == 'other' ? personalizedConfig.languageOther : null,
+        languageOther: normalized == 'other'
+            ? personalizedConfig.languageOther
+            : null,
       ),
     );
     notifyListeners();
@@ -330,11 +352,14 @@ class TicketProvider with ChangeNotifier {
         languageOther: standardConfig.languageCode == 'other' ? trimmed : null,
       ),
       personalizedTourConfig: personalizedConfig.copyWith(
-        languageOther: personalizedConfig.languageCode == 'other' ? trimmed : null,
+        languageOther: personalizedConfig.languageCode == 'other'
+            ? trimmed
+            : null,
       ),
     );
     notifyListeners();
   }
+
   void updatePersonalizedTourConfig(PersonalizedTourConfig config) {
     _currentOrderDraft = _currentOrderDraft.copyWith(
       personalizedTourConfig: config,
@@ -345,7 +370,8 @@ class TicketProvider with ChangeNotifier {
 
   PurchasedTicketSet? mockCheckoutFromDraft({required String userId}) {
     if (!kDebugMode) return null;
-    if (_currentOrderDraft.visitorCount > BookingPricing.maxVisitorsPerBooking) {
+    if (_currentOrderDraft.visitorCount >
+        BookingPricing.maxVisitorsPerBooking) {
       _ticketError =
           'Each Horus-Bot booking can include up to ${BookingPricing.maxVisitorsPerBooking} visitors.';
       notifyListeners();
@@ -428,7 +454,8 @@ class TicketProvider with ChangeNotifier {
     required String userId,
   }) async {
     if (_isCheckingOut) return null;
-    if (_currentOrderDraft.visitorCount > BookingPricing.maxVisitorsPerBooking) {
+    if (_currentOrderDraft.visitorCount >
+        BookingPricing.maxVisitorsPerBooking) {
       _ticketError =
           'Each Horus-Bot booking can include up to ${BookingPricing.maxVisitorsPerBooking} visitors.';
       notifyListeners();
@@ -624,7 +651,8 @@ class TicketProvider with ChangeNotifier {
       return message;
     }
     if (message == 'Please choose a future visit time.' ||
-        message == 'This time has already passed. Please choose a later time.') {
+        message ==
+            'This time has already passed. Please choose a later time.') {
       return message;
     }
     if (message == 'Choose a recommended route for the standard tour.' ||
@@ -662,14 +690,20 @@ class TicketProvider with ChangeNotifier {
     if (museumTicket == null || robotTicket == null) return false;
     if (museumTicket.status == TicketStatus.used ||
         museumTicket.status == TicketStatus.cancelled ||
-        museumTicket.status == TicketStatus.expired) {
+        museumTicket.status == TicketStatus.expired ||
+        museumTicket.status == TicketStatus.declined ||
+        museumTicket.status == TicketStatus.archived ||
+        museumTicket.status == TicketStatus.inactive) {
       return false;
     }
     if (robotTicket.status == TicketStatus.paired ||
         robotTicket.status == TicketStatus.in_progress ||
         robotTicket.status == TicketStatus.completed ||
         robotTicket.status == TicketStatus.cancelled ||
-        robotTicket.status == TicketStatus.expired) {
+        robotTicket.status == TicketStatus.expired ||
+        robotTicket.status == TicketStatus.declined ||
+        robotTicket.status == TicketStatus.archived ||
+        robotTicket.status == TicketStatus.inactive) {
       return false;
     }
     return !isWithinCancellationDeadline(set);
@@ -872,7 +906,8 @@ class TicketProvider with ChangeNotifier {
     if (config.selectedExhibitIds.length > max) {
       return 'This duration supports up to $max exhibits. Choose a longer duration to add more.';
     }
-    if (config.languageCode == 'other' && config.languageOther?.trim().isNotEmpty != true) {
+    if (config.languageCode == 'other' &&
+        config.languageOther?.trim().isNotEmpty != true) {
       return 'Please type your preferred language.';
     }
     return 'Choose at least one exhibit for your personalized tour.';

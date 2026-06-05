@@ -40,31 +40,55 @@ class TourNarrationLanguage {
 
   static String label(String? value, bool isArabic, {String? otherText}) {
     if (normalize(value) == 'other' && otherText?.trim().isNotEmpty == true) {
-      return isArabic ? '\u0644\u063a\u0629 \u0623\u062e\u0631\u0649: ${otherText!.trim()}' : 'Other: ${otherText!.trim()}';
+      return isArabic
+          ? '\u0644\u063a\u0629 \u0623\u062e\u0631\u0649: ${otherText!.trim()}'
+          : 'Other: ${otherText!.trim()}';
     }
     switch (normalize(value)) {
       case 'english':
-        return isArabic ? '\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629' : 'English';
+        return isArabic
+            ? '\u0627\u0644\u0625\u0646\u062c\u0644\u064a\u0632\u064a\u0629'
+            : 'English';
       case 'arabic':
-        return isArabic ? '\u0627\u0644\u0639\u0631\u0628\u064a\u0629' : 'Arabic';
+        return isArabic
+            ? '\u0627\u0644\u0639\u0631\u0628\u064a\u0629'
+            : 'Arabic';
       case 'french':
-        return isArabic ? '\u0627\u0644\u0641\u0631\u0646\u0633\u064a\u0629' : 'French';
+        return isArabic
+            ? '\u0627\u0644\u0641\u0631\u0646\u0633\u064a\u0629'
+            : 'French';
       case 'german':
-        return isArabic ? '\u0627\u0644\u0623\u0644\u0645\u0627\u0646\u064a\u0629' : 'German';
+        return isArabic
+            ? '\u0627\u0644\u0623\u0644\u0645\u0627\u0646\u064a\u0629'
+            : 'German';
       case 'spanish':
-        return isArabic ? '\u0627\u0644\u0625\u0633\u0628\u0627\u0646\u064a\u0629' : 'Spanish';
+        return isArabic
+            ? '\u0627\u0644\u0625\u0633\u0628\u0627\u0646\u064a\u0629'
+            : 'Spanish';
       case 'italian':
-        return isArabic ? '\u0627\u0644\u0625\u064a\u0637\u0627\u0644\u064a\u0629' : 'Italian';
+        return isArabic
+            ? '\u0627\u0644\u0625\u064a\u0637\u0627\u0644\u064a\u0629'
+            : 'Italian';
       case 'korean':
-        return isArabic ? '\u0627\u0644\u0643\u0648\u0631\u064a\u0629' : 'Korean';
+        return isArabic
+            ? '\u0627\u0644\u0643\u0648\u0631\u064a\u0629'
+            : 'Korean';
       case 'chinese':
-        return isArabic ? '\u0627\u0644\u0635\u064a\u0646\u064a\u0629' : 'Chinese';
+        return isArabic
+            ? '\u0627\u0644\u0635\u064a\u0646\u064a\u0629'
+            : 'Chinese';
       case 'japanese':
-        return isArabic ? '\u0627\u0644\u064a\u0627\u0628\u0627\u0646\u064a\u0629' : 'Japanese';
+        return isArabic
+            ? '\u0627\u0644\u064a\u0627\u0628\u0627\u0646\u064a\u0629'
+            : 'Japanese';
       case 'other':
-        return isArabic ? '\u0644\u063a\u0629 \u0623\u062e\u0631\u0649' : 'Other';
+        return isArabic
+            ? '\u0644\u063a\u0629 \u0623\u062e\u0631\u0649'
+            : 'Other';
       default:
-        return isArabic ? '\u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u0645\u062e\u062a\u0627\u0631\u0629' : 'Selected language';
+        return isArabic
+            ? '\u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u0645\u062e\u062a\u0627\u0631\u0629'
+            : 'Selected language';
     }
   }
 }
@@ -324,7 +348,9 @@ class StandardTourConfig {
     return StandardTourConfig(
       durationMinutes: _intValue(json['durationMinutes']) ?? 45,
       languageCode: _normalizeLanguage(json['languageCode']) ?? 'english',
-      languageOther: _stringValue(json['languageOther'] ?? json['preferred_language_other']),
+      languageOther: _stringValue(
+        json['languageOther'] ?? json['preferred_language_other'],
+      ),
       routeName: json['routeName'] as String? ?? defaultConfig.routeName,
       routeExhibitIds: _stringList(json['routeExhibitIds']),
     );
@@ -406,7 +432,9 @@ class PersonalizedTourConfig {
       selectedThemes: _stringList(json['selectedThemes']),
       durationMinutes: _intValue(json['durationMinutes']) ?? 45,
       languageCode: _normalizeLanguage(json['languageCode']) ?? 'english',
-      languageOther: _stringValue(json['languageOther'] ?? json['preferred_language_other']),
+      languageOther: _stringValue(
+        json['languageOther'] ?? json['preferred_language_other'],
+      ),
       accessibilityNeeds: _stringList(json['accessibilityNeeds']),
       visitorMode: VisitorMode.values.firstWhere(
         (value) => value.name == json['visitorMode'],
@@ -612,9 +640,7 @@ DateTime? visitDateTimeFromParts(DateTime date, String timeSlot) {
   if (raw.isEmpty) return null;
   final start = raw.contains(' - ') ? raw.split(' - ').first.trim() : raw;
   final normalized = start.toUpperCase();
-  final amPm = RegExp(
-    r'^(\d{1,2}):(\d{2})\s*(AM|PM)$',
-  ).firstMatch(normalized);
+  final amPm = RegExp(r'^(\d{1,2}):(\d{2})\s*(AM|PM)$').firstMatch(normalized);
   if (amPm != null) {
     var hour = int.parse(amPm.group(1)!);
     final minute = int.parse(amPm.group(2)!);
@@ -676,8 +702,8 @@ TicketSetDisplayStatus deriveTicketSetDisplayStatus(PurchasedTicketSet set) {
   final museumStatus = set.museumTicket?.status;
   final robotStatus = set.robotTourTicket?.status;
 
-  if (museumStatus == TicketStatus.cancelled &&
-      robotStatus == TicketStatus.cancelled) {
+  if (_isClosedTicketStatus(museumStatus) ||
+      _isClosedTicketStatus(robotStatus)) {
     return TicketSetDisplayStatus.cancelled;
   }
   if (museumStatus == TicketStatus.expired ||
@@ -706,6 +732,13 @@ TicketSetDisplayStatus deriveTicketSetDisplayStatus(PurchasedTicketSet set) {
   }
 
   return TicketSetDisplayStatus.partial;
+}
+
+bool _isClosedTicketStatus(TicketStatus? status) {
+  return status == TicketStatus.cancelled ||
+      status == TicketStatus.declined ||
+      status == TicketStatus.archived ||
+      status == TicketStatus.inactive;
 }
 
 int ticketSetStatusPriority(TicketSetDisplayStatus status) {

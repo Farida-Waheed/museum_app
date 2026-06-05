@@ -57,7 +57,6 @@ class AuthProvider extends ChangeNotifier {
         _currentUser = user;
         _authState = AuthState.loggedIn;
         _errorMessage = null;
-        await _restoreLanguageFromAccount(user);
       } else {
         _authState = AuthState.loggedOut;
       }
@@ -93,7 +92,6 @@ class AuthProvider extends ChangeNotifier {
       final user = await _authService.login(email: email, password: password);
       _currentUser = user;
       _authState = AuthState.loggedIn;
-      await _restoreLanguageFromAccount(user);
       notifyListeners();
       return true;
     } catch (e) {
@@ -128,7 +126,6 @@ class AuthProvider extends ChangeNotifier {
       );
       _currentUser = user;
       _authState = AuthState.loggedIn;
-      await _restoreLanguageFromAccount(user);
       notifyListeners();
       return true;
     } catch (e) {
@@ -221,14 +218,6 @@ class AuthProvider extends ChangeNotifier {
     if (_currentUser == null) return true;
     return updateProfile(
       preferredLanguage: AppUser.accountLanguageFromCode(languageCode),
-    );
-  }
-
-  Future<void> _restoreLanguageFromAccount(AppUser user) async {
-    final preferences = _preferences;
-    if (preferences == null) return;
-    await preferences.setLanguage(
-      AppUser.languageCodeFromAccount(user.preferredLanguage),
     );
   }
 
