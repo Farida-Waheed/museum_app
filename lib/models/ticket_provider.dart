@@ -52,6 +52,17 @@ class TicketProvider with ChangeNotifier {
   bool get hasRobotTourTicket =>
       _robotTourTickets.any(_isPairableRobotTourTicket);
   bool get hasTickets => hasMuseumTicket || hasRobotTourTicket;
+  bool get hasTicketHistory =>
+      _museumTickets.isNotEmpty ||
+      _robotTourTickets.isNotEmpty ||
+      _purchasedTicketSets.isNotEmpty;
+  bool get hasCompletedTourHistory =>
+      _robotTourTickets.any(
+        (ticket) => ticket.status == TicketStatus.completed,
+      ) ||
+      _purchasedTicketSets.any(
+        (set) => set.robotTourTicket?.status == TicketStatus.completed,
+      );
 
   /// Canonical entitlement checks used across Home/Map/Live Tour and ticket flow.
   bool get hasValidMuseumEntryEntitlement => hasMuseumTicket;
@@ -119,20 +130,30 @@ class TicketProvider with ChangeNotifier {
   }
 
   bool _isUsableMuseumTicket(MuseumTicket ticket) {
-    return ticket.status == TicketStatus.active &&
-        !_isVisitDateExpired(ticket.visitDate);
+    return _isUsableTicketStatus(ticket.status) &&
+        !_isVisitDateTimeExpired(ticket.visitDate, ticket.timeSlot);
   }
 
   bool _isPairableRobotTourTicket(RobotTourTicket ticket) {
-    return ticket.status == TicketStatus.active &&
-        (ticket.visitDate == null || !_isVisitDateExpired(ticket.visitDate!));
+    return _isUsableTicketStatus(ticket.status) &&
+        (ticket.visitDate == null ||
+            !_isVisitDateTimeExpired(ticket.visitDate!, ticket.timeSlot));
   }
 
-  bool _isVisitDateExpired(DateTime visitDate) {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final ticketDay = DateTime(visitDate.year, visitDate.month, visitDate.day);
-    return ticketDay.isBefore(today);
+  bool _isUsableTicketStatus(TicketStatus status) {
+    return status == TicketStatus.active;
+  }
+
+  bool _isVisitDateTimeExpired(DateTime visitDate, String? timeSlot) {
+    final startsAt = timeSlot == null
+        ? null
+        : visitDateTimeFromParts(visitDate, timeSlot);
+    final fallbackStart = DateTime(
+      visitDate.year,
+      visitDate.month,
+      visitDate.day,
+    );
+    return DateTime.now().isAfter(startsAt ?? fallbackStart);
   }
 
   VisitorTicketCategory? categoryById(String categoryId) {

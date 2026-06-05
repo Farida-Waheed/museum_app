@@ -483,7 +483,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     if (snapshot.isLoggedInWithoutTickets) {
-      return [
+      final actions = <HomeQuickActionItem>[
         HomeQuickActionItem(
           icon: Icons.route_outlined,
           label: l10n.tourPlanner,
@@ -499,6 +499,46 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: () => Navigator.pushNamed(context, AppRoutes.exhibits),
         ),
       ];
+      if (snapshot.hasTicketHistory) {
+        actions.add(
+          HomeQuickActionItem(
+            icon: Icons.confirmation_number_outlined,
+            label: l10n.myTickets,
+            subtitle: isArabic
+                ? '\u0639\u0631\u0636 \u062d\u0627\u0644\u0629 \u0627\u0644\u062a\u0630\u0627\u0643\u0631 \u0648\u0627\u0644\u0633\u062c\u0644'
+                : 'View ticket status and history',
+            onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
+          ),
+        );
+      }
+      if (snapshot.hasCompletedTourHistory) {
+        actions.add(
+          HomeQuickActionItem(
+            icon: Icons.photo_library_outlined,
+            label: isArabic
+                ? '\u0627\u0644\u0630\u0643\u0631\u064a\u0627\u062a'
+                : 'Memories',
+            subtitle: isArabic
+                ? '\u0627\u0633\u062a\u0639\u062f \u0644\u062d\u0638\u0627\u062a \u062c\u0648\u0644\u0627\u062a\u0643 \u0627\u0644\u0633\u0627\u0628\u0642\u0629'
+                : 'Revisit moments from completed tours',
+            onTap: () => Navigator.pushNamed(context, AppRoutes.memories),
+          ),
+        );
+      }
+      if (actions.length == 3) {
+        actions.insert(
+          1,
+          HomeQuickActionItem(
+            icon: Icons.confirmation_number_outlined,
+            label: l10n.buyTickets,
+            subtitle: isArabic
+                ? '\u062e\u0637\u0637 \u0644\u0632\u064a\u0627\u0631\u0629 \u0647\u0648\u0631\u0633-\u0628\u0648\u062a \u0623\u062e\u0631\u0649'
+                : 'Plan another Horus-Bot visit',
+            onTap: () => Navigator.pushNamed(context, AppRoutes.buyTickets),
+          ),
+        );
+      }
+      return actions;
     }
 
     if (snapshot.isActiveTourState) {
@@ -543,6 +583,45 @@ class _HomeScreenState extends State<HomeScreen> {
               ? 'شاهد صور جولتك وذكريات زياراتك السابقة.'
               : 'View your captured tour photos and past visits.',
           onTap: () => Navigator.pushNamed(context, AppRoutes.memories),
+        ),
+        HomeQuickActionItem(
+          icon: Icons.museum_outlined,
+          label: l10n.exhibits,
+          subtitle: l10n.homeExploreArtifacts,
+          onTap: () => Navigator.pushNamed(context, AppRoutes.exhibits),
+        ),
+      ];
+    }
+
+    if (snapshot.hasTicketHistory || snapshot.hasCompletedTourHistory) {
+      return [
+        if (snapshot.hasCompletedTourHistory)
+          HomeQuickActionItem(
+            icon: Icons.photo_library_outlined,
+            label: isArabic
+                ? '\u0627\u0644\u0630\u0643\u0631\u064a\u0627\u062a'
+                : 'Memories',
+            subtitle: isArabic
+                ? '\u0627\u0633\u062a\u0639\u062f \u0644\u062d\u0638\u0627\u062a \u062c\u0648\u0644\u0627\u062a\u0643 \u0627\u0644\u0633\u0627\u0628\u0642\u0629'
+                : 'Revisit moments from completed tours',
+            onTap: () => Navigator.pushNamed(context, AppRoutes.memories),
+          ),
+        if (snapshot.hasTicketHistory)
+          HomeQuickActionItem(
+            icon: Icons.confirmation_number_outlined,
+            label: l10n.myTickets,
+            subtitle: isArabic
+                ? '\u0639\u0631\u0636 \u062d\u0627\u0644\u0629 \u0627\u0644\u062a\u0630\u0627\u0643\u0631 \u0648\u0627\u0644\u0633\u062c\u0644'
+                : 'View ticket status and history',
+            onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
+          ),
+        HomeQuickActionItem(
+          icon: Icons.confirmation_number_outlined,
+          label: l10n.buyTickets,
+          subtitle: isArabic
+              ? '\u062e\u0637\u0637 \u0644\u0632\u064a\u0627\u0631\u0629 \u0647\u0648\u0631\u0633-\u0628\u0648\u062a \u0623\u062e\u0631\u0649'
+              : 'Plan another Horus-Bot visit',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.buyTickets),
         ),
         HomeQuickActionItem(
           icon: Icons.museum_outlined,

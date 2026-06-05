@@ -87,6 +87,9 @@ class HomeController {
       hasValidMuseumTicket: hasValidMuseumTicket,
       hasRobotTourTicket: hasRobotTourTicket,
       hasRobotTourEligibility: hasRobotTourEligibility,
+      hasTicketHistory: ticketProvider.hasTicketHistory,
+      hasCompletedTourHistory:
+          ticketProvider.hasCompletedTourHistory || isCompleted,
       ticketCount: ticketCount,
       nextTicketQrAvailable: ticketProvider.hasTickets,
       isRobotConnected: connected,

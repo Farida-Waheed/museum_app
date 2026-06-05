@@ -91,11 +91,11 @@ service cloud.firestore {
         && request.resource.data.robot_tour_ticket_id is string
         && activeOwnedMuseumTicket(request.resource.data.museum_ticket_id)
         && activeOwnedRobotTourTicket(request.resource.data.robot_tour_ticket_id)
-        && request.resource.data.status == 'paired'
-        && request.resource.data.current_exhibit_id == null
+        && request.resource.data.status in ['paired', 'active']
+        && (request.resource.data.status == 'active' || request.resource.data.current_exhibit_id == null)
         && request.resource.data.current_exhibit_index == 0
         && request.resource.data.selected_exhibits is list
-        && request.resource.data.started_at == null
+        && (request.resource.data.status == 'active' || request.resource.data.started_at == null)
         && request.resource.data.completed_at == null;
     }
 
@@ -180,7 +180,7 @@ service cloud.firestore {
         && unpairedExistingTicket()
         && request.resource.data.diff(resource.data).affectedKeys()
           .hasOnly(['status', 'paired_robot_id', 'session_id', 'paired_at', 'updated_at'])
-        && request.resource.data.status == 'paired'
+        && request.resource.data.status in ['paired', 'in_progress']
         && request.resource.data.paired_robot_id is string
         && request.resource.data.paired_robot_id != ''
         && request.resource.data.session_id is string

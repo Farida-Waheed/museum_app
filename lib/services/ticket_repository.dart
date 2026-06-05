@@ -294,11 +294,16 @@ class TicketRepository {
         );
       }
 
-      final today = _dateOnly(now ?? DateTime.now());
-      final visitDate = _dateOnly(ticket.visitDate);
-      if (visitDate.compareTo(today) < 0) {
+      final startsAt =
+          visitDateTimeFromParts(ticket.visitDate, ticket.timeSlot) ??
+          DateTime(
+            ticket.visitDate.year,
+            ticket.visitDate.month,
+            ticket.visitDate.day,
+          );
+      if ((now ?? DateTime.now()).isAfter(startsAt)) {
         throw const TicketRepositoryException(
-          'This ticket date has already passed.',
+          'This ticket visit time has already passed.',
           code: 'ticket-date-passed',
         );
       }

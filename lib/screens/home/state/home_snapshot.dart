@@ -47,6 +47,8 @@ class HomeSnapshot {
     required this.hasValidMuseumTicket,
     required this.hasRobotTourTicket,
     required this.hasRobotTourEligibility,
+    required this.hasTicketHistory,
+    required this.hasCompletedTourHistory,
     required this.ticketCount,
     required this.nextTicketQrAvailable,
     required this.isRobotConnected,
@@ -80,6 +82,8 @@ class HomeSnapshot {
   final bool hasValidMuseumTicket;
   final bool hasRobotTourTicket;
   final bool hasRobotTourEligibility;
+  final bool hasTicketHistory;
+  final bool hasCompletedTourHistory;
   final int ticketCount;
   final bool nextTicketQrAvailable;
 
@@ -110,7 +114,8 @@ class HomeSnapshot {
   final HomeMapPreviewData mapPreview;
   final bool isLiveMapAvailable;
 
-  bool get hasAnyTicket => hasValidMuseumTicket || hasRobotTourTicket;
+  bool get hasAnyTicket =>
+      hasValidMuseumTicket || hasRobotTourTicket || hasTicketHistory;
   bool get hasCompleteTicketBundle =>
       hasValidMuseumTicket && hasRobotTourTicket;
   bool get shouldShowStats => hasActiveTour || isTourPaused || isTourCompleted;

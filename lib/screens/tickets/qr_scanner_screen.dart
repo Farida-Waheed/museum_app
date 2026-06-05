@@ -189,6 +189,17 @@ class _QrScannerScreenState extends State<QrScannerScreen>
             selectedExhibitIds: pairing.selectedExhibitIds,
             nextExhibitId: pairing.nextExhibitId,
           );
+          if (pairing.currentExhibitId != null) {
+            sessionProvider.startActiveTour(
+              currentExhibitId: pairing.currentExhibitId!,
+              nextExhibitId: pairing.nextExhibitId,
+            );
+            tourProvider.startTour(
+              context: context,
+              initialExhibitId: pairing.currentExhibitId,
+              nextExhibitId: pairing.nextExhibitId,
+            );
+          }
           result = _ScanResult(
             isValid: true,
             title: l10n.qrRobotConnectedTitle,
@@ -281,6 +292,10 @@ class _QrScannerScreenState extends State<QrScannerScreen>
         return l10n.qrSignInRequiredTitle;
       case RobotPairingFailureCode.robotTourTicketRequired:
         return l10n.qrRobotTicketRequiredTitle;
+      case RobotPairingFailureCode.robotTourTicketExpired:
+        return 'Robot tour ticket expired';
+      case RobotPairingFailureCode.robotTourTicketCompleted:
+        return 'Ticket already used';
       case RobotPairingFailureCode.ambiguousRobotTourTicket:
         return l10n.qrRobotTicketRequiredTitle;
       case RobotPairingFailureCode.robotNotFound:
@@ -306,7 +321,11 @@ class _QrScannerScreenState extends State<QrScannerScreen>
       case RobotPairingFailureCode.signInRequired:
         return l10n.qrSignInRequiredMessage;
       case RobotPairingFailureCode.robotTourTicketRequired:
-        return l10n.qrRobotTicketRequiredMessage;
+        return 'You need a valid Horus-Bot tour ticket to pair with this robot.';
+      case RobotPairingFailureCode.robotTourTicketExpired:
+        return 'Your robot tour ticket has expired. Please book a new Horus-Bot tour.';
+      case RobotPairingFailureCode.robotTourTicketCompleted:
+        return 'This robot tour ticket was already used for a completed tour. Please book a new Horus-Bot tour.';
       case RobotPairingFailureCode.ambiguousRobotTourTicket:
         return 'Please select a robot tour ticket from My Tickets before pairing.';
       case RobotPairingFailureCode.robotNotFound:

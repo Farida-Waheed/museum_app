@@ -722,6 +722,9 @@ TicketSetDisplayStatus deriveTicketSetDisplayStatus(PurchasedTicketSet set) {
   if (museumStatus == TicketStatus.used) {
     return TicketSetDisplayStatus.used;
   }
+  if (_isTicketSetVisitExpired(set)) {
+    return TicketSetDisplayStatus.expired;
+  }
   if (museumStatus == TicketStatus.active &&
       robotStatus == TicketStatus.active) {
     return TicketSetDisplayStatus.active;
@@ -732,6 +735,22 @@ TicketSetDisplayStatus deriveTicketSetDisplayStatus(PurchasedTicketSet set) {
   }
 
   return TicketSetDisplayStatus.partial;
+}
+
+bool _isTicketSetVisitExpired(PurchasedTicketSet set) {
+  final museumTicket = set.museumTicket;
+  final robotTicket = set.robotTourTicket;
+  if (museumTicket?.status != TicketStatus.active &&
+      robotTicket?.status != TicketStatus.active) {
+    return false;
+  }
+  final date = museumTicket?.visitDate ?? robotTicket?.visitDate;
+  if (date == null) return false;
+  final slot = museumTicket?.timeSlot ?? robotTicket?.timeSlot ?? '';
+  final startsAt =
+      visitDateTimeFromParts(date, slot) ??
+      DateTime(date.year, date.month, date.day);
+  return DateTime.now().isAfter(startsAt);
 }
 
 bool _isClosedTicketStatus(TicketStatus? status) {
