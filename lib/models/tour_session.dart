@@ -16,6 +16,12 @@ class TourSession {
   final String? routeTitleEn;
   final String? routeTitleAr;
   final String? preferredLanguage;
+  final List<String> selectedInterests;
+  final int durationMinutes;
+  final String? tourType;
+  final String? language;
+  final List<String> accessibilityPreferences;
+  final bool includePhotoStops;
   final String? pace;
   final String robotState;
   final double? userDistanceFromRobot;
@@ -49,6 +55,12 @@ class TourSession {
     required this.routeTitleEn,
     required this.routeTitleAr,
     required this.preferredLanguage,
+    required this.selectedInterests,
+    required this.durationMinutes,
+    required this.tourType,
+    required this.language,
+    required this.accessibilityPreferences,
+    required this.includePhotoStops,
     required this.pace,
     required this.robotState,
     required this.userDistanceFromRobot,
@@ -69,7 +81,9 @@ class TourSession {
 
   factory TourSession.fromFirestore(String docId, Map<String, dynamic> data) {
     final selectedExhibits = _stringList(
-      data['selectedExhibitIds'] ?? data['selected_exhibits'],
+      data['selected_artifact_ids'] ??
+          data['selectedExhibitIds'] ??
+          data['selected_exhibits'],
     );
     final currentExhibitId = _stringValue(
       data['currentExhibitId'] ?? data['current_exhibit_id'],
@@ -106,6 +120,30 @@ class TourSession {
       routeTitleEn: _stringValue(data['route_title_en']),
       routeTitleAr: _stringValue(data['route_title_ar']),
       preferredLanguage: _stringValue(data['preferred_language']),
+      selectedInterests: _stringList(
+        data['selected_interests'] ?? data['interests'],
+      ),
+      durationMinutes:
+          _intValue(
+            data['duration_minutes'] ??
+                data['tour_duration_min'] ??
+                data['tour_duration'],
+          ) ??
+          45,
+      tourType: _stringValue(data['tour_type']),
+      language:
+          _stringValue(data['language']) ??
+          _stringValue(data['preferred_language']),
+      accessibilityPreferences: _stringList(
+        data['accessibility_preferences'] ?? data['accessibility'],
+      ),
+      includePhotoStops:
+          _boolValue(
+            data['include_photo_stops'] ??
+                data['photo_spots_enabled'] ??
+                data['photo_spots'],
+          ) ??
+          false,
       pace: _stringValue(data['pace']),
       robotState: _stringValue(data['robotState']) ?? 'waiting',
       userDistanceFromRobot: _doubleValue(data['userDistanceFromRobot']),
@@ -132,6 +170,7 @@ class TourSession {
       'robotId': robotId,
       'museumTicketId': museumTicketId,
       'robotTourTicketId': robotTourTicketId,
+      'selected_artifact_ids': selectedExhibitIds,
       'selectedExhibitIds': selectedExhibitIds,
       'currentExhibitId': currentExhibitId,
       'currentExhibitIndex': currentExhibitIndex,
@@ -142,6 +181,12 @@ class TourSession {
       'routeTitleEn': routeTitleEn,
       'routeTitleAr': routeTitleAr,
       'preferredLanguage': preferredLanguage,
+      'selected_interests': selectedInterests,
+      'duration_minutes': durationMinutes,
+      'tour_type': tourType,
+      'language': language,
+      'accessibility_preferences': accessibilityPreferences,
+      'include_photo_stops': includePhotoStops,
       'pace': pace,
       'robotState': robotState,
       'userDistanceFromRobot': userDistanceFromRobot,

@@ -60,7 +60,9 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
 
     if (success) {
-      Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
+      final args = ModalRoute.of(context)?.settings.arguments;
+      final redirect = args is Map ? args['redirect'] as String? : null;
+      Navigator.pushReplacementNamed(context, redirect ?? AppRoutes.mainHome);
     } else {
       _showError(authProvider.errorMessage ?? l10n.loginFailed);
     }
@@ -236,9 +238,13 @@ class _LoginScreenState extends State<LoginScreen> {
                             const SizedBox(height: 14),
                             TextButton(
                               onPressed: () {
+                                final args = ModalRoute.of(
+                                  context,
+                                )?.settings.arguments;
                                 Navigator.pushReplacementNamed(
                                   context,
                                   AppRoutes.register,
+                                  arguments: args,
                                 );
                               },
                               child: RichText(

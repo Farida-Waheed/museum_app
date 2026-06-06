@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 import '../app/router.dart';
@@ -28,86 +30,135 @@ class BottomNav extends StatelessWidget {
       Navigator.pushNamedAndRemoveUntil(context, route, (route) => false);
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.cinematicNav : AppColors.warmSurface,
-        border: Border(
-          top: BorderSide(
-            color: isDark
-                ? AppColors.goldBorder(0.10)
-                : AppColors.mutedText.withValues(alpha: 0.1),
-          ),
-        ),
+    final items = [
+      _NavItem(Icons.home_outlined, Icons.home_rounded, l10n.home),
+      _NavItem(Icons.map_outlined, Icons.map_rounded, l10n.map),
+      _NavItem(
+        Icons.confirmation_number_outlined,
+        Icons.confirmation_number_rounded,
+        l10n.tickets,
       ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          child: BottomNavigationBar(
-            currentIndex: currentIndex,
-            onTap: handleTap,
-            type: BottomNavigationBarType.fixed,
-            selectedItemColor: AppColors.primaryGold,
-            unselectedItemColor: isDark
-                ? AppColors.darkMutedText
-                : AppColors.mutedText,
-            showUnselectedLabels: true,
-            selectedFontSize: 11,
-            unselectedFontSize: 11,
-            selectedLabelStyle: AppTextStyles.premiumNavLabel(
-              context,
-            ).copyWith(fontWeight: FontWeight.w600),
-            unselectedLabelStyle: AppTextStyles.premiumNavLabel(context),
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            items: [
-              _buildNavItem(Icons.home_outlined, Icons.home_rounded, l10n.home),
-              _buildNavItem(Icons.map_outlined, Icons.map_rounded, l10n.map),
-              _buildNavItem(
-                Icons.confirmation_number_outlined,
-                Icons.confirmation_number_rounded,
-                l10n.tickets,
+      _NavItem(
+        Icons.photo_library_outlined,
+        Icons.photo_library_rounded,
+        l10n.memories,
+      ),
+      _NavItem(Icons.person_outline, Icons.person_rounded, l10n.profile),
+    ];
+
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(28),
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              decoration: BoxDecoration(
+                color: (isDark ? AppColors.cinematicNav : AppColors.warmSurface)
+                    .withValues(alpha: 0.78),
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(
+                  color: isDark
+                      ? AppColors.goldBorder(0.20)
+                      : AppColors.mutedText.withValues(alpha: 0.12),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.28),
+                    blurRadius: 22,
+                    offset: const Offset(0, 10),
+                  ),
+                ],
               ),
-              _buildNavItem(
-                Icons.photo_library_outlined,
-                Icons.photo_library_rounded,
-                l10n.memories,
+              child: Row(
+                children: [
+                  for (var i = 0; i < items.length; i++)
+                    Expanded(
+                      child: _NavButton(
+                        item: items[i],
+                        selected: i == currentIndex,
+                        isDark: isDark,
+                        onTap: () => handleTap(i),
+                      ),
+                    ),
+                ],
               ),
-              _buildNavItem(
-                Icons.person_outline,
-                Icons.person_rounded,
-                l10n.profile,
-              ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
+}
 
-  BottomNavigationBarItem _buildNavItem(
-    IconData icon,
-    IconData activeIcon,
-    String label,
-  ) {
-    return BottomNavigationBarItem(
-      icon: Icon(icon, size: 22),
-      activeIcon: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(activeIcon, size: 23),
-          const SizedBox(height: 4),
-          Container(
-            width: 16,
-            height: 2,
-            decoration: BoxDecoration(
-              color: AppColors.primaryGold,
-              borderRadius: BorderRadius.circular(1),
+class _NavItem {
+  const _NavItem(this.icon, this.activeIcon, this.label);
+
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+}
+
+class _NavButton extends StatelessWidget {
+  const _NavButton({
+    required this.item,
+    required this.selected,
+    required this.isDark,
+    required this.onTap,
+  });
+
+  final _NavItem item;
+  final bool selected;
+  final bool isDark;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = selected
+        ? AppColors.primaryGold
+        : (isDark ? AppColors.darkMutedText : AppColors.mutedText);
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(22),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOutCubic,
+        height: 58,
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 7),
+        decoration: BoxDecoration(
+          color: selected
+              ? AppColors.primaryGold.withValues(alpha: 0.13)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(22),
+          border: selected
+              ? Border.all(color: AppColors.goldBorder(0.28))
+              : Border.all(color: Colors.transparent),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              selected ? item.activeIcon : item.icon,
+              size: 22,
+              color: color,
             ),
-          ),
-        ],
+            const SizedBox(height: 4),
+            Text(
+              item.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.premiumNavLabel(context).copyWith(
+                color: color,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
-      label: label,
     );
   }
 }

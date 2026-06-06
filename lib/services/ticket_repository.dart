@@ -731,16 +731,19 @@ class TicketRepository {
       'visit_time': ticket.timeSlot == null
           ? null
           : _slotStart(ticket.timeSlot!),
-      'tour_duration_min': ticket.durationMinutes,
-      'preferred_language': _normalizedLanguage(ticket.languageCode),
+      'duration_minutes': ticket.durationMinutes,
+      'language': _normalizedLanguage(ticket.languageCode),
       'preferred_language_other': ticket.languageCode == 'other'
           ? ticket.languageOther?.trim()
           : null,
-      'selected_exhibits':
+      'selected_artifact_ids':
           personalized?.selectedExhibitIds ??
           ticket.selectedArtifactIds ??
           (ticket.standardTourConfig?.routeExhibitIds ?? const <String>[]),
-      'photo_spots': personalized?.photoSpotsEnabled ?? false,
+      'selected_interests': personalized?.selectedThemes ?? const <String>[],
+      'accessibility_preferences':
+          personalized?.accessibilityNeeds ?? const <String>[],
+      'include_photo_stops': personalized?.photoSpotsEnabled ?? false,
       'notes': null,
       'route_id': ticket.routeId,
       'route_title_en': ticket.routeTitleEn,

@@ -523,7 +523,11 @@ class _TicketScreenState extends State<TicketScreen> {
                 ),
                 if (draft.robotTourType == RobotTourType.personalized) ...[
                   const SizedBox(height: 18),
-                  _PersonalizedTourCard(l10n: l10n, isArabic: isArabic),
+                  _PersonalizedTourCard(
+                    l10n: l10n,
+                    isArabic: isArabic,
+                    ticketProvider: ticketProvider,
+                  ),
                 ],
                 const SizedBox(height: 18),
                 _OrderSummaryCard(
@@ -1252,15 +1256,31 @@ class _NarrationLanguageCard extends StatelessWidget {
 }
 
 class _PersonalizedTourCard extends StatelessWidget {
-  const _PersonalizedTourCard({required this.l10n, required this.isArabic});
+  const _PersonalizedTourCard({
+    required this.l10n,
+    required this.isArabic,
+    required this.ticketProvider,
+  });
 
   final AppLocalizations l10n;
   final bool isArabic;
+  final TicketProvider ticketProvider;
 
   @override
   Widget build(BuildContext context) {
+    final config = ticketProvider.currentOrderDraft.personalizedTourConfig;
+    final hasPlannerRoute =
+        config != null &&
+        (config.selectedExhibitIds.isNotEmpty ||
+            config.selectedThemes.isNotEmpty ||
+            config.accessibilityNeeds.isNotEmpty ||
+            config.photoSpotsEnabled);
     return _SectionCard(
-      title: l10n.ticketsPersonalizedSummaryTitle,
+      title: hasPlannerRoute
+          ? (isArabic
+                ? 'جولة مخصصة من المخطط'
+                : 'Personalized tour from planner')
+          : l10n.ticketsPersonalizedSummaryTitle,
       isArabic: isArabic,
       child: Column(
         crossAxisAlignment: isArabic
@@ -1268,15 +1288,42 @@ class _PersonalizedTourCard extends StatelessWidget {
             : CrossAxisAlignment.start,
         children: [
           Text(
-            l10n.ticketsPersonalizedPhase3,
+            hasPlannerRoute
+                ? (isArabic
+                      ? 'تم حفظ اختيارات المخطط. أكمل تاريخ الزيارة والوقت والدفع لتأكيد الحجز.'
+                      : 'Your planner choices are attached. Complete visit details and payment confirmation to book.')
+                : l10n.ticketsPersonalizedPhase3,
             textAlign: TextAlign.start,
             style: AppTextStyles.bodyPrimary(
               context,
             ).copyWith(color: AppColors.bodyText, height: 1.4),
           ),
+          if (hasPlannerRoute) ...[
+            const SizedBox(height: 12),
+            _SummaryLine(
+              label: isArabic ? 'المعروضات' : 'Planner stops',
+              value: '${config.selectedExhibitIds.length}',
+            ),
+            _SummaryLine(
+              label: isArabic ? 'الاهتمامات' : 'Interests',
+              value: '${config.selectedThemes.length}',
+            ),
+            _SummaryLine(
+              label: isArabic ? 'المدة' : 'Duration',
+              value: '${config.durationMinutes} min',
+            ),
+            _SummaryLine(
+              label: isArabic ? 'نقاط الصور' : 'Photo stops',
+              value: config.photoSpotsEnabled
+                  ? (isArabic ? 'مفعلة' : 'Enabled')
+                  : (isArabic ? 'غير مفعلة' : 'Disabled'),
+            ),
+          ],
           const SizedBox(height: 14),
           _OutlineActionButton(
-            label: l10n.ticketsCustomizeTour,
+            label: hasPlannerRoute
+                ? (isArabic ? 'تعديل الخطة' : 'Edit planner choices')
+                : l10n.ticketsCustomizeTour,
             onTap: () =>
                 Navigator.pushNamed(context, AppRoutes.tourCustomization),
           ),

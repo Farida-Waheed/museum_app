@@ -171,12 +171,9 @@ class RobotTourTicket {
       'packageId': packageId,
       'packageName': packageName,
       'tour_type': tourType.name,
-      'tour_duration': durationMinutes,
-      'durationMinutes': durationMinutes,
-      'preferred_language': languageCode,
+      'duration_minutes': durationMinutes,
+      'language': languageCode,
       'preferred_language_other': languageOther,
-      'languageCode': languageCode,
-      'languageOther': languageOther,
       'includedFeatures': includedFeatures,
       'price': price,
       'currency': currency,
@@ -190,6 +187,11 @@ class RobotTourTicket {
       'route_id': routeId,
       'route_title_en': routeTitleEn,
       'route_title_ar': routeTitleAr,
+      'selected_artifact_ids': selectedArtifactIds ?? const <String>[],
+      'selected_interests': selectedInterests ?? const <String>[],
+      'accessibility_preferences':
+          personalizedTourConfig?.accessibilityNeeds ?? const <String>[],
+      'include_photo_stops': personalizedTourConfig?.photoSpotsEnabled ?? false,
       'purchased_at': Timestamp.fromDate(purchasedAt),
     };
   }
@@ -261,23 +263,30 @@ class RobotTourTicket {
     final tourType = _tourTypeValue(json['tourType'] ?? json['tour_type']);
     final selectedExhibitIds = _stringList(
       json['selectedArtifactIds'] ??
+          json['selected_artifact_ids'] ??
           json['selected_exhibits'] ??
           json['selected_exhibit_ids'],
     );
     final interests = _stringList(
-      json['selectedInterests'] ?? json['interests'],
+      json['selectedInterests'] ??
+          json['selected_interests'] ??
+          json['interests'],
     );
     final accessibility = _stringList(
-      json['accessibilityNeeds'] ?? json['accessibility'],
+      json['accessibilityNeeds'] ??
+          json['accessibility_preferences'] ??
+          json['accessibility'],
     );
     final duration =
         _intValue(json['durationMinutes']) ??
+        _intValue(json['duration_minutes']) ??
         _intValue(json['tour_duration_min']) ??
         _intValue(json['tour_duration']) ??
         45;
     final language =
         _languageCode(
           _stringValue(json['languageCode']) ??
+              _stringValue(json['language']) ??
               _stringValue(json['preferred_language']),
         ) ??
         'english';
@@ -418,6 +427,7 @@ class RobotTourTicket {
       photoSpotsEnabled:
           _boolValue(
             json['photoSpotsEnabled'] ??
+                json['include_photo_stops'] ??
                 json['photo_spots_enabled'] ??
                 json['photo_spots'],
           ) ??

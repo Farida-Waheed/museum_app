@@ -60,6 +60,11 @@ class RobotPairingService {
 
       final robotTourTicket = pairableTicket.ticket;
       final selectedExhibitIds = _selectedExhibitIds(robotTourTicket);
+      final plannerMetadata = _plannerMetadata(
+        ticket: robotTourTicket,
+        data: pairableTicket.data,
+        selectedExhibitIds: selectedExhibitIds,
+      );
       final sessionRef = _firestore.collection('tourSessions').doc();
       final sessionId = sessionRef.id;
       final robotRef = await _robotDocumentRef(parsedRobotId);
@@ -174,6 +179,7 @@ class RobotPairingService {
               ? <String>[]
               : <String>[currentExhibitId],
           'selected_exhibits': selectedExhibitIds,
+          ...plannerMetadata,
           'route_id': robotTourTicket.routeId,
           'route_title_en': robotTourTicket.routeTitleEn,
           'route_title_ar': robotTourTicket.routeTitleAr,
@@ -271,8 +277,16 @@ class RobotPairingService {
       }
 
       final ticket = RobotTourTicket.fromFirestore(doc.id, data);
+      await _patchSessionPlannerMetadataIfMissing(
+        sessionId: sessionId,
+        sessionData: sessionData,
+        ticket: ticket,
+        ticketData: data,
+      );
       final selectedExhibitIds = _stringList(
-        sessionData['selected_exhibits'] ?? sessionData['selectedExhibitIds'],
+        sessionData['selected_artifact_ids'] ??
+            sessionData['selected_exhibits'] ??
+            sessionData['selectedExhibitIds'],
       );
       final route = selectedExhibitIds.isEmpty
           ? _selectedExhibitIds(ticket)
@@ -510,6 +524,124 @@ class RobotPairingService {
         TourPace.normal.name;
   }
 
+  Map<String, dynamic> _plannerMetadata({
+    required RobotTourTicket ticket,
+    required Map<String, dynamic> data,
+    required List<String> selectedExhibitIds,
+  }) {
+    final personalized = ticket.personalizedTourConfig;
+    final interests = personalized?.selectedThemes.isNotEmpty == true
+        ? personalized!.selectedThemes
+        : _stringList(
+            data['selected_interests'] ??
+                data['selectedInterests'] ??
+                data['interests'] ??
+                ticket.selectedInterests,
+          );
+    final accessibility = personalized?.accessibilityNeeds.isNotEmpty == true
+        ? personalized!.accessibilityNeeds
+        : _stringList(
+            data['accessibility_preferences'] ??
+                data['accessibilityNeeds'] ??
+                data['accessibility'],
+          );
+    final includePhotoStops =
+        personalized?.photoSpotsEnabled ??
+        _boolValue(
+          data['include_photo_stops'] ??
+              data['photoSpotsEnabled'] ??
+              data['photo_spots_enabled'] ??
+              data['photo_spots'],
+        ) ??
+        false;
+    final duration =
+        _intValue(data['duration_minutes']) ??
+        _intValue(data['durationMinutes']) ??
+        _intValue(data['tour_duration_min']) ??
+        _intValue(data['tour_duration']) ??
+        ticket.durationMinutes;
+    final language =
+        _stringValue(data['language']) ??
+        _stringValue(data['languageCode']) ??
+        _stringValue(data['preferred_language']) ??
+        ticket.languageCode;
+
+    return {
+      'selected_artifact_ids': selectedExhibitIds,
+      'selected_interests': interests,
+      'duration_minutes': duration,
+      'tour_type': ticket.tourType.name,
+      'language': language,
+      'accessibility_preferences': accessibility,
+      'include_photo_stops': includePhotoStops,
+    };
+  }
+
+  Future<void> _patchSessionPlannerMetadataIfMissing({
+    required String sessionId,
+    required Map<String, dynamic> sessionData,
+    required RobotTourTicket ticket,
+    required Map<String, dynamic> ticketData,
+  }) async {
+    final status = _stringValue(sessionData['status']);
+    if (status == 'completed' || status == 'cancelled') return;
+
+    final selectedExhibitIds = _selectedExhibitIds(ticket);
+    final metadata = _plannerMetadata(
+      ticket: ticket,
+      data: ticketData,
+      selectedExhibitIds: selectedExhibitIds,
+    );
+    final updates = <String, dynamic>{};
+    _putIfMissingList(updates, sessionData, 'selected_artifact_ids', metadata);
+    _putIfMissingList(updates, sessionData, 'selected_interests', metadata);
+    _putIfMissingValue(updates, sessionData, 'duration_minutes', metadata);
+    _putIfMissingValue(updates, sessionData, 'tour_type', metadata);
+    _putIfMissingValue(updates, sessionData, 'language', metadata);
+    _putIfMissingList(
+      updates,
+      sessionData,
+      'accessibility_preferences',
+      metadata,
+    );
+    _putIfMissingValue(updates, sessionData, 'include_photo_stops', metadata);
+    if (_stringList(sessionData['selected_exhibits']).isEmpty &&
+        selectedExhibitIds.isNotEmpty) {
+      updates['selected_exhibits'] = selectedExhibitIds;
+    }
+    if (_stringValue(sessionData['preferred_language']) == null &&
+        _stringValue(metadata['language']) != null) {
+      updates['preferred_language'] = metadata['language'];
+    }
+    if (updates.isEmpty) return;
+    updates['updated_at'] = FieldValue.serverTimestamp();
+    await _firestore.collection('tourSessions').doc(sessionId).update(updates);
+  }
+
+  void _putIfMissingValue(
+    Map<String, dynamic> updates,
+    Map<String, dynamic> existing,
+    String key,
+    Map<String, dynamic> metadata,
+  ) {
+    final value = metadata[key];
+    if (value == null) return;
+    if (existing.containsKey(key) && existing[key] != null) return;
+    updates[key] = value;
+  }
+
+  void _putIfMissingList(
+    Map<String, dynamic> updates,
+    Map<String, dynamic> existing,
+    String key,
+    Map<String, dynamic> metadata,
+  ) {
+    final value = metadata[key];
+    if (value is! List || value.isEmpty) return;
+    if (_stringList(existing[key]).isNotEmpty) return;
+    updates[key] = value;
+  }
+
   String? _stringValue(Object? value) {
     if (value is String && value.trim().isNotEmpty) return value.trim();
     return null;
@@ -518,6 +650,13 @@ class RobotPairingService {
   bool? _boolValue(Object? value) {
     if (value is bool) return value;
     if (value is String) return bool.tryParse(value);
+    return null;
+  }
+
+  int? _intValue(Object? value) {
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value);
     return null;
   }
 

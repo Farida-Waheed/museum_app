@@ -44,10 +44,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_languageInitialized) return;
-    _preferredLanguage =
-        Localizations.localeOf(context).languageCode == 'ar'
-            ? 'arabic'
-            : 'english';
+    _preferredLanguage = Localizations.localeOf(context).languageCode == 'ar'
+        ? 'arabic'
+        : 'english';
     _languageInitialized = true;
   }
 
@@ -104,7 +103,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!mounted) return;
 
     if (success) {
-      Navigator.pushReplacementNamed(context, AppRoutes.mainHome);
+      final args = ModalRoute.of(context)?.settings.arguments;
+      final redirect = args is Map ? args['redirect'] as String? : null;
+      Navigator.pushReplacementNamed(context, redirect ?? AppRoutes.mainHome);
     } else {
       _showError(authProvider.errorMessage ?? l10n.registerFailed);
     }
@@ -237,8 +238,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             isArabic: isArabic,
                             onChanged: (value) {
                               setState(() {
-                                _preferredLanguage =
-                                    value == 'arabic' ? 'arabic' : 'english';
+                                _preferredLanguage = value == 'arabic'
+                                    ? 'arabic'
+                                    : 'english';
                               });
                             },
                           ),
