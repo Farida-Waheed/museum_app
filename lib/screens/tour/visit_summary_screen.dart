@@ -12,6 +12,7 @@ import '../../models/exhibit_provider.dart';
 import '../../models/tour_provider.dart';
 import '../../services/visit_summary_repository.dart';
 import '../../widgets/app_menu_shell.dart';
+import '../../widgets/bottom_nav.dart';
 
 class VisitSummaryScreen extends StatefulWidget {
   const VisitSummaryScreen({super.key});
@@ -55,6 +56,7 @@ class _VisitSummaryScreenState extends State<VisitSummaryScreen> {
     return AppMenuShell(
       title: l10n.visitSummary.toUpperCase(),
       backgroundColor: AppColors.darkBackground,
+      bottomNavigationBar: const BottomNav(currentIndex: 3),
       showChatButton: true,
       body: DecoratedBox(
         decoration: const BoxDecoration(

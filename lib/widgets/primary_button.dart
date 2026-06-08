@@ -23,8 +23,6 @@ class PrimaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     Widget content = Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -45,16 +43,13 @@ class PrimaryButton extends StatelessWidget {
       ],
     );
 
-    final buttonStyle = ElevatedButton.styleFrom(
-      backgroundColor: color ?? AppColors.primaryGold,
-      foregroundColor: AppColors.darkInk,
-      minimumSize: fullWidth
-          ? const Size(double.infinity, AppSizes.buttonHeight)
-          : const Size(0, AppSizes.buttonHeight),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+    final buttonStyle = AppDecorations.primaryButton().copyWith(
+      backgroundColor: color == null ? null : WidgetStatePropertyAll(color),
+      minimumSize: WidgetStatePropertyAll(
+        fullWidth
+            ? const Size(double.infinity, AppSizes.buttonHeight)
+            : const Size(0, AppSizes.buttonHeight),
       ),
-      elevation: 0,
     );
 
     return ElevatedButton(

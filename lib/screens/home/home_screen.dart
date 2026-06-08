@@ -48,12 +48,15 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _loadedTicketsUserId;
   bool _restoreInFlight = false;
   late Timer _didYouKnowTimer;
+  late Timer _featuredArtifactTimer;
   int _didYouKnowIndex = 0;
+  int _featuredArtifactIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _startDidYouKnowTimer();
+    _startFeaturedArtifactTimer();
 
     Future.delayed(const Duration(seconds: 1), () async {
       if (!mounted) return;
@@ -74,6 +77,19 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         });
       }
+    });
+  }
+
+  void _startFeaturedArtifactTimer() {
+    _featuredArtifactTimer = Timer.periodic(const Duration(minutes: 3), (_) {
+      if (!mounted) return;
+      setState(() {
+        final exhibits = context.read<ExhibitProvider>().exhibits;
+        if (exhibits.isNotEmpty) {
+          _featuredArtifactIndex =
+              (_featuredArtifactIndex + 1) % exhibits.length;
+        }
+      });
     });
   }
 
@@ -98,6 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _didYouKnowTimer.cancel();
+    _featuredArtifactTimer.cancel();
     _scrollController.dispose();
     super.dispose();
   }
@@ -172,6 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
       exhibits: exhibits,
       lang: Localizations.localeOf(context).languageCode,
       didYouKnowIndex: _didYouKnowIndex,
+      featuredArtifactIndex: _featuredArtifactIndex,
     );
   }
 
@@ -258,6 +276,14 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.pushNamedAndRemoveUntil(context, AppRoutes.map, (route) => false);
   }
 
+  void _openChat(BuildContext context) {
+    Navigator.pushNamed(context, AppRoutes.chat);
+  }
+
+  void _openSummary(BuildContext context) {
+    Navigator.pushNamed(context, AppRoutes.summary);
+  }
+
   void _maybeRestoreActiveSession() {
     final authProvider = context.read<AuthProvider>();
     final userId = authProvider.currentUser?.id;
@@ -305,120 +331,106 @@ class _HomeScreenState extends State<HomeScreen> {
   })
   _statusModel(BuildContext context, HomeSnapshot snapshot, bool isArabic) {
     final l10n = AppLocalizations.of(context)!;
-    if (!snapshot.isLoggedIn) {
-      return (
-        label: l10n.loginToStartTour,
-        title: l10n.homeReadyTitle,
-        subtitle: l10n.homeGuestSubtitle,
-        icon: Icons.person_outline,
-        onTap: () => Navigator.pushNamed(context, AppRoutes.login),
-      );
-    }
-
-    if (!snapshot.hasCompleteTicketBundle) {
-      return (
-        label: l10n.homeReadyLabel,
-        title: l10n.homeReadyTitle,
-        subtitle: l10n.homeReadySubtitle,
-        icon: Icons.explore_rounded,
-        onTap: () => _openTickets(context, snapshot),
-      );
-    }
-
-    if (snapshot.robotStatus == HomeRobotStatus.error) {
-      return (
-        label: l10n.homeConnectionLostLabel,
-        title: l10n.homeReconnectTitle,
-        subtitle: l10n.homeReconnectSubtitle,
-        icon: Icons.wifi_off_rounded,
-        onTap: () => _openRobotPairing(context),
-      );
-    }
-
-    if (snapshot.isTourCompleted) {
-      return (
-        label: l10n.homeTourCompletedLabel,
-        title: l10n.homeTourCompletedTitle,
-        subtitle: l10n.homeTourCompletedSubtitle,
-        icon: Icons.verified_rounded,
-        onTap: () => _openTourFlow(context, snapshot),
-      );
-    }
-
-    if (snapshot.isTourPaused) {
-      return (
-        label: l10n.homeTourPausedLabel,
-        title: l10n.homeTourPausedTitle,
-        subtitle: l10n.homeTourPausedSubtitle,
-        icon: Icons.pause_circle_outline_rounded,
-        onTap: () => _openTourFlow(context, snapshot),
-      );
-    }
-
-    if (snapshot.hasActiveTour) {
-      final exhibit = snapshot.currentExhibitName ?? snapshot.nextStopName;
-      switch (snapshot.robotStatus) {
-        case HomeRobotStatus.speaking:
+    switch (snapshot.dashboardState) {
+      case HomeDashboardState.staffBlocked:
+        return (
+          label: 'Staff account',
+          title: 'Use the staff portal',
+          subtitle: AuthProvider.staffAccountMessage,
+          icon: Icons.admin_panel_settings_outlined,
+          onTap: () => Navigator.pushNamed(context, AppRoutes.login),
+        );
+      case HomeDashboardState.guest:
+        return (
+          label: 'Explore the museum',
+          title: 'Plan your visit',
+          subtitle: 'Sign in to plan and save your personalized museum route.',
+          icon: Icons.museum_outlined,
+          onTap: () => Navigator.pushNamed(context, AppRoutes.login),
+        );
+      case HomeDashboardState.loggedInNoTickets:
+        return (
+          label: 'Plan visit',
+          title: 'Welcome back, ${snapshot.userName}',
+          subtitle: 'Book a museum entry and Horus-Bot tour when ready.',
+          icon: Icons.explore_rounded,
+          onTap: () => Navigator.pushNamed(context, AppRoutes.buyTickets),
+        );
+      case HomeDashboardState.paymentPending:
+        return (
+          label: 'Payment pending',
+          title: 'Pay at the counter',
+          subtitle: 'Your QR code unlocks after cashier confirmation.',
+          icon: Icons.payments_outlined,
+          onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
+        );
+      case HomeDashboardState.ticketReady:
+        return (
+          label: 'Ticket ready',
+          title: 'Your tickets are ready',
+          subtitle: 'View your QR now. Scan the robot QR when you arrive.',
+          icon: Icons.confirmation_number_outlined,
+          onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
+        );
+      case HomeDashboardState.awaitingRobotPairing:
+        return (
+          label: 'At the museum',
+          title: 'Find your Horus-Bot',
+          subtitle: 'Scan the robot QR nearby to start your guided tour.',
+          icon: Icons.qr_code_scanner_rounded,
+          onTap: () => _openRobotPairing(context),
+        );
+      case HomeDashboardState.tourCompleted:
+        return (
+          label: l10n.homeTourCompletedLabel,
+          title: 'Tour completed',
+          subtitle: 'Your visit summary, memories, and achievements are ready.',
+          icon: Icons.verified_rounded,
+          onTap: () => _openSummary(context),
+        );
+      case HomeDashboardState.activeTour:
+        if (snapshot.isTourPaused) {
           return (
-            label: l10n.homeHorusSpeakingLabel,
-            title: exhibit ?? l10n.currentStop,
-            subtitle: exhibit == null
-                ? l10n.homeListenRobotSubtitle
-                : l10n.homeCurrentStopValue(exhibit),
-            icon: Icons.record_voice_over_rounded,
-            onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
+            label: l10n.homeTourPausedLabel,
+            title: snapshot.currentExhibitName ?? l10n.homeTourPausedTitle,
+            subtitle: 'Resume your live Horus-Bot tour.',
+            icon: Icons.pause_circle_outline_rounded,
+            onTap: () => _openTourFlow(context, snapshot),
           );
-        case HomeRobotStatus.moving:
-          return (
-            label: l10n.homeHorusMovingLabel,
-            title: snapshot.nextStopName ?? l10n.nextStopLabel,
-            subtitle: l10n.homeStayCloseSubtitle,
-            icon: Icons.route_rounded,
-            onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
-          );
-        default:
-          return (
-            label: l10n.homeHorusWaitingLabel,
-            title: exhibit ?? l10n.homeContinueTourAction,
-            subtitle: l10n.homeAskOrContinueSubtitle,
-            icon: Icons.hourglass_top_rounded,
-            onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
-          );
-      }
+        }
+        final exhibit = snapshot.currentExhibitName ?? snapshot.nextStopName;
+        switch (snapshot.robotStatus) {
+          case HomeRobotStatus.speaking:
+            return (
+              label: l10n.homeHorusSpeakingLabel,
+              title: exhibit ?? l10n.currentStop,
+              subtitle: exhibit == null
+                  ? l10n.homeListenRobotSubtitle
+                  : l10n.homeCurrentStopValue(exhibit),
+              icon: Icons.record_voice_over_rounded,
+              onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
+            );
+          case HomeRobotStatus.moving:
+            return (
+              label: l10n.homeHorusMovingLabel,
+              title: snapshot.nextStopName ?? l10n.nextStopLabel,
+              subtitle: l10n.homeStayCloseSubtitle,
+              icon: Icons.route_rounded,
+              onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
+            );
+          default:
+            return (
+              label: l10n.homeHorusWaitingLabel,
+              title: exhibit ?? l10n.homeContinueTourAction,
+              subtitle: l10n.homeAskOrContinueSubtitle,
+              icon: Icons.hourglass_top_rounded,
+              onTap: () => Navigator.pushNamed(context, AppRoutes.liveTour),
+            );
+        }
     }
-
-    if (snapshot.hasRobotTourEligibility && !snapshot.isRobotConnected) {
-      return (
-        label: l10n.homeMuseumTicketReadyLabel,
-        title: l10n.homeMuseumTicketReadyTitle,
-        subtitle: l10n.homeConnectTourSubtitle,
-        icon: Icons.qr_code_scanner_rounded,
-        onTap: () => _openRobotPairing(context),
-      );
-    }
-
-    if (snapshot.isRobotConnected) {
-      return (
-        label: l10n.homeConnectedLabel,
-        title: l10n.homeConnectedTitle,
-        subtitle: _robotMetaLine(snapshot, l10n),
-        icon: Icons.smart_toy_outlined,
-        onTap: () => _openTourFlow(context, snapshot),
-      );
-    }
-
-    return (
-      label: l10n.homeNextStopCaps,
-      title: snapshot.nextStopName ?? l10n.homeTutankhamunHall,
-      subtitle: l10n.homeMinutesAway(
-        snapshot.estimatedTimeToNextStop ?? 5,
-        snapshot.nextStopLocation ?? l10n.homeGoldenHall,
-      ),
-      icon: Icons.near_me_rounded,
-      onTap: () => _openTourFlow(context, snapshot),
-    );
   }
 
+  // ignore: unused_element
   String _robotMetaLine(HomeSnapshot snapshot, AppLocalizations l10n) {
     final parts = <String>[];
     if (snapshot.connectedRobotName.isNotEmpty) {
@@ -478,6 +490,23 @@ class _HomeScreenState extends State<HomeScreen> {
               ? 'اشتر تذاكر المتحف وجولة الروبوت'
               : 'Purchase museum and robot tour tickets',
           onTap: () => Navigator.pushNamed(context, AppRoutes.buyTickets),
+        ),
+      ];
+    }
+
+    if (snapshot.dashboardState == HomeDashboardState.paymentPending) {
+      return [
+        HomeQuickActionItem(
+          icon: Icons.confirmation_number_outlined,
+          label: l10n.myTickets,
+          subtitle: 'View payment status and counter instructions',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
+        ),
+        HomeQuickActionItem(
+          icon: Icons.museum_outlined,
+          label: l10n.exhibits,
+          subtitle: l10n.homeExploreArtifacts,
+          onTap: () => Navigator.pushNamed(context, AppRoutes.exhibits),
         ),
       ];
     }
@@ -544,12 +573,82 @@ class _HomeScreenState extends State<HomeScreen> {
     if (snapshot.isActiveTourState) {
       return [
         HomeQuickActionItem(
+          icon: Icons.map_outlined,
+          label: l10n.map,
+          subtitle: 'See where you and Horus are now',
+          onTap: () => _openMap(context),
+        ),
+        HomeQuickActionItem(
+          icon: Icons.chat_bubble_outline_rounded,
+          label: 'Ask Horus',
+          subtitle: 'Ask about the current stop or route',
+          onTap: () => _openChat(context),
+        ),
+        HomeQuickActionItem(
           icon: Icons.photo_library_outlined,
           label: isArabic ? 'الذكريات' : 'Memories',
           subtitle: isArabic
               ? 'شاهد لحظات جولتك الحالية'
               : 'Review moments from your current tour',
           onTap: () => Navigator.pushNamed(context, AppRoutes.memories),
+        ),
+        HomeQuickActionItem(
+          icon: Icons.museum_outlined,
+          label: l10n.exhibits,
+          subtitle: l10n.homeExploreArtifacts,
+          onTap: () => Navigator.pushNamed(context, AppRoutes.exhibits),
+        ),
+      ];
+    }
+
+    if (snapshot.dashboardState == HomeDashboardState.tourCompleted) {
+      return [
+        HomeQuickActionItem(
+          icon: Icons.summarize_outlined,
+          label: 'Summary',
+          subtitle: 'Review the stops and highlights from your tour',
+          onTap: () => _openSummary(context),
+        ),
+        HomeQuickActionItem(
+          icon: Icons.photo_library_outlined,
+          label: isArabic ? 'Ø§Ù„Ø°ÙƒØ±ÙŠØ§Øª' : 'Memories',
+          subtitle: 'Revisit photos and saved tour moments',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.memories),
+        ),
+        HomeQuickActionItem(
+          icon: Icons.rate_review_outlined,
+          label: l10n.feedback,
+          subtitle: 'Tell us how your Horus-Bot visit felt',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.feedback),
+        ),
+        HomeQuickActionItem(
+          icon: Icons.emoji_events_outlined,
+          label: l10n.achievements,
+          subtitle: 'See badges and progress from your visit',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.achievements),
+        ),
+      ];
+    }
+
+    if (snapshot.dashboardState == HomeDashboardState.awaitingRobotPairing) {
+      return [
+        HomeQuickActionItem(
+          icon: Icons.qr_code_scanner_rounded,
+          label: l10n.homeScanRobotQr,
+          subtitle: 'Pair with the Horus-Bot beside you',
+          onTap: () => _openRobotPairing(context),
+        ),
+        HomeQuickActionItem(
+          icon: Icons.map_outlined,
+          label: l10n.map,
+          subtitle: 'Use the map to orient yourself before starting',
+          onTap: () => _openMap(context),
+        ),
+        HomeQuickActionItem(
+          icon: Icons.confirmation_number_outlined,
+          label: l10n.myTickets,
+          subtitle: 'Keep your entry QR and tour ticket handy',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
         ),
         HomeQuickActionItem(
           icon: Icons.museum_outlined,
@@ -651,6 +750,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _ticketStatusLine(HomeSnapshot snapshot, AppLocalizations l10n) {
+    if (snapshot.dashboardState == HomeDashboardState.paymentPending) {
+      return 'Payment pending - pay at the museum counter';
+    }
+    if (snapshot.dashboardState == HomeDashboardState.tourCompleted) {
+      return 'Tour completed - summary and memories ready';
+    }
     if (!snapshot.hasCompleteTicketBundle) {
       return l10n.homeNoTicketsYet;
     }
@@ -739,6 +844,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _heroSubtitle(HomeSnapshot snapshot) {
     final language = Localizations.localeOf(context).languageCode;
+    switch (snapshot.dashboardState) {
+      case HomeDashboardState.staffBlocked:
+        return 'Staff accounts continue on the Horus-Bot website portal.';
+      case HomeDashboardState.guest:
+        return language == 'ar'
+            ? 'Ø®Ø·Ø· Ù„Ø±Ø­Ù„ØªÙƒ ÙÙŠ Ø§Ù„Ù…ØªØ­Ù Ù‚Ø¨Ù„ Ø§Ù„Ø²ÙŠØ§Ø±Ø©.'
+            : 'Explore the museum and plan your Horus-Bot visit.';
+      case HomeDashboardState.loggedInNoTickets:
+        return 'Welcome, ${snapshot.userName}. Plan your Horus-Bot visit.';
+      case HomeDashboardState.paymentPending:
+        return 'Payment is pending. Your QR activates after counter confirmation.';
+      case HomeDashboardState.ticketReady:
+        return 'Ticket ready. Keep your QR handy for museum entry.';
+      case HomeDashboardState.awaitingRobotPairing:
+        return 'Find your Horus-Bot and scan its QR to begin.';
+      case HomeDashboardState.activeTour:
+        return language == 'ar'
+            ? 'Ø§ØªØ¨Ø¹ Ø­ÙˆØ±Ø³ Ø®Ù„Ø§Ù„ Ø¬ÙˆÙ„ØªÙƒ Ø§Ù„Ù…Ø¨Ø§Ø´Ø±Ø© ÙÙŠ Ø§Ù„Ù…ØªØ­Ù.'
+            : 'Follow Horus through your live museum tour.';
+      case HomeDashboardState.tourCompleted:
+        return 'Your Horus-Bot tour is complete. Relive the visit.';
+    }
+    // ignore: dead_code
     if (snapshot.isActiveTourState) {
       return language == 'ar'
           ? 'اتبع حورس خلال جولتك المباشرة في المتحف.'
@@ -774,6 +902,92 @@ class _HomeScreenState extends State<HomeScreen> {
     AppLocalizations l10n,
     bool isArabic,
   ) {
+    switch (snapshot.dashboardState) {
+      case HomeDashboardState.staffBlocked:
+        return (
+          title: 'Staff account detected',
+          subtitle: AuthProvider.staffAccountMessage,
+          statusLine: 'Visitor app access is blocked for staff roles',
+          primaryLabel: l10n.login,
+          secondaryLabel: l10n.about,
+          onPrimary: () => Navigator.pushNamed(context, AppRoutes.login),
+          onSecondary: () => Navigator.pushNamed(context, AppRoutes.projectInfo),
+        );
+      case HomeDashboardState.guest:
+        return (
+          title: 'Explore before you book',
+          subtitle: 'Create an account or log in to save tickets, tours, and memories.',
+          statusLine: l10n.homeNoTicketsYet,
+          primaryLabel: l10n.buyTickets,
+          secondaryLabel: l10n.login,
+          onPrimary: () => Navigator.pushNamed(context, AppRoutes.buyTickets),
+          onSecondary: () => Navigator.pushNamed(context, AppRoutes.login),
+        );
+      case HomeDashboardState.loggedInNoTickets:
+        return (
+          title: 'Plan your museum visit',
+          subtitle: 'Choose museum entry and a Horus-Bot tour package before your visit.',
+          statusLine: l10n.homeNoTicketsYet,
+          primaryLabel: l10n.buyTickets,
+          secondaryLabel: l10n.exhibits,
+          onPrimary: () => Navigator.pushNamed(context, AppRoutes.buyTickets),
+          onSecondary: () => Navigator.pushNamed(context, AppRoutes.exhibits),
+        );
+      case HomeDashboardState.paymentPending:
+        return (
+          title: 'Payment pending',
+          subtitle: 'Please pay at the museum counter. Your QR code and robot pairing unlock after cashier confirmation.',
+          statusLine: _ticketStatusLine(snapshot, l10n),
+          primaryLabel: l10n.myTickets,
+          secondaryLabel: l10n.exhibits,
+          onPrimary: () => Navigator.pushNamed(context, AppRoutes.myTickets),
+          onSecondary: () => Navigator.pushNamed(context, AppRoutes.exhibits),
+        );
+      case HomeDashboardState.ticketReady:
+        return (
+          title: 'Ticket ready',
+          subtitle: 'Your museum entry and Horus-Bot tour are confirmed. Keep the QR ready for entry.',
+          statusLine: _ticketStatusLine(snapshot, l10n),
+          primaryLabel: l10n.myTickets,
+          secondaryLabel: l10n.homeScanRobotQr,
+          onPrimary: () => Navigator.pushNamed(context, AppRoutes.myTickets),
+          onSecondary: () => _openRobotPairing(context),
+        );
+      case HomeDashboardState.awaitingRobotPairing:
+        return (
+          title: 'Find your Horus-Bot',
+          subtitle: 'When you are beside the robot, scan its QR to pair and start the tour.',
+          statusLine: _ticketStatusLine(snapshot, l10n),
+          primaryLabel: l10n.homeScanRobotQr,
+          secondaryLabel: l10n.map,
+          onPrimary: () => _openRobotPairing(context),
+          onSecondary: () => _openMap(context),
+        );
+      case HomeDashboardState.activeTour:
+        return (
+          title: snapshot.currentExhibitName ?? l10n.homeContinueTourAction,
+          subtitle: snapshot.nextStopName == null
+              ? l10n.homeAskOrContinueSubtitle
+              : 'Next stop: ${snapshot.nextStopName}',
+          statusLine: _ticketStatusLine(snapshot, l10n),
+          primaryLabel: snapshot.isTourPaused ? l10n.resume : l10n.homeContinueTourAction,
+          secondaryLabel: l10n.map,
+          onPrimary: () => _openTourFlow(context, snapshot),
+          onSecondary: () => _openMap(context),
+        );
+      case HomeDashboardState.tourCompleted:
+        return (
+          title: 'Tour completed',
+          subtitle: 'Review your route, revisit memories, share feedback, and keep your achievements.',
+          statusLine: _ticketStatusLine(snapshot, l10n),
+          primaryLabel: 'View Summary',
+          secondaryLabel: 'Book another tour',
+          onPrimary: () => _openSummary(context),
+          onSecondary: () => Navigator.pushNamed(context, AppRoutes.buyTickets),
+        );
+    }
+
+    // ignore: dead_code
     if (snapshot.isActiveTourState) {
       return (
         title: snapshot.currentExhibitName ?? l10n.homeContinueTourAction,
@@ -937,6 +1151,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           horizontal: AppSpacing.screenHorizontal,
                         ),
                         child: HomeFeaturedArtifactCard(
+                          key: ValueKey(
+                            'featured-${contextualArtifact.id}-$_featuredArtifactIndex',
+                          ),
                           artifact: contextualArtifact,
                           onTap: () => _openArtifactDetails(
                             context,
@@ -968,6 +1185,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             horizontal: AppSpacing.screenHorizontal,
                           ),
                           child: HomeInfoCard(
+                            key: ValueKey(
+                              'did-you-know-$_didYouKnowIndex-${snapshot.didYouKnowText}',
+                            ),
                             title: l10n.didYouKnow,
                             body: snapshot.didYouKnowText,
                             icon: Icons.auto_awesome_rounded,

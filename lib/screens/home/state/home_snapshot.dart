@@ -10,6 +10,17 @@ enum HomeRobotStatus {
   error,
 }
 
+enum HomeDashboardState {
+  guest,
+  loggedInNoTickets,
+  paymentPending,
+  ticketReady,
+  awaitingRobotPairing,
+  activeTour,
+  tourCompleted,
+  staffBlocked,
+}
+
 class HomeFeaturedArtifact {
   const HomeFeaturedArtifact({
     required this.id,
@@ -49,6 +60,9 @@ class HomeSnapshot {
     required this.hasRobotTourEligibility,
     required this.hasTicketHistory,
     required this.hasCompletedTourHistory,
+    required this.hasPendingPayment,
+    required this.isStaffBlocked,
+    required this.isAwaitingRobotPairing,
     required this.ticketCount,
     required this.nextTicketQrAvailable,
     required this.isRobotConnected,
@@ -84,6 +98,9 @@ class HomeSnapshot {
   final bool hasRobotTourEligibility;
   final bool hasTicketHistory;
   final bool hasCompletedTourHistory;
+  final bool hasPendingPayment;
+  final bool isStaffBlocked;
+  final bool isAwaitingRobotPairing;
   final int ticketCount;
   final bool nextTicketQrAvailable;
 
@@ -121,13 +138,27 @@ class HomeSnapshot {
   bool get shouldShowStats => hasActiveTour || isTourPaused || isTourCompleted;
 
   bool get isGuest => !isLoggedIn;
-  bool get isLoggedInWithoutTickets => isLoggedIn && !hasCompleteTicketBundle;
+  bool get isLoggedInWithoutTickets =>
+      isLoggedIn && !hasCompleteTicketBundle && !hasPendingPayment;
   bool get isTicketReady =>
       isLoggedIn &&
       hasCompleteTicketBundle &&
       !isRobotConnected &&
+      !isAwaitingRobotPairing &&
       !hasActiveTour &&
       !isTourPaused &&
       !isTourCompleted;
   bool get isActiveTourState => isLoggedIn && (hasActiveTour || isTourPaused);
+  bool get isPaymentPendingState =>
+      isLoggedIn && hasPendingPayment && !hasCompleteTicketBundle;
+  HomeDashboardState get dashboardState {
+    if (isStaffBlocked) return HomeDashboardState.staffBlocked;
+    if (isTourCompleted) return HomeDashboardState.tourCompleted;
+    if (isActiveTourState) return HomeDashboardState.activeTour;
+    if (isPaymentPendingState) return HomeDashboardState.paymentPending;
+    if (isAwaitingRobotPairing) return HomeDashboardState.awaitingRobotPairing;
+    if (isTicketReady) return HomeDashboardState.ticketReady;
+    if (isGuest) return HomeDashboardState.guest;
+    return HomeDashboardState.loggedInNoTickets;
+  }
 }

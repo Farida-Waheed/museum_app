@@ -15,6 +15,7 @@ import '../../models/ticket_order.dart';
 import '../../models/ticket_provider.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../widgets/guest_prompt.dart';
 import '../../widgets/primary_button.dart';
 
 class TourPlannerScreen extends StatefulWidget {
@@ -76,6 +77,7 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final authProvider = context.watch<AuthProvider>();
     final exhibitProvider = context.watch<ExhibitProvider>();
     final exhibits = exhibitProvider.exhibits
         .where((exhibit) => exhibit.isActive)
@@ -91,20 +93,41 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
     final matchScore = _matchScore(routePreview, recommended);
     final languageLabel = _tourLanguageLabel(context);
 
+    if (!authProvider.isLoggedIn) {
+      return AppMenuShell(
+        title: l10n.tourPlanner.toUpperCase(),
+        backgroundColor: AppColors.cinematicBackground,
+        bottomNavigationBar: const BottomNav(currentIndex: 0),
+        showChatButton: true,
+        body: DecoratedBox(
+          decoration: const BoxDecoration(color: AppColors.cinematicBackground),
+          child: GuestPrompt(
+            icon: Icons.route_outlined,
+            title: 'Plan Your Horus-Bot Tour',
+            body:
+                'Sign in to create and save a personalized route through the museum.',
+            primaryLabel: l10n.login,
+            secondaryLabel: l10n.createAccount,
+            tertiaryLabel: l10n.exhibits,
+            onTertiary: () => Navigator.pushNamed(context, AppRoutes.exhibits),
+          ),
+        ),
+      );
+    }
+
     return AppMenuShell(
       title: l10n.tourPlanner.toUpperCase(),
       backgroundColor: AppColors.cinematicBackground,
-      hideDefaultAppBar: true,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
       showChatButton: true,
       body: Container(
-        decoration: AppDecorations.cinematicBackground(),
+        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
         child: Directionality(
           textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: SingleChildScrollView(
-            padding: EdgeInsetsDirectional.fromSTEB(
+            padding: const EdgeInsetsDirectional.fromSTEB(
               AppSpacing.screenHorizontalCompact,
-              MediaQuery.paddingOf(context).top + 12,
+              20,
               AppSpacing.screenHorizontalCompact,
               176,
             ),
@@ -113,10 +136,6 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                   ? CrossAxisAlignment.end
                   : CrossAxisAlignment.start,
               children: [
-                _PlannerHeader(
-                  onMenu: () => AppMenuShell.of(context)?.toggleMenu(),
-                ),
-                const SizedBox(height: AppSpacing.cardGap),
                 const _HeroCard(),
                 const SizedBox(height: AppSpacing.sectionGap),
                 _SectionCard(
@@ -747,97 +766,6 @@ class _DurationOption {
   final int targetStops;
 }
 
-class _PlannerHeader extends StatelessWidget {
-  const _PlannerHeader({required this.onMenu});
-
-  final VoidCallback onMenu;
-
-  @override
-  Widget build(BuildContext context) {
-    final canPop = Navigator.canPop(context);
-    final isArabic = Directionality.of(context) == TextDirection.rtl;
-    return SizedBox(
-      height: 52,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Row(
-            children: [
-              _HeaderButton(
-                icon: canPop
-                    ? (isArabic
-                          ? Icons.arrow_forward_ios
-                          : Icons.arrow_back_ios_new)
-                    : Icons.menu_rounded,
-                onTap: canPop ? () => Navigator.pop(context) : onMenu,
-              ),
-              const Spacer(),
-              const SizedBox(width: 44, height: 44),
-            ],
-          ),
-          const IgnorePointer(child: _PlannerHeaderBrand()),
-        ],
-      ),
-    );
-  }
-}
-
-class _PlannerHeaderBrand extends StatelessWidget {
-  const _PlannerHeaderBrand();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Image.asset('assets/icons/horus_eye.png', width: 18, height: 18),
-        const SizedBox(width: 8),
-        Text(
-          'HORUS-BOT',
-          style: AppTextStyles.premiumBrandTitle(context).copyWith(
-            color: AppColors.primaryGold,
-            fontSize: 17.5,
-            shadows: [
-              Shadow(
-                color: Colors.black.withValues(alpha: 0.70),
-                blurRadius: 10,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _HeaderButton extends StatelessWidget {
-  const _HeaderButton({required this.icon, required this.onTap});
-
-  final IconData icon;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: Container(
-          width: 44,
-          height: 44,
-          alignment: Alignment.center,
-          decoration: AppDecorations.secondaryGlassCard(
-            radius: 18,
-            opacity: 0.54,
-          ),
-          child: Icon(icon, color: AppColors.whiteTitle, size: 20),
-        ),
-      ),
-    );
-  }
-}
-
 class _HeroCard extends StatelessWidget {
   const _HeroCard();
 
@@ -1196,7 +1124,7 @@ class _PhotoExperienceCard extends StatelessWidget {
           ),
           Switch(
             value: enabled,
-            activeColor: AppColors.primaryGold,
+            activeThumbColor: AppColors.primaryGold,
             onChanged: onChanged,
           ),
         ],

@@ -5,6 +5,7 @@ import '../core/constants/colors.dart';
 import '../core/constants/text_styles.dart';
 import '../l10n/app_localizations.dart';
 import '../models/app_session_provider.dart' as session;
+import '../models/auth_provider.dart';
 import '../models/tour_provider.dart';
 import '../screens/chat/chat_screen.dart';
 
@@ -41,6 +42,20 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
   }
 
   void _openChat() {
+    final authProvider = context.read<AuthProvider>();
+    if (!authProvider.isLoggedIn) {
+      showDialog(
+        context: context,
+        barrierColor: Colors.black54,
+        builder: (_) => ChatScreen(
+          isPopup: true,
+          screen: widget.screen,
+          currentExhibitId: widget.currentExhibitId,
+        ),
+      );
+      return;
+    }
+
     final sessionProvider = context.read<session.AppSessionProvider>();
     final tourProvider = context.read<TourProvider>();
     final canAsk =

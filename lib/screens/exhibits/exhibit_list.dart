@@ -25,7 +25,7 @@ class ExhibitListScreen extends StatelessWidget {
     return AppMenuShell(
       title: l10n.exhibits.toUpperCase(),
       backgroundColor: AppColors.darkBackground,
-      bottomNavigationBar: const BottomNav(currentIndex: 0),
+      bottomNavigationBar: const BottomNav(currentIndex: 1),
       showChatButton: true,
       actions: [
         IconButton(
@@ -123,19 +123,7 @@ class _ExhibitListTile extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: Container(
-                  width: 66,
-                  height: 66,
-                  decoration: BoxDecoration(
-                    gradient: AppGradients.premiumGold,
-                    border: Border.all(color: AppColors.goldBorder(0.22)),
-                  ),
-                  child: const Icon(
-                    Icons.museum_outlined,
-                    size: 30,
-                    color: AppColors.darkInk,
-                  ),
-                ),
+                child: _ExhibitThumb(imageAsset: exhibit.imageAsset),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -180,6 +168,45 @@ class _ExhibitListTile extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ExhibitThumb extends StatelessWidget {
+  const _ExhibitThumb({required this.imageAsset});
+
+  final String imageAsset;
+
+  @override
+  Widget build(BuildContext context) {
+    if (imageAsset.trim().isEmpty) return const _ExhibitThumbPlaceholder();
+    return Image.asset(
+      imageAsset,
+      width: 66,
+      height: 66,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => const _ExhibitThumbPlaceholder(),
+    );
+  }
+}
+
+class _ExhibitThumbPlaceholder extends StatelessWidget {
+  const _ExhibitThumbPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 66,
+      height: 66,
+      decoration: BoxDecoration(
+        gradient: AppGradients.premiumGold,
+        border: Border.all(color: AppColors.goldBorder(0.22)),
+      ),
+      child: const Icon(
+        Icons.museum_outlined,
+        size: 30,
+        color: AppColors.darkInk,
       ),
     );
   }

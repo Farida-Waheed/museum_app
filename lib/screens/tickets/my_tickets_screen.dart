@@ -18,6 +18,7 @@ import '../../models/ticket_provider.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../widgets/guest_prompt.dart';
 import 'qr_scanner_screen.dart';
 
 class MyTicketsScreen extends StatefulWidget {
@@ -347,61 +348,16 @@ class _AccountRequiredState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        padding: const EdgeInsetsDirectional.fromSTEB(24, 24, 24, 144),
-        child: _GlassCard(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: isArabic
-                ? CrossAxisAlignment.end
-                : CrossAxisAlignment.start,
-            children: [
-              const Icon(
-                Icons.account_circle_outlined,
-                color: AppColors.primaryGold,
-                size: 46,
-              ),
-              const SizedBox(height: AppSpacing.cardGap),
-              Text(
-                l10n.myTicketsSignInTitle,
-                textAlign: TextAlign.start,
-                style: AppTextStyles.displayScreenTitle(
-                  context,
-                ).copyWith(fontSize: 24),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                l10n.myTicketsSignInBody,
-                textAlign: TextAlign.start,
-                style: AppTextStyles.bodyPrimary(
-                  context,
-                ).copyWith(color: AppColors.bodyText, height: 1.45),
-              ),
-              const SizedBox(height: AppSpacing.cardPaddingCompact),
-              Row(
-                children: [
-                  Expanded(
-                    child: _GoldButton(
-                      label: l10n.login,
-                      onTap: () =>
-                          Navigator.pushNamed(context, AppRoutes.login),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _OutlineButton(
-                      label: l10n.createAccount,
-                      onTap: () =>
-                          Navigator.pushNamed(context, AppRoutes.register),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
+    return GuestPrompt(
+      icon: Icons.confirmation_number_outlined,
+      title: isArabic ? l10n.myTicketsSignInTitle : 'Your Tickets Await',
+      body: isArabic
+          ? l10n.myTicketsSignInBody
+          : 'Museum entry tickets, Horus-Bot tour tickets, QR entry passes, and booking history are saved to your account.',
+      primaryLabel: l10n.login,
+      secondaryLabel: l10n.createAccount,
+      tertiaryLabel: l10n.buyTickets,
+      onTertiary: () => Navigator.pushNamed(context, AppRoutes.buyTickets),
     );
   }
 }

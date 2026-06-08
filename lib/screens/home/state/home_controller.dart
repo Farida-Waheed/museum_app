@@ -19,6 +19,7 @@ class HomeController {
     required List<Exhibit> exhibits,
     required String lang,
     required int didYouKnowIndex,
+    required int featuredArtifactIndex,
   }) {
     final hasSessionTourContext =
         sessionProvider.isRobotConnected ||
@@ -56,15 +57,30 @@ class HomeController {
     final hasValidMuseumTicket = ticketProvider.hasValidMuseumEntryEntitlement;
     final hasRobotTourTicket = ticketProvider.hasValidRobotTourEntitlement;
     final hasRobotTourEligibility = ticketProvider.hasValidRobotTourEligibility;
+    final connected = sessionProvider.isRobotConnected;
+    final hasPendingPayment =
+        ticketProvider.museumTickets.any(
+          (ticket) => _isPaymentPending(ticket.paymentStatus),
+        ) ||
+        ticketProvider.robotTourTickets.any(
+          (ticket) => _isPaymentPending(ticket.paymentStatus),
+        );
+    final isAwaitingRobotPairing =
+        hasRobotTourEligibility &&
+        !connected &&
+        !hasActiveTour &&
+        !isPaused &&
+        !isCompleted &&
+        sessionProvider.appUsageMode == app.AppUsageMode.visiting;
     final ticketCount =
         ticketProvider.museumTickets.length +
         ticketProvider.robotTourTickets.length;
-    final connected = sessionProvider.isRobotConnected;
 
     final featuredArtifact = demoService.getFeaturedArtifact(
       exhibits: exhibits,
       lang: lang,
       preferredExhibitId: currentExhibit?.id,
+      fallbackIndex: featuredArtifactIndex,
     );
     final didYouKnowText = _buildDidYouKnow(
       exhibits: exhibits,
@@ -90,6 +106,10 @@ class HomeController {
       hasTicketHistory: ticketProvider.hasTicketHistory,
       hasCompletedTourHistory:
           ticketProvider.hasCompletedTourHistory || isCompleted,
+      hasPendingPayment: hasPendingPayment,
+      isStaffBlocked:
+          authProvider.errorMessage == AuthProvider.staffAccountMessage,
+      isAwaitingRobotPairing: isAwaitingRobotPairing,
       ticketCount: ticketCount,
       nextTicketQrAvailable: ticketProvider.hasValidMuseumEntryEntitlement,
       isRobotConnected: connected,
@@ -142,6 +162,14 @@ class HomeController {
     final seconds = provider.estimatedTimeToNext;
     if (seconds <= 0) return 5;
     return (seconds / 60).ceil();
+  }
+
+  bool _isPaymentPending(String status) {
+    final normalized = status.trim().toLowerCase().replaceAll('-', '_');
+    return normalized == 'pay_at_counter' ||
+        normalized == 'pending' ||
+        normalized == 'unpaid' ||
+        normalized == 'awaiting_payment';
   }
 
   HomeRobotStatus _mapRobotStatus(
@@ -238,9 +266,13 @@ class HomeController {
 
     var fact = sentences.first;
 
-    if (fact.length > 110) {
-      fact = fact.substring(0, 110).trimRight();
-      if (!fact.endsWith('.')) fact += '...';
+    if (fact.length > 86) {
+      fact = fact.substring(0, 86).trimRight();
+      final lastSpace = fact.lastIndexOf(' ');
+      if (lastSpace > 48) {
+        fact = fact.substring(0, lastSpace).trimRight();
+      }
+      if (!fact.endsWith('.')) fact += '.';
     } else if (!fact.endsWith('.') && !fact.endsWith('...')) {
       fact += '.';
     }

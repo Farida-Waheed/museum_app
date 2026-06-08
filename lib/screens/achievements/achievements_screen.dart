@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../l10n/app_localizations.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../widgets/guest_prompt.dart';
+import '../../models/auth_provider.dart';
 import '../../models/tour_provider.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
@@ -13,6 +15,7 @@ class AchievementsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final authProvider = context.watch<AuthProvider>();
     final tourProvider = Provider.of<TourProvider>(context);
     final visitedCount = tourProvider.visitedExhibitIds.length;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
@@ -27,7 +30,14 @@ class AchievementsScreen extends StatelessWidget {
         ),
         child: Directionality(
           textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-          child: SingleChildScrollView(
+          child: !authProvider.isLoggedIn
+              ? const GuestPrompt(
+                  icon: Icons.emoji_events_outlined,
+                  title: 'Your Journey Starts Here',
+                  body:
+                      'Sign in and complete tours to unlock achievements as you explore the museum.',
+                )
+              : SingleChildScrollView(
             padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 120),
             child: Column(
               crossAxisAlignment: isArabic

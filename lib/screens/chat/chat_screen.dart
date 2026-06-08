@@ -539,6 +539,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   void _requestHumanSupport({String userQuestion = ''}) {
     final l10n = AppLocalizations.of(context)!;
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    if (!authProvider.isLoggedIn) {
+      _typeBotMessage(
+        'Sign in to contact museum support and track your conversations.',
+      );
+      return;
+    }
+
     final requestName = l10n.guestUser;
     final contextData = ChatContextBuilder.build(
       context,
@@ -622,6 +630,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       return;
     }
 
+    if (_isGuestPersonalQuestion(trimmed)) {
+      setState(() => _isTyping = false);
+      _typeBotMessage(
+        'Sign in and start a tour so I can help with your personal tickets, route, memories, and live tour progress.',
+      );
+      return;
+    }
+
     unawaited(_sendSessionQuestionToFirestore(trimmed));
 
     final contextData = ChatContextBuilder.build(
@@ -641,6 +657,27 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       setState(() => _isTyping = false);
       _typeBotMessage(response);
     });
+  }
+
+  bool _isGuestPersonalQuestion(String text) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    if (authProvider.isLoggedIn) return false;
+    final lower = text.toLowerCase();
+    final asksPersonal =
+        lower.contains('my ticket') ||
+        lower.contains('my payment') ||
+        lower.contains('payment status') ||
+        lower.contains('continue my tour') ||
+        lower.contains('resume my') ||
+        lower.contains('my robot') ||
+        lower.contains('where is horus') ||
+        lower.contains('where is my robot') ||
+        lower.contains('my memories') ||
+        lower.contains('my photos') ||
+        lower.contains('my next exhibit') ||
+        lower.contains('my route') ||
+        lower.contains('my session');
+    return asksPersonal;
   }
 
   void _typeBotMessage(String fullText) {
@@ -743,9 +780,12 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     final isArabic =
         Provider.of<UserPreferencesModel>(context).language == "ar";
     final l10n = AppLocalizations.of(context)!;
+    final authProvider = Provider.of<AuthProvider>(context);
+    final isGuest = !authProvider.isLoggedIn;
     final sessionProvider = Provider.of<session.AppSessionProvider>(context);
     final tourProvider = Provider.of<TourProvider>(context);
     final canAskDuringTour =
+        isGuest ||
         sessionProvider.hasRestorableTourSession ||
         tourProvider.tourLifecycleState == TourLifecycleState.active ||
         tourProvider.tourLifecycleState == TourLifecycleState.paused;
@@ -758,7 +798,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
+            const Icon(
               Icons.record_voice_over_outlined,
               color: AppColors.primaryGold,
               size: 48,
@@ -915,7 +955,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.info_outline,
                               size: 20,
                               color: AppColors.primaryGold,

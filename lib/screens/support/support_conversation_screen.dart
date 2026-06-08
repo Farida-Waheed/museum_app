@@ -7,6 +7,7 @@ import '../../models/support_message.dart';
 import '../../models/support_request.dart';
 import '../../services/support_request_service.dart';
 import '../../widgets/app_menu_shell.dart';
+import '../../widgets/bottom_nav.dart';
 
 class SupportConversationScreen extends StatefulWidget {
   const SupportConversationScreen({super.key, this.requestId});
@@ -48,6 +49,7 @@ class _SupportConversationScreenState extends State<SupportConversationScreen> {
     return AppMenuShell(
       title: l10n.supportConversationTitle.toUpperCase(),
       backgroundColor: AppColors.cinematicBackground,
+      bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: DecoratedBox(
         decoration: const BoxDecoration(
           gradient: AppGradients.screenBackground,
@@ -216,7 +218,7 @@ class _SupportChatBubble extends StatelessWidget {
             ? MainAxisAlignment.end
             : MainAxisAlignment.start,
         children: [
-          if (!isUser) _BubbleAvatar(icon: Icons.support_agent_outlined),
+          if (!isUser) const _BubbleAvatar(icon: Icons.support_agent_outlined),
           if (!isUser) const SizedBox(width: 10),
           Flexible(
             child: Container(
@@ -238,7 +240,7 @@ class _SupportChatBubble extends StatelessWidget {
             ),
           ),
           if (isUser) const SizedBox(width: 10),
-          if (isUser) _BubbleAvatar(icon: Icons.person_outline),
+          if (isUser) const _BubbleAvatar(icon: Icons.person_outline),
         ],
       ),
     );

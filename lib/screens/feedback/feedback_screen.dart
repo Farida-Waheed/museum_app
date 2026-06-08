@@ -7,6 +7,7 @@ import '../../models/auth_provider.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
+import '../../widgets/guest_prompt.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 
@@ -142,10 +143,28 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   @override
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
+    final authProvider = context.watch<AuthProvider>();
     final isArabic = prefs.language == "ar";
     final l10n = AppLocalizations.of(context)!;
 
     final tags = isArabic ? _tagsAr : _tagsEn;
+
+    if (!authProvider.isLoggedIn) {
+      return AppMenuShell(
+        title: l10n.feedback.toUpperCase(),
+        backgroundColor: AppColors.cinematicBackground,
+        bottomNavigationBar: const BottomNav(currentIndex: 4),
+        body: const DecoratedBox(
+          decoration: BoxDecoration(gradient: AppGradients.screenBackground),
+          child: GuestPrompt(
+            icon: Icons.rate_review_outlined,
+            title: 'Share Your Experience',
+            body:
+                'Sign in after your visit to rate exhibits, tickets, navigation, and the Horus-Bot guide.',
+          ),
+        ),
+      );
+    }
 
     return AppMenuShell(
       title: l10n.feedback.toUpperCase(),

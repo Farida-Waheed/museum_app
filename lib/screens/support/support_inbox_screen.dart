@@ -5,8 +5,11 @@ import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 import '../../l10n/app_localizations.dart';
 import '../../app/router.dart';
+import '../../models/auth_provider.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../widgets/guest_prompt.dart';
+import 'package:provider/provider.dart';
 
 class SupportInboxScreen extends StatefulWidget {
   const SupportInboxScreen({super.key});
@@ -21,6 +24,7 @@ class _SupportInboxScreenState extends State<SupportInboxScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final authProvider = context.watch<AuthProvider>();
     final requests = _service.requests;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     return AppMenuShell(
@@ -33,7 +37,14 @@ class _SupportInboxScreenState extends State<SupportInboxScreen> {
         ),
         child: Directionality(
           textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-          child: requests.isEmpty
+          child: !authProvider.isLoggedIn
+              ? const GuestPrompt(
+                  icon: Icons.support_agent_outlined,
+                  title: 'Need Help?',
+                  body:
+                      'Sign in to contact museum support and track your conversations.',
+                )
+              : requests.isEmpty
               ? _EmptySupportState(message: l10n.supportNoRequests)
               : ListView.separated(
                   padding: const EdgeInsetsDirectional.fromSTEB(

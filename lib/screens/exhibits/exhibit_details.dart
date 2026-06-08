@@ -5,8 +5,9 @@ import '../../l10n/app_localizations.dart';
 import '../../models/exhibit.dart';
 import '../../models/user_preferences.dart';
 import '../../models/exhibit_provider.dart';
+import '../../models/auth_provider.dart';
 import '../../widgets/app_menu_shell.dart';
-import '../../widgets/robot_status_banner.dart';
+import '../../widgets/bottom_nav.dart';
 import '../../models/app_session_provider.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
@@ -49,11 +50,11 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen> {
     final exhibit = widget.exhibit;
     final prefs = Provider.of<UserPreferencesModel>(context);
     final exhibitProvider = Provider.of<ExhibitProvider>(context);
+    final authProvider = Provider.of<AuthProvider>(context);
     final l10n = AppLocalizations.of(context)!;
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final cs = theme.colorScheme;
     final isBookmarked = exhibitProvider.isBookmarked(exhibit.id);
 
     // Mark as visited when viewing details
@@ -65,30 +66,40 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen> {
     });
 
     return AppMenuShell(
-      subHeader: const RobotStatusBanner(),
+      title: exhibit.getName(prefs.language).toUpperCase(),
+      bottomNavigationBar: const BottomNav(currentIndex: 1),
       showChatButton: true,
-      body: CustomScrollView(
-        slivers: [
-          _buildSliverAppBar(
-            exhibit,
-            prefs.language,
-            cs,
-            l10n,
-            isBookmarked,
-            exhibitProvider,
+      actions: [
+        if (authProvider.isLoggedIn)
+          Padding(
+            padding: const EdgeInsetsDirectional.only(end: 10),
+            child: IconButton(
+              tooltip: isBookmarked ? l10n.removedFromBookmarks : l10n.addToMyRoute,
+              icon: Icon(
+                isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                color: AppColors.primaryGold,
+              ),
+              onPressed: () => _toggleBookmark(exhibit, l10n, exhibitProvider),
+            ),
           ),
-          SliverToBoxAdapter(
-            child: Padding(
+      ],
+      body: DecoratedBox(
+        decoration: const BoxDecoration(gradient: AppGradients.screenBackground),
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 144),
+          children: [
+            _ExhibitHero(exhibit: exhibit, language: prefs.language),
+            Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.screenHorizontalCompact,
                 24,
                 AppSpacing.screenHorizontalCompact,
-                44,
+                0,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildFactChips(exhibit, l10n, cs),
+                  _buildFactChips(exhibit, l10n),
                   const SizedBox(height: AppSpacing.sectionGap),
                   Text(
                     l10n.description.toUpperCase(),
@@ -117,61 +128,6 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen> {
                 ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ---------- HEADER ----------
-
-  Widget _buildSliverAppBar(
-    Exhibit exhibit,
-    String language,
-    ColorScheme cs,
-    AppLocalizations l10n,
-    bool isBookmarked,
-    ExhibitProvider exhibitProvider,
-  ) {
-    return SliverAppBar(
-      expandedHeight: 320,
-      pinned: true,
-      backgroundColor: cs.surface,
-      iconTheme: const IconThemeData(color: Colors.white),
-      actions: [
-        IconButton(
-          icon: Icon(
-            isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-            color: Colors.white,
-          ),
-          onPressed: () => _toggleBookmark(exhibit, l10n, exhibitProvider),
-        ),
-      ],
-      flexibleSpace: FlexibleSpaceBar(
-        centerTitle: false,
-        titlePadding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-        title: Text(
-          exhibit.getName(language),
-          style: AppTextStyles.displayArtifactTitle(
-            context,
-          ).copyWith(color: Colors.white, fontSize: 18),
-        ),
-        background: Stack(
-          fit: StackFit.expand,
-          children: [
-            Image.asset('assets/images/museum_interior.jpg', fit: BoxFit.cover),
-            Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.15),
-                    Colors.black.withOpacity(0.65),
-                  ],
-                ),
-              ),
-            ),
           ],
         ),
       ),
@@ -183,7 +139,6 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen> {
   Widget _buildFactChips(
     Exhibit exhibit,
     AppLocalizations l10n,
-    ColorScheme cs,
   ) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final facts = <Map<String, dynamic>>[
@@ -226,6 +181,86 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen> {
           ),
         );
       }).toList(),
+    );
+  }
+}
+
+class _ExhibitHero extends StatelessWidget {
+  const _ExhibitHero({required this.exhibit, required this.language});
+
+  final Exhibit exhibit;
+  final String language;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 286,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(
+            exhibit.imageAsset.isNotEmpty
+                ? exhibit.imageAsset
+                : 'assets/images/museum_interior.jpg',
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => Container(
+              color: AppColors.cinematicSection,
+              child: const Center(
+                child: Icon(
+                  Icons.museum_outlined,
+                  color: AppColors.primaryGold,
+                  size: 42,
+                ),
+              ),
+            ),
+          ),
+          const DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.bottomCenter,
+                end: Alignment.topCenter,
+                colors: [
+                  Color(0xE6000000),
+                  Color(0x66000000),
+                  Color(0x16000000),
+                ],
+              ),
+            ),
+          ),
+          PositionedDirectional(
+            start: AppSpacing.screenHorizontalCompact,
+            end: AppSpacing.screenHorizontalCompact,
+            bottom: 22,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  exhibit.getName(language),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.displayArtifactTitle(context).copyWith(
+                    color: Colors.white,
+                    fontSize: 28,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withValues(alpha: 0.72),
+                        blurRadius: 16,
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Grand Egyptian Museum',
+                  style: AppTextStyles.metadata(
+                    context,
+                  ).copyWith(color: AppColors.primaryGold),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

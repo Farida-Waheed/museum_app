@@ -17,8 +17,6 @@ class BottomNav extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     void handleTap(int index) {
-      if (index == currentIndex) return;
-
       final route = switch (index) {
         0 => AppRoutes.mainHome,
         1 => AppRoutes.map,
@@ -50,41 +48,53 @@ class BottomNav extends StatelessWidget {
       top: false,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(28),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-              decoration: BoxDecoration(
-                color: (isDark ? AppColors.cinematicNav : AppColors.warmSurface)
-                    .withValues(alpha: 0.78),
-                borderRadius: BorderRadius.circular(28),
-                border: Border.all(
-                  color: isDark
-                      ? AppColors.goldBorder(0.20)
-                      : AppColors.mutedText.withValues(alpha: 0.12),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.28),
-                    blurRadius: 22,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.26),
+                blurRadius: 34,
+                spreadRadius: 2,
+                offset: const Offset(0, 16),
               ),
-              child: Row(
-                children: [
-                  for (var i = 0; i < items.length; i++)
-                    Expanded(
-                      child: _NavButton(
-                        item: items[i],
-                        selected: i == currentIndex,
-                        isDark: isDark,
-                        onTap: () => handleTap(i),
+              BoxShadow(
+                color: AppColors.bronzeGlow(0.06),
+                blurRadius: 30,
+                spreadRadius: 1,
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(28),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 28, sigmaY: 28),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                decoration: BoxDecoration(
+                  color:
+                      (isDark ? AppColors.cinematicNav : AppColors.warmSurface)
+                          .withValues(alpha: isDark ? 0.30 : 0.42),
+                  borderRadius: BorderRadius.circular(28),
+                  border: Border.all(
+                    color: isDark
+                        ? AppColors.goldBorder(0.18)
+                        : AppColors.mutedText.withValues(alpha: 0.14),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    for (var i = 0; i < items.length; i++)
+                      Expanded(
+                        child: _NavButton(
+                          item: items[i],
+                          selected: i == currentIndex,
+                          isDark: isDark,
+                          onTap: () => handleTap(i),
+                        ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -130,7 +140,7 @@ class _NavButton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 7),
         decoration: BoxDecoration(
           color: selected
-              ? AppColors.primaryGold.withValues(alpha: 0.13)
+              ? AppColors.primaryGold.withValues(alpha: 0.10)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(22),
           border: selected

@@ -10,6 +10,7 @@ class HomeDemoService {
     required List<Exhibit> exhibits,
     required String lang,
     String? preferredExhibitId,
+    int fallbackIndex = 0,
   }) {
     if (exhibits.isEmpty) {
       return HomeFeaturedArtifact(
@@ -25,9 +26,10 @@ class HomeDemoService {
       );
     }
 
+    final fallback = exhibits[fallbackIndex % exhibits.length];
     final exhibit = exhibits.firstWhere(
       (item) => item.id == preferredExhibitId,
-      orElse: () => exhibits.first,
+      orElse: () => fallback,
     );
 
     return HomeFeaturedArtifact(

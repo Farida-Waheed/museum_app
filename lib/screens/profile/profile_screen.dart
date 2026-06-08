@@ -14,6 +14,7 @@ import '../../services/photo_repository.dart';
 import '../../services/robot_mqtt_service.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../widgets/guest_prompt.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -300,7 +301,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
             gradient: AppGradients.screenBackground,
           ),
           child: SafeArea(
-            child: ListView(
+            child: user == null && !authProvider.isLoading && !authProvider.hasError
+                ? GuestPrompt(
+                    icon: Icons.person_outline,
+                    title: isArabic
+                        ? l10n.guestVisitor
+                        : 'Welcome to Horus-Bot',
+                    body:
+                        'Sign in to save tickets, memories, achievements, and personalized museum tours.',
+                    primaryLabel: l10n.login,
+                    secondaryLabel: l10n.createAccount,
+                    tertiaryLabel: l10n.settings,
+                    onTertiary: () =>
+                        Navigator.pushNamed(context, AppRoutes.settings),
+                  )
+                : ListView(
               padding: const EdgeInsetsDirectional.fromSTEB(
                 AppSpacing.screenHorizontalCompact,
                 24,

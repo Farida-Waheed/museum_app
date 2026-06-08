@@ -70,8 +70,8 @@ class HomeInfoCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     Text(
                       body,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                      maxLines: 3,
+                      overflow: TextOverflow.fade,
                       textAlign: isArabic ? TextAlign.right : TextAlign.left,
                       style: AppTextStyles.premiumBody(context).copyWith(
                         fontSize: 14,

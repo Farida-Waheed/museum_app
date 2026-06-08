@@ -9,6 +9,7 @@ import '../../models/exhibit.dart';
 import '../../models/exhibit_provider.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/app_menu_shell.dart';
+import '../../widgets/bottom_nav.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -69,6 +70,7 @@ class _SearchScreenState extends State<SearchScreen> {
     return AppMenuShell(
       title: l10n.searchExhibits,
       backgroundColor: AppColors.cinematicBackground,
+      bottomNavigationBar: const BottomNav(currentIndex: 1),
       showChatButton: true,
       body: DecoratedBox(
         decoration: const BoxDecoration(
@@ -250,19 +252,7 @@ class _SearchResultTile extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: Container(
-                  width: 58,
-                  height: 58,
-                  decoration: BoxDecoration(
-                    gradient: AppGradients.premiumGold,
-                    border: Border.all(color: AppColors.goldBorder(0.22)),
-                  ),
-                  child: const Icon(
-                    Icons.museum_outlined,
-                    size: 27,
-                    color: AppColors.darkInk,
-                  ),
-                ),
+                child: _SearchThumb(imageAsset: exhibit.imageAsset),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -302,6 +292,45 @@ class _SearchResultTile extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _SearchThumb extends StatelessWidget {
+  const _SearchThumb({required this.imageAsset});
+
+  final String imageAsset;
+
+  @override
+  Widget build(BuildContext context) {
+    if (imageAsset.trim().isEmpty) return const _SearchThumbPlaceholder();
+    return Image.asset(
+      imageAsset,
+      width: 58,
+      height: 58,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => const _SearchThumbPlaceholder(),
+    );
+  }
+}
+
+class _SearchThumbPlaceholder extends StatelessWidget {
+  const _SearchThumbPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 58,
+      height: 58,
+      decoration: BoxDecoration(
+        gradient: AppGradients.premiumGold,
+        border: Border.all(color: AppColors.goldBorder(0.22)),
+      ),
+      child: const Icon(
+        Icons.museum_outlined,
+        size: 27,
+        color: AppColors.darkInk,
       ),
     );
   }

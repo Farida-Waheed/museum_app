@@ -157,24 +157,24 @@ class AppDecorations {
   static BoxDecoration premiumGlassCard({
     double radius = 28,
     bool highlighted = false,
-    double opacity = 0.72,
+    double opacity = 0.66,
   }) {
     return BoxDecoration(
       color: AppColors.cardGlass(opacity),
       borderRadius: BorderRadius.circular(radius),
       border: Border.all(
-        color: AppColors.goldBorder(highlighted ? 0.22 : 0.18),
+        color: AppColors.goldBorder(highlighted ? 0.22 : 0.20),
         width: 1,
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.40),
-          blurRadius: 25,
-          offset: const Offset(0, 12),
+          color: Colors.black.withValues(alpha: 0.24),
+          blurRadius: 18,
+          offset: const Offset(0, 10),
         ),
         BoxShadow(
-          color: AppColors.bronzeGlow(highlighted ? 0.10 : 0.08),
-          blurRadius: 30,
+          color: AppColors.bronzeGlow(highlighted ? 0.10 : 0.06),
+          blurRadius: 24,
         ),
         if (highlighted)
           BoxShadow(
@@ -188,26 +188,25 @@ class AppDecorations {
 
   static BoxDecoration secondaryGlassCard({
     double radius = 24,
-    double opacity = 0.62,
+    double opacity = 0.52,
   }) {
     return BoxDecoration(
       color: AppColors.secondaryGlass(opacity),
       borderRadius: BorderRadius.circular(radius),
-      border: Border.all(color: AppColors.goldBorder(0.14), width: 1),
+      border: Border.all(color: AppColors.goldBorder(0.16), width: 1),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.28),
-          blurRadius: 18,
-          offset: const Offset(0, 10),
+          color: Colors.black.withValues(alpha: 0.18),
+          blurRadius: 14,
+          offset: const Offset(0, 7),
         ),
-        BoxShadow(color: AppColors.bronzeGlow(0.05), blurRadius: 22),
       ],
     );
   }
 
   static ButtonStyle primaryButton() {
     return ElevatedButton.styleFrom(
-      backgroundColor: AppColors.darkGold,
+      backgroundColor: AppColors.primaryGold,
       foregroundColor: AppColors.darkInk,
       elevation: 0,
       minimumSize: const Size.fromHeight(AppSpacing.buttonHeight),
