@@ -300,12 +300,12 @@ class _TicketScreenState extends State<TicketScreen> {
           title: Text(
             isArabic
                 ? '\u062a\u0645 \u062a\u0623\u0643\u064a\u062f \u0627\u0644\u062d\u062c\u0632'
-                : 'Booking confirmed',
+                : 'Booking created successfully',
           ),
           content: Text(
             isArabic
                 ? '\u062a\u0645 \u062a\u0623\u0643\u064a\u062f \u0627\u0644\u062d\u062c\u0632. \u064a\u0631\u062c\u0649 \u0627\u0644\u062f\u0641\u0639 \u0639\u0646\u062f \u0634\u0628\u0627\u0643 \u0627\u0644\u0645\u062a\u062d\u0641. \u062a\u0630\u0627\u0643\u0631\u0643 \u0645\u062a\u0627\u062d\u0629 \u0627\u0644\u0622\u0646 \u0641\u064a \u062a\u0630\u0627\u0643\u0631\u064a.'
-                : 'Booking confirmed. Please pay at the museum counter. Your tickets are now available in My Tickets.',
+                : 'Booking created successfully. Please pay at the museum counter to activate your QR code and Horus-Bot tour.',
           ),
           actions: [
             ElevatedButton(
@@ -342,6 +342,7 @@ class _TicketScreenState extends State<TicketScreen> {
       bottomNavigationBar: const BottomNav(currentIndex: 2),
       backgroundColor: AppColors.baseBlack,
       hideDefaultAppBar: true,
+      showChatButton: true,
       body: Builder(
         builder: (shellContext) => Directionality(
           textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
@@ -384,7 +385,7 @@ class _TicketScreenState extends State<TicketScreen> {
             24,
             MediaQuery.paddingOf(context).top + 104,
             24,
-            120,
+            144,
           ),
           child: _GlassCard(
             child: Column(
@@ -398,7 +399,7 @@ class _TicketScreenState extends State<TicketScreen> {
                   color: AppColors.primaryGold,
                   size: 44,
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.cardGap),
                 Text(
                   l10n.ticketsAccountRequiredTitle,
                   textAlign: TextAlign.start,
@@ -414,7 +415,7 @@ class _TicketScreenState extends State<TicketScreen> {
                     context,
                   ).copyWith(color: AppColors.bodyText, height: 1.45),
                 ),
-                const SizedBox(height: 22),
+                const SizedBox(height: AppSpacing.cardPaddingCompact),
                 Row(
                   children: [
                     Expanded(
@@ -462,20 +463,20 @@ class _TicketScreenState extends State<TicketScreen> {
             child: ListView(
               controller: _scrollController,
               padding: EdgeInsetsDirectional.fromSTEB(
-                20,
+                AppSpacing.screenHorizontalCompact,
                 MediaQuery.paddingOf(context).top + 92,
-                20,
-                120,
+                AppSpacing.screenHorizontalCompact,
+                156,
               ),
               children: [
                 _PageIntroCard(l10n: l10n, isArabic: isArabic),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.cardGap),
                 _MuseumEntryCard(
                   l10n: l10n,
                   ticketProvider: ticketProvider,
                   isArabic: isArabic,
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.cardGap),
                 _RobotTourCard(
                   l10n: l10n,
                   ticketProvider: ticketProvider,
@@ -483,7 +484,7 @@ class _TicketScreenState extends State<TicketScreen> {
                 ),
                 if (draft.robotTourType == RobotTourType.standard &&
                     _recommendedRoutes.isNotEmpty) ...[
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.cardGap),
                   _RecommendedRoutesCard(
                     routes: _recommendedRoutes,
                     selectedRouteId: draft.recommendedRouteId,
@@ -492,16 +493,16 @@ class _TicketScreenState extends State<TicketScreen> {
                   ),
                 ] else if (draft.robotTourType == RobotTourType.standard &&
                     _recommendedRoutesLoaded) ...[
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.cardGap),
                   _RecommendedRoutesFallbackCard(
                     warnings: _recommendedRouteWarnings,
                     isArabic: isArabic,
                   ),
                 ] else if (draft.robotTourType == RobotTourType.standard) ...[
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.cardGap),
                   _RecommendedRoutesLoadingCard(isArabic: isArabic),
                 ],
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.cardGap),
                 _VisitDetailsCard(
                   l10n: l10n,
                   formattedDate: formattedDate,
@@ -515,28 +516,28 @@ class _TicketScreenState extends State<TicketScreen> {
                   },
                   isArabic: isArabic,
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.cardGap),
                 _NarrationLanguageCard(
                   l10n: l10n,
                   ticketProvider: ticketProvider,
                   isArabic: isArabic,
                 ),
                 if (draft.robotTourType == RobotTourType.personalized) ...[
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.cardGap),
                   _PersonalizedTourCard(
                     l10n: l10n,
                     isArabic: isArabic,
                     ticketProvider: ticketProvider,
                   ),
                 ],
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.cardGap),
                 _OrderSummaryCard(
                   l10n: l10n,
                   ticketProvider: ticketProvider,
                   formattedDate: formattedDate,
                   isArabic: isArabic,
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.cardGap),
                 _PaymentNoticeCard(isArabic: isArabic),
               ],
             ),
@@ -687,11 +688,25 @@ class _PageIntroCard extends StatelessWidget {
             ? CrossAxisAlignment.end
             : CrossAxisAlignment.start,
         children: [
+          Container(
+            width: 46,
+            height: 46,
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: AppGradients.premiumGold,
+            ),
+            child: const Icon(
+              Icons.confirmation_number_outlined,
+              color: AppColors.darkInk,
+              size: 24,
+            ),
+          ),
+          const SizedBox(height: 14),
           Text(
             l10n.ticketsPlanVisitTitle,
-            style: AppTextStyles.displayScreenTitle(
+            style: AppTextStyles.premiumScreenTitle(
               context,
-            ).copyWith(color: AppColors.primaryGold, fontSize: 24),
+            ).copyWith(color: AppColors.whiteTitle, fontSize: 24),
           ),
           const SizedBox(height: 8),
           Text(
@@ -1020,7 +1035,7 @@ class _RecommendedRoutesCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: selected
                       ? AppColors.primaryGold.withValues(alpha: 0.13)
@@ -1426,7 +1441,12 @@ class _StickyCheckoutBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 18),
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        AppSpacing.screenHorizontalCompact,
+        12,
+        AppSpacing.screenHorizontalCompact,
+        22,
+      ),
       decoration: BoxDecoration(
         color: AppColors.cinematicNav,
         border: Border(top: BorderSide(color: AppColors.goldBorder(0.14))),
@@ -1497,7 +1517,7 @@ class _SectionCard extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.start,
-            style: AppTextStyles.displaySectionTitle(
+            style: AppTextStyles.premiumSectionLabel(
               context,
             ).copyWith(color: AppColors.softGold),
           ),
@@ -1528,19 +1548,8 @@ class _GlassCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: AppColors.cardGlass(0.56),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.goldBorder(0.16)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.20),
-            blurRadius: 16,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
+      padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
+      decoration: AppDecorations.premiumGlassCard(radius: 24, opacity: 0.58),
       child: child,
     );
   }
@@ -1565,11 +1574,10 @@ class _TapRow extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppColors.secondaryGlass(0.35),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.goldBorder(0.12)),
+        padding: const EdgeInsets.all(12),
+        decoration: AppDecorations.secondaryGlassCard(
+          radius: 16,
+          opacity: 0.42,
         ),
         child: Row(
           textDirection: Directionality.of(context),
@@ -1640,21 +1648,24 @@ class _ChoicePill extends StatelessWidget {
             : null,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-          decoration: BoxDecoration(
-            color: !enabled
-                ? AppColors.secondaryGlass(0.18)
-                : selected
-                ? AppColors.primaryGold.withValues(alpha: 0.18)
-                : AppColors.secondaryGlass(0.30),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: !enabled
-                  ? Colors.transparent
-                  : selected
-                  ? AppColors.primaryGold
-                  : AppColors.goldBorder(0.12),
-            ),
-          ),
+          decoration:
+              AppDecorations.secondaryGlassCard(
+                radius: 16,
+                opacity: 0.34,
+              ).copyWith(
+                color: !enabled
+                    ? AppColors.secondaryGlass(0.18)
+                    : selected
+                    ? AppColors.primaryGold.withValues(alpha: 0.18)
+                    : AppColors.secondaryGlass(0.34),
+                border: Border.all(
+                  color: !enabled
+                      ? Colors.transparent
+                      : selected
+                      ? AppColors.primaryGold
+                      : AppColors.goldBorder(0.14),
+                ),
+              ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -1781,18 +1792,21 @@ class _TourOptionTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(18),
         child: Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: selected
-                ? AppColors.primaryGold.withValues(alpha: 0.13)
-                : AppColors.secondaryGlass(0.30),
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: selected
-                  ? AppColors.primaryGold
-                  : AppColors.goldBorder(0.12),
-            ),
-          ),
+          padding: const EdgeInsets.all(12),
+          decoration:
+              AppDecorations.secondaryGlassCard(
+                radius: 18,
+                opacity: 0.36,
+              ).copyWith(
+                color: selected
+                    ? AppColors.primaryGold.withValues(alpha: 0.13)
+                    : AppColors.secondaryGlass(0.34),
+                border: Border.all(
+                  color: selected
+                      ? AppColors.primaryGold
+                      : AppColors.goldBorder(0.14),
+                ),
+              ),
           child: Row(
             textDirection: Directionality.of(context),
             children: [
@@ -1868,7 +1882,7 @@ class _RouteSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.secondaryGlass(0.32),
         borderRadius: BorderRadius.circular(16),

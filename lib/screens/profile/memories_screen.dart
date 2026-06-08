@@ -26,6 +26,7 @@ class MemoriesScreen extends StatelessWidget {
       title: (isArabic ? 'ذكريات الجولة' : 'Tour Memories').toUpperCase(),
       backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 3),
+      showChatButton: true,
       body: DecoratedBox(
         decoration: const BoxDecoration(
           gradient: AppGradients.screenBackground,
@@ -87,10 +88,10 @@ class MemoriesScreen extends StatelessWidget {
                       slivers: [
                         SliverPadding(
                           padding: const EdgeInsetsDirectional.fromSTEB(
-                            20,
+                            AppSpacing.screenHorizontalCompact,
                             24,
-                            20,
-                            6,
+                            AppSpacing.screenHorizontalCompact,
+                            8,
                           ),
                           sliver: SliverToBoxAdapter(
                             child: _HeroCount(
@@ -131,7 +132,7 @@ class MemoriesScreen extends StatelessWidget {
                               ? 'سيتم عرض أبرز ذكرياتك هنا.'
                               : 'Your highlighted memories will appear here.',
                         ),
-                        const SliverToBoxAdapter(child: SizedBox(height: 28)),
+                        const SliverToBoxAdapter(child: SizedBox(height: 56)),
                       ],
                     );
                   },
@@ -158,7 +159,7 @@ class _HeroCount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
       decoration: AppDecorations.premiumGlassCard(
         radius: 22,
         highlighted: true,
@@ -167,8 +168,8 @@ class _HeroCount extends StatelessWidget {
         textDirection: Directionality.of(context),
         children: [
           Container(
-            width: 54,
-            height: 54,
+            width: AppSpacing.iconCircle,
+            height: AppSpacing.iconCircle,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
               gradient: AppGradients.premiumGold,
@@ -190,9 +191,9 @@ class _HeroCount extends StatelessWidget {
                   isArabic
                       ? 'حورس حفظ لحظات من جولتك'
                       : 'Horus saved moments from your tour',
-                  style: AppTextStyles.titleMedium(
+                  style: AppTextStyles.premiumCardTitle(
                     context,
-                  ).copyWith(color: Colors.white),
+                  ).copyWith(color: AppColors.whiteTitle, fontSize: 17),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -224,7 +225,12 @@ class _PhotoSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverPadding(
-      padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 0),
+      padding: const EdgeInsetsDirectional.fromSTEB(
+        AppSpacing.screenHorizontalCompact,
+        AppSpacing.sectionGap,
+        AppSpacing.screenHorizontalCompact,
+        0,
+      ),
       sliver: SliverToBoxAdapter(
         child: Column(
           crossAxisAlignment: Directionality.of(context) == ui.TextDirection.rtl
@@ -233,16 +239,19 @@ class _PhotoSection extends StatelessWidget {
           children: [
             Text(
               title.toUpperCase(),
-              style: AppTextStyles.displaySectionTitle(
+              style: AppTextStyles.premiumSectionLabel(
                 context,
-              ).copyWith(color: AppColors.softGold, letterSpacing: 1.2),
+              ).copyWith(color: AppColors.softGold),
             ),
             const SizedBox(height: 12),
             if (photos.isEmpty)
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: AppDecorations.secondaryGlassCard(radius: 16),
+                padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
+                decoration: AppDecorations.secondaryGlassCard(
+                  radius: 20,
+                  opacity: 0.50,
+                ),
                 child: Text(
                   emptyText,
                   style: AppTextStyles.bodyPrimary(
@@ -256,9 +265,9 @@ class _PhotoSection extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  crossAxisSpacing: 14,
-                  mainAxisSpacing: 14,
-                  childAspectRatio: 0.72,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 0.80,
                 ),
                 itemCount: photos.length,
                 itemBuilder: (context, index) {
@@ -291,7 +300,7 @@ class _MemoryCard extends StatelessWidget {
         : DateFormat.yMMMd(lang).add_jm().format(photo.createdAt!);
 
     return Container(
-      decoration: AppDecorations.premiumGlassCard(radius: 18),
+      decoration: AppDecorations.premiumGlassCard(radius: 20, opacity: 0.58),
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -314,7 +323,7 @@ class _MemoryCard extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -322,7 +331,7 @@ class _MemoryCard extends StatelessWidget {
                   exhibitName,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.titleMedium(
+                  style: AppTextStyles.premiumCardTitle(
                     context,
                   ).copyWith(color: Colors.white, fontSize: 14),
                 ),
@@ -373,14 +382,22 @@ class _StateMessage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: AppColors.primaryGold, size: 54),
+            Container(
+              width: AppSpacing.iconCircle,
+              height: AppSpacing.iconCircle,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: AppGradients.premiumGold,
+              ),
+              child: Icon(icon, color: AppColors.darkInk, size: 26),
+            ),
             const SizedBox(height: 18),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: AppTextStyles.titleLarge(
+              style: AppTextStyles.premiumScreenTitle(
                 context,
-              ).copyWith(color: Colors.white),
+              ).copyWith(color: AppColors.whiteTitle, fontSize: 24),
             ),
             const SizedBox(height: 10),
             Text(

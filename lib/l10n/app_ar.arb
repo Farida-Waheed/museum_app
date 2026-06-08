@@ -585,7 +585,7 @@
   "ticketsCheckout": "إنشاء الحجز",
   "ticketsSelectMuseumEntryFirst": "اختر تذكرة دخول متحف واحدة على الأقل قبل إنشاء الحجز.",
   "ticketsCompletePersonalizedTourFirst": "خصّص جولتك واحفظها قبل إنشاء الحجز.",
-  "ticketsPurchaseComplete": "تم تأكيد الحجز. تم حفظ تذاكرك.",
+  "ticketsPurchaseComplete": "تم إنشاء الحجز بنجاح. يرجى الدفع عند شباك المتحف لتفعيل رمز QR وجولة Horus-Bot.",
   "ticketId": "معرّف التذكرة",
   "active": "سارية",
   "expired": "منتهية",

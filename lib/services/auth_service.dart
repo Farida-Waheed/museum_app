@@ -71,6 +71,10 @@ class AuthService {
       if (trimmedName.isEmpty) {
         throw const AuthServiceException('Name is required.');
       }
+      final trimmedPhone = _nullableTrimmed(phone);
+      if (trimmedPhone == null) {
+        throw const AuthServiceException('Phone number is required.');
+      }
 
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email.trim(),
@@ -90,7 +94,7 @@ class AuthService {
         email: firebaseUser.email ?? email.trim(),
         fullName: trimmedName,
         displayName: trimmedName,
-        phoneNumber: _nullableTrimmed(phone),
+        phoneNumber: trimmedPhone,
         nationality: _nullableTrimmed(nationality),
         preferredLanguage: _normalizedLanguage(preferredLanguage),
         createdAt: DateTime.now(),
@@ -197,6 +201,18 @@ class AuthService {
     }
   }
 
+  Future<void> sendPasswordResetEmail(String email) async {
+    final trimmedEmail = email.trim();
+    if (trimmedEmail.isEmpty) {
+      throw const AuthServiceException('Please enter your email address.');
+    }
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: trimmedEmail);
+    } on FirebaseAuthException catch (e) {
+      throw AuthServiceException(_friendlyAuthError(e));
+    }
+  }
+
   /// Sign in to the same Firebase account used by the web app.
   Future<AppUser> loadWebsiteAccount({
     required String email,
@@ -281,7 +297,8 @@ class AuthService {
       uid: firebaseUser.uid,
       email: firebaseUser.email ?? '',
       fullName: firebaseUser.displayName ?? _nameFromEmail(firebaseUser.email),
-      displayName: firebaseUser.displayName ?? _nameFromEmail(firebaseUser.email),
+      displayName:
+          firebaseUser.displayName ?? _nameFromEmail(firebaseUser.email),
       phoneNumber: firebaseUser.phoneNumber,
       preferredLanguage: 'english',
       createdAt: DateTime.now(),

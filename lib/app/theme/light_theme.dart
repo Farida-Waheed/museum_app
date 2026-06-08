@@ -18,8 +18,8 @@ ThemeData getLightTheme(String languageCode) {
 
     colorScheme: const ColorScheme.light(
       primary: AppColors.primaryGold,
-      secondary: AppColors.darkInk,
-      surface: AppColors.softSurface,
+      secondary: AppColors.darkGold,
+      surface: AppColors.warmSurface,
       onSurface: AppColors.darkInk,
       error: AppColors.alertRed,
     ),
@@ -40,10 +40,11 @@ ThemeData getLightTheme(String languageCode) {
     ),
 
     cardTheme: const CardThemeData(
-      color: AppColors.softSurface,
+      color: Color(0xFFFFFBF3),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(18)),
+        side: BorderSide(color: Color(0x1F8C6A2F), width: 1),
       ),
     ),
 
@@ -88,8 +89,27 @@ ThemeData getLightTheme(String languageCode) {
     ),
 
     dividerTheme: const DividerThemeData(
-      color: Color(0xFFE3E8F2),
+      color: Color(0xFFE2D6BF),
       thickness: 1,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: const Color(0xFFFFFBF3),
+      labelStyle: TextStyle(fontFamily: bodyFont, color: AppColors.mutedText),
+      hintStyle: TextStyle(fontFamily: bodyFont, color: AppColors.mutedText),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: Color(0x268C6A2F)),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: AppColors.primaryGold, width: 1.2),
+      ),
+    ),
+    snackBarTheme: const SnackBarThemeData(
+      backgroundColor: AppColors.darkInk,
+      contentTextStyle: TextStyle(color: AppColors.whiteTitle),
+      actionTextColor: AppColors.primaryGold,
     ),
   );
 }

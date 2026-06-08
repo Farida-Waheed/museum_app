@@ -37,6 +37,7 @@ class MuseumTicket {
   final String? bookingId;
   final String? bookingSource;
   final String? robotTourTicketId;
+  final String paymentStatus;
 
   const MuseumTicket({
     required this.id,
@@ -55,6 +56,7 @@ class MuseumTicket {
     this.bookingId,
     this.bookingSource,
     this.robotTourTicketId,
+    this.paymentStatus = 'pay_at_counter',
   });
 
   /// Create a copy with optional field overrides
@@ -75,6 +77,7 @@ class MuseumTicket {
     String? bookingId,
     String? bookingSource,
     String? robotTourTicketId,
+    String? paymentStatus,
   }) {
     return MuseumTicket(
       id: id ?? this.id,
@@ -93,6 +96,7 @@ class MuseumTicket {
       bookingId: bookingId ?? this.bookingId,
       bookingSource: bookingSource ?? this.bookingSource,
       robotTourTicketId: robotTourTicketId ?? this.robotTourTicketId,
+      paymentStatus: paymentStatus ?? this.paymentStatus,
     );
   }
 
@@ -115,6 +119,7 @@ class MuseumTicket {
       'bookingId': bookingId,
       'bookingSource': bookingSource,
       'robotTourTicketId': robotTourTicketId,
+      'payment_status': paymentStatus,
     };
   }
 
@@ -138,6 +143,7 @@ class MuseumTicket {
       'booking_id': bookingId,
       'booking_source': bookingSource,
       'robot_tour_ticket_id': robotTourTicketId,
+      'payment_status': paymentStatus,
     };
   }
 
@@ -172,6 +178,10 @@ class MuseumTicket {
       bookingSource:
           json['bookingSource'] as String? ?? json['booking_source'] as String?,
       robotTourTicketId: json['robotTourTicketId'] as String?,
+      paymentStatus:
+          json['paymentStatus'] as String? ??
+          json['payment_status'] as String? ??
+          'pay_at_counter',
     );
   }
 
@@ -225,6 +235,10 @@ class MuseumTicket {
       robotTourTicketId:
           _stringValue(json['robotTourTicketId']) ??
           _stringValue(json['robot_tour_ticket_id']),
+      paymentStatus:
+          _stringValue(json['paymentStatus']) ??
+          _stringValue(json['payment_status']) ??
+          'pay_at_counter',
     );
   }
 

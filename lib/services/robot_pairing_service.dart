@@ -429,6 +429,8 @@ class RobotPairingService {
   bool _isUnpairedActiveRobotTicket(Map<String, dynamic> data, String userId) {
     return data['userId'] == userId &&
         _isUsableStatus(data['status']) &&
+        _isPaymentConfirmed(data['payment_status']) &&
+        !_isCompletedTicketData(data) &&
         !_isPastVisitDateTime(
           data['visit_date'] ?? data['visitDate'],
           data['visit_time'] ?? data['timeSlot'],
@@ -441,6 +443,7 @@ class RobotPairingService {
     if (data == null) return false;
     return data['userId'] == userId &&
         _isUsableStatus(data['status']) &&
+        _isPaymentConfirmed(data['payment_status']) &&
         !_isPastVisitDateTime(
           data['visit_date'] ?? data['visitDate'],
           data['visit_time'] ?? data['timeSlot'],
@@ -452,6 +455,11 @@ class RobotPairingService {
     return status == TicketStatus.active.name ||
         status == 'valid' ||
         status == 'confirmed';
+  }
+
+  bool _isPaymentConfirmed(Object? value) {
+    final status = value?.toString().trim().toLowerCase().replaceAll('-', '_');
+    return status == 'paid' || status == 'confirmed';
   }
 
   RobotPairingFailureCode _ticketFailureCode(Map<String, dynamic>? data) {

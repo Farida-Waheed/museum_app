@@ -1812,7 +1812,8 @@ class AppLocalizationsAr extends AppLocalizations {
       'خصّص جولتك واحفظها قبل إنشاء الحجز.';
 
   @override
-  String get ticketsPurchaseComplete => 'تم تأكيد الحجز. تم حفظ تذاكرك.';
+  String get ticketsPurchaseComplete =>
+      'تم إنشاء الحجز بنجاح. يرجى الدفع عند شباك المتحف لتفعيل رمز QR وجولة Horus-Bot.';
 
   @override
   String get ticketId => 'معرّف التذكرة';

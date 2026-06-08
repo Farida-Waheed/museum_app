@@ -75,6 +75,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
+    final phone = _phoneController.text.trim();
+    if (phone.isEmpty) {
+      _showError(
+        isArabicMessage(l10n)
+            ? 'رقم الهاتف مطلوب.'
+            : 'Phone number is required.',
+      );
+      return;
+    }
+    if (!_looksLikePhone(phone)) {
+      _showError(
+        isArabicMessage(l10n)
+            ? 'يرجى إدخال رقم هاتف صحيح.'
+            : 'Please enter a valid phone number.',
+      );
+      return;
+    }
+
     if (_passwordController.text.length < 6) {
       _showError(l10n.passwordTooShort);
       return;
@@ -91,9 +109,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       name: _nameController.text.trim(),
       email: _emailController.text.trim(),
       password: _passwordController.text,
-      phone: _phoneController.text.isEmpty
-          ? null
-          : _phoneController.text.trim(),
+      phone: phone,
       nationality: _nationalityController.text.isEmpty
           ? null
           : _nationalityController.text.trim(),
@@ -117,6 +133,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     ScaffoldMessenger.of(
       context,
     ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  bool isArabicMessage(AppLocalizations l10n) => l10n.localeName == 'ar';
+
+  bool _looksLikePhone(String value) {
+    final digits = value.replaceAll(RegExp(r'\D'), '');
+    return digits.length >= 7 && digits.length <= 15;
   }
 
   @override

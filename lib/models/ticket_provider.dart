@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'museum_ticket.dart';
@@ -24,6 +26,8 @@ class TicketProvider with ChangeNotifier {
   bool _isCheckingOut = false;
   String? _ticketError;
   int _skippedTicketSetCount = 0;
+  StreamSubscription<TicketLoadResult>? _ticketSubscription;
+  String? _ticketSubscriptionUserId;
 
   TicketProvider({TicketRepository? ticketRepository})
     : _ticketRepository = ticketRepository ?? TicketRepository();
@@ -131,17 +135,24 @@ class TicketProvider with ChangeNotifier {
 
   bool _isUsableMuseumTicket(MuseumTicket ticket) {
     return _isUsableTicketStatus(ticket.status) &&
+        _isPaymentConfirmed(ticket.paymentStatus) &&
         !_isVisitDateTimeExpired(ticket.visitDate, ticket.timeSlot);
   }
 
   bool _isPairableRobotTourTicket(RobotTourTicket ticket) {
     return _isUsableTicketStatus(ticket.status) &&
+        _isPaymentConfirmed(ticket.paymentStatus) &&
         (ticket.visitDate == null ||
             !_isVisitDateTimeExpired(ticket.visitDate!, ticket.timeSlot));
   }
 
   bool _isUsableTicketStatus(TicketStatus status) {
     return status == TicketStatus.active;
+  }
+
+  bool _isPaymentConfirmed(String status) {
+    final normalized = status.trim().toLowerCase().replaceAll('-', '_');
+    return normalized == 'paid' || normalized == 'confirmed';
   }
 
   bool _isVisitDateTimeExpired(DateTime visitDate, String? timeSlot) {
@@ -580,16 +591,8 @@ class TicketProvider with ChangeNotifier {
 
     try {
       final result = await _ticketRepository.loadUserTickets(userId);
-      _museumTickets
-        ..removeWhere((ticket) => ticket.userId == userId)
-        ..addAll(result.museumTickets);
-      _robotTourTickets
-        ..removeWhere((ticket) => ticket.userId == userId)
-        ..addAll(result.robotTourTickets);
-      _rebuildPurchasedSetsForUser(
-        userId,
-        skippedBookingCount: result.skippedBookingCount,
-      );
+      _applyTicketLoadResult(userId, result);
+      _watchUserTickets(userId);
     } on TicketRepositoryException catch (e) {
       _skippedTicketSetCount = 0;
       _ticketError = _ticketsErrorMessage(e.message);
@@ -601,6 +604,45 @@ class TicketProvider with ChangeNotifier {
       _isLoadingTickets = false;
       notifyListeners();
     }
+  }
+
+  void _watchUserTickets(String userId) {
+    if (_ticketSubscriptionUserId == userId && _ticketSubscription != null) {
+      return;
+    }
+    _ticketSubscription?.cancel();
+    _ticketSubscriptionUserId = userId;
+    _ticketSubscription = _ticketRepository
+        .watchUserTickets(userId)
+        .listen(
+          (result) {
+            _applyTicketLoadResult(userId, result);
+            _ticketError = null;
+            notifyListeners();
+          },
+          onError: (Object error) {
+            if (error is TicketRepositoryException) {
+              _ticketError = _ticketsErrorMessage(error.message);
+            } else {
+              _ticketError =
+                  'We could not load your tickets. Showing available saved content.';
+            }
+            notifyListeners();
+          },
+        );
+  }
+
+  void _applyTicketLoadResult(String userId, TicketLoadResult result) {
+    _museumTickets
+      ..removeWhere((ticket) => ticket.userId == userId)
+      ..addAll(result.museumTickets);
+    _robotTourTickets
+      ..removeWhere((ticket) => ticket.userId == userId)
+      ..addAll(result.robotTourTickets);
+    _rebuildPurchasedSetsForUser(
+      userId,
+      skippedBookingCount: result.skippedBookingCount,
+    );
   }
 
   Future<bool> cancelBooking(PurchasedTicketSet set) async {
@@ -709,22 +751,13 @@ class TicketProvider with ChangeNotifier {
     final museumTicket = set.museumTicket;
     final robotTicket = set.robotTourTicket;
     if (museumTicket == null || robotTicket == null) return false;
-    if (museumTicket.status == TicketStatus.used ||
-        museumTicket.status == TicketStatus.cancelled ||
-        museumTicket.status == TicketStatus.expired ||
-        museumTicket.status == TicketStatus.declined ||
-        museumTicket.status == TicketStatus.archived ||
-        museumTicket.status == TicketStatus.inactive) {
+    if (!_isUsableTicketStatus(museumTicket.status)) {
       return false;
     }
-    if (robotTicket.status == TicketStatus.paired ||
+    if (!_isUsableTicketStatus(robotTicket.status) ||
+        robotTicket.status == TicketStatus.paired ||
         robotTicket.status == TicketStatus.in_progress ||
-        robotTicket.status == TicketStatus.completed ||
-        robotTicket.status == TicketStatus.cancelled ||
-        robotTicket.status == TicketStatus.expired ||
-        robotTicket.status == TicketStatus.declined ||
-        robotTicket.status == TicketStatus.archived ||
-        robotTicket.status == TicketStatus.inactive) {
+        robotTicket.status == TicketStatus.completed) {
       return false;
     }
     return !isWithinCancellationDeadline(set);
@@ -1166,12 +1199,23 @@ class TicketProvider with ChangeNotifier {
 
   /// Clear all tickets for a user (e.g., on logout)
   void clearUserTickets(String userId) {
+    if (_ticketSubscriptionUserId == userId) {
+      _ticketSubscription?.cancel();
+      _ticketSubscription = null;
+      _ticketSubscriptionUserId = null;
+    }
     _museumTickets.removeWhere((t) => t.userId == userId);
     _robotTourTickets.removeWhere((t) => t.userId == userId);
     _payments.removeWhere((p) => p.userId == userId);
     _purchasedTicketSets.removeWhere((set) => set.userId == userId);
     _skippedTicketSetCount = 0;
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _ticketSubscription?.cancel();
+    super.dispose();
   }
 
   /// Load mock tickets for a user (for development)

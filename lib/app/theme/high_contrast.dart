@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../core/constants/colors.dart';
 
 ThemeData getHighContrastTheme(String languageCode) {
   final bool isArabic = languageCode == 'ar';
@@ -22,6 +23,7 @@ ThemeData getHighContrastTheme(String languageCode) {
       secondary: Colors.white,
       surface: Colors.black,
       onSurface: Colors.white,
+      error: AppColors.alertRed,
     ),
 
     appBarTheme: AppBarTheme(
@@ -37,6 +39,18 @@ ThemeData getHighContrastTheme(String languageCode) {
     ),
 
     textTheme: TextTheme(
+      displayLarge: TextStyle(
+        fontFamily: headingFont,
+        color: Colors.yellow,
+        fontSize: 32,
+        fontWeight: FontWeight.w900,
+      ),
+      headlineMedium: TextStyle(
+        fontFamily: headingFont,
+        color: Colors.yellow,
+        fontSize: 26,
+        fontWeight: FontWeight.w900,
+      ),
       bodyLarge: TextStyle(
         fontFamily: bodyFont,
         color: Colors.white,
@@ -56,9 +70,37 @@ ThemeData getHighContrastTheme(String languageCode) {
         fontSize: 28,
         fontWeight: FontWeight.w900,
       ),
+      titleMedium: TextStyle(
+        fontFamily: headingFont,
+        color: Colors.yellow,
+        fontSize: 22,
+        fontWeight: FontWeight.w900,
+      ),
+      bodySmall: TextStyle(
+        fontFamily: bodyFont,
+        color: Colors.white,
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+      ),
     ),
 
     iconTheme: const IconThemeData(color: Colors.yellow, size: 34),
+    cardTheme: CardThemeData(
+      color: Colors.black,
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: const BorderSide(color: Colors.yellow, width: 1.4),
+      ),
+    ),
+    dividerTheme: const DividerThemeData(color: Colors.yellow, thickness: 1.2),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: Colors.black,
+      selectedItemColor: Colors.yellow,
+      unselectedItemColor: Colors.white,
+      showUnselectedLabels: true,
+      type: BottomNavigationBarType.fixed,
+    ),
 
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
@@ -69,6 +111,38 @@ ThemeData getHighContrastTheme(String languageCode) {
           fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: Colors.yellow,
+        side: const BorderSide(color: Colors.yellow, width: 1.4),
+        textStyle: TextStyle(
+          fontFamily: bodyFont,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        foregroundColor: Colors.yellow,
+        textStyle: TextStyle(
+          fontFamily: bodyFont,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    ),
+    switchTheme: SwitchThemeData(
+      thumbColor: WidgetStateProperty.resolveWith(
+        (states) =>
+            states.contains(WidgetState.selected) ? Colors.black : Colors.white,
+      ),
+      trackColor: WidgetStateProperty.resolveWith(
+        (states) => states.contains(WidgetState.selected)
+            ? Colors.yellow
+            : Colors.white24,
       ),
     ),
   );

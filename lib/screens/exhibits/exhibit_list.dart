@@ -26,6 +26,7 @@ class ExhibitListScreen extends StatelessWidget {
       title: l10n.exhibits.toUpperCase(),
       backgroundColor: AppColors.darkBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
+      showChatButton: true,
       actions: [
         IconButton(
           tooltip: l10n.searchExhibits,
@@ -33,49 +34,60 @@ class ExhibitListScreen extends StatelessWidget {
           onPressed: () => Navigator.pushNamed(context, AppRoutes.search),
         ),
       ],
-      body: exhibitProvider.isLoading && exhibits.isEmpty
-          ? _ExhibitStateCard(
-              isArabic: isArabic,
-              title: isArabic
-                  ? '\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0639\u0631\u0648\u0636\u0627\u062a...'
-                  : 'Loading exhibits...',
-              isLoading: true,
-            )
-          : exhibits.isEmpty
-          ? _ExhibitStateCard(
-              isArabic: isArabic,
-              title: isArabic
-                  ? '\u0645\u0639\u0644\u0648\u0645\u0627\u062a \u0627\u0644\u0645\u0639\u0631\u0648\u0636\u0627\u062a \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629 \u062d\u0627\u0644\u064a\u0627\u064b.'
-                  : 'Exhibit information is currently unavailable.',
-              buttonLabel: isArabic
-                  ? '\u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629'
-                  : 'Try again',
-              onPressed: () => context.read<ExhibitProvider>().loadExhibits(),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              itemCount: exhibits.length + (exhibitProvider.error == null ? 0 : 1),
-              itemBuilder: (context, index) {
-                if (exhibitProvider.error != null && index == 0) {
-                  return _SavedContentBanner(isArabic: isArabic);
-                }
-                final exhibitIndex = exhibitProvider.error == null
-                    ? index
-                    : index - 1;
-                final exhibit = exhibits[exhibitIndex];
-                return _ExhibitListTile(
-                  exhibit: exhibit,
-                  prefs: prefs,
-                  onTap: () {
-                    Navigator.pushNamed(
-                      context,
-                      AppRoutes.exhibitDetails,
-                      arguments: exhibit,
-                    );
-                  },
-                );
-              },
-            ),
+      body: DecoratedBox(
+        decoration: const BoxDecoration(
+          gradient: AppGradients.screenBackground,
+        ),
+        child: exhibitProvider.isLoading && exhibits.isEmpty
+            ? _ExhibitStateCard(
+                isArabic: isArabic,
+                title: isArabic
+                    ? '\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0639\u0631\u0648\u0636\u0627\u062a...'
+                    : 'Loading exhibits...',
+                isLoading: true,
+              )
+            : exhibits.isEmpty
+            ? _ExhibitStateCard(
+                isArabic: isArabic,
+                title: isArabic
+                    ? '\u0645\u0639\u0644\u0648\u0645\u0627\u062a \u0627\u0644\u0645\u0639\u0631\u0648\u0636\u0627\u062a \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629 \u062d\u0627\u0644\u064a\u0627\u064b.'
+                    : 'Exhibit information is currently unavailable.',
+                buttonLabel: isArabic
+                    ? '\u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629'
+                    : 'Try again',
+                onPressed: () => context.read<ExhibitProvider>().loadExhibits(),
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.screenHorizontalCompact,
+                  18,
+                  AppSpacing.screenHorizontalCompact,
+                  128,
+                ),
+                itemCount:
+                    exhibits.length + (exhibitProvider.error == null ? 0 : 1),
+                itemBuilder: (context, index) {
+                  if (exhibitProvider.error != null && index == 0) {
+                    return _SavedContentBanner(isArabic: isArabic);
+                  }
+                  final exhibitIndex = exhibitProvider.error == null
+                      ? index
+                      : index - 1;
+                  final exhibit = exhibits[exhibitIndex];
+                  return _ExhibitListTile(
+                    exhibit: exhibit,
+                    prefs: prefs,
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        AppRoutes.exhibitDetails,
+                        arguments: exhibit,
+                      );
+                    },
+                  );
+                },
+              ),
+      ),
     );
   }
 }
@@ -97,50 +109,44 @@ class _ExhibitListTile extends StatelessWidget {
     final isArabic = prefs.language == 'ar';
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
         child: Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppColors.darkSurface,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.darkDivider),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
+          padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
+          decoration: AppDecorations.secondaryGlassCard(
+            radius: 22,
+            opacity: 0.54,
           ),
           child: Row(
             children: [
-              // Thumbnail
               ClipRRect(
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(16),
                 child: Container(
-                  width: 72,
-                  height: 72,
-                  color: AppColors.primaryGold.withOpacity(0.05),
-                  child: Icon(
+                  width: 66,
+                  height: 66,
+                  decoration: BoxDecoration(
+                    gradient: AppGradients.premiumGold,
+                    border: Border.all(color: AppColors.goldBorder(0.22)),
+                  ),
+                  child: const Icon(
                     Icons.museum_outlined,
-                    size: 32,
-                    color: AppColors.primaryGold,
+                    size: 30,
+                    color: AppColors.darkInk,
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 14),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       exhibit.getName(prefs.language),
-                      style: AppTextStyles.displayArtifactTitle(
+                      style: AppTextStyles.premiumCardTitle(
                         context,
-                      ).copyWith(fontSize: 16),
+                      ).copyWith(fontSize: 17),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -155,7 +161,9 @@ class _ExhibitListTile extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           l10n.mainGallery,
-                          style: AppTextStyles.metadata(context),
+                          style: AppTextStyles.premiumMutedBody(
+                            context,
+                          ).copyWith(fontSize: 12),
                         ),
                       ],
                     ),
@@ -167,7 +175,7 @@ class _ExhibitListTile extends StatelessWidget {
                 isArabic
                     ? Icons.chevron_left_rounded
                     : Icons.chevron_right_rounded,
-                color: Colors.white24,
+                color: AppColors.primaryGold.withValues(alpha: 0.62),
               ),
             ],
           ),
@@ -199,12 +207,8 @@ class _ExhibitStateCard extends StatelessWidget {
         padding: const EdgeInsets.all(24),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: AppColors.darkSurface,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.darkDivider),
-          ),
+          padding: const EdgeInsets.all(AppSpacing.cardPadding),
+          decoration: AppDecorations.premiumGlassCard(radius: 22),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: isArabic
@@ -243,10 +247,7 @@ class _ExhibitStateCard extends StatelessWidget {
               ),
               if (buttonLabel != null && onPressed != null) ...[
                 const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: onPressed,
-                  child: Text(buttonLabel!),
-                ),
+                FilledButton(onPressed: onPressed, child: Text(buttonLabel!)),
               ],
             ],
           ),
@@ -264,13 +265,12 @@ class _SavedContentBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Container(
         padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppColors.primaryGold.withOpacity(0.10),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: AppColors.primaryGold.withOpacity(0.24)),
+        decoration: AppDecorations.secondaryGlassCard(
+          radius: 18,
+          opacity: 0.46,
         ),
         child: Row(
           textDirection: Directionality.of(context),

@@ -30,6 +30,7 @@ class RobotTourTicket {
   final String? routeId;
   final String? routeTitleEn;
   final String? routeTitleAr;
+  final String paymentStatus;
 
   // Optional for future extension
   final List<String>? selectedInterests;
@@ -61,6 +62,7 @@ class RobotTourTicket {
     this.routeId,
     this.routeTitleEn,
     this.routeTitleAr,
+    this.paymentStatus = 'pay_at_counter',
     this.selectedInterests,
     this.selectedArtifactIds,
   });
@@ -92,6 +94,7 @@ class RobotTourTicket {
     String? routeId,
     String? routeTitleEn,
     String? routeTitleAr,
+    String? paymentStatus,
     List<String>? selectedInterests,
     List<String>? selectedArtifactIds,
   }) {
@@ -122,6 +125,7 @@ class RobotTourTicket {
       routeId: routeId ?? this.routeId,
       routeTitleEn: routeTitleEn ?? this.routeTitleEn,
       routeTitleAr: routeTitleAr ?? this.routeTitleAr,
+      paymentStatus: paymentStatus ?? this.paymentStatus,
       selectedInterests: selectedInterests ?? this.selectedInterests,
       selectedArtifactIds: selectedArtifactIds ?? this.selectedArtifactIds,
     );
@@ -141,7 +145,6 @@ class RobotTourTicket {
       'price': price,
       'currency': currency,
       'payment_method': 'cash',
-      'payment_status': 'pay_at_counter',
       'status': status.name,
       'purchasedAt': purchasedAt.toIso8601String(),
       'tourType': tourType.name,
@@ -157,6 +160,7 @@ class RobotTourTicket {
       'routeId': routeId,
       'routeTitleEn': routeTitleEn,
       'routeTitleAr': routeTitleAr,
+      'payment_status': paymentStatus,
       'selectedInterests': selectedInterests,
       'selectedArtifactIds': selectedArtifactIds,
     };
@@ -184,6 +188,7 @@ class RobotTourTicket {
       'qrCodeValue': qrCodeValue,
       'booking_id': bookingId,
       'booking_source': bookingSource,
+      'payment_status': paymentStatus,
       'route_id': routeId,
       'route_title_en': routeTitleEn,
       'route_title_ar': routeTitleAr,
@@ -247,6 +252,10 @@ class RobotTourTicket {
           json['routeTitleEn'] as String? ?? json['route_title_en'] as String?,
       routeTitleAr:
           json['routeTitleAr'] as String? ?? json['route_title_ar'] as String?,
+      paymentStatus:
+          json['paymentStatus'] as String? ??
+          json['payment_status'] as String? ??
+          'pay_at_counter',
       selectedInterests: json['selectedInterests'] != null
           ? List<String>.from(json['selectedInterests'] as List)
           : null,
@@ -364,6 +373,10 @@ class RobotTourTicket {
       routeTitleAr:
           _stringValue(json['routeTitleAr']) ??
           _stringValue(json['route_title_ar']),
+      paymentStatus:
+          _stringValue(json['paymentStatus']) ??
+          _stringValue(json['payment_status']) ??
+          'pay_at_counter',
       selectedInterests: interests,
       selectedArtifactIds: selectedExhibitIds,
     );

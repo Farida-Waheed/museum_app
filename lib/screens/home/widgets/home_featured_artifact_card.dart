@@ -24,7 +24,7 @@ class HomeFeaturedArtifactCard extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(28),
         child: SizedBox(
-          height: 188,
+          height: 176,
           child: Stack(
             fit: StackFit.expand,
             children: [

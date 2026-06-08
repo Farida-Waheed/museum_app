@@ -858,7 +858,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   physics: const BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics(),
                   ),
-                  padding: const EdgeInsets.only(bottom: 112),
+                  padding: const EdgeInsets.only(bottom: 144),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -893,7 +893,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpacing.sectionGap),
                       if (snapshot.shouldShowStats) ...[
                         Padding(
                           padding: const EdgeInsets.symmetric(
@@ -903,7 +903,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             items: _tourStats(snapshot, l10n),
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: AppSpacing.sectionGap),
                       ],
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -920,7 +920,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onSecondary: primaryCard.onSecondary,
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpacing.sectionGap),
                       _SectionLabel(label: l10n.homeQuickActions),
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -928,7 +928,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: HomeQuickActionsGrid(items: quickActions),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpacing.sectionGap),
                       _SectionLabel(
                         label: _artifactSectionLabel(snapshot, l10n),
                       ),
@@ -945,7 +945,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpacing.sectionGap),
                       _SectionLabel(label: l10n.mapPreview),
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -961,7 +961,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onFullView: () => _openMap(context),
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpacing.sectionGap),
                       if (snapshot.didYouKnowText.trim().isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.symmetric(
@@ -1211,7 +1211,7 @@ class _PrimaryActionCard extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
           decoration: BoxDecoration(
             color: AppColors.cardGlass(0.58),
             borderRadius: BorderRadius.circular(28),
@@ -1244,9 +1244,9 @@ class _PrimaryActionCard extends StatelessWidget {
                   context,
                 ).copyWith(fontSize: 14, color: AppColors.bodyText),
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 16),
               _TicketStatusPill(label: statusLine, isArabic: isArabic),
-              const SizedBox(height: 28),
+              const SizedBox(height: 24),
               LayoutBuilder(
                 builder: (context, constraints) {
                   final stackButtons = constraints.maxWidth < 330;

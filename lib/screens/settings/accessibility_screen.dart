@@ -30,13 +30,21 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
 
   Future<void> _checkAllPermissions() async {
     if (kIsWeb) return;
-    final statuses = await [
+    final permissions = [
       Permission.location,
       Permission.notification,
       Permission.camera,
       Permission.microphone,
       Permission.bluetooth,
-    ].request();
+    ];
+    final statusEntries = await Future.wait(
+      permissions.map((permission) async {
+        return MapEntry(permission, await permission.status);
+      }),
+    );
+    final statuses = Map<Permission, PermissionStatus>.fromEntries(
+      statusEntries,
+    );
     if (mounted) {
       setState(() => _statuses = statuses);
     }
@@ -485,12 +493,6 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                       onTap: () =>
                           Navigator.pushNamed(context, AppRoutes.projectInfo),
                     ),
-                    _AboutNavItem(
-                      title: l10n.team,
-                      onTap: () => Navigator.pushNamed(context, AppRoutes.team),
-                    ),
-                    // Notification test screen removed during cleanup.
-                    _AboutNavItem(title: l10n.privacyPolicy),
                   ],
                 ),
               ),
@@ -653,6 +655,9 @@ class _PermissionItem extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryGold,
                   foregroundColor: AppColors.darkInk,
+                  textStyle: AppTextStyles.buttonLabel(
+                    context,
+                  ).copyWith(inherit: false, fontSize: 13),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -662,12 +667,7 @@ class _PermissionItem extends StatelessWidget {
                     vertical: 8,
                   ),
                 ),
-                child: Text(
-                  l10n.enable,
-                  style: AppTextStyles.buttonLabel(
-                    context,
-                  ).copyWith(fontSize: 13),
-                ),
+                child: Text(l10n.enable),
               ),
             ],
           ),

@@ -6,6 +6,16 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    function isAdminOrCashier() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'cashier'];
+    }
+
+    function paymentConfirmed(status) {
+      return status in ['paid', 'confirmed'];
+    }
+
     function ownsExisting() {
       return signedIn() && resource.data.userId == request.auth.uid;
     }
@@ -55,7 +65,8 @@ service cloud.firestore {
         && ticketId is string
         && exists(/databases/$(database)/documents/museumTickets/$(ticketId))
         && get(/databases/$(database)/documents/museumTickets/$(ticketId)).data.userId == request.auth.uid
-        && usableTicketStatus(get(/databases/$(database)/documents/museumTickets/$(ticketId)).data.status);
+        && usableTicketStatus(get(/databases/$(database)/documents/museumTickets/$(ticketId)).data.status)
+        && paymentConfirmed(get(/databases/$(database)/documents/museumTickets/$(ticketId)).data.payment_status);
     }
 
     function activeOwnedRobotTourTicket(ticketId) {
@@ -63,7 +74,8 @@ service cloud.firestore {
         && ticketId is string
         && exists(/databases/$(database)/documents/robotTourTickets/$(ticketId))
         && get(/databases/$(database)/documents/robotTourTickets/$(ticketId)).data.userId == request.auth.uid
-        && usableTicketStatus(get(/databases/$(database)/documents/robotTourTickets/$(ticketId)).data.status);
+        && usableTicketStatus(get(/databases/$(database)/documents/robotTourTickets/$(ticketId)).data.status)
+        && paymentConfirmed(get(/databases/$(database)/documents/robotTourTickets/$(ticketId)).data.payment_status);
     }
 
     function validTourSessionCreate(sessionId) {
@@ -177,6 +189,7 @@ service cloud.firestore {
       return ownsExisting()
         && ownsIncoming()
         && usableTicketStatus(resource.data.status)
+        && paymentConfirmed(resource.data.payment_status)
         && unpairedExistingTicket()
         && request.resource.data.diff(resource.data).affectedKeys()
           .hasOnly(['status', 'paired_robot_id', 'session_id', 'paired_at', 'updated_at'])
@@ -248,30 +261,67 @@ service cloud.firestore {
         && request.resource.data.status in ['paired', 'active', 'paused', 'completed', 'cancelled'];
     }
 
+    function adminPaymentUpdate() {
+      return isAdminOrCashier()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['payment_status', 'payment_confirmed_at', 'payment_confirmed_by', 'updated_at'])
+        && request.resource.data.payment_status in ['confirmed', 'paid']
+        && request.resource.data.payment_confirmed_by == request.auth.uid;
+    }
+
+    function ownedUserCreate(userId) {
+      return signedIn()
+        && userId == request.auth.uid
+        && (!('role' in request.resource.data) || request.resource.data.role == null);
+    }
+
+    function ownedUserProfileUpdate(userId) {
+      return signedIn()
+        && userId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly([
+            'uid',
+            'email',
+            'full_name',
+            'display_name',
+            'phone_number',
+            'nationality',
+            'preferred_language',
+            'avatar_url',
+            'accessibility_defaults',
+            'marketing_opt_in',
+            'created_at',
+            'updated_at',
+            'last_seen_at'
+          ]);
+    }
+
     match /users/{userId} {
-      allow read, update: if signedIn() && userId == request.auth.uid;
-      allow create: if signedIn() && userId == request.auth.uid;
+      allow read: if signedIn() && userId == request.auth.uid;
+      allow create: if ownedUserCreate(userId);
+      allow update: if ownedUserProfileUpdate(userId);
       allow delete: if false;
     }
 
     match /bookings/{bookingId} {
-      allow read: if ownsExisting();
+      allow read: if ownsExisting() || isAdminOrCashier();
       allow create: if bookingContractCreateValid();
-      allow update: if ownedBookingCancelUpdate();
+      allow update: if ownedBookingCancelUpdate() || adminPaymentUpdate();
       allow delete: if false;
     }
 
     match /museumTickets/{ticketId} {
-      allow read: if ownsExisting();
+      allow read: if ownsExisting() || isAdminOrCashier();
       allow create: if bookingContractCreateValid();
-      allow update: if ownedMuseumTicketCancelUpdate();
+      allow update: if ownedMuseumTicketCancelUpdate() || adminPaymentUpdate();
       allow delete: if false;
     }
 
     match /robotTourTickets/{ticketId} {
-      allow read: if ownsExisting();
+      allow read: if ownsExisting() || isAdminOrCashier();
       allow create: if bookingContractCreateValid();
       allow update: if ownedRobotTourTicketCancelUpdate()
+        || adminPaymentUpdate()
         || validRobotTourTicketPairUpdate(ticketId)
         || validRobotTourTicketStartUpdate(ticketId)
         || validRobotTourTicketCompleteUpdate(ticketId);

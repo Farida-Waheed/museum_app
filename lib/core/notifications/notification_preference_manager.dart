@@ -26,8 +26,8 @@ class NotificationPreferenceManager {
     NotificationCategory.tourUpdates: true,
     NotificationCategory.exhibitReminders: true,
     NotificationCategory.quizReminders: true,
-    NotificationCategory.guideReminders: false,
-    NotificationCategory.museumNews: false,
+    NotificationCategory.guideReminders: true,
+    NotificationCategory.museumNews: true,
     NotificationCategory.ticketReminders: true,
     NotificationCategory.systemAlerts: true,
   };
@@ -63,6 +63,14 @@ class NotificationPreferenceManager {
   bool get notificationsEnabled =>
       _prefs.getBool(_kNotificationsEnabled) ?? true;
 
+  /// Master action that keeps every category in sync with the master switch.
+  Future<void> setAllNotificationsEnabled(bool enabled) async {
+    await setNotificationsEnabled(enabled);
+    for (final category in NotificationCategory.values) {
+      await setCategoryEnabled(category, enabled);
+    }
+  }
+
   /// Toggle specific notification category
   Future<void> setCategoryEnabled(
     NotificationCategory category,
@@ -84,6 +92,10 @@ class NotificationPreferenceManager {
       states[category] = isCategoryEnabled(category);
     }
     return states;
+  }
+
+  bool areAllCategoriesEnabled() {
+    return NotificationCategory.values.every(isCategoryEnabled);
   }
 
   /// Check if notification should be shown based on preferences
@@ -116,12 +128,8 @@ class NotificationPreferenceManager {
 
   /// Reset all preferences to defaults
   Future<void> resetToDefaults() async {
-    await setNotificationsEnabled(true);
+    await setAllNotificationsEnabled(true);
     await setNotificationPermissionPromptShown(false);
     await setNotificationPermissionDeclined(false);
-    for (final category in NotificationCategory.values) {
-      final defaultValue = _defaultCategoryEnabled[category] ?? true;
-      await setCategoryEnabled(category, defaultValue);
-    }
   }
 }

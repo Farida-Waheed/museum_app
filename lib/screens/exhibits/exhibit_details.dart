@@ -5,14 +5,9 @@ import '../../l10n/app_localizations.dart';
 import '../../models/exhibit.dart';
 import '../../models/user_preferences.dart';
 import '../../models/exhibit_provider.dart';
-import '../../models/tour_provider.dart';
-import '../../models/app_session_provider.dart';
-import '../../models/tour_memory.dart';
-import '../../core/utils/audio_player.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/robot_status_banner.dart';
-import '../quiz/quiz_screen.dart'; // To navigate to quiz
-import '../../widgets/dialogs/premium_dialog.dart';
+import '../../models/app_session_provider.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 
@@ -25,50 +20,7 @@ class ExhibitDetailScreen extends StatefulWidget {
   State<ExhibitDetailScreen> createState() => _ExhibitDetailScreenState();
 }
 
-class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
-    with SingleTickerProviderStateMixin {
-  final AudioGuideService _audioService = AudioGuideService();
-  late final AnimationController _playController;
-
-  bool _isPlaying = false;
-  bool _quizPromptShown = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _playController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 250),
-    );
-  }
-
-  @override
-  void dispose() {
-    _audioService.stop();
-    _playController.dispose();
-    super.dispose();
-  }
-
-  void _toggleAudio(Exhibit exhibit, AppLocalizations l10n) {
-    setState(() {
-      _isPlaying = !_isPlaying;
-    });
-
-    if (_isPlaying) {
-      _playController.forward();
-      _audioService.playAudio('audio/${exhibit.id}.mp3');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.audioPlaying),
-          duration: const Duration(seconds: 1),
-        ),
-      );
-    } else {
-      _playController.reverse();
-      _audioService.stop();
-    }
-  }
-
+class _ExhibitDetailScreenState extends State<ExhibitDetailScreen> {
   void _toggleBookmark(
     Exhibit exhibit,
     AppLocalizations l10n,
@@ -97,20 +49,12 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
     final exhibit = widget.exhibit;
     final prefs = Provider.of<UserPreferencesModel>(context);
     final exhibitProvider = Provider.of<ExhibitProvider>(context);
-    final tourProvider = Provider.of<TourProvider>(context);
-    final sessionProvider = Provider.of<AppSessionProvider>(context);
     final l10n = AppLocalizations.of(context)!;
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final cs = theme.colorScheme;
     final isBookmarked = exhibitProvider.isBookmarked(exhibit.id);
-    final isArabic = prefs.language == 'ar';
-
-    final hasCompletedQuiz = sessionProvider.quizResults.any(
-      (result) => result.exhibitId == exhibit.id,
-    );
-    final canTakeQuiz = sessionProvider.canTakeQuiz;
 
     // Mark as visited when viewing details
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -118,62 +62,11 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
         context,
         listen: false,
       ).setCurrentExhibit(exhibit.id);
-      if (!_quizPromptShown && canTakeQuiz && !hasCompletedQuiz) {
-        _quizPromptShown = true;
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => PremiumDialog(
-            title: l10n.quizPromptTitle,
-            icon: const Icon(
-              Icons.quiz_rounded,
-              color: AppColors.primaryGold,
-              size: 28,
-            ),
-            content: Text(
-              l10n.quizPromptDescription,
-              style: AppTextStyles.bodyPrimary(
-                context,
-              ).copyWith(color: Colors.white70),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  tourProvider.postponeQuiz(exhibit.id);
-                },
-                child: Text(
-                  l10n.later,
-                  style: AppTextStyles.buttonLabel(
-                    context,
-                  ).copyWith(color: Colors.white60),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, '/quiz', arguments: exhibit.id);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryGold,
-                  foregroundColor: AppColors.darkInk,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: Text(
-                  l10n.takeNow,
-                  style: AppTextStyles.buttonLabel(context),
-                ),
-              ),
-            ],
-          ),
-        );
-      }
     });
 
     return AppMenuShell(
       subHeader: const RobotStatusBanner(),
+      showChatButton: true,
       body: CustomScrollView(
         slivers: [
           _buildSliverAppBar(
@@ -186,231 +79,43 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20.0,
-                vertical: 24.0,
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.screenHorizontalCompact,
+                24,
+                AppSpacing.screenHorizontalCompact,
+                44,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildAudioCard(exhibit, l10n, cs),
-                  const SizedBox(height: 24),
-                  if (sessionProvider.isInActiveTour)
-                    _buildTakePhotoButton(l10n, cs, exhibit, prefs.language),
                   _buildFactChips(exhibit, l10n, cs),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: AppSpacing.sectionGap),
                   Text(
                     l10n.description.toUpperCase(),
-                    style: AppTextStyles.displaySectionTitle(context),
+                    style: AppTextStyles.premiumSectionLabel(
+                      context,
+                    ).copyWith(color: AppColors.softGold),
                   ),
                   const SizedBox(height: 12),
-                  Text(
-                    exhibit.getDescription(prefs.language),
-                    style: AppTextStyles.bodyPrimary(context).copyWith(
-                      height: 1.6,
-                      color: isDark ? AppColors.helperText : Colors.black87,
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(
+                      AppSpacing.cardPaddingCompact,
+                    ),
+                    decoration: AppDecorations.secondaryGlassCard(
+                      radius: 22,
+                      opacity: 0.52,
+                    ),
+                    child: Text(
+                      exhibit.getDescription(prefs.language),
+                      style: AppTextStyles.premiumBody(context).copyWith(
+                        height: 1.58,
+                        color: isDark ? AppColors.bodyText : Colors.black87,
+                      ),
                     ),
                   ),
-                  const SizedBox(height: 28),
-
-                  // Integrated Quiz Prompt
-                  if (!hasCompletedQuiz && canTakeQuiz)
-                    _buildQuizPrompt(l10n, cs, exhibit.id, isArabic)
-                  else if (hasCompletedQuiz)
-                    _buildQuizCompletedChip(
-                      l10n,
-                      cs,
-                      sessionProvider.quizResults
-                          .firstWhere(
-                            (result) => result.exhibitId == exhibit.id,
-                          )
-                          .correctAnswers,
-                      isArabic,
-                    ),
-
-                  const SizedBox(height: 28),
-                  _buildRouteButtons(l10n, cs),
-                  const SizedBox(height: 32),
                 ],
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuizPrompt(
-    AppLocalizations l10n,
-    ColorScheme cs,
-    String exhibitId,
-    bool isArabic,
-  ) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : Colors.amber.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.primaryGold.withOpacity(0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.quiz_outlined,
-                color: AppColors.primaryGold,
-                size: 24,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  l10n.takeQuickQuiz,
-                  style: AppTextStyles.bodyPrimary(context).copyWith(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 16,
-                    color: isDark ? Colors.white : AppColors.darkInk,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (context) => PremiumDialog(
-                        title: isArabic ? "هل أنت مستعد؟" : "Are you ready?",
-                        icon: const Icon(
-                          Icons.quiz_outlined,
-                          color: AppColors.primaryGold,
-                        ),
-                        content: Text(
-                          isArabic
-                              ? "أنهيت عرض توت عنخ آمون. هل تريد بدء الاختبار؟"
-                              : "You finished the Tutankhamun exhibit. Ready to start the quiz?",
-                          style: AppTextStyles.bodyPrimary(
-                            context,
-                          ).copyWith(color: Colors.white70, fontSize: 16),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              Provider.of<TourProvider>(
-                                context,
-                                listen: false,
-                              ).skipQuiz(exhibitId);
-                            },
-                            child: Text(
-                              isArabic ? "لاحقاً" : "Later",
-                              style: AppTextStyles.buttonLabel(
-                                context,
-                              ).copyWith(color: Colors.white60),
-                            ),
-                          ),
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      QuizScreen(exhibitId: exhibitId),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primaryGold,
-                              foregroundColor: AppColors.darkInk,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: Text(
-                              l10n.startQuiz,
-                              style: AppTextStyles.buttonLabel(
-                                context,
-                              ).copyWith(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryGold,
-                    foregroundColor: AppColors.darkInk,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    l10n.startQuiz,
-                    style: AppTextStyles.buttonLabel(
-                      context,
-                    ).copyWith(fontWeight: FontWeight.bold),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              TextButton(
-                onPressed: () {
-                  Provider.of<TourProvider>(
-                    context,
-                    listen: false,
-                  ).skipQuiz(exhibitId);
-                },
-                child: Text(
-                  isArabic ? "تخطي" : "Skip",
-                  style: AppTextStyles.buttonLabel(context).copyWith(
-                    color: isDark ? Colors.white70 : AppColors.mutedText,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuizCompletedChip(
-    AppLocalizations l10n,
-    ColorScheme cs,
-    int score,
-    bool isArabic,
-  ) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.green.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.green.withOpacity(0.3)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.check_circle_rounded, color: Colors.green, size: 20),
-          const SizedBox(width: 10),
-          Text(
-            isArabic ? "الاختبار مكتمل" : "Quiz Completed",
-            style: AppTextStyles.bodyPrimary(
-              context,
-            ).copyWith(color: Colors.green, fontWeight: FontWeight.bold),
-          ),
-          const Spacer(),
-          Text(
-            isArabic ? "النتيجة: $score" : "Score: $score",
-            style: AppTextStyles.bodyPrimary(context).copyWith(
-              color: Colors.green.shade800,
-              fontWeight: FontWeight.w900,
             ),
           ),
         ],
@@ -473,81 +178,6 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
     );
   }
 
-  // ---------- AUDIO CARD ----------
-
-  Widget _buildAudioCard(
-    Exhibit exhibit,
-    AppLocalizations l10n,
-    ColorScheme cs,
-  ) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: isDark ? AppColors.darkDivider : Colors.transparent,
-        ),
-        boxShadow: [
-          if (!isDark)
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Row(
-          children: [
-            InkWell(
-              onTap: () => _toggleAudio(exhibit, l10n),
-              borderRadius: BorderRadius.circular(30),
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryGold.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: AnimatedIcon(
-                  icon: AnimatedIcons.play_pause,
-                  progress: _playController,
-                  size: 32,
-                  color: AppColors.primaryGold,
-                ),
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.audioGuide,
-                    style: AppTextStyles.bodyPrimary(context).copyWith(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 15,
-                      color: isDark ? Colors.white : Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    l10n.audioNarration,
-                    style: AppTextStyles.metadata(context).copyWith(
-                      fontSize: 12,
-                      color: isDark ? AppColors.helperText : Colors.black54,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   // ---------- FACT CHIPS ----------
 
   Widget _buildFactChips(
@@ -567,107 +197,35 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen>
     ];
 
     return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      children: facts
-          .map(
-            (f) => Chip(
-              avatar: Icon(f['icon'] as IconData, size: 18, color: cs.primary),
-              label: Text(
+      spacing: 10,
+      runSpacing: 10,
+      children: facts.map((f) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: AppDecorations.secondaryGlassCard(
+            radius: 16,
+            opacity: 0.46,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                f['icon'] as IconData,
+                size: 16,
+                color: AppColors.primaryGold,
+              ),
+              const SizedBox(width: 7),
+              Text(
                 '${f['label']}: ${f['value']}',
-                style: AppTextStyles.metadata(context),
+                style: AppTextStyles.premiumMutedBody(context).copyWith(
+                  color: isDark ? AppColors.bodyText : Colors.black87,
+                  fontSize: 12,
+                ),
               ),
-              backgroundColor: AppColors.primaryGold.withOpacity(0.1),
-              labelStyle: AppTextStyles.metadata(
-                context,
-              ).copyWith(color: isDark ? Colors.white : Colors.black),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                side: BorderSide(color: AppColors.primaryGold.withOpacity(0.2)),
-              ),
-            ),
-          )
-          .toList(),
-    );
-  }
-
-  // ---------- ROUTE / MAP BUTTONS ----------
-
-  Widget _buildRouteButtons(AppLocalizations l10n, ColorScheme cs) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        OutlinedButton.icon(
-          onPressed: () {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(l10n.addedToRoute)));
-          },
-          icon: const Icon(Icons.route),
-          label: Text(
-            l10n.addToMyRoute,
-            style: AppTextStyles.buttonLabel(context).copyWith(fontSize: 14),
+            ],
           ),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: AppColors.primaryGold,
-            side: BorderSide(color: AppColors.primaryGold.withOpacity(0.4)),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        TextButton.icon(
-          onPressed: () {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(l10n.openingMap)));
-          },
-          icon: const Icon(Icons.map_outlined, color: AppColors.primaryGold),
-          label: Text(
-            l10n.viewOnMap,
-            style: AppTextStyles.buttonLabel(
-              context,
-            ).copyWith(color: AppColors.primaryGold, fontSize: 14),
-          ),
-          style: TextButton.styleFrom(foregroundColor: AppColors.primaryGold),
-        ),
-      ],
+        );
+      }).toList(),
     );
-  }
-
-  Widget _buildTakePhotoButton(
-    AppLocalizations l10n,
-    ColorScheme cs,
-    Exhibit exhibit,
-    String language,
-  ) {
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
-    return ElevatedButton.icon(
-      onPressed: () => _takePhoto(exhibit, language),
-      icon: const Icon(Icons.camera_alt),
-      label: Text(isArabic ? 'التقط صورة' : 'Take Photo'),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primaryGold,
-        foregroundColor: AppColors.darkInk,
-        minimumSize: const Size(double.infinity, 48),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-    );
-  }
-
-  void _takePhoto(Exhibit exhibit, String language) {
-    // Simulate taking photo - in real app, would use camera
-    final memory = TourMemory(
-      exhibitId: exhibit.id,
-      exhibitName: exhibit.getName(language),
-      note: 'Photo taken at ${DateTime.now()}',
-      imagePath: 'assets/images/placeholder_photo.jpg', // Mock path
-    );
-    context.read<AppSessionProvider>().addMemory(memory);
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Photo saved to memories!')));
   }
 }

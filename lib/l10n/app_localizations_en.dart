@@ -1834,7 +1834,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ticketsPurchaseComplete =>
-      'Booking confirmed. Your tickets were saved.';
+      'Booking created successfully. Please pay at the museum counter to activate your QR code and Horus-Bot tour.';
 
   @override
   String get ticketId => 'Ticket ID';
@@ -1899,7 +1899,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmBooking => 'Confirm booking';
 
   @override
-  String get paymentStatusPayAtCounter => 'Payment status: Pay at counter';
+  String get paymentStatusPayAtCounter => 'Payment pending: Pay at counter';
 
   @override
   String get cancelBooking => 'Cancel booking';

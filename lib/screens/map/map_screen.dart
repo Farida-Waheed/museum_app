@@ -277,49 +277,57 @@ class _MapScreenState extends State<MapScreen>
                 // Map title content, beneath the Horus-Bot header identity.
                 Container(
                   padding: EdgeInsetsDirectional.fromSTEB(
-                    20,
+                    AppSpacing.screenHorizontalCompact,
                     MediaQuery.paddingOf(context).top + 74,
-                    20,
+                    AppSpacing.screenHorizontalCompact,
                     16,
                   ),
                   decoration: AppDecorations.cinematicBackground(),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: isArabic
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.museumMap,
-                            style: AppTextStyles.titleMedium(
-                              context,
-                            ).copyWith(fontSize: 15),
-                            textAlign: isArabic
-                                ? TextAlign.right
-                                : TextAlign.left,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            contentSubtitle,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: AppTextStyles.metadata(
-                              context,
-                            ).copyWith(color: AppColors.bodyText),
-                            textAlign: isArabic
-                                ? TextAlign.right
-                                : TextAlign.left,
-                          ),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: isArabic
+                              ? CrossAxisAlignment.end
+                              : CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.museumMap,
+                              style: AppTextStyles.premiumSectionLabel(
+                                context,
+                              ).copyWith(color: AppColors.softGold),
+                              textAlign: isArabic
+                                  ? TextAlign.right
+                                  : TextAlign.left,
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              contentSubtitle,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTextStyles.premiumMutedBody(
+                                context,
+                              ).copyWith(color: AppColors.bodyText),
+                              textAlign: isArabic
+                                  ? TextAlign.right
+                                  : TextAlign.left,
+                            ),
+                          ],
+                        ),
                       ),
+                      const SizedBox(width: 12),
                       _FilterChip(label: l10n.exhibits),
                     ],
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsetsDirectional.fromSTEB(20, 0, 20, 8),
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                    AppSpacing.screenHorizontalCompact,
+                    0,
+                    AppSpacing.screenHorizontalCompact,
+                    12,
+                  ),
                   child: _MapStatusPanel(
                     sessionProvider: sessionProvider,
                     tourProvider: tourProvider,
@@ -350,14 +358,14 @@ class _MapScreenState extends State<MapScreen>
                 if (sessionProvider.shouldShowFollowControls)
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
+                      horizontal: AppSpacing.screenHorizontalCompact,
                       vertical: 8,
                     ),
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                    child: Container(
+                      decoration: AppDecorations.secondaryGlassCard(
+                        radius: 20,
+                        opacity: 0.50,
                       ),
-                      color: AppColors.darkSurfaceSecondary,
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
@@ -374,9 +382,11 @@ class _MapScreenState extends State<MapScreen>
                                             FollowModeState.on
                                         ? l10n.mapFollowingHorus
                                         : l10n.mapExploreOwnPace,
-                                    style: AppTextStyles.bodyPrimary(
-                                      context,
-                                    ).copyWith(fontWeight: FontWeight.w700),
+                                    style: AppTextStyles.bodyPrimary(context)
+                                        .copyWith(
+                                          color: AppColors.whiteTitle,
+                                          fontWeight: FontWeight.w800,
+                                        ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
@@ -926,7 +936,7 @@ class _MapStatusPanel extends StatelessWidget {
     final canRecover = onRecover != null;
     return Container(
       padding: const EdgeInsets.all(14),
-      decoration: AppDecorations.secondaryGlassCard(radius: 18, opacity: 0.72),
+      decoration: AppDecorations.premiumGlassCard(radius: 24, opacity: 0.58),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -954,9 +964,9 @@ class _MapStatusPanel extends StatelessWidget {
                   children: [
                     Text(
                       status.title,
-                      style: AppTextStyles.bodyPrimary(
+                      style: AppTextStyles.premiumCardTitle(
                         context,
-                      ).copyWith(fontWeight: FontWeight.w800),
+                      ).copyWith(color: AppColors.whiteTitle, fontSize: 16),
                       textAlign: TextAlign.start,
                     ),
                     const SizedBox(height: 3),
@@ -1345,7 +1355,7 @@ class _ExhibitPreviewOverlay extends StatelessWidget {
             child: SafeArea(
               top: false,
               child: Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 84),
+                padding: const EdgeInsetsDirectional.fromSTEB(16, 0, 16, 104),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(28),
                   child: Container(
@@ -1379,7 +1389,9 @@ class _ExhibitPreviewOverlay extends StatelessWidget {
                           ],
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(20),
+                          padding: const EdgeInsets.all(
+                            AppSpacing.cardPaddingCompact,
+                          ),
                           child: Column(
                             crossAxisAlignment: isArabic
                                 ? CrossAxisAlignment.end

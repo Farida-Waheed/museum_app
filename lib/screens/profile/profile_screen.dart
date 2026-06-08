@@ -97,9 +97,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (!context.mounted) return;
     if (!loggedOut) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(_genericFailureMessage(isArabic))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_genericFailureMessage(isArabic))));
       return;
     }
     Navigator.pushNamedAndRemoveUntil(
@@ -214,6 +214,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ? null
                       : () async {
                           setDialogState(() => isSaving = true);
+                          if (phoneController.text.trim().isEmpty) {
+                            setDialogState(() => isSaving = false);
+                            ScaffoldMessenger.of(dialogContext).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  isArabic
+                                      ? '\u0631\u0642\u0645 \u0627\u0644\u0647\u0627\u062a\u0641 \u0645\u0637\u0644\u0648\u0628.'
+                                      : 'Phone number is required.',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
                           final ok = await authProvider.updateProfile(
                             fullName: fullNameController.text,
                             displayName: displayNameController.text,
@@ -261,9 +274,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       language == 'arabic' ? 'ar' : 'en',
     );
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(_profileUpdatedMessage(isArabic))),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(_profileUpdatedMessage(isArabic))));
   }
 
   @override
@@ -288,7 +301,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           child: SafeArea(
             child: ListView(
-              padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 120),
+              padding: const EdgeInsetsDirectional.fromSTEB(
+                AppSpacing.screenHorizontalCompact,
+                24,
+                AppSpacing.screenHorizontalCompact,
+                148,
+              ),
               children: [
                 if (authProvider.isLoading && user == null) ...[
                   _ProfileStateCard(
@@ -300,7 +318,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     isLoading: true,
                     isArabic: isArabic,
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.cardGap),
                 ],
                 if (authProvider.hasError && user == null) ...[
                   _ProfileStateCard(
@@ -314,7 +332,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         context.read<AuthProvider>().retryProfileLoad(),
                     isArabic: isArabic,
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.cardGap),
                 ],
                 _ProfileHeader(
                   name: user?.name ?? l10n.guestVisitor,
@@ -324,8 +342,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   avatarUrl: user?.avatarUrl,
                   isArabic: isArabic,
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.cardGap),
                 if (user != null) ...[
+                  if ((user.phoneNumber ?? '').trim().isEmpty) ...[
+                    _ProfileStateCard(
+                      icon: Icons.phone_outlined,
+                      title: isArabic
+                          ? '\u0623\u0636\u0641 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641\u0643'
+                          : 'Add your phone number',
+                      message: isArabic
+                          ? '\u0623\u0636\u0641 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641\u0643 \u0644\u0625\u0643\u0645\u0627\u0644 \u0645\u0644\u0641 \u0627\u0644\u0632\u0627\u0626\u0631.'
+                          : 'Add your phone number to complete your visitor profile.',
+                      buttonLabel: isArabic
+                          ? '\u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0645\u0644\u0641'
+                          : 'Update profile',
+                      onPressed: () => _editProfile(context, isArabic),
+                      isArabic: isArabic,
+                    ),
+                    const SizedBox(height: AppSpacing.cardGap),
+                  ],
                   _ActionTile(
                     icon: Icons.edit_outlined,
                     title: isArabic ? 'تعديل الملف الشخصي' : 'Edit profile',
@@ -352,7 +387,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                   ],
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.cardGap),
                 if (userId == null || userId.isEmpty)
                   _AccountGate(isArabic: isArabic)
                 else
@@ -368,9 +403,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                     },
                   ),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.sectionGap),
                 _SectionTitle(isArabic ? 'الوصول السريع' : 'Quick access'),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 _ActionTile(
                   icon: Icons.confirmation_number_outlined,
                   title: l10n.myTickets,
@@ -379,14 +414,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       : 'Museum Entry Tickets and Horus-Bot Tour Tickets',
                   onTap: () =>
                       Navigator.pushNamed(context, AppRoutes.myTickets),
-                ),
-                _ActionTile(
-                  icon: Icons.event_outlined,
-                  title: l10n.events,
-                  subtitle: isArabic
-                      ? 'الفعاليات والعروض المتاحة في المتحف'
-                      : 'Museum events and scheduled moments',
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.events),
                 ),
                 _ActionTile(
                   icon: Icons.photo_library_outlined,
@@ -416,32 +443,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 _ActionTile(
-                  icon: Icons.emoji_events_outlined,
-                  title: l10n.achievements,
-                  subtitle: isArabic
-                      ? 'الشارات وتقدم الزيارة'
-                      : 'Badges and visit progress',
-                  onTap: () =>
-                      Navigator.pushNamed(context, AppRoutes.achievements),
-                ),
-                _ActionTile(
-                  icon: Icons.feedback_outlined,
-                  title: l10n.feedback,
-                  subtitle: isArabic
-                      ? 'شاركنا رأيك في التجربة'
-                      : 'Share your visit feedback',
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.feedback),
-                ),
-                _ActionTile(
-                  icon: Icons.support_agent_outlined,
-                  title: l10n.supportInboxTitle,
-                  subtitle: isArabic
-                      ? 'طلبات ومحادثات الدعم'
-                      : 'Support requests and conversations',
-                  onTap: () =>
-                      Navigator.pushNamed(context, AppRoutes.supportInbox),
-                ),
-                _ActionTile(
                   icon: Icons.info_outline,
                   title: l10n.about,
                   subtitle: isArabic
@@ -449,14 +450,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       : 'About the Horus-Bot project',
                   onTap: () =>
                       Navigator.pushNamed(context, AppRoutes.projectInfo),
-                ),
-                _ActionTile(
-                  icon: Icons.groups_2_outlined,
-                  title: l10n.team,
-                  subtitle: isArabic
-                      ? 'الفريق والمشرفون'
-                      : 'Team members and supervisors',
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.team),
                 ),
                 const SizedBox(height: 22),
                 SizedBox(
@@ -513,7 +506,7 @@ class _ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
       decoration: AppDecorations.premiumGlassCard(
         radius: 24,
         highlighted: true,
@@ -533,9 +526,9 @@ class _ProfileHeader extends StatelessWidget {
                   name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.titleLarge(
+                  style: AppTextStyles.premiumScreenTitle(
                     context,
-                  ).copyWith(color: Colors.white),
+                  ).copyWith(color: AppColors.whiteTitle, fontSize: 24),
                 ),
                 const SizedBox(height: 5),
                 Text(
@@ -577,8 +570,8 @@ class _ProfileStateCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: AppDecorations.secondaryGlassCard(radius: 20),
+      padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
+      decoration: AppDecorations.secondaryGlassCard(radius: 22, opacity: 0.52),
       child: Column(
         crossAxisAlignment: isArabic
             ? CrossAxisAlignment.end
@@ -602,10 +595,9 @@ class _ProfileStateCard extends StatelessWidget {
                 child: Text(
                   title,
                   textAlign: TextAlign.start,
-                  style: AppTextStyles.bodyPrimary(context).copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                  ),
+                  style: AppTextStyles.bodyPrimary(
+                    context,
+                  ).copyWith(color: Colors.white, fontWeight: FontWeight.w800),
                 ),
               ),
             ],
@@ -622,10 +614,7 @@ class _ProfileStateCard extends StatelessWidget {
           ],
           if (buttonLabel != null && onPressed != null) ...[
             const SizedBox(height: 14),
-            FilledButton(
-              onPressed: onPressed,
-              child: Text(buttonLabel!),
-            ),
+            FilledButton(onPressed: onPressed, child: Text(buttonLabel!)),
           ],
         ],
       ),
@@ -647,7 +636,7 @@ class _ProfileTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 10),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
@@ -715,8 +704,8 @@ class _InfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: AppDecorations.secondaryGlassCard(radius: 20),
+      padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
+      decoration: AppDecorations.secondaryGlassCard(radius: 22, opacity: 0.52),
       child: Column(
         children: rows
             .map(
@@ -779,7 +768,8 @@ class _StatsGrid extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       crossAxisSpacing: 10,
-      childAspectRatio: 0.95,
+      mainAxisSpacing: 10,
+      childAspectRatio: 1.05,
       children: [
         _StatCard(
           icon: Icons.museum_outlined,
@@ -815,12 +805,21 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: AppDecorations.secondaryGlassCard(radius: 18),
+      padding: const EdgeInsets.all(12),
+      decoration: AppDecorations.secondaryGlassCard(radius: 20, opacity: 0.50),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: AppColors.primaryGold, size: 22),
+          Container(
+            width: 34,
+            height: 34,
+            decoration: BoxDecoration(
+              color: AppColors.primaryGold.withValues(alpha: 0.12),
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.goldBorder(0.18)),
+            ),
+            child: Icon(icon, color: AppColors.primaryGold, size: 18),
+          ),
           const Spacer(),
           Text(
             value,
@@ -870,7 +869,7 @@ class _SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       title.toUpperCase(),
-      style: AppTextStyles.displaySectionTitle(
+      style: AppTextStyles.premiumSectionLabel(
         context,
       ).copyWith(color: AppColors.softGold),
     );
@@ -894,24 +893,28 @@ class _ActionTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final isArabic = Directionality.of(context) == TextDirection.rtl;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(18),
           onTap: onTap,
           child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: AppDecorations.secondaryGlassCard(radius: 18),
+            padding: const EdgeInsets.all(14),
+            decoration: AppDecorations.secondaryGlassCard(
+              radius: 20,
+              opacity: 0.50,
+            ),
             child: Row(
               textDirection: Directionality.of(context),
               children: [
                 Container(
-                  width: 44,
-                  height: 44,
+                  width: 42,
+                  height: 42,
                   decoration: BoxDecoration(
                     color: AppColors.primaryGold.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(14),
+                    shape: BoxShape.circle,
+                    border: Border.all(color: AppColors.goldBorder(0.18)),
                   ),
                   child: Icon(icon, color: AppColors.primaryGold),
                 ),

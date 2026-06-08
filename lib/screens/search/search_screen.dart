@@ -54,7 +54,8 @@ class _SearchScreenState extends State<SearchScreen> {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
     final l10n = AppLocalizations.of(context)!;
-    final providerExhibits = context.watch<ExhibitProvider>().exhibits;
+    final exhibitProvider = context.watch<ExhibitProvider>();
+    final providerExhibits = exhibitProvider.exhibits;
     if (!identical(_allExhibits, providerExhibits)) {
       _allExhibits = providerExhibits;
       _filteredExhibits = _searchController.text.isEmpty
@@ -68,15 +69,21 @@ class _SearchScreenState extends State<SearchScreen> {
     return AppMenuShell(
       title: l10n.searchExhibits,
       backgroundColor: AppColors.cinematicBackground,
+      showChatButton: true,
       body: DecoratedBox(
         decoration: const BoxDecoration(
           gradient: AppGradients.screenBackground,
         ),
         child: ListView(
-          padding: const EdgeInsetsDirectional.fromSTEB(0, 8, 0, 32),
+          padding: const EdgeInsetsDirectional.fromSTEB(
+            AppSpacing.screenHorizontalCompact,
+            16,
+            AppSpacing.screenHorizontalCompact,
+            48,
+          ),
           children: [
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.only(bottom: 18),
               child: TextField(
                 controller: _searchController,
                 onChanged: _filter,
@@ -97,32 +104,30 @@ class _SearchScreenState extends State<SearchScreen> {
                         )
                       : null,
                   hintText: l10n.searchByExhibitName,
-                  hintStyle: AppTextStyles.bodyPrimary(
+                  hintStyle: AppTextStyles.premiumMutedBody(
                     context,
-                  ).copyWith(color: AppColors.helperText),
+                  ).copyWith(fontSize: 14),
                   filled: true,
-                  fillColor: AppColors.cinematicCard,
+                  fillColor: AppColors.cinematicCard.withValues(alpha: 0.82),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 16,
                   ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(26),
-                    borderSide: BorderSide.none,
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(22),
+                    borderSide: BorderSide(color: AppColors.goldBorder(0.10)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(22),
+                    borderSide: BorderSide(color: AppColors.goldBorder(0.42)),
                   ),
                 ),
               ),
             ),
-            const SizedBox(height: 4),
-            if (_allExhibits.isEmpty)
-              const Padding(
-                padding: EdgeInsets.only(top: 40),
-                child: Center(
-                  child: CircularProgressIndicator(
-                    color: AppColors.primaryGold,
-                  ),
-                ),
-              )
+            if (_allExhibits.isEmpty && exhibitProvider.isLoading)
+              const _SearchLoadingState()
+            else if (_allExhibits.isEmpty)
+              _buildEmptyState(l10n)
             else if (_filteredExhibits.isEmpty &&
                 _searchController.text.isNotEmpty)
               _buildEmptyState(l10n)
@@ -159,21 +164,58 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildEmptyState(AppLocalizations l10n) {
     return Padding(
-      padding: const EdgeInsets.all(32),
-      child: Column(
-        children: [
-          const Icon(Icons.search_off, size: 56, color: AppColors.primaryGold),
-          const SizedBox(height: 16),
-          Text(l10n.noResultsFound, style: AppTextStyles.titleLarge(context)),
-          const SizedBox(height: 8),
-          Text(
-            l10n.noResultsFoundDesc,
-            textAlign: TextAlign.center,
-            style: AppTextStyles.bodyPrimary(
-              context,
-            ).copyWith(color: AppColors.helperText),
-          ),
-        ],
+      padding: const EdgeInsets.only(top: 18),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(AppSpacing.cardPadding),
+        decoration: AppDecorations.premiumGlassCard(radius: 24),
+        child: Column(
+          children: [
+            Container(
+              width: 54,
+              height: 54,
+              decoration: BoxDecoration(
+                color: AppColors.primaryGold.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.goldBorder(0.22)),
+              ),
+              child: const Icon(
+                Icons.search_off_rounded,
+                size: 28,
+                color: AppColors.primaryGold,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.noResultsFound,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.premiumCardTitle(context),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.noResultsFoundDesc,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.premiumMutedBody(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SearchLoadingState extends StatelessWidget {
+  const _SearchLoadingState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(top: 18),
+      padding: const EdgeInsets.all(AppSpacing.cardPadding),
+      decoration: AppDecorations.premiumGlassCard(radius: 24),
+      child: const Center(
+        child: CircularProgressIndicator(color: AppColors.primaryGold),
       ),
     );
   }
@@ -196,30 +238,29 @@ class _SearchResultTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      decoration: BoxDecoration(
-        color: AppColors.cinematicCard,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.goldBorder(0.10)),
-      ),
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: AppDecorations.secondaryGlassCard(radius: 22, opacity: 0.54),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
         child: Padding(
-          padding: const EdgeInsets.all(10),
+          padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
           child: Row(
             textDirection: Directionality.of(context),
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(16),
                 child: Container(
-                  width: 56,
-                  height: 56,
-                  color: AppColors.primaryGold.withOpacity(0.1),
+                  width: 58,
+                  height: 58,
+                  decoration: BoxDecoration(
+                    gradient: AppGradients.premiumGold,
+                    border: Border.all(color: AppColors.goldBorder(0.22)),
+                  ),
                   child: const Icon(
                     Icons.museum_outlined,
-                    size: 28,
-                    color: AppColors.primaryGold,
+                    size: 27,
+                    color: AppColors.darkInk,
                   ),
                 ),
               ),
@@ -232,16 +273,20 @@ class _SearchResultTile extends StatelessWidget {
                   children: [
                     Text(
                       exhibit.getName(prefs.language),
-                      style: AppTextStyles.titleMedium(
+                      style: AppTextStyles.premiumCardTitle(
                         context,
-                      ).copyWith(fontSize: 15),
+                      ).copyWith(fontSize: 16),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       l10n.tapToViewDetailsAudioGuide,
-                      style: AppTextStyles.metadata(context),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppTextStyles.premiumMutedBody(
+                        context,
+                      ).copyWith(fontSize: 12),
                     ),
                   ],
                 ),
@@ -252,7 +297,7 @@ class _SearchResultTile extends StatelessWidget {
                     ? Icons.chevron_left_rounded
                     : Icons.chevron_right_rounded,
                 size: 20,
-                color: Colors.white24,
+                color: AppColors.primaryGold.withValues(alpha: 0.62),
               ),
             ],
           ),

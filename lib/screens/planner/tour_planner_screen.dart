@@ -38,19 +38,17 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
     'Photography spots',
   ];
   static const List<String> _accessibilityOptions = [
-    'Wheelchair Friendly',
-    'Avoid Stairs',
     'Family Friendly',
     'Rest Stops Preferred',
   ];
   static const List<_DurationOption> _durationOptions = [
-    _DurationOption('Express', 30, 3),
-    _DurationOption('Standard', 45, 5),
-    _DurationOption('Extended', 60, 7),
-    _DurationOption('Full Experience', 90, 10),
+    _DurationOption('Express', 30, 6),
+    _DurationOption('Standard', 45, 9),
+    _DurationOption('Extended', 60, 12),
+    _DurationOption('Full Experience', 90, 18),
   ];
 
-  final Set<String> _selectedInterests = {'Royal artifacts'};
+  final Set<String> _selectedInterests = {};
   final Set<String> _selectedExhibitIds = {};
   final Set<String> _accessibilityPreferences = {};
   RobotTourType _tourType = RobotTourType.personalized;
@@ -98,16 +96,17 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
       backgroundColor: AppColors.cinematicBackground,
       hideDefaultAppBar: true,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
+      showChatButton: true,
       body: Container(
         decoration: AppDecorations.cinematicBackground(),
         child: Directionality(
           textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: SingleChildScrollView(
             padding: EdgeInsetsDirectional.fromSTEB(
-              20,
-              MediaQuery.paddingOf(context).top + 10,
-              20,
-              156,
+              AppSpacing.screenHorizontalCompact,
+              MediaQuery.paddingOf(context).top + 12,
+              AppSpacing.screenHorizontalCompact,
+              176,
             ),
             child: Column(
               crossAxisAlignment: isArabic
@@ -117,9 +116,9 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                 _PlannerHeader(
                   onMenu: () => AppMenuShell.of(context)?.toggleMenu(),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.cardGap),
                 const _HeroCard(),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.sectionGap),
                 _SectionCard(
                   title: 'Tour type',
                   child: Row(
@@ -151,7 +150,7 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.cardGap),
                 _SectionCard(
                   title: 'Tour duration',
                   subtitle:
@@ -168,7 +167,7 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                     }).toList(),
                   ),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.cardGap),
                 _SectionCard(
                   title: 'Interests',
                   subtitle: 'Select what you want Horus to focus on.',
@@ -190,7 +189,7 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                     }).toList(),
                   ),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.cardGap),
                 _SectionCard(
                   title: 'Accessibility preferences',
                   subtitle:
@@ -214,14 +213,14 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                     }).toList(),
                   ),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.cardGap),
                 _PhotoExperienceCard(
                   enabled: _includePhotoStops,
                   onChanged: (value) => _updateDraft(() {
                     _includePhotoStops = value;
                   }),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.sectionGap),
                 _SectionCard(
                   title: 'Select exhibits',
                   subtitle: _exhibitFilterNote(
@@ -234,7 +233,9 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                           child: Center(child: CircularProgressIndicator()),
                         )
                       : exhibits.isEmpty
-                      ? _EmptyText(text: 'No exhibits are available right now.')
+                      ? const _EmptyText(
+                          text: 'No exhibits are available right now.',
+                        )
                       : Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -256,7 +257,7 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                             ],
                             ...visibleExhibits.map((exhibit) {
                               return Padding(
-                                padding: const EdgeInsets.only(bottom: 12),
+                                padding: const EdgeInsets.only(bottom: 10),
                                 child: _ExhibitCard(
                                   exhibit: exhibit,
                                   isArabic: isArabic,
@@ -270,18 +271,18 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                           ],
                         ),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.cardGap),
                 _SectionCard(
                   title: 'Recommended for you',
                   subtitle: 'Based on selected interests and exhibit data.',
                   child: recommended.isEmpty
-                      ? _EmptyText(
+                      ? const _EmptyText(
                           text: 'Choose interests to see matching exhibits.',
                         )
                       : Column(
                           children: recommended.take(4).map((exhibit) {
                             return Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
+                              padding: const EdgeInsets.only(bottom: 8),
                               child: _RecommendationCard(
                                 exhibit: exhibit,
                                 isArabic: isArabic,
@@ -293,17 +294,17 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                           }).toList(),
                         ),
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.cardGap),
                 if (_showValidation) ...[
                   _PlannerNotice(
                     text:
                         _inlineMessage ??
                         'Select at least one interest or exhibit to generate your Horus-Bot tour.',
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.cardGap),
                 ] else if (_inlineMessage != null) ...[
                   _PlannerNotice(text: _inlineMessage!),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.cardGap),
                 ],
                 if (_generated) ...[
                   _GeneratedRouteCard(
@@ -318,7 +319,7 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                     includePhotoStops: _includePhotoStops,
                     isArabic: isArabic,
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: AppSpacing.cardGap),
                 ],
                 _SummaryCard(
                   isArabic: isArabic,
@@ -333,7 +334,7 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                   languageLabel: languageLabel,
                   matchScore: matchScore,
                 ),
-                const SizedBox(height: 18),
+                const SizedBox(height: AppSpacing.cardGap),
                 PrimaryButton(
                   label: _generated ? 'Book this tour' : 'Generate my tour',
                   onPressed: () {
@@ -374,7 +375,7 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
         _generated = false;
         _showValidation = false;
         _inlineMessage =
-            'You selected the maximum number of stops for this duration.';
+            'This duration supports up to ${_targetStopsForDuration()} stops.';
       });
       return;
     }
@@ -535,7 +536,20 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
     if (_showAllExhibits || _selectedInterests.isEmpty) {
       return 'Showing all available exhibits. Selected: ${_selectedExhibitIds.length} / ${_targetStopsForDuration()} stops.';
     }
-    return 'Showing exhibits matching your selected interests. Selected: ${_selectedExhibitIds.length} / ${_targetStopsForDuration()} stops. $visibleCount of $totalCount shown.';
+    final interests = _selectedInterests.join(', ');
+    final exactMatches = _filteredExhibitMatchCount();
+    if (exactMatches == 0) {
+      return 'No exact matches. Showing all exhibits so you can still build your tour. Selected: ${_selectedExhibitIds.length} / ${_targetStopsForDuration()} stops.';
+    }
+    return 'Showing exhibits matching: $interests. Selected: ${_selectedExhibitIds.length} / ${_targetStopsForDuration()} stops. $visibleCount of $totalCount shown.';
+  }
+
+  int _filteredExhibitMatchCount() {
+    final exhibitProvider = context.read<ExhibitProvider>();
+    final exhibits = exhibitProvider.exhibits
+        .where((exhibit) => exhibit.isActive)
+        .toList();
+    return exhibits.where(_matchesSelectedInterests).length;
   }
 
   List<String> _routeReasons({
@@ -687,7 +701,7 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
           ..addAll(_stringList(data['exhibitIds']));
         _accessibilityPreferences
           ..clear()
-          ..addAll(_stringList(data['accessibility']));
+          ..addAll(_supportedAccessibilityValues(data['accessibility']));
       });
     } catch (_) {
       return;
@@ -707,6 +721,11 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
         'accessibility': _accessibilityPreferences.toList(),
       }),
     );
+  }
+
+  List<String> _supportedAccessibilityValues(Object? value) {
+    final allowed = _accessibilityOptions.toSet();
+    return _stringList(value).where(allowed.contains).toList();
   }
 
   List<String> _stringList(Object? value) {
@@ -854,7 +873,7 @@ class _HeroCard extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.all(22),
+            padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
             child: Row(
               children: [
                 Container(
@@ -922,7 +941,7 @@ class _SectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
       decoration: AppDecorations.premiumGlassCard(radius: 24, opacity: 0.58),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -930,7 +949,7 @@ class _SectionCard extends StatelessWidget {
           Text(
             title,
             textAlign: TextAlign.start,
-            style: AppTextStyles.displaySectionTitle(
+            style: AppTextStyles.premiumSectionLabel(
               context,
             ).copyWith(color: AppColors.softGold),
           ),
@@ -977,7 +996,7 @@ class _TourTypeTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(14),
       child: Container(
         constraints: const BoxConstraints(minHeight: 128),
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.all(12),
         decoration: selected
             ? AppDecorations.premiumGlassCard(
                 radius: 18,
@@ -1055,7 +1074,7 @@ class _DurationChip extends StatelessWidget {
       borderRadius: BorderRadius.circular(14),
       child: Container(
         width: 142,
-        padding: const EdgeInsets.all(14),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: selected
             ? AppDecorations.premiumGlassCard(
                 radius: 18,
@@ -1135,13 +1154,13 @@ class _PhotoExperienceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
       decoration: AppDecorations.premiumGlassCard(radius: 24, opacity: 0.58),
       child: Row(
         children: [
           Container(
-            width: 42,
-            height: 42,
+            width: 40,
+            height: 40,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
               gradient: AppGradients.premiumGold,
@@ -1206,7 +1225,7 @@ class _ExhibitCard extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(14),
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(9),
         decoration: selected
             ? AppDecorations.premiumGlassCard(
                 radius: 18,
@@ -1287,7 +1306,7 @@ class _RecommendationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(10),
       decoration: AppDecorations.secondaryGlassCard(radius: 18, opacity: 0.54),
       child: Row(
         children: [
@@ -1354,7 +1373,7 @@ class _SelectionCounter extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Selected: $selected / $max exhibits',
+              'Selected: $selected / $max stops',
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.premiumCardTitle(
@@ -1363,7 +1382,7 @@ class _SelectionCounter extends StatelessWidget {
             ),
           ),
           Text(
-            '$remaining remaining',
+            '$remaining stops remaining',
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: AppTextStyles.metadata(
@@ -1476,7 +1495,7 @@ class _GeneratedRouteCard extends StatelessWidget {
     ];
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
       decoration: AppDecorations.premiumGlassCard(
         radius: 24,
         highlighted: true,
@@ -1490,7 +1509,7 @@ class _GeneratedRouteCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   'Your Horus Route',
-                  style: AppTextStyles.displaySectionTitle(
+                  style: AppTextStyles.premiumSectionLabel(
                     context,
                   ).copyWith(color: AppColors.softGold),
                 ),
@@ -1651,7 +1670,7 @@ class _SummaryCard extends StatelessWidget {
         : 'Standard Tour';
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
       decoration: AppDecorations.premiumGlassCard(
         radius: 24,
         highlighted: true,
@@ -1664,7 +1683,7 @@ class _SummaryCard extends StatelessWidget {
         children: [
           Text(
             'Tour Summary',
-            style: AppTextStyles.displaySectionTitle(
+            style: AppTextStyles.premiumSectionLabel(
               context,
             ).copyWith(color: AppColors.softGold),
           ),

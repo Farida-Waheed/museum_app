@@ -206,6 +206,19 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> sendPasswordResetEmail(String email) async {
+    _errorMessage = null;
+    notifyListeners();
+    try {
+      await _authService.sendPasswordResetEmail(email);
+      return true;
+    } catch (e) {
+      _errorMessage = _messageFromError(e);
+      notifyListeners();
+      return false;
+    }
+  }
+
   /// Sign in to the same Firebase account used by the web app.
   Future<bool> loadWebsiteAccount({
     required String email,

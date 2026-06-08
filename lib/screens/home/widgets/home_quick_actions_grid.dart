@@ -35,7 +35,7 @@ class HomeQuickActionsGrid extends StatelessWidget {
         crossAxisCount: 2,
         crossAxisSpacing: 12,
         mainAxisSpacing: 12,
-        childAspectRatio: 1.40,
+        childAspectRatio: 1.55,
       ),
       itemBuilder: (context, index) {
         final item = items[index];
@@ -49,7 +49,7 @@ class HomeQuickActionsGrid extends StatelessWidget {
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                 child: Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: AppColors.secondaryGlass(0.52),
                     borderRadius: BorderRadius.circular(24),
@@ -69,8 +69,8 @@ class HomeQuickActionsGrid extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
-                        width: 46,
-                        height: 46,
+                        width: 42,
+                        height: 42,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           color: AppColors.cardGlass(0.62),
@@ -86,7 +86,7 @@ class HomeQuickActionsGrid extends StatelessWidget {
                         child: Icon(
                           item.icon,
                           color: AppColors.primaryGold,
-                          size: 24,
+                          size: 22,
                         ),
                       ),
                       Column(

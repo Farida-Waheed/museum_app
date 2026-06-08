@@ -91,7 +91,7 @@ class HomeController {
       hasCompletedTourHistory:
           ticketProvider.hasCompletedTourHistory || isCompleted,
       ticketCount: ticketCount,
-      nextTicketQrAvailable: ticketProvider.hasTickets,
+      nextTicketQrAvailable: ticketProvider.hasValidMuseumEntryEntitlement,
       isRobotConnected: connected,
       connectedRobotId: connected ? sessionProvider.connectedRobotId : null,
       connectedRobotName: 'Horus-Bot',

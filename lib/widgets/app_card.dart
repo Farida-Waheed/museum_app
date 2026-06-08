@@ -40,7 +40,7 @@ class AppCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(AppSizes.radiusLg),
         child: Padding(
-          padding: padding ?? const EdgeInsets.all(20),
+          padding: padding ?? const EdgeInsets.all(AppSizes.md),
           child: child,
         ),
       ),

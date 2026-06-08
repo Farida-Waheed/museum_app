@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 
+import '../../app/router.dart';
+import '../../models/auth_provider.dart';
 import '../../models/user_preferences.dart';
 import '../../widgets/bottom_nav.dart';
 import '../../widgets/app_menu_shell.dart';
@@ -55,6 +57,30 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   }
 
   Future<void> _handleSubmit(bool isArabic) async {
+    final authProvider = context.read<AuthProvider>();
+    if (!authProvider.isLoggedIn) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isArabic
+                ? 'يرجى تسجيل الدخول لإرسال الملاحظات.'
+                : 'Please sign in to submit feedback.',
+          ),
+          action: SnackBarAction(
+            label: isArabic ? 'تسجيل الدخول' : 'Sign in',
+            onPressed: () {
+              Navigator.pushNamed(
+                context,
+                AppRoutes.login,
+                arguments: {'redirect': AppRoutes.feedback},
+              );
+            },
+          ),
+        ),
+      );
+      return;
+    }
+
     if (_rating == 0 && _commentController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

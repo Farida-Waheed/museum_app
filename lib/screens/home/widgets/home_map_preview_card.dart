@@ -36,7 +36,7 @@ class HomeMapPreviewCard extends StatelessWidget {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
-            height: 154,
+            height: 146,
             decoration: BoxDecoration(
               color: AppColors.cardGlass(0.58),
               borderRadius: BorderRadius.circular(24),

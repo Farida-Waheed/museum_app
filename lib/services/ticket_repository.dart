@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -39,8 +40,8 @@ class TicketRepository {
     final uid = _verifiedUid(userId);
     if (draft.visitorCount < 1 ||
         draft.visitorCount > BookingPricing.maxVisitorsPerBooking) {
-      throw TicketRepositoryException(
-        'Each Horus-Bot booking can include up to ${BookingPricing.maxVisitorsPerBooking} visitors.',
+      throw const TicketRepositoryException(
+        'Each Horus-Bot booking can include up to 10 visitors.',
       );
     }
     if (!draft.isVisitTimeFuture()) {
@@ -259,6 +260,57 @@ class TicketRepository {
     }
   }
 
+  Stream<TicketLoadResult> watchUserTickets(String userId) {
+    final uid = _verifiedUid(userId);
+    late final StreamController<TicketLoadResult> controller;
+    final subscriptions =
+        <StreamSubscription<QuerySnapshot<Map<String, dynamic>>>>[];
+    var reloadQueued = false;
+    var closed = false;
+
+    Future<void> reload() async {
+      if (closed) return;
+      if (reloadQueued) return;
+      reloadQueued = true;
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+      reloadQueued = false;
+      if (closed) return;
+      try {
+        controller.add(await loadUserTickets(uid));
+      } catch (error, stackTrace) {
+        controller.addError(error, stackTrace);
+      }
+    }
+
+    controller = StreamController<TicketLoadResult>(
+      onListen: () {
+        subscriptions.addAll([
+          _bookings
+              .where('userId', isEqualTo: uid)
+              .snapshots()
+              .listen((_) => reload(), onError: controller.addError),
+          _museumTickets
+              .where('userId', isEqualTo: uid)
+              .snapshots()
+              .listen((_) => reload(), onError: controller.addError),
+          _robotTourTickets
+              .where('userId', isEqualTo: uid)
+              .snapshots()
+              .listen((_) => reload(), onError: controller.addError),
+        ]);
+        reload();
+      },
+      onCancel: () async {
+        closed = true;
+        for (final subscription in subscriptions) {
+          await subscription.cancel();
+        }
+      },
+    );
+
+    return controller.stream;
+  }
+
   Future<MuseumTicket> validateMuseumTicketQr({
     required String userId,
     required String scannedCode,
@@ -291,6 +343,12 @@ class TicketRepository {
         throw TicketRepositoryException(
           'This ticket is ${ticket.status.name} and cannot be used.',
           code: 'ticket-not-active',
+        );
+      }
+      if (!_isPaymentConfirmed(ticket.paymentStatus)) {
+        throw const TicketRepositoryException(
+          'QR will be available after cashier confirmation.',
+          code: 'ticket-payment-pending',
         );
       }
 
@@ -489,18 +547,17 @@ class TicketRepository {
     required Map<String, dynamic> robotTicket,
   }) {
     final museumStatus = _stringValue(museumTicket['status']);
-    if (museumStatus == TicketStatus.used.name ||
-        museumStatus == TicketStatus.cancelled.name ||
-        museumStatus == TicketStatus.expired.name) {
+    if (!_isCancellableStatus(museumStatus)) {
       throw const TicketRepositoryException('Unable to cancel this booking.');
     }
 
     final robotStatus = _stringValue(robotTicket['status']);
-    if (robotStatus == TicketStatus.paired.name ||
+    if (!_isCancellableStatus(robotStatus) ||
+        robotStatus == TicketStatus.paired.name ||
         robotStatus == TicketStatus.in_progress.name ||
-        robotStatus == TicketStatus.completed.name ||
-        robotStatus == TicketStatus.cancelled.name ||
-        robotStatus == TicketStatus.expired.name) {
+        _dateValue(robotTicket['completed_at'] ?? robotTicket['completedAt']) !=
+            null ||
+        _stringValue(robotTicket['session_id']) != null) {
       throw const TicketRepositoryException('Unable to cancel this booking.');
     }
 
@@ -563,6 +620,18 @@ class TicketRepository {
       );
     }
     return uid;
+  }
+
+  bool _isPaymentConfirmed(String status) {
+    final normalized = status.trim().toLowerCase().replaceAll('-', '_');
+    return normalized == 'paid' || normalized == 'confirmed';
+  }
+
+  bool _isCancellableStatus(String? status) {
+    final normalized = status?.trim().toLowerCase().replaceAll('-', '_');
+    return normalized == TicketStatus.active.name ||
+        normalized == 'valid' ||
+        normalized == 'confirmed';
   }
 
   MuseumTicket _museumTicketFromDraft({
@@ -833,6 +902,13 @@ class TicketRepository {
 
   String? _stringValue(Object? value) {
     if (value is String && value.trim().isNotEmpty) return value;
+    return null;
+  }
+
+  DateTime? _dateValue(Object? value) {
+    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
+    if (value is String) return DateTime.tryParse(value);
     return null;
   }
 

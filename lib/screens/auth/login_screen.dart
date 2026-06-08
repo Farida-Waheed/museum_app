@@ -70,6 +70,79 @@ class _LoginScreenState extends State<LoginScreen> {
     setState(() => _isLoading = false);
   }
 
+  Future<void> _handleForgotPassword() async {
+    final l10n = AppLocalizations.of(context)!;
+    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final authProvider = context.read<AuthProvider>();
+    var email = _emailController.text.trim();
+
+    if (email.isEmpty) {
+      final controller = TextEditingController();
+      final entered = await showDialog<String>(
+        context: context,
+        builder: (dialogContext) {
+          return AlertDialog(
+            backgroundColor: AppColors.cinematicCard,
+            title: Text(
+              isArabic ? 'إعادة تعيين كلمة المرور' : 'Reset password',
+              style: AppTextStyles.titleLarge(
+                dialogContext,
+              ).copyWith(color: Colors.white),
+            ),
+            content: TextField(
+              controller: controller,
+              keyboardType: TextInputType.emailAddress,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: l10n.email,
+                hintText: l10n.emailHint,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(isArabic ? 'إلغاء' : 'Cancel'),
+              ),
+              FilledButton(
+                onPressed: () =>
+                    Navigator.pop(dialogContext, controller.text.trim()),
+                child: Text(isArabic ? 'إرسال' : 'Send'),
+              ),
+            ],
+          );
+        },
+      );
+      controller.dispose();
+      email = entered?.trim() ?? '';
+    }
+
+    if (email.isEmpty) {
+      _showError(
+        isArabic
+            ? 'يرجى إدخال بريدك الإلكتروني.'
+            : 'Please enter your email address.',
+      );
+      return;
+    }
+
+    final ok = await authProvider.sendPasswordResetEmail(email);
+    if (!mounted) return;
+    if (ok) {
+      _showError(
+        isArabic
+            ? 'تم إرسال بريد إعادة تعيين كلمة المرور. يرجى مراجعة بريدك.'
+            : 'Password reset email sent. Please check your inbox.',
+      );
+    } else {
+      _showError(
+        authProvider.errorMessage ??
+            (isArabic
+                ? 'تعذر إرسال بريد إعادة التعيين.'
+                : 'We could not send the reset email.'),
+      );
+    }
+  }
+
   void _showError(String message) {
     ScaffoldMessenger.of(
       context,
@@ -211,6 +284,24 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ? Icons.visibility_off_outlined
                                       : Icons.visibility_outlined,
                                   color: AppColors.softGold,
+                                ),
+                              ),
+                            ),
+                            Align(
+                              alignment: isArabic
+                                  ? Alignment.centerLeft
+                                  : Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: _isLoading
+                                    ? null
+                                    : _handleForgotPassword,
+                                child: Text(
+                                  isArabic
+                                      ? 'هل نسيت كلمة المرور؟'
+                                      : 'Forgot Password?',
+                                  style: AppTextStyles.premiumButtonLabel(
+                                    context,
+                                  ).copyWith(color: AppColors.primaryGold),
                                 ),
                               ),
                             ),

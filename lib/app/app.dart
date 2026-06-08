@@ -20,15 +20,19 @@ class MuseumApp extends StatelessWidget {
     return Consumer<UserPreferencesModel>(
       builder: (context, prefs, child) {
         ThemeMode themeMode;
-        switch (prefs.themeMode) {
-          case 'light':
-            themeMode = ThemeMode.light;
-            break;
-          case 'dark':
-            themeMode = ThemeMode.dark;
-            break;
-          default:
-            themeMode = ThemeMode.system;
+        if (prefs.isHighContrast) {
+          themeMode = ThemeMode.dark;
+        } else {
+          switch (prefs.themeMode) {
+            case 'light':
+              themeMode = ThemeMode.light;
+              break;
+            case 'dark':
+              themeMode = ThemeMode.dark;
+              break;
+            default:
+              themeMode = ThemeMode.system;
+          }
         }
 
         // Language-aware theme selection

@@ -36,15 +36,19 @@ class _NotificationSettingsScreenState
     if (!mounted) return;
     setState(() {
       _categoryStates = _prefManager.getAllCategoryStates();
-      _masterEnabled = _prefManager.notificationsEnabled;
+      _masterEnabled = _prefManager.areAllCategoriesEnabled();
       _initialized = true;
     });
+    await _prefManager.setNotificationsEnabled(_masterEnabled);
   }
 
   Future<void> _setMasterEnabled(bool enabled) async {
-    await _prefManager.setNotificationsEnabled(enabled);
+    await _prefManager.setAllNotificationsEnabled(enabled);
     if (!mounted) return;
-    setState(() => _masterEnabled = enabled);
+    setState(() {
+      _categoryStates = _prefManager.getAllCategoryStates();
+      _masterEnabled = enabled;
+    });
   }
 
   Future<void> _setCategoryEnabled(
@@ -52,8 +56,13 @@ class _NotificationSettingsScreenState
     bool enabled,
   ) async {
     await _prefManager.setCategoryEnabled(category, enabled);
+    final allCategoriesEnabled = _prefManager.areAllCategoriesEnabled();
+    await _prefManager.setNotificationsEnabled(allCategoriesEnabled);
     if (!mounted) return;
-    setState(() => _categoryStates[category] = enabled);
+    setState(() {
+      _categoryStates[category] = enabled;
+      _masterEnabled = allCategoriesEnabled;
+    });
   }
 
   @override

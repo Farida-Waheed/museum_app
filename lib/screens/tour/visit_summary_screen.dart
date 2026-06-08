@@ -12,7 +12,6 @@ import '../../models/exhibit_provider.dart';
 import '../../models/tour_provider.dart';
 import '../../services/visit_summary_repository.dart';
 import '../../widgets/app_menu_shell.dart';
-import '../../widgets/primary_button.dart';
 
 class VisitSummaryScreen extends StatefulWidget {
   const VisitSummaryScreen({super.key});
@@ -56,6 +55,7 @@ class _VisitSummaryScreenState extends State<VisitSummaryScreen> {
     return AppMenuShell(
       title: l10n.visitSummary.toUpperCase(),
       backgroundColor: AppColors.darkBackground,
+      showChatButton: true,
       body: DecoratedBox(
         decoration: const BoxDecoration(
           gradient: AppGradients.screenBackground,
@@ -237,27 +237,9 @@ class _SummaryContent extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 26),
-          PrimaryButton(
-            label: l10n.shareVisit,
-            onPressed: () {},
-            icon: Icons.share,
-            fullWidth: true,
-          ),
-          const SizedBox(height: 12),
           _OutlineAction(
             label: isArabic ? 'عرض ذكرياتي' : 'View My Memories',
             onPressed: () => Navigator.pushNamed(context, AppRoutes.memories),
-          ),
-          const SizedBox(height: 12),
-          _OutlineAction(
-            label: l10n.achievements,
-            onPressed: () =>
-                Navigator.pushNamed(context, AppRoutes.achievements),
-          ),
-          const SizedBox(height: 12),
-          _OutlineAction(
-            label: l10n.feedback,
-            onPressed: () => Navigator.pushNamed(context, AppRoutes.feedback),
           ),
           const SizedBox(height: 12),
           _OutlineAction(

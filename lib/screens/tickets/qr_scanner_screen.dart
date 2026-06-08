@@ -36,6 +36,8 @@ class _QrScannerScreenState extends State<QrScannerScreen>
     with TickerProviderStateMixin {
   bool _isScanned = false;
   late final AnimationController _scanAnim;
+  final TextEditingController _manualRobotCodeController =
+      TextEditingController(text: 'ROBOT-HORUS-001');
   final RobotPairingService _robotPairingService = RobotPairingService();
   final TicketRepository _ticketRepository = TicketRepository();
 
@@ -51,6 +53,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
 
   @override
   void dispose() {
+    _manualRobotCodeController.dispose();
     _scanAnim.dispose();
     super.dispose();
   }
@@ -100,6 +103,14 @@ class _QrScannerScreenState extends State<QrScannerScreen>
 
   void _handleCancel() {
     Navigator.pop(context);
+  }
+
+  void _submitManualRobotCode() {
+    if (_isScanned) return;
+    final code = _manualRobotCodeController.text.trim();
+    if (code.isEmpty) return;
+    setState(() => _isScanned = true);
+    _showResultDialog(code);
   }
 
   Future<void> _showResultDialog(String code) async {
@@ -375,24 +386,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
         ? l10n.qrRobotPairingSubtitle
         : l10n.qrMuseumEntrySubtitle;
     if (kIsWeb && mode == QRScanMode.robotConnection) {
-      return Scaffold(
-        backgroundColor: AppColors.cinematicBackground,
-        body: Directionality(
-          textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-          child: Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Text(
-                'Robot Pairing is available only in the mobile app.',
-                textAlign: TextAlign.center,
-                style: AppTextStyles.displaySectionTitle(
-                  context,
-                ).copyWith(color: AppColors.primaryGold, fontSize: 22),
-              ),
-            ),
-          ),
-        ),
-      );
+      return _buildWebRobotFallback(context, isArabic);
     }
     return Scaffold(
       backgroundColor: Colors.black,
@@ -495,6 +489,180 @@ class _QrScannerScreenState extends State<QrScannerScreen>
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWebRobotFallback(BuildContext context, bool isArabic) {
+    return Scaffold(
+      backgroundColor: AppColors.cinematicBackground,
+      body: Directionality(
+        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 460),
+                child: Container(
+                  padding: const EdgeInsets.all(22),
+                  decoration: BoxDecoration(
+                    color: AppColors.cinematicCard,
+                    borderRadius: BorderRadius.circular(28),
+                    border: Border.all(color: AppColors.goldBorder(0.18)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.35),
+                        blurRadius: 34,
+                        offset: const Offset(0, 18),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: isArabic
+                        ? CrossAxisAlignment.end
+                        : CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        textDirection: Directionality.of(context),
+                        children: [
+                          Container(
+                            width: 52,
+                            height: 52,
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryGold.withValues(
+                                alpha: 0.12,
+                              ),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: AppColors.goldBorder(0.22),
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.smart_toy_outlined,
+                              color: AppColors.primaryGold,
+                            ),
+                          ),
+                          const SizedBox(width: 14),
+                          Expanded(
+                            child: Text(
+                              isArabic
+                                  ? '\u0631\u0628\u0637 Horus-Bot'
+                                  : 'Horus-Bot pairing',
+                              textAlign: TextAlign.start,
+                              style: AppTextStyles.displaySectionTitle(context)
+                                  .copyWith(
+                                    color: AppColors.whiteTitle,
+                                    fontSize: 22,
+                                  ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        isArabic
+                            ? '\u064a\u0633\u062a\u062e\u062f\u0645 \u0631\u0628\u0637 \u0627\u0644\u0631\u0648\u0628\u0648\u062a \u0643\u0627\u0645\u064a\u0631\u0627 \u062a\u0637\u0628\u064a\u0642 \u0627\u0644\u0647\u0627\u062a\u0641. \u0641\u064a \u0639\u0631\u0636 \u0627\u0644\u0648\u064a\u0628\u060c \u064a\u0645\u0643\u0646\u0643 \u0625\u062f\u062e\u0627\u0644 \u0643\u0648\u062f \u0627\u0644\u0631\u0648\u0628\u0648\u062a \u0644\u0644\u062a\u062c\u0631\u0628\u0629.'
+                            : 'Robot pairing uses the mobile camera. For the web demo, enter the robot code below.',
+                        textAlign: TextAlign.start,
+                        style: AppTextStyles.bodyPrimary(
+                          context,
+                        ).copyWith(color: AppColors.bodyText, height: 1.45),
+                      ),
+                      const SizedBox(height: 18),
+                      TextField(
+                        controller: _manualRobotCodeController,
+                        enabled: !_isScanned,
+                        textInputAction: TextInputAction.done,
+                        textCapitalization: TextCapitalization.characters,
+                        onSubmitted: (_) => _submitManualRobotCode(),
+                        style: AppTextStyles.bodyPrimary(
+                          context,
+                        ).copyWith(color: AppColors.whiteTitle),
+                        decoration: InputDecoration(
+                          hintText: 'ROBOT-HORUS-001',
+                          prefixIcon: const Icon(
+                            Icons.qr_code_2_rounded,
+                            color: AppColors.primaryGold,
+                          ),
+                          filled: true,
+                          fillColor: AppColors.secondaryGlass(0.36),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide(
+                              color: AppColors.goldBorder(0.16),
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: BorderSide(
+                              color: AppColors.goldBorder(0.16),
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(18),
+                            borderSide: const BorderSide(
+                              color: AppColors.primaryGold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: _isScanned
+                                  ? null
+                                  : () => Navigator.pop(context),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: AppColors.primaryGold,
+                                side: BorderSide(
+                                  color: AppColors.goldBorder(0.22),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 15,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              child: const Text('Back'),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: _isScanned
+                                  ? null
+                                  : _submitManualRobotCode,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primaryGold,
+                                foregroundColor: AppColors.darkInk,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 15,
+                                ),
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                              child: Text(
+                                isArabic ? '\u0631\u0628\u0637' : 'Pair',
+                                style: AppTextStyles.buttonLabel(context),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
