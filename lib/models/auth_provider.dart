@@ -43,6 +43,8 @@ class AuthProvider extends ChangeNotifier {
   bool get isGuest => _authState == AuthState.guest;
   bool get isLoading => _authState == AuthState.loading;
   bool get hasError => _authState == AuthState.error;
+  static const staffAccountMessage =
+      'Staff accounts are managed from the Horus-Bot website cashier portal.';
 
   // ========================
   // ACTIONS
@@ -54,6 +56,14 @@ class AuthProvider extends ChangeNotifier {
     try {
       final user = await _authService.restoreCurrentUser();
       if (user != null) {
+        if (user.isStaffAccount) {
+          await _authService.logout();
+          _currentUser = null;
+          _authState = AuthState.loggedOut;
+          _errorMessage = staffAccountMessage;
+          notifyListeners();
+          return;
+        }
         _currentUser = user;
         _authState = AuthState.loggedIn;
         _errorMessage = null;

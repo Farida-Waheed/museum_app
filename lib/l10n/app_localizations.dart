@@ -3509,7 +3509,7 @@ abstract class AppLocalizations {
   /// No description provided for @ticketsPurchaseComplete.
   ///
   /// In en, this message translates to:
-  /// **'Booking confirmed. Your tickets were saved.'**
+  /// **'Booking created successfully. Please pay at the museum counter to activate your QR code and Horus-Bot tour.'**
   String get ticketsPurchaseComplete;
 
   /// No description provided for @ticketId.
@@ -3629,7 +3629,7 @@ abstract class AppLocalizations {
   /// No description provided for @paymentStatusPayAtCounter.
   ///
   /// In en, this message translates to:
-  /// **'Payment status: Pay at counter'**
+  /// **'Payment pending: Pay at counter'**
   String get paymentStatusPayAtCounter;
 
   /// No description provided for @cancelBooking.

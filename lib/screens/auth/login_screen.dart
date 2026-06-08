@@ -60,6 +60,11 @@ class _LoginScreenState extends State<LoginScreen> {
     if (!mounted) return;
 
     if (success) {
+      if (authProvider.currentUser?.isStaffAccount == true) {
+        setState(() => _isLoading = false);
+        await _showStaffAccountDialog(authProvider);
+        return;
+      }
       final args = ModalRoute.of(context)?.settings.arguments;
       final redirect = args is Map ? args['redirect'] as String? : null;
       Navigator.pushReplacementNamed(context, redirect ?? AppRoutes.mainHome);
@@ -68,6 +73,41 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     setState(() => _isLoading = false);
+  }
+
+  Future<void> _showStaffAccountDialog(AuthProvider authProvider) async {
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColors.cinematicCard,
+          title: Text(
+            'Staff account',
+            style: AppTextStyles.titleLarge(
+              dialogContext,
+            ).copyWith(color: Colors.white),
+          ),
+          content: Text(
+            AuthProvider.staffAccountMessage,
+            style: AppTextStyles.premiumBody(
+              dialogContext,
+            ).copyWith(color: AppColors.bodyText),
+          ),
+          actions: [
+            FilledButton(
+              onPressed: () async {
+                await authProvider.logout();
+                if (dialogContext.mounted) {
+                  Navigator.pop(dialogContext);
+                }
+              },
+              child: const Text('Sign Out'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _handleForgotPassword() async {

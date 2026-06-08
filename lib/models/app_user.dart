@@ -15,6 +15,7 @@ class AppUser {
   final String? avatarUrl;
   final Map<String, dynamic> accessibilityDefaults;
   final bool marketingOptIn;
+  final String? role;
   final DateTime createdAt;
   final DateTime? updatedAt;
   final DateTime? lastSeenAt;
@@ -30,6 +31,7 @@ class AppUser {
     this.avatarUrl,
     Map<String, dynamic>? accessibilityDefaults,
     this.marketingOptIn = false,
+    this.role,
     required this.createdAt,
     this.updatedAt,
     this.lastSeenAt,
@@ -39,6 +41,10 @@ class AppUser {
   String get name => displayName.isNotEmpty ? displayName : fullName;
   String? get phone => phoneNumber;
   int get visitCount => 0;
+  bool get isStaffAccount {
+    final normalized = role?.trim().toLowerCase();
+    return normalized == 'admin' || normalized == 'cashier';
+  }
 
   AppUser copyWith({
     String? uid,
@@ -51,6 +57,7 @@ class AppUser {
     String? avatarUrl,
     Map<String, dynamic>? accessibilityDefaults,
     bool? marketingOptIn,
+    String? role,
     DateTime? createdAt,
     DateTime? updatedAt,
     DateTime? lastSeenAt,
@@ -65,8 +72,10 @@ class AppUser {
       preferredLanguage: preferredLanguage ?? this.preferredLanguage,
       avatarUrl: avatarUrl ?? this.avatarUrl,
       accessibilityDefaults:
-          accessibilityDefaults ?? Map<String, dynamic>.from(this.accessibilityDefaults),
+          accessibilityDefaults ??
+          Map<String, dynamic>.from(this.accessibilityDefaults),
       marketingOptIn: marketingOptIn ?? this.marketingOptIn,
+      role: role ?? this.role,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       lastSeenAt: lastSeenAt ?? this.lastSeenAt,
@@ -89,6 +98,7 @@ class AppUser {
       'avatarUrl': avatarUrl,
       'accessibilityDefaults': accessibilityDefaults,
       'marketingOptIn': marketingOptIn,
+      'role': role,
       'createdAt': createdAt.toIso8601String(),
       'updatedAt': updatedAt?.toIso8601String(),
       'lastSeenAt': lastSeenAt?.toIso8601String(),
@@ -142,13 +152,12 @@ class AppUser {
       accessibilityDefaults: _mapValue(
         json['accessibilityDefaults'] ?? json['accessibility_defaults'],
       ),
-      marketingOptIn:
-          json['marketingOptIn'] is bool
-              ? json['marketingOptIn'] as bool
-              : json['marketing_opt_in'] == true,
+      marketingOptIn: json['marketingOptIn'] is bool
+          ? json['marketingOptIn'] as bool
+          : json['marketing_opt_in'] == true,
+      role: _stringValue(json['role']),
       createdAt:
-          _dateValue(json['createdAt'] ?? json['created_at']) ??
-          DateTime.now(),
+          _dateValue(json['createdAt'] ?? json['created_at']) ?? DateTime.now(),
       updatedAt: _dateValue(json['updatedAt'] ?? json['updated_at']),
       lastSeenAt: _dateValue(json['lastSeenAt'] ?? json['last_seen_at']),
     );
@@ -180,6 +189,7 @@ class AppUser {
       avatarUrl: _stringValue(json['avatar_url']),
       accessibilityDefaults: _mapValue(json['accessibility_defaults']),
       marketingOptIn: json['marketing_opt_in'] == true,
+      role: _stringValue(json['role']),
       createdAt: _dateValue(json['created_at']) ?? DateTime.now(),
       updatedAt: _dateValue(json['updated_at']),
       lastSeenAt: _dateValue(json['last_seen_at']),
@@ -201,7 +211,9 @@ class AppUser {
   }
 
   static String languageCodeFromAccount(String preferredLanguage) {
-    return normalizeAccountLanguage(preferredLanguage) == 'arabic' ? 'ar' : 'en';
+    return normalizeAccountLanguage(preferredLanguage) == 'arabic'
+        ? 'ar'
+        : 'en';
   }
 
   static String accountLanguageFromCode(String languageCode) {
@@ -234,5 +246,6 @@ class AppUser {
   }
 
   @override
-  String toString() => 'AppUser(uid: $uid, displayName: $displayName, email: $email)';
+  String toString() =>
+      'AppUser(uid: $uid, displayName: $displayName, email: $email)';
 }
