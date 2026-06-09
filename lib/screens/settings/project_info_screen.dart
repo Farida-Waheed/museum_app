@@ -46,25 +46,21 @@ class _ProjectInfoScreenState extends State<ProjectInfoScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final teamOnly = widget.targetSection == 'team';
 
-    final textColor = isDark ? Colors.white : AppColors.darkInk;
-    final secondaryTextColor = isDark ? Colors.white70 : AppColors.mutedText;
+    const textColor = Colors.white;
+    const secondaryTextColor = AppColors.bodyText;
 
     return AppMenuShell(
       title: (teamOnly ? l10n.team : l10n.aboutHorusBot).toUpperCase(),
-      backgroundColor: isDark
-          ? AppColors.darkBackground
-          : AppColors.warmSurface,
+      backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
         child: SingleChildScrollView(
           controller: _scrollController,
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsetsDirectional.fromSTEB(20, 78, 20, 20),
           child: Column(
             crossAxisAlignment: isArabic
                 ? CrossAxisAlignment.end
@@ -233,22 +229,10 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkSurface : Colors.white,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.primaryGold.withOpacity(0.2)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      decoration: AppDecorations.secondaryGlassCard(radius: 24),
       child: child,
     );
   }
@@ -281,9 +265,9 @@ class _TechChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.primaryGold.withOpacity(0.1),
+        color: AppColors.primaryGold.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primaryGold.withOpacity(0.3)),
+        border: Border.all(color: AppColors.goldBorder(0.30)),
       ),
       child: Text(
         label,

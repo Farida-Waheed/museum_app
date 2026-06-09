@@ -25,9 +25,7 @@ class AchievementsScreen extends StatelessWidget {
       backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: AppGradients.screenBackground,
-        ),
+        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
         child: Directionality(
           textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: !authProvider.isLoggedIn
@@ -38,81 +36,89 @@ class AchievementsScreen extends StatelessWidget {
                       'Sign in and complete tours to unlock achievements as you explore the museum.',
                 )
               : SingleChildScrollView(
-            padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 120),
-            child: Column(
-              crossAxisAlignment: isArabic
-                  ? CrossAxisAlignment.end
-                  : CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: AppDecorations.premiumGlassCard(
-                    radius: 24,
-                    highlighted: true,
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                    20,
+                    24,
+                    20,
+                    120,
                   ),
-                  child: Row(
-                    textDirection: Directionality.of(context),
+                  child: Column(
+                    crossAxisAlignment: isArabic
+                        ? CrossAxisAlignment.end
+                        : CrossAxisAlignment.start,
                     children: [
-                      const Icon(
-                        Icons.stars,
-                        size: 48,
-                        color: AppColors.primaryGold,
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: isArabic
-                              ? CrossAxisAlignment.end
-                              : CrossAxisAlignment.start,
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: AppDecorations.premiumGlassCard(
+                          radius: 24,
+                          highlighted: true,
+                        ),
+                        child: Row(
+                          textDirection: Directionality.of(context),
                           children: [
-                            Text(
-                              l10n.exhibitsFound.toUpperCase(),
-                              style: AppTextStyles.displaySectionTitle(context),
+                            const Icon(
+                              Icons.stars,
+                              size: 48,
+                              color: AppColors.primaryGold,
                             ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "$visitedCount",
-                              style: AppTextStyles.titleLarge(context).copyWith(
-                                fontSize: 32,
-                                color: AppColors.primaryGold,
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: isArabic
+                                    ? CrossAxisAlignment.end
+                                    : CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    l10n.exhibitsFound.toUpperCase(),
+                                    style: AppTextStyles.displaySectionTitle(
+                                      context,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    "$visitedCount",
+                                    style: AppTextStyles.titleLarge(context)
+                                        .copyWith(
+                                          fontSize: 32,
+                                          color: AppColors.primaryGold,
+                                        ),
+                                  ),
+                                ],
                               ),
                             ),
                           ],
                         ),
                       ),
+                      const SizedBox(height: 32),
+                      Text(
+                        l10n.achievements.toUpperCase(),
+                        style: AppTextStyles.displaySectionTitle(context),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildAchievementTile(
+                        context,
+                        Icons.explore,
+                        l10n.pioneer,
+                        l10n.pioneerDesc,
+                        visitedCount >= 1,
+                      ),
+                      _buildAchievementTile(
+                        context,
+                        Icons.history_edu,
+                        l10n.scholar,
+                        l10n.scholarDesc,
+                        false,
+                      ),
+                      _buildAchievementTile(
+                        context,
+                        Icons.map,
+                        l10n.wayfinder,
+                        l10n.wayfinderDesc,
+                        false,
+                      ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 32),
-                Text(
-                  l10n.achievements.toUpperCase(),
-                  style: AppTextStyles.displaySectionTitle(context),
-                ),
-                const SizedBox(height: 16),
-                _buildAchievementTile(
-                  context,
-                  Icons.explore,
-                  l10n.pioneer,
-                  l10n.pioneerDesc,
-                  visitedCount >= 1,
-                ),
-                _buildAchievementTile(
-                  context,
-                  Icons.history_edu,
-                  l10n.scholar,
-                  l10n.scholarDesc,
-                  false,
-                ),
-                _buildAchievementTile(
-                  context,
-                  Icons.map,
-                  l10n.wayfinder,
-                  l10n.wayfinderDesc,
-                  false,
-                ),
-              ],
-            ),
-          ),
         ),
       ),
     );

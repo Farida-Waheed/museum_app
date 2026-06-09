@@ -535,7 +535,7 @@ class _MapScreenState extends State<MapScreen>
                       // --- LEGEND FLOATING CARD ---
                       PositionedDirectional(
                         start: 16,
-                        bottom: 16,
+                        bottom: 112,
                         child: Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(

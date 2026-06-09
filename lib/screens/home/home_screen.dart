@@ -42,21 +42,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   static const double _readyCardOverlap = 58;
+  static final DateTime _sessionRotationStartedAt = DateTime.now();
   final HomeController _homeController = const HomeController();
   final ScrollController _scrollController = ScrollController();
   String? _lastRestoreUid;
   String? _loadedTicketsUserId;
   bool _restoreInFlight = false;
-  late Timer _didYouKnowTimer;
-  late Timer _featuredArtifactTimer;
-  int _didYouKnowIndex = 0;
-  int _featuredArtifactIndex = 0;
+  late Timer _homeRotationTimer;
+  late int _rotationMinuteIndex;
 
   @override
   void initState() {
     super.initState();
-    _startDidYouKnowTimer();
-    _startFeaturedArtifactTimer();
+    _rotationMinuteIndex = _currentSessionMinuteIndex;
+    _scheduleHomeRotationTimer();
 
     Future.delayed(const Duration(seconds: 1), () async {
       if (!mounted) return;
@@ -67,35 +66,35 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _startDidYouKnowTimer() {
-    _didYouKnowTimer = Timer.periodic(const Duration(seconds: 60), (_) {
-      if (mounted) {
-        setState(() {
-          final exhibits = context.read<ExhibitProvider>().exhibits;
-          if (exhibits.isNotEmpty) {
-            _didYouKnowIndex = (_didYouKnowIndex + 1) % exhibits.length;
-          }
-        });
-      }
+  int get _currentSessionMinuteIndex {
+    final elapsed = DateTime.now().difference(_sessionRotationStartedAt);
+    return elapsed.inMinutes;
+  }
+
+  void _scheduleHomeRotationTimer() {
+    final elapsed = DateTime.now().difference(_sessionRotationStartedAt);
+    final secondsUntilNextMinute = 60 - (elapsed.inSeconds % 60);
+    _homeRotationTimer = Timer(Duration(seconds: secondsUntilNextMinute), () {
+      if (!mounted) return;
+      _syncRotationMinute();
+      _scheduleHomeRotationTimer();
     });
   }
 
-  void _startFeaturedArtifactTimer() {
-    _featuredArtifactTimer = Timer.periodic(const Duration(minutes: 3), (_) {
-      if (!mounted) return;
-      setState(() {
-        final exhibits = context.read<ExhibitProvider>().exhibits;
-        if (exhibits.isNotEmpty) {
-          _featuredArtifactIndex =
-              (_featuredArtifactIndex + 1) % exhibits.length;
-        }
-      });
-    });
+  void _syncRotationMinute({bool rebuild = true}) {
+    final minuteIndex = _currentSessionMinuteIndex;
+    if (minuteIndex == _rotationMinuteIndex) return;
+    if (!rebuild) {
+      _rotationMinuteIndex = minuteIndex;
+      return;
+    }
+    setState(() => _rotationMinuteIndex = minuteIndex);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    _syncRotationMinute(rebuild: false);
     final authProvider = context.watch<AuthProvider>();
     final userId = authProvider.currentUser?.id;
     if (!authProvider.isLoggedIn || userId == null) {
@@ -113,8 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    _didYouKnowTimer.cancel();
-    _featuredArtifactTimer.cancel();
+    _homeRotationTimer.cancel();
     _scrollController.dispose();
     super.dispose();
   }
@@ -188,8 +186,8 @@ class _HomeScreenState extends State<HomeScreen> {
       tourProvider: context.watch<TourProvider>(),
       exhibits: exhibits,
       lang: Localizations.localeOf(context).languageCode,
-      didYouKnowIndex: _didYouKnowIndex,
-      featuredArtifactIndex: _featuredArtifactIndex,
+      didYouKnowIndex: _rotationMinuteIndex,
+      featuredArtifactIndex: _rotationMinuteIndex,
     );
   }
 
@@ -911,12 +909,14 @@ class _HomeScreenState extends State<HomeScreen> {
           primaryLabel: l10n.login,
           secondaryLabel: l10n.about,
           onPrimary: () => Navigator.pushNamed(context, AppRoutes.login),
-          onSecondary: () => Navigator.pushNamed(context, AppRoutes.projectInfo),
+          onSecondary: () =>
+              Navigator.pushNamed(context, AppRoutes.projectInfo),
         );
       case HomeDashboardState.guest:
         return (
           title: 'Explore before you book',
-          subtitle: 'Create an account or log in to save tickets, tours, and memories.',
+          subtitle:
+              'Create an account or log in to save tickets, tours, and memories.',
           statusLine: l10n.homeNoTicketsYet,
           primaryLabel: l10n.buyTickets,
           secondaryLabel: l10n.login,
@@ -926,7 +926,8 @@ class _HomeScreenState extends State<HomeScreen> {
       case HomeDashboardState.loggedInNoTickets:
         return (
           title: 'Plan your museum visit',
-          subtitle: 'Choose museum entry and a Horus-Bot tour package before your visit.',
+          subtitle:
+              'Choose museum entry and a Horus-Bot tour package before your visit.',
           statusLine: l10n.homeNoTicketsYet,
           primaryLabel: l10n.buyTickets,
           secondaryLabel: l10n.exhibits,
@@ -936,7 +937,8 @@ class _HomeScreenState extends State<HomeScreen> {
       case HomeDashboardState.paymentPending:
         return (
           title: 'Payment pending',
-          subtitle: 'Please pay at the museum counter. Your QR code and robot pairing unlock after cashier confirmation.',
+          subtitle:
+              'Please pay at the museum counter. Your QR code and robot pairing unlock after cashier confirmation.',
           statusLine: _ticketStatusLine(snapshot, l10n),
           primaryLabel: l10n.myTickets,
           secondaryLabel: l10n.exhibits,
@@ -946,7 +948,8 @@ class _HomeScreenState extends State<HomeScreen> {
       case HomeDashboardState.ticketReady:
         return (
           title: 'Ticket ready',
-          subtitle: 'Your museum entry and Horus-Bot tour are confirmed. Keep the QR ready for entry.',
+          subtitle:
+              'Your museum entry and Horus-Bot tour are confirmed. Keep the QR ready for entry.',
           statusLine: _ticketStatusLine(snapshot, l10n),
           primaryLabel: l10n.myTickets,
           secondaryLabel: l10n.homeScanRobotQr,
@@ -956,7 +959,8 @@ class _HomeScreenState extends State<HomeScreen> {
       case HomeDashboardState.awaitingRobotPairing:
         return (
           title: 'Find your Horus-Bot',
-          subtitle: 'When you are beside the robot, scan its QR to pair and start the tour.',
+          subtitle:
+              'When you are beside the robot, scan its QR to pair and start the tour.',
           statusLine: _ticketStatusLine(snapshot, l10n),
           primaryLabel: l10n.homeScanRobotQr,
           secondaryLabel: l10n.map,
@@ -970,7 +974,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ? l10n.homeAskOrContinueSubtitle
               : 'Next stop: ${snapshot.nextStopName}',
           statusLine: _ticketStatusLine(snapshot, l10n),
-          primaryLabel: snapshot.isTourPaused ? l10n.resume : l10n.homeContinueTourAction,
+          primaryLabel: snapshot.isTourPaused
+              ? l10n.resume
+              : l10n.homeContinueTourAction,
           secondaryLabel: l10n.map,
           onPrimary: () => _openTourFlow(context, snapshot),
           onSecondary: () => _openMap(context),
@@ -978,7 +984,8 @@ class _HomeScreenState extends State<HomeScreen> {
       case HomeDashboardState.tourCompleted:
         return (
           title: 'Tour completed',
-          subtitle: 'Review your route, revisit memories, share feedback, and keep your achievements.',
+          subtitle:
+              'Review your route, revisit memories, share feedback, and keep your achievements.',
           statusLine: _ticketStatusLine(snapshot, l10n),
           primaryLabel: 'View Summary',
           secondaryLabel: 'Book another tour',
@@ -1134,7 +1141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           onSecondary: primaryCard.onSecondary,
                         ),
                       ),
-                      const SizedBox(height: AppSpacing.sectionGap),
+                      const SizedBox(height: 22),
                       _SectionLabel(label: l10n.homeQuickActions),
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -1152,7 +1159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: HomeFeaturedArtifactCard(
                           key: ValueKey(
-                            'featured-${contextualArtifact.id}-$_featuredArtifactIndex',
+                            'featured-${contextualArtifact.id}-$_rotationMinuteIndex',
                           ),
                           artifact: contextualArtifact,
                           onTap: () => _openArtifactDetails(
@@ -1186,7 +1193,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           child: HomeInfoCard(
                             key: ValueKey(
-                              'did-you-know-$_didYouKnowIndex-${snapshot.didYouKnowText}',
+                              'did-you-know-$_rotationMinuteIndex-${snapshot.didYouKnowText}',
                             ),
                             title: l10n.didYouKnow,
                             body: snapshot.didYouKnowText,
@@ -1225,7 +1232,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               PositionedDirectional(
                 end: 12,
-                bottom: 12,
+                bottom: 104,
                 child: AskTheGuideButton(
                   screen: 'home',
                   currentExhibitId: context

@@ -297,11 +297,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
         child: DecoratedBox(
-          decoration: const BoxDecoration(
-            gradient: AppGradients.screenBackground,
-          ),
+          decoration: const BoxDecoration(color: AppColors.cinematicBackground),
           child: SafeArea(
-            child: user == null && !authProvider.isLoading && !authProvider.hasError
+            child:
+                user == null &&
+                    !authProvider.isLoading &&
+                    !authProvider.hasError
                 ? GuestPrompt(
                     icon: Icons.person_outline,
                     title: isArabic
@@ -312,192 +313,203 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     primaryLabel: l10n.login,
                     secondaryLabel: l10n.createAccount,
                     tertiaryLabel: l10n.settings,
+                    bottomPadding: 72,
                     onTertiary: () =>
                         Navigator.pushNamed(context, AppRoutes.settings),
                   )
                 : ListView(
-              padding: const EdgeInsetsDirectional.fromSTEB(
-                AppSpacing.screenHorizontalCompact,
-                24,
-                AppSpacing.screenHorizontalCompact,
-                148,
-              ),
-              children: [
-                if (authProvider.isLoading && user == null) ...[
-                  _ProfileStateCard(
-                    icon: Icons.account_circle_outlined,
-                    title: isArabic
-                        ? '\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a...'
-                        : 'Loading profile...',
-                    message: '',
-                    isLoading: true,
-                    isArabic: isArabic,
-                  ),
-                  const SizedBox(height: AppSpacing.cardGap),
-                ],
-                if (authProvider.hasError && user == null) ...[
-                  _ProfileStateCard(
-                    icon: Icons.info_outline_rounded,
-                    title: _profileLoadFailureMessage(isArabic),
-                    message: _connectionIssueMessage(isArabic),
-                    buttonLabel: isArabic
-                        ? '\u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629'
-                        : 'Try again',
-                    onPressed: () =>
-                        context.read<AuthProvider>().retryProfileLoad(),
-                    isArabic: isArabic,
-                  ),
-                  const SizedBox(height: AppSpacing.cardGap),
-                ],
-                _ProfileHeader(
-                  name: user?.name ?? l10n.guestVisitor,
-                  email:
-                      user?.email ??
-                      (isArabic ? 'غير مسجل الدخول' : 'Not signed in'),
-                  avatarUrl: user?.avatarUrl,
-                  isArabic: isArabic,
-                ),
-                const SizedBox(height: AppSpacing.cardGap),
-                if (user != null) ...[
-                  if ((user.phoneNumber ?? '').trim().isEmpty) ...[
-                    _ProfileStateCard(
-                      icon: Icons.phone_outlined,
-                      title: isArabic
-                          ? '\u0623\u0636\u0641 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641\u0643'
-                          : 'Add your phone number',
-                      message: isArabic
-                          ? '\u0623\u0636\u0641 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641\u0643 \u0644\u0625\u0643\u0645\u0627\u0644 \u0645\u0644\u0641 \u0627\u0644\u0632\u0627\u0626\u0631.'
-                          : 'Add your phone number to complete your visitor profile.',
-                      buttonLabel: isArabic
-                          ? '\u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0645\u0644\u0641'
-                          : 'Update profile',
-                      onPressed: () => _editProfile(context, isArabic),
-                      isArabic: isArabic,
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      AppSpacing.screenHorizontalCompact,
+                      78,
+                      AppSpacing.screenHorizontalCompact,
+                      148,
                     ),
-                    const SizedBox(height: AppSpacing.cardGap),
-                  ],
-                  _ActionTile(
-                    icon: Icons.edit_outlined,
-                    title: isArabic ? 'تعديل الملف الشخصي' : 'Edit profile',
-                    subtitle: isArabic
-                        ? 'الاسم والهاتف والجنسية ولغة الواجهة'
-                        : 'Name, phone, nationality, and UI language',
-                    onTap: () => _editProfile(context, isArabic),
-                  ),
-                  const SizedBox(height: 6),
-                ],
-                _InfoCard(
-                  rows: [
-                    _InfoRow(
-                      label: isArabic ? 'لغة الواجهة' : 'UI language',
-                      value: _languageName(
-                        user?.preferredLanguage ?? prefs.language,
-                        isArabic,
-                      ),
-                    ),
-                    if ((user?.nationality ?? '').isNotEmpty)
-                      _InfoRow(
-                        label: isArabic ? 'الجنسية' : 'Nationality',
-                        value: user!.nationality!,
-                      ),
-                  ],
-                ),
-                const SizedBox(height: AppSpacing.cardGap),
-                if (userId == null || userId.isEmpty)
-                  _AccountGate(isArabic: isArabic)
-                else
-                  StreamBuilder<List<TourPhoto>>(
-                    stream: PhotoRepository().watchUserPhotos(userId),
-                    builder: (context, snapshot) {
-                      final photoCount = snapshot.data?.length ?? 0;
-                      return _StatsGrid(
+                    children: [
+                      if (authProvider.isLoading && user == null) ...[
+                        _ProfileStateCard(
+                          icon: Icons.account_circle_outlined,
+                          title: isArabic
+                              ? '\u062c\u0627\u0631\u064a \u062a\u062d\u0645\u064a\u0644 \u0627\u0644\u0645\u0644\u0641 \u0627\u0644\u0634\u062e\u0635\u064a...'
+                              : 'Loading profile...',
+                          message: '',
+                          isLoading: true,
+                          isArabic: isArabic,
+                        ),
+                        const SizedBox(height: AppSpacing.cardGap),
+                      ],
+                      if (authProvider.hasError && user == null) ...[
+                        _ProfileStateCard(
+                          icon: Icons.info_outline_rounded,
+                          title: _profileLoadFailureMessage(isArabic),
+                          message: _connectionIssueMessage(isArabic),
+                          buttonLabel: isArabic
+                              ? '\u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629'
+                              : 'Try again',
+                          onPressed: () =>
+                              context.read<AuthProvider>().retryProfileLoad(),
+                          isArabic: isArabic,
+                        ),
+                        const SizedBox(height: AppSpacing.cardGap),
+                      ],
+                      _ProfileHeader(
+                        name: user?.name ?? l10n.guestVisitor,
+                        email:
+                            user?.email ??
+                            (isArabic ? 'غير مسجل الدخول' : 'Not signed in'),
+                        avatarUrl: user?.avatarUrl,
                         isArabic: isArabic,
-                        museumTickets: ticketProvider.museumTickets.length,
-                        robotTickets: ticketProvider.robotTourTickets.length,
-                        memories: photoCount,
-                      );
-                    },
-                  ),
-                const SizedBox(height: AppSpacing.sectionGap),
-                _SectionTitle(isArabic ? 'الوصول السريع' : 'Quick access'),
-                const SizedBox(height: 10),
-                _ActionTile(
-                  icon: Icons.confirmation_number_outlined,
-                  title: l10n.myTickets,
-                  subtitle: isArabic
-                      ? 'تذاكر الدخول وجولات Horus-Bot'
-                      : 'Museum Entry Tickets and Horus-Bot Tour Tickets',
-                  onTap: () =>
-                      Navigator.pushNamed(context, AppRoutes.myTickets),
-                ),
-                _ActionTile(
-                  icon: Icons.photo_library_outlined,
-                  title: isArabic ? 'الذكريات' : 'Memories',
-                  subtitle: isArabic
-                      ? 'الصور وسجل الزيارات'
-                      : 'Photos and visit history',
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.memories),
-                ),
-                _ActionTile(
-                  icon: Icons.accessibility_outlined,
-                  title: l10n.settings,
-                  subtitle: isArabic
-                      ? 'اللغة والتباين وحجم النص'
-                      : 'Language, contrast, and text size',
-                  onTap: () => Navigator.pushNamed(context, AppRoutes.settings),
-                ),
-                _ActionTile(
-                  icon: Icons.notifications_outlined,
-                  title: l10n.notifications,
-                  subtitle: isArabic
-                      ? 'تنبيهات الجولة والتذاكر'
-                      : 'Tour and ticket alerts',
-                  onTap: () => Navigator.pushNamed(
-                    context,
-                    AppRoutes.notificationSettings,
-                  ),
-                ),
-                _ActionTile(
-                  icon: Icons.info_outline,
-                  title: l10n.about,
-                  subtitle: isArabic
-                      ? 'عن مشروع Horus-Bot'
-                      : 'About the Horus-Bot project',
-                  onTap: () =>
-                      Navigator.pushNamed(context, AppRoutes.projectInfo),
-                ),
-                const SizedBox(height: 22),
-                SizedBox(
-                  height: 56,
-                  child: TextButton.icon(
-                    onPressed: _isLoggingOut
-                        ? null
-                        : () => _confirmSignOut(context, isArabic),
-                    icon: _isLoggingOut
-                        ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: AppColors.alertRed,
+                      ),
+                      const SizedBox(height: AppSpacing.cardGap),
+                      if (user != null) ...[
+                        if ((user.phoneNumber ?? '').trim().isEmpty) ...[
+                          _ProfileStateCard(
+                            icon: Icons.phone_outlined,
+                            title: isArabic
+                                ? '\u0623\u0636\u0641 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641\u0643'
+                                : 'Add your phone number',
+                            message: isArabic
+                                ? '\u0623\u0636\u0641 \u0631\u0642\u0645 \u0647\u0627\u062a\u0641\u0643 \u0644\u0625\u0643\u0645\u0627\u0644 \u0645\u0644\u0641 \u0627\u0644\u0632\u0627\u0626\u0631.'
+                                : 'Add your phone number to complete your visitor profile.',
+                            buttonLabel: isArabic
+                                ? '\u062a\u062d\u062f\u064a\u062b \u0627\u0644\u0645\u0644\u0641'
+                                : 'Update profile',
+                            onPressed: () => _editProfile(context, isArabic),
+                            isArabic: isArabic,
+                          ),
+                          const SizedBox(height: AppSpacing.cardGap),
+                        ],
+                        _ActionTile(
+                          icon: Icons.edit_outlined,
+                          title: isArabic
+                              ? 'تعديل الملف الشخصي'
+                              : 'Edit profile',
+                          subtitle: isArabic
+                              ? 'الاسم والهاتف والجنسية ولغة الواجهة'
+                              : 'Name, phone, nationality, and UI language',
+                          onTap: () => _editProfile(context, isArabic),
+                        ),
+                        const SizedBox(height: 6),
+                      ],
+                      _InfoCard(
+                        rows: [
+                          _InfoRow(
+                            label: isArabic ? 'لغة الواجهة' : 'UI language',
+                            value: _languageName(
+                              user?.preferredLanguage ?? prefs.language,
+                              isArabic,
                             ),
-                          )
-                        : const Icon(Icons.logout_rounded),
-                    label: Text(isArabic ? 'تسجيل الخروج' : 'Sign out'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.alertRed,
-                      backgroundColor: AppColors.cinematicCard,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
-                        side: BorderSide(
-                          color: AppColors.alertRed.withValues(alpha: 0.28),
+                          ),
+                          if ((user?.nationality ?? '').isNotEmpty)
+                            _InfoRow(
+                              label: isArabic ? 'الجنسية' : 'Nationality',
+                              value: user!.nationality!,
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: AppSpacing.cardGap),
+                      if (userId == null || userId.isEmpty)
+                        _AccountGate(isArabic: isArabic)
+                      else
+                        StreamBuilder<List<TourPhoto>>(
+                          stream: PhotoRepository().watchUserPhotos(userId),
+                          builder: (context, snapshot) {
+                            final photoCount = snapshot.data?.length ?? 0;
+                            return _StatsGrid(
+                              isArabic: isArabic,
+                              museumTickets:
+                                  ticketProvider.museumTickets.length,
+                              robotTickets:
+                                  ticketProvider.robotTourTickets.length,
+                              memories: photoCount,
+                            );
+                          },
+                        ),
+                      const SizedBox(height: AppSpacing.sectionGap),
+                      _SectionTitle(
+                        isArabic ? 'الوصول السريع' : 'Quick access',
+                      ),
+                      const SizedBox(height: 10),
+                      _ActionTile(
+                        icon: Icons.confirmation_number_outlined,
+                        title: l10n.myTickets,
+                        subtitle: isArabic
+                            ? 'تذاكر الدخول وجولات Horus-Bot'
+                            : 'Museum Entry Tickets and Horus-Bot Tour Tickets',
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.myTickets),
+                      ),
+                      _ActionTile(
+                        icon: Icons.photo_library_outlined,
+                        title: isArabic ? 'الذكريات' : 'Memories',
+                        subtitle: isArabic
+                            ? 'الصور وسجل الزيارات'
+                            : 'Photos and visit history',
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.memories),
+                      ),
+                      _ActionTile(
+                        icon: Icons.accessibility_outlined,
+                        title: l10n.settings,
+                        subtitle: isArabic
+                            ? 'اللغة والتباين وحجم النص'
+                            : 'Language, contrast, and text size',
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.settings),
+                      ),
+                      _ActionTile(
+                        icon: Icons.notifications_outlined,
+                        title: l10n.notifications,
+                        subtitle: isArabic
+                            ? 'تنبيهات الجولة والتذاكر'
+                            : 'Tour and ticket alerts',
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          AppRoutes.notificationSettings,
                         ),
                       ),
-                    ),
+                      _ActionTile(
+                        icon: Icons.info_outline,
+                        title: l10n.about,
+                        subtitle: isArabic
+                            ? 'عن مشروع Horus-Bot'
+                            : 'About the Horus-Bot project',
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.projectInfo),
+                      ),
+                      const SizedBox(height: 22),
+                      SizedBox(
+                        height: 56,
+                        child: TextButton.icon(
+                          onPressed: _isLoggingOut
+                              ? null
+                              : () => _confirmSignOut(context, isArabic),
+                          icon: _isLoggingOut
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: AppColors.alertRed,
+                                  ),
+                                )
+                              : const Icon(Icons.logout_rounded),
+                          label: Text(isArabic ? 'تسجيل الخروج' : 'Sign out'),
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.alertRed,
+                            backgroundColor: AppColors.cinematicCard,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
+                              side: BorderSide(
+                                color: AppColors.alertRed.withValues(
+                                  alpha: 0.28,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
           ),
         ),
       ),

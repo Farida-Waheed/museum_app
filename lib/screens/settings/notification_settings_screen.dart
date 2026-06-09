@@ -70,13 +70,10 @@ class _NotificationSettingsScreenState
     final l10n = AppLocalizations.of(context)!;
     final prefs = context.watch<UserPreferencesModel>();
     final isArabic = prefs.language == 'ar';
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return AppMenuShell(
       title: l10n.notificationSettings.toUpperCase(),
-      backgroundColor: isDark
-          ? AppColors.cinematicBackground
-          : AppColors.warmSurface,
+      backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
@@ -85,7 +82,7 @@ class _NotificationSettingsScreenState
                 child: CircularProgressIndicator(color: AppColors.primaryGold),
               )
             : ListView(
-                padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 120),
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 78, 20, 120),
                 children: [
                   _IntroCard(
                     title: l10n.notificationSettings,
@@ -263,7 +260,8 @@ class _MasterToggleCard extends StatelessWidget {
           Switch.adaptive(
             value: value,
             onChanged: onChanged,
-            activeColor: AppColors.primaryGold,
+            activeThumbColor: AppColors.primaryGold,
+            activeTrackColor: AppColors.primaryGold.withValues(alpha: 0.36),
           ),
         ],
       ),
@@ -338,7 +336,8 @@ class _CategoryCard extends StatelessWidget {
             onChanged: disabledByMaster
                 ? null
                 : (value) => onChanged(category, value),
-            activeColor: AppColors.primaryGold,
+            activeThumbColor: AppColors.primaryGold,
+            activeTrackColor: AppColors.primaryGold.withValues(alpha: 0.36),
           ),
         ],
       ),

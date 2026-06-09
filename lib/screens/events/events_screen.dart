@@ -24,13 +24,11 @@ class EventsScreen extends StatelessWidget {
       backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: AppGradients.screenBackground,
-        ),
+        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
         child: Directionality(
           textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: SingleChildScrollView(
-            padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 120),
+            padding: const EdgeInsetsDirectional.fromSTEB(20, 78, 20, 120),
             child: Column(
               crossAxisAlignment: isArabic
                   ? CrossAxisAlignment.end

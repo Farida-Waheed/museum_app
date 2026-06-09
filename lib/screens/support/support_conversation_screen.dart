@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 import '../../l10n/app_localizations.dart';
+import '../../models/auth_provider.dart';
 import '../../models/support_message.dart';
 import '../../models/support_request.dart';
 import '../../services/support_request_service.dart';
 import '../../widgets/app_menu_shell.dart';
 import '../../widgets/bottom_nav.dart';
+import '../../widgets/guest_prompt.dart';
+import 'package:provider/provider.dart';
 
 class SupportConversationScreen extends StatefulWidget {
   const SupportConversationScreen({super.key, this.requestId});
@@ -43,6 +46,7 @@ class _SupportConversationScreenState extends State<SupportConversationScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final authProvider = context.watch<AuthProvider>();
     final request = _request;
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
@@ -51,12 +55,17 @@ class _SupportConversationScreenState extends State<SupportConversationScreen> {
       backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: AppGradients.screenBackground,
-        ),
+        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
         child: Directionality(
           textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-          child: request == null
+          child: !authProvider.isLoggedIn
+              ? const GuestPrompt(
+                  icon: Icons.support_agent_outlined,
+                  title: 'Support Inbox',
+                  body:
+                      'Sign in to contact museum support and track your conversations.',
+                )
+              : request == null
               ? _MissingRequestState(message: l10n.supportRequestNotFound)
               : Column(
                   children: [

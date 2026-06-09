@@ -28,9 +28,7 @@ class MemoriesScreen extends StatelessWidget {
       bottomNavigationBar: const BottomNav(currentIndex: 3),
       showChatButton: true,
       body: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: AppGradients.screenBackground,
-        ),
+        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
         child: SafeArea(
           child: userId == null || userId.isEmpty
               ? _StateMessage(
@@ -89,7 +87,7 @@ class MemoriesScreen extends StatelessWidget {
                         SliverPadding(
                           padding: const EdgeInsetsDirectional.fromSTEB(
                             AppSpacing.screenHorizontalCompact,
-                            24,
+                            78,
                             AppSpacing.screenHorizontalCompact,
                             8,
                           ),

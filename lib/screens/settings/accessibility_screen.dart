@@ -37,16 +37,22 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
       Permission.microphone,
       Permission.bluetooth,
     ];
-    final statusEntries = await Future.wait(
-      permissions.map((permission) async {
-        return MapEntry(permission, await permission.status);
-      }),
-    );
-    final statuses = Map<Permission, PermissionStatus>.fromEntries(
-      statusEntries,
-    );
-    if (mounted) {
-      setState(() => _statuses = statuses);
+    try {
+      final statusEntries = await Future.wait(
+        permissions.map((permission) async {
+          return MapEntry(permission, await permission.status);
+        }),
+      );
+      final statuses = Map<Permission, PermissionStatus>.fromEntries(
+        statusEntries,
+      );
+      if (mounted) {
+        setState(() => _statuses = statuses);
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _statuses = {});
+      }
     }
   }
 
@@ -121,21 +127,15 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final l10n = AppLocalizations.of(context)!;
     final isArabic = prefs.language == 'ar';
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return AppMenuShell(
       title: l10n.settings.toUpperCase(),
-      backgroundColor: isDark
-          ? AppColors.cinematicBackground
-          : AppColors.warmSurface,
+      backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
         child: SingleChildScrollView(
-          padding: const EdgeInsetsDirectional.symmetric(
-            horizontal: 16,
-            vertical: 24,
-          ),
+          padding: const EdgeInsetsDirectional.fromSTEB(16, 78, 16, 128),
           child: Column(
             crossAxisAlignment: isArabic
                 ? CrossAxisAlignment.end
@@ -144,17 +144,13 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
               // 1. Introduction Card
               Container(
                 padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.cinematicCard,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
-                ),
+                decoration: AppDecorations.secondaryGlassCard(radius: 24),
                 child: Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryGold.withOpacity(0.1),
+                        color: AppColors.primaryGold.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
@@ -195,11 +191,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
               // 2. PERMISSIONS
               _SectionTitle(title: l10n.permissionsCenter.toUpperCase()),
               Container(
-                decoration: BoxDecoration(
-                  color: AppColors.cinematicCard,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
-                ),
+                decoration: AppDecorations.secondaryGlassCard(radius: 24),
                 child: Column(
                   children: [
                     _PermissionItem(
@@ -252,11 +244,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
               _SectionTitle(title: l10n.displayText.toUpperCase()),
               Container(
                 padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.cinematicCard,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
-                ),
+                decoration: AppDecorations.secondaryGlassCard(radius: 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -308,9 +296,11 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                     SliderTheme(
                       data: SliderTheme.of(context).copyWith(
                         activeTrackColor: AppColors.primaryGold,
-                        inactiveTrackColor: Colors.white.withOpacity(0.1),
+                        inactiveTrackColor: AppColors.cardGlass(0.38),
                         thumbColor: AppColors.primaryGold,
-                        overlayColor: AppColors.primaryGold.withOpacity(0.2),
+                        overlayColor: AppColors.primaryGold.withValues(
+                          alpha: 0.20,
+                        ),
                         trackHeight: 4,
                       ),
                       child: Slider(
@@ -348,17 +338,13 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
               _SectionTitle(title: l10n.language.toUpperCase()),
               Container(
                 padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.cinematicCard,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
-                ),
+                decoration: AppDecorations.secondaryGlassCard(radius: 24),
                 child: Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: AppColors.primaryGold.withOpacity(0.1),
+                        color: AppColors.primaryGold.withValues(alpha: 0.12),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(
@@ -444,11 +430,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
               _SectionTitle(title: l10n.aboutHorusBot.toUpperCase()),
               Container(
                 padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: AppColors.cinematicCard,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: Colors.white.withOpacity(0.05)),
-                ),
+                decoration: AppDecorations.secondaryGlassCard(radius: 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -525,13 +507,11 @@ class _SectionTitle extends StatelessWidget {
 
 class _SwitchItem extends StatelessWidget {
   final String title;
-  final String? subtitle;
   final bool value;
   final ValueChanged<bool> onChanged;
 
   const _SwitchItem({
     required this.title,
-    this.subtitle,
     required this.value,
     required this.onChanged,
   });
@@ -557,23 +537,14 @@ class _SwitchItem extends StatelessWidget {
                     fontSize: 15,
                   ),
                 ),
-                if (subtitle != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle!,
-                    style: AppTextStyles.metadata(
-                      context,
-                    ).copyWith(fontSize: 12),
-                  ),
-                ],
               ],
             ),
           ),
           Switch.adaptive(
             value: value,
             onChanged: onChanged,
-            activeTrackColor: AppColors.primaryGold.withOpacity(0.4),
-            activeColor: AppColors.primaryGold,
+            activeTrackColor: AppColors.primaryGold.withValues(alpha: 0.36),
+            activeThumbColor: AppColors.primaryGold,
           ),
         ],
       ),
@@ -652,20 +623,21 @@ class _PermissionItem extends StatelessWidget {
               const SizedBox(width: 12),
               ElevatedButton(
                 onPressed: isGranted ? null : onEnable,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryGold,
-                  foregroundColor: AppColors.darkInk,
-                  textStyle: AppTextStyles.buttonLabel(
-                    context,
-                  ).copyWith(inherit: false, fontSize: 13),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                style: AppDecorations.primaryButton().copyWith(
+                  textStyle: WidgetStatePropertyAll(
+                    AppTextStyles.buttonLabel(
+                      context,
+                    ).copyWith(inherit: false, fontSize: 13),
                   ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 8,
+                  shape: WidgetStatePropertyAll(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
                   ),
+                  padding: const WidgetStatePropertyAll(
+                    EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  ),
+                  minimumSize: const WidgetStatePropertyAll(Size(0, 42)),
                 ),
                 child: Text(l10n.enable),
               ),
@@ -737,9 +709,7 @@ class _AppearanceChip extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 16),
           decoration: BoxDecoration(
-            color: selected
-                ? AppColors.primaryGold
-                : Colors.white.withOpacity(0.05),
+            color: selected ? AppColors.primaryGold : AppColors.cardGlass(0.38),
             borderRadius: BorderRadius.circular(16),
           ),
           child: Column(
@@ -771,7 +741,7 @@ class _Divider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Divider(
       height: 1,
-      color: Colors.white.withOpacity(0.05),
+      color: AppColors.goldBorder(0.12),
       indent: 20,
       endIndent: 20,
     );

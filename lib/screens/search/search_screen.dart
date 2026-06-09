@@ -73,13 +73,11 @@ class _SearchScreenState extends State<SearchScreen> {
       bottomNavigationBar: const BottomNav(currentIndex: 1),
       showChatButton: true,
       body: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: AppGradients.screenBackground,
-        ),
+        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
         child: ListView(
           padding: const EdgeInsetsDirectional.fromSTEB(
             AppSpacing.screenHorizontalCompact,
-            16,
+            78,
             AppSpacing.screenHorizontalCompact,
             48,
           ),

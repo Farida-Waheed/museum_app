@@ -411,50 +411,6 @@ class _ShellFloatingHeader extends StatelessWidget {
         child: Stack(
           alignment: Alignment.topCenter,
           children: [
-            Positioned.fill(
-              child: IgnorePointer(
-                child: ShaderMask(
-                  blendMode: BlendMode.dstIn,
-                  shaderCallback: (bounds) {
-                    return const LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Colors.white, Colors.white, Colors.transparent],
-                      stops: [0.0, 0.54, 1.0],
-                    ).createShader(bounds);
-                  },
-                  child: ClipRect(
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(
-                        sigmaX: 7 * scrollStrength,
-                        sigmaY: 7 * scrollStrength,
-                      ),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              Colors.black.withValues(
-                                alpha: 0.12 * scrollStrength,
-                              ),
-                              Colors.black.withValues(
-                                alpha: 0.18 * scrollStrength,
-                              ),
-                              Colors.black.withValues(
-                                alpha: 0.08 * scrollStrength,
-                              ),
-                              Colors.transparent,
-                            ],
-                            stops: const [0.0, 0.36, 0.68, 1.0],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
             SafeArea(
               bottom: false,
               child: Padding(
@@ -612,6 +568,7 @@ class AppMenuShellState extends State<AppMenuShell>
       backgroundColor: bgColor,
       extendBody: true,
       bottomNavigationBar: widget.bottomNavigationBar,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton:
           widget.floatingActionButton ??
           (widget.showChatButton
@@ -626,6 +583,7 @@ class AppMenuShellState extends State<AppMenuShell>
           final menuDx = (isArabic ? 1 : -1) * menuWidth * (1 - v);
 
           return Stack(
+            fit: StackFit.expand,
             children: [
               AbsorbPointer(
                 absorbing: _isMenuOpen,
@@ -640,17 +598,10 @@ class AppMenuShellState extends State<AppMenuShell>
                                 ? Icons.arrow_forward_ios_rounded
                                 : Icons.arrow_back_ios_new_rounded)
                           : Icons.menu_rounded;
-                      final topInset =
-                          MediaQuery.paddingOf(context).top +
-                          (widget.subHeader == null ? 76 : 124);
                       return Stack(
+                        fit: StackFit.expand,
                         children: [
-                          Positioned.fill(
-                            child: Padding(
-                              padding: EdgeInsets.only(top: topInset),
-                              child: widget.body,
-                            ),
-                          ),
+                          Positioned.fill(child: widget.body),
                           _ShellFloatingHeader(
                             title: widget.title ?? l10n.appTitle,
                             leadingIcon: leadingIcon,

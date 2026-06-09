@@ -66,9 +66,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
       body: Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
         child: Container(
-          decoration: const BoxDecoration(
-            gradient: AppGradients.screenBackground,
-          ),
+          decoration: const BoxDecoration(color: AppColors.cinematicBackground),
           child: authProvider.isLoggedIn
               ? _buildWallet(
                   context,
@@ -148,7 +146,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
     return ListView(
       padding: const EdgeInsetsDirectional.fromSTEB(
         AppSpacing.screenHorizontalCompact,
-        24,
+        78,
         AppSpacing.screenHorizontalCompact,
         148,
       ),
@@ -1465,11 +1463,10 @@ class _GoldButton extends StatelessWidget {
           );
     return ElevatedButton(
       onPressed: onTap,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primaryGold,
-        foregroundColor: AppColors.darkInk,
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      style: AppDecorations.primaryButton().copyWith(
+        padding: const WidgetStatePropertyAll(
+          EdgeInsets.symmetric(vertical: 14, horizontal: 14),
+        ),
       ),
       child: DefaultTextStyle.merge(
         style: AppTextStyles.buttonLabel(context),
@@ -1494,11 +1491,10 @@ class _OutlineButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton(
       onPressed: isLoading ? null : onTap,
-      style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.primaryGold,
-        side: const BorderSide(color: AppColors.primaryGold),
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      style: AppDecorations.secondaryButton().copyWith(
+        padding: const WidgetStatePropertyAll(
+          EdgeInsets.symmetric(vertical: 14, horizontal: 14),
+        ),
       ),
       child: isLoading
           ? const SizedBox(

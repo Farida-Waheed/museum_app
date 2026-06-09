@@ -61,8 +61,8 @@ class HomeFeaturedArtifactCard extends StatelessWidget {
                           children: [
                             Text(
                               artifact.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              overflow: TextOverflow.fade,
                               textAlign: isArabic
                                   ? TextAlign.right
                                   : TextAlign.left,
@@ -75,8 +75,8 @@ class HomeFeaturedArtifactCard extends StatelessWidget {
                             const SizedBox(height: 4),
                             Text(
                               artifact.subtitle,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              overflow: TextOverflow.fade,
                               textAlign: isArabic
                                   ? TextAlign.right
                                   : TextAlign.left,
@@ -87,8 +87,8 @@ class HomeFeaturedArtifactCard extends StatelessWidget {
                             const SizedBox(height: 6),
                             Text(
                               artifact.contextHint,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                              overflow: TextOverflow.fade,
                               textAlign: isArabic
                                   ? TextAlign.right
                                   : TextAlign.left,

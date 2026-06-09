@@ -155,7 +155,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
         backgroundColor: AppColors.cinematicBackground,
         bottomNavigationBar: const BottomNav(currentIndex: 4),
         body: const DecoratedBox(
-          decoration: BoxDecoration(gradient: AppGradients.screenBackground),
+          decoration: BoxDecoration(color: AppColors.cinematicBackground),
           child: GuestPrompt(
             icon: Icons.rate_review_outlined,
             title: 'Share Your Experience',
@@ -182,17 +182,15 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   // HEADER CARD
                   Container(
                     padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.cinematicCard,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.white.withOpacity(0.05)),
-                    ),
+                    decoration: AppDecorations.secondaryGlassCard(radius: 24),
                     child: Row(
                       children: [
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryGold.withOpacity(0.1),
+                            color: AppColors.primaryGold.withValues(
+                              alpha: 0.12,
+                            ),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Icon(
@@ -234,11 +232,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   // RATING CARD
                   Container(
                     padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: AppColors.cinematicCard,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.white.withOpacity(0.05)),
-                    ),
+                    decoration: AppDecorations.secondaryGlassCard(radius: 24),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -304,13 +298,15 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                                 ),
                                 decoration: BoxDecoration(
                                   color: selected
-                                      ? AppColors.primaryGold.withOpacity(0.1)
+                                      ? AppColors.primaryGold.withValues(
+                                          alpha: 0.12,
+                                        )
                                       : Colors.transparent,
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
                                     color: selected
                                         ? AppColors.primaryGold
-                                        : Colors.white.withOpacity(0.1),
+                                        : AppColors.goldBorder(0.16),
                                   ),
                                 ),
                                 child: Text(
@@ -339,11 +335,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   // COMMENT CARD
                   Container(
                     padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: AppColors.cinematicCard,
-                      borderRadius: BorderRadius.circular(24),
-                      border: Border.all(color: Colors.white.withOpacity(0.05)),
-                    ),
+                    decoration: AppDecorations.secondaryGlassCard(radius: 24),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -376,12 +368,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                               context,
                             ).copyWith(color: Colors.white24),
                             filled: true,
-                            fillColor: Colors.white.withOpacity(0.02),
+                            fillColor: AppColors.cardGlass(0.30),
                             contentPadding: const EdgeInsets.all(16),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16),
                               borderSide: BorderSide(
-                                color: Colors.white.withOpacity(0.05),
+                                color: AppColors.goldBorder(0.16),
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
@@ -417,9 +409,9 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.darkHeader,
+              color: AppColors.cardGlass(0.66),
               border: Border(
-                top: BorderSide(color: Colors.white.withOpacity(0.05)),
+                top: BorderSide(color: AppColors.goldBorder(0.16)),
               ),
             ),
             child: SafeArea(
@@ -431,14 +423,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                   onPressed: _isSubmitting
                       ? null
                       : () => _handleSubmit(isArabic),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryGold,
-                    foregroundColor: AppColors.darkInk,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 0,
-                  ),
+                  style: AppDecorations.primaryButton(),
                   child: _isSubmitting
                       ? const SizedBox(
                           width: 20,
@@ -494,12 +479,12 @@ class _FeedbackThankYouDialog extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 32),
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
-          color: AppColors.cinematicCard,
+          color: AppColors.cardGlass(0.66),
           borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: AppColors.primaryGold.withOpacity(0.2)),
+          border: Border.all(color: AppColors.goldBorder(0.20)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(.5),
+              color: Colors.black.withValues(alpha: 0.50),
               blurRadius: 40,
               offset: const Offset(0, 20),
             ),
@@ -511,7 +496,7 @@ class _FeedbackThankYouDialog extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.1),
+                color: Colors.green.withValues(alpha: 0.10),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -548,14 +533,7 @@ class _FeedbackThankYouDialog extends StatelessWidget {
                 onPressed: () {
                   Navigator.of(context, rootNavigator: true).pop();
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryGold,
-                  foregroundColor: AppColors.darkInk,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  elevation: 0,
-                ),
+                style: AppDecorations.primaryButton(),
                 child: Text(
                   isArabic ? "إغلاق" : "Close",
                   style: AppTextStyles.buttonLabel(context),

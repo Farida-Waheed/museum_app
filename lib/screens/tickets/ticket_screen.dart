@@ -273,10 +273,7 @@ class _TicketScreenState extends State<TicketScreen> {
             ),
             ElevatedButton(
               onPressed: () => Navigator.pop(dialogContext, true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryGold,
-                foregroundColor: AppColors.darkInk,
-              ),
+              style: AppDecorations.primaryButton(),
               child: Text(AppLocalizations.of(dialogContext)!.confirmBooking),
             ),
           ],
@@ -313,10 +310,7 @@ class _TicketScreenState extends State<TicketScreen> {
                 Navigator.pop(dialogContext);
                 Navigator.pushReplacementNamed(context, AppRoutes.myTickets);
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryGold,
-                foregroundColor: AppColors.darkInk,
-              ),
+              style: AppDecorations.primaryButton(),
               child: Text(
                 isArabic
                     ? '\u0639\u0631\u0636 \u062a\u0630\u0627\u0643\u0631\u064a'
@@ -352,16 +346,12 @@ class _TicketScreenState extends State<TicketScreen> {
                 l10n,
                 isArabic,
               )
-            : _buildAccountGate(context, l10n, isArabic),
+            : _buildAccountGate(context, l10n),
       ),
     );
   }
 
-  Widget _buildAccountGate(
-    BuildContext context,
-    AppLocalizations l10n,
-    bool isArabic,
-  ) {
+  Widget _buildAccountGate(BuildContext context, AppLocalizations l10n) {
     return Container(
       decoration: const BoxDecoration(color: AppColors.cinematicBackground),
       child: Center(
@@ -370,9 +360,7 @@ class _TicketScreenState extends State<TicketScreen> {
           child: _GlassCard(
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: isArabic
-                  ? CrossAxisAlignment.end
-                  : CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Icon(
                   Icons.account_circle_outlined,
@@ -382,7 +370,7 @@ class _TicketScreenState extends State<TicketScreen> {
                 const SizedBox(height: AppSpacing.cardGap),
                 Text(
                   l10n.ticketsAccountRequiredTitle,
-                  textAlign: TextAlign.start,
+                  textAlign: TextAlign.center,
                   style: AppTextStyles.displayScreenTitle(
                     context,
                   ).copyWith(fontSize: 24),
@@ -390,7 +378,7 @@ class _TicketScreenState extends State<TicketScreen> {
                 const SizedBox(height: 10),
                 Text(
                   l10n.ticketsAccountRequiredBody,
-                  textAlign: TextAlign.start,
+                  textAlign: TextAlign.center,
                   style: AppTextStyles.bodyPrimary(
                     context,
                   ).copyWith(color: AppColors.bodyText, height: 1.45),
@@ -1816,42 +1804,60 @@ class _GoldButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: isLoading ? null : onTap,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primaryGold,
-        foregroundColor: AppColors.darkInk,
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: isLoading ? null : onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          height: 48,
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            gradient: AppGradients.premiumGold,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.goldBorder(0.42)),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primaryGold.withValues(alpha: 0.25),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: isLoading
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.darkInk,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        label,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.buttonLabel(context),
+                      ),
+                    ),
+                  ],
+                )
+              : Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.premiumButtonLabel(
+                    context,
+                  ).copyWith(fontSize: 15, color: AppColors.darkInk),
+                ),
+        ),
       ),
-      child: isLoading
-          ? Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: AppColors.darkInk,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Flexible(
-                  child: Text(
-                    label,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppTextStyles.buttonLabel(context),
-                  ),
-                ),
-              ],
-            )
-          : Text(
-              label,
-              overflow: TextOverflow.ellipsis,
-              style: AppTextStyles.buttonLabel(context),
-            ),
     );
   }
 }
@@ -1864,20 +1870,29 @@ class _OutlineActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OutlinedButton(
-      onPressed: onTap,
-      style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.primaryGold,
-        side: const BorderSide(color: AppColors.primaryGold),
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      ),
-      child: Text(
-        label,
-        overflow: TextOverflow.ellipsis,
-        style: AppTextStyles.buttonLabel(
-          context,
-        ).copyWith(color: AppColors.primaryGold),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          height: 48,
+          alignment: Alignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          decoration: BoxDecoration(
+            color: AppColors.cardGlass(0.36),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.goldBorder(0.42), width: 1.1),
+          ),
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.premiumButtonLabel(
+              context,
+            ).copyWith(fontSize: 15, color: AppColors.primaryGold),
+          ),
+        ),
       ),
     );
   }

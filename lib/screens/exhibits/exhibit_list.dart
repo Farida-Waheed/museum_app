@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/constants/colors.dart';
@@ -28,16 +30,14 @@ class ExhibitListScreen extends StatelessWidget {
       bottomNavigationBar: const BottomNav(currentIndex: 1),
       showChatButton: true,
       actions: [
-        IconButton(
+        _HeaderCircleAction(
           tooltip: l10n.searchExhibits,
           icon: const Icon(Icons.search_rounded),
           onPressed: () => Navigator.pushNamed(context, AppRoutes.search),
         ),
       ],
       body: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: AppGradients.screenBackground,
-        ),
+        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
         child: exhibitProvider.isLoading && exhibits.isEmpty
             ? _ExhibitStateCard(
                 isArabic: isArabic,
@@ -60,7 +60,7 @@ class ExhibitListScreen extends StatelessWidget {
             : ListView.builder(
                 padding: const EdgeInsets.fromLTRB(
                   AppSpacing.screenHorizontalCompact,
-                  18,
+                  78,
                   AppSpacing.screenHorizontalCompact,
                   128,
                 ),
@@ -87,6 +87,65 @@ class ExhibitListScreen extends StatelessWidget {
                   );
                 },
               ),
+      ),
+    );
+  }
+}
+
+class _HeaderCircleAction extends StatelessWidget {
+  const _HeaderCircleAction({
+    required this.tooltip,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  final String tooltip;
+  final Widget icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: tooltip,
+      child: Center(
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onPressed,
+            borderRadius: BorderRadius.circular(24),
+            child: ClipOval(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                child: Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.09),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: AppColors.goldBorder(0.18),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.10),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: IconTheme(
+                    data: const IconThemeData(
+                      color: AppColors.whiteTitle,
+                      size: 22,
+                    ),
+                    child: icon,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

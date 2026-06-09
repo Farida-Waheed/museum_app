@@ -32,9 +32,7 @@ class _SupportInboxScreenState extends State<SupportInboxScreen> {
       backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: AppGradients.screenBackground,
-        ),
+        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
         child: Directionality(
           textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: !authProvider.isLoggedIn
@@ -49,7 +47,7 @@ class _SupportInboxScreenState extends State<SupportInboxScreen> {
               : ListView.separated(
                   padding: const EdgeInsetsDirectional.fromSTEB(
                     20,
-                    24,
+                    78,
                     20,
                     120,
                   ),

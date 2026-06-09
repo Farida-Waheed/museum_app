@@ -73,7 +73,8 @@ class GuestPrompt extends StatelessWidget {
                     child: _PromptButton(
                       label: primaryLabel,
                       primary: true,
-                      onTap: () => Navigator.pushNamed(context, AppRoutes.login),
+                      onTap: () =>
+                          Navigator.pushNamed(context, AppRoutes.login),
                     ),
                   ),
                   const SizedBox(width: 12, height: 12),
@@ -93,19 +94,15 @@ class GuestPrompt extends StatelessWidget {
                       _PromptButton(
                         label: primaryLabel,
                         primary: true,
-                        onTap: () => Navigator.pushNamed(
-                          context,
-                          AppRoutes.login,
-                        ),
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.login),
                       ),
                       const SizedBox(height: 12),
                       _PromptButton(
                         label: secondaryLabel,
                         primary: false,
-                        onTap: () => Navigator.pushNamed(
-                          context,
-                          AppRoutes.register,
-                        ),
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.register),
                       ),
                     ],
                   );
@@ -147,35 +144,49 @@ class _PromptButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
+      width: double.infinity,
       height: 48,
-      child: primary
-          ? ElevatedButton(
-              onPressed: onTap,
-              style: AppDecorations.primaryButton().copyWith(
-                shape: WidgetStatePropertyAll(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            alignment: Alignment.center,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: primary
+                ? BoxDecoration(
+                    gradient: AppGradients.premiumGold,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: AppColors.goldBorder(0.42)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primaryGold.withValues(alpha: 0.25),
+                        blurRadius: 18,
+                        offset: const Offset(0, 8),
+                      ),
+                    ],
+                  )
+                : BoxDecoration(
+                    color: AppColors.cardGlass(0.36),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: AppColors.goldBorder(0.42),
+                      width: 1.1,
+                    ),
                   ),
-                ),
-              ),
-              child: Text(label, style: AppTextStyles.buttonLabel(context)),
-            )
-          : OutlinedButton(
-              onPressed: onTap,
-              style: AppDecorations.secondaryButton().copyWith(
-                shape: WidgetStatePropertyAll(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                ),
-              ),
-              child: Text(
-                label,
-                style: AppTextStyles.buttonLabel(
-                  context,
-                ).copyWith(color: AppColors.primaryGold),
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.premiumButtonLabel(context).copyWith(
+                fontSize: 15,
+                color: primary ? AppColors.darkInk : AppColors.primaryGold,
               ),
             ),
+          ),
+        ),
+      ),
     );
   }
 }

@@ -86,8 +86,9 @@ class HomeController {
       exhibits: exhibits,
       lang: lang,
       index: didYouKnowIndex,
-      currentExhibit: hasSessionTourContext ? currentExhibit : null,
-      activeTour: hasActiveTour || isPaused,
+      currentExhibit: hasSessionTourContext
+          ? currentExhibit
+          : _findExhibit(exhibits: exhibits, exhibitId: featuredArtifact.id),
     );
     const String? smallUpdateCard = null;
     final mapPreview = demoService.getMapPreview(
@@ -246,13 +247,10 @@ class HomeController {
     required String lang,
     required int index,
     Exhibit? currentExhibit,
-    bool activeTour = false,
   }) {
     if (exhibits.isEmpty) return '';
 
-    final exhibit = activeTour && currentExhibit != null
-        ? currentExhibit
-        : exhibits[index % exhibits.length];
+    final exhibit = currentExhibit ?? exhibits[index % exhibits.length];
     final description = exhibit.getDescription(lang).trim();
     if (description.isEmpty) return '';
 

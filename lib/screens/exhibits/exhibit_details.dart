@@ -53,8 +53,6 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
     final l10n = AppLocalizations.of(context)!;
 
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final isBookmarked = exhibitProvider.isBookmarked(exhibit.id);
 
     // Mark as visited when viewing details
@@ -74,7 +72,9 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen> {
           Padding(
             padding: const EdgeInsetsDirectional.only(end: 10),
             child: IconButton(
-              tooltip: isBookmarked ? l10n.removedFromBookmarks : l10n.addToMyRoute,
+              tooltip: isBookmarked
+                  ? l10n.removedFromBookmarks
+                  : l10n.addToMyRoute,
               icon: Icon(
                 isBookmarked ? Icons.bookmark : Icons.bookmark_border,
                 color: AppColors.primaryGold,
@@ -84,46 +84,24 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen> {
           ),
       ],
       body: DecoratedBox(
-        decoration: const BoxDecoration(gradient: AppGradients.screenBackground),
+        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
         child: ListView(
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 144),
           children: [
-            _ExhibitHero(exhibit: exhibit, language: prefs.language),
+            _ExhibitHero(exhibit: exhibit),
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.screenHorizontalCompact,
-                24,
+                0,
                 AppSpacing.screenHorizontalCompact,
                 0,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildFactChips(exhibit, l10n),
-                  const SizedBox(height: AppSpacing.sectionGap),
-                  Text(
-                    l10n.description.toUpperCase(),
-                    style: AppTextStyles.premiumSectionLabel(
-                      context,
-                    ).copyWith(color: AppColors.softGold),
-                  ),
-                  const SizedBox(height: 12),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(
-                      AppSpacing.cardPaddingCompact,
-                    ),
-                    decoration: AppDecorations.secondaryGlassCard(
-                      radius: 22,
-                      opacity: 0.52,
-                    ),
-                    child: Text(
-                      exhibit.getDescription(prefs.language),
-                      style: AppTextStyles.premiumBody(context).copyWith(
-                        height: 1.58,
-                        color: isDark ? AppColors.bodyText : Colors.black87,
-                      ),
-                    ),
+                  _ExhibitDetailsPanel(
+                    exhibit: exhibit,
+                    language: prefs.language,
                   ),
                 ],
               ),
@@ -133,130 +111,175 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen> {
       ),
     );
   }
+}
 
-  // ---------- FACT CHIPS ----------
+class _ExhibitHero extends StatelessWidget {
+  const _ExhibitHero({required this.exhibit});
 
-  Widget _buildFactChips(
-    Exhibit exhibit,
-    AppLocalizations l10n,
-  ) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final facts = <Map<String, dynamic>>[
-      {'icon': Icons.public, 'label': l10n.origin, 'value': 'Ancient Egypt'},
-      {
-        'icon': Icons.calendar_today,
-        'label': l10n.period,
-        'value': 'New Kingdom',
-      },
-      {'icon': Icons.location_on, 'label': l10n.gallery, 'value': 'Hall A'},
-    ];
+  final Exhibit exhibit;
 
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      children: facts.map((f) {
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          decoration: AppDecorations.secondaryGlassCard(
-            radius: 16,
-            opacity: 0.46,
+  @override
+  Widget build(BuildContext context) {
+    final heroHeight = MediaQuery.sizeOf(context).height * 0.50;
+    return SizedBox(
+      height: heroHeight.clamp(340.0, 460.0),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (exhibit.imageUrl.trim().isNotEmpty)
+            Image.network(
+              exhibit.imageUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) =>
+                  _ExhibitImageFallback(imageAsset: exhibit.imageAsset),
+            )
+          else
+            _ExhibitImageFallback(imageAsset: exhibit.imageAsset),
+          const DecoratedBox(
+            decoration: BoxDecoration(gradient: AppGradients.heroImageOverlay),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                f['icon'] as IconData,
-                size: 16,
-                color: AppColors.primaryGold,
-              ),
-              const SizedBox(width: 7),
-              Text(
-                '${f['label']}: ${f['value']}',
-                style: AppTextStyles.premiumMutedBody(context).copyWith(
-                  color: isDark ? AppColors.bodyText : Colors.black87,
-                  fontSize: 12,
-                ),
-              ),
-            ],
+          PositionedDirectional(
+            start: AppSpacing.screenHorizontalCompact,
+            bottom: 24,
+            child: Text(
+              'Grand Egyptian Museum',
+              style: AppTextStyles.metadata(
+                context,
+              ).copyWith(color: AppColors.primaryGold),
+            ),
           ),
-        );
-      }).toList(),
+        ],
+      ),
     );
   }
 }
 
-class _ExhibitHero extends StatelessWidget {
-  const _ExhibitHero({required this.exhibit, required this.language});
+class _ExhibitDetailsPanel extends StatelessWidget {
+  const _ExhibitDetailsPanel({required this.exhibit, required this.language});
 
   final Exhibit exhibit;
   final String language;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 286,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.asset(
-            exhibit.imageAsset.isNotEmpty
-                ? exhibit.imageAsset
-                : 'assets/images/museum_interior.jpg',
-            fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => Container(
-              color: AppColors.cinematicSection,
-              child: const Center(
-                child: Icon(
-                  Icons.museum_outlined,
-                  color: AppColors.primaryGold,
-                  size: 42,
-                ),
-              ),
-            ),
-          ),
-          const DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
-                colors: [
-                  Color(0xE6000000),
-                  Color(0x66000000),
-                  Color(0x16000000),
-                ],
-              ),
-            ),
-          ),
-          PositionedDirectional(
-            start: AppSpacing.screenHorizontalCompact,
-            end: AppSpacing.screenHorizontalCompact,
-            bottom: 22,
+    final l10n = AppLocalizations.of(context)!;
+    final rows = <_DetailRowData>[
+      _DetailRowData(l10n.gallery, exhibit.floor),
+      _DetailRowData(l10n.period, exhibit.category),
+      _DetailRowData(
+        'Recommended time',
+        exhibit.recommendedDurationMin == null
+            ? ''
+            : '${exhibit.recommendedDurationMin} min',
+      ),
+      _DetailRowData('Photo spot', exhibit.photoSpot ? 'Yes' : ''),
+    ].where((row) => row.value.trim().isNotEmpty).toList();
+    final description = exhibit.getDescription(language).trim();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (rows.isNotEmpty) ...[
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
+            decoration: AppDecorations.secondaryGlassCard(radius: 22),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  exhibit.getName(language),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.displayArtifactTitle(context).copyWith(
-                    color: Colors.white,
-                    fontSize: 28,
-                    shadows: [
-                      Shadow(
-                        color: Colors.black.withValues(alpha: 0.72),
-                        blurRadius: 16,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Grand Egyptian Museum',
-                  style: AppTextStyles.metadata(
-                    context,
-                  ).copyWith(color: AppColors.primaryGold),
-                ),
+                for (var i = 0; i < rows.length; i++) _DetailRow(data: rows[i]),
               ],
+            ),
+          ),
+        ],
+        if (description.isNotEmpty) ...[
+          const SizedBox(height: 24),
+          Text(
+            l10n.description.toUpperCase(),
+            style: AppTextStyles.premiumSectionLabel(
+              context,
+            ).copyWith(color: AppColors.softGold),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
+            decoration: AppDecorations.secondaryGlassCard(radius: 22),
+            child: Text(
+              description,
+              style: AppTextStyles.premiumBody(
+                context,
+              ).copyWith(height: 1.58, color: AppColors.bodyText),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _ExhibitImageFallback extends StatelessWidget {
+  const _ExhibitImageFallback({required this.imageAsset});
+
+  final String imageAsset;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      imageAsset.isNotEmpty ? imageAsset : 'assets/images/museum_interior.jpg',
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => Container(
+        color: AppColors.cinematicSection,
+        child: const Center(
+          child: Icon(
+            Icons.museum_outlined,
+            color: AppColors.primaryGold,
+            size: 42,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DetailRowData {
+  const _DetailRowData(this.label, this.value);
+
+  final String label;
+  final String value;
+}
+
+class _DetailRow extends StatelessWidget {
+  const _DetailRow({required this.data});
+
+  final _DetailRowData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final isArabic = Directionality.of(context) == TextDirection.rtl;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 7),
+      child: Row(
+        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 118,
+            child: Text(
+              data.label.toUpperCase(),
+              textAlign: isArabic ? TextAlign.right : TextAlign.left,
+              style: AppTextStyles.premiumSectionLabel(
+                context,
+              ).copyWith(fontSize: 10, color: AppColors.softGold),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              data.value,
+              textAlign: isArabic ? TextAlign.right : TextAlign.left,
+              style: AppTextStyles.premiumBody(
+                context,
+              ).copyWith(color: AppColors.whiteTitle, height: 1.35),
             ),
           ),
         ],
