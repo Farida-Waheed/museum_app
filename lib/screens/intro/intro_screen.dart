@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/router.dart';
+import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 import '../../models/user_preferences.dart';
 import '../../l10n/app_localizations.dart';
@@ -105,7 +106,7 @@ class _IntroScreenState extends State<IntroScreen>
 
     final TextStyle taglineStyle = AppTextStyles.heroSubtitle(
       context,
-    ).copyWith(color: Colors.white70);
+    ).copyWith(color: AppColors.resolvedBodyText);
 
     return Scaffold(
       body: Stack(

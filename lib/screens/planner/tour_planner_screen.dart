@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -96,16 +96,15 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
     if (!authProvider.isLoggedIn) {
       return AppMenuShell(
         title: l10n.tourPlanner.toUpperCase(),
-        backgroundColor: AppColors.cinematicBackground,
+        backgroundColor: AppColors.resolvedBackground,
         bottomNavigationBar: const BottomNav(currentIndex: 0),
         showChatButton: true,
         body: DecoratedBox(
-          decoration: const BoxDecoration(color: AppColors.cinematicBackground),
+          decoration: BoxDecoration(color: AppColors.resolvedBackground),
           child: GuestPrompt(
             icon: Icons.route_outlined,
-            title: 'Plan Your Horus-Bot Tour',
-            body:
-                'Sign in to create and save a personalized route through the museum.',
+            title: l10n.plannerGuestTitle,
+            body: l10n.plannerGuestBody,
             primaryLabel: l10n.login,
             secondaryLabel: l10n.createAccount,
             tertiaryLabel: l10n.exhibits,
@@ -117,11 +116,11 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
 
     return AppMenuShell(
       title: l10n.tourPlanner.toUpperCase(),
-      backgroundColor: AppColors.cinematicBackground,
+      backgroundColor: AppColors.resolvedBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
       showChatButton: true,
       body: Container(
-        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
+        decoration: BoxDecoration(color: AppColors.resolvedBackground),
         child: Directionality(
           textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: SingleChildScrollView(
@@ -139,13 +138,13 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                 const _HeroCard(),
                 const SizedBox(height: AppSpacing.sectionGap),
                 _SectionCard(
-                  title: 'Tour type',
+                  title: l10n.plannerTourType,
                   child: Row(
                     children: [
                       Expanded(
                         child: _TourTypeTile(
-                          title: 'Standard',
-                          subtitle: 'Recommended route - 200 EGP',
+                          title: l10n.plannerStandard,
+                          subtitle: l10n.plannerRecommendedRoutePrice,
                           icon: Icons.route_rounded,
                           selected: _tourType == RobotTourType.standard,
                           onTap: () => _updateDraft(() {
@@ -156,8 +155,8 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: _TourTypeTile(
-                          title: 'Personalized',
-                          subtitle: 'Custom exhibits and interests - 350 EGP',
+                          title: l10n.plannerPersonalized,
+                          subtitle: l10n.plannerCustomRoutePrice,
                           icon: Icons.tune_rounded,
                           selected: _tourType == RobotTourType.personalized,
                           emphasized: true,
@@ -171,15 +170,15 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                 ),
                 const SizedBox(height: AppSpacing.cardGap),
                 _SectionCard(
-                  title: 'Tour duration',
-                  subtitle:
-                      'Duration controls the number of stops Horus plans.',
+                  title: l10n.plannerTourDuration,
+                  subtitle: l10n.plannerTourDurationSubtitle,
                   child: Wrap(
                     spacing: 10,
                     runSpacing: 10,
                     children: _durationOptions.map((option) {
                       return _DurationChip(
                         option: option,
+                        label: _localizedDuration(context, option.label),
                         selected: _durationMinutes == option.minutes,
                         onTap: () => _changeDuration(option.minutes),
                       );
@@ -188,15 +187,15 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                 ),
                 const SizedBox(height: AppSpacing.cardGap),
                 _SectionCard(
-                  title: 'Interests',
-                  subtitle: 'Select what you want Horus to focus on.',
+                  title: l10n.plannerInterests,
+                  subtitle: l10n.plannerInterestsSubtitle,
                   child: Wrap(
                     spacing: 10,
                     runSpacing: 10,
                     children: _interestOptions.map((interest) {
                       final selected = _selectedInterests.contains(interest);
                       return _PlannerChip(
-                        label: interest,
+                        label: _localizedInterest(context, interest),
                         selected: selected,
                         onSelected: (value) => _updateDraft(() {
                           _showAllExhibits = false;
@@ -210,9 +209,8 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                 ),
                 const SizedBox(height: AppSpacing.cardGap),
                 _SectionCard(
-                  title: 'Accessibility preferences',
-                  subtitle:
-                      'These preferences are saved with the generated tour plan.',
+                  title: l10n.plannerAccessibilityPreferences,
+                  subtitle: l10n.plannerAccessibilitySubtitle,
                   child: Wrap(
                     spacing: 10,
                     runSpacing: 10,
@@ -221,7 +219,7 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                         option,
                       );
                       return _PlannerChip(
-                        label: option,
+                        label: _localizedAccessibility(context, option),
                         selected: selected,
                         onSelected: (value) => _updateDraft(() {
                           value
@@ -241,7 +239,7 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                 ),
                 const SizedBox(height: AppSpacing.sectionGap),
                 _SectionCard(
-                  title: 'Select exhibits',
+                  title: l10n.plannerSelectExhibits,
                   subtitle: _exhibitFilterNote(
                     visibleCount: visibleExhibits.length,
                     totalCount: exhibits.length,
@@ -252,9 +250,7 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                           child: Center(child: CircularProgressIndicator()),
                         )
                       : exhibits.isEmpty
-                      ? const _EmptyText(
-                          text: 'No exhibits are available right now.',
-                        )
+                      ? _EmptyText(text: l10n.plannerNoExhibitsAvailable)
                       : Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -266,7 +262,7 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                             if (!_showAllExhibits &&
                                 visibleExhibits.length < exhibits.length) ...[
                               _TextAction(
-                                label: 'Show all exhibits',
+                                label: l10n.plannerShowAllExhibits,
                                 onTap: () => setState(() {
                                   _showAllExhibits = true;
                                   _inlineMessage = null;
@@ -292,12 +288,10 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                 ),
                 const SizedBox(height: AppSpacing.cardGap),
                 _SectionCard(
-                  title: 'Recommended for you',
-                  subtitle: 'Based on selected interests and exhibit data.',
+                  title: l10n.plannerRecommendedForYou,
+                  subtitle: l10n.plannerRecommendedForYouSubtitle,
                   child: recommended.isEmpty
-                      ? const _EmptyText(
-                          text: 'Choose interests to see matching exhibits.',
-                        )
+                      ? _EmptyText(text: l10n.plannerChooseInterests)
                       : Column(
                           children: recommended.take(4).map((exhibit) {
                             return Padding(
@@ -305,7 +299,7 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                               child: _RecommendationCard(
                                 exhibit: exhibit,
                                 isArabic: isArabic,
-                                reason: _recommendationReason(exhibit),
+                                reason: _recommendationReason(context, exhibit),
                                 onAdd: () =>
                                     _toggleExhibit(exhibit.id, addOnly: true),
                               ),
@@ -316,9 +310,7 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                 const SizedBox(height: AppSpacing.cardGap),
                 if (_showValidation) ...[
                   _PlannerNotice(
-                    text:
-                        _inlineMessage ??
-                        'Select at least one interest or exhibit to generate your Horus-Bot tour.',
+                    text: _inlineMessage ?? l10n.plannerGenerateValidation,
                   ),
                   const SizedBox(height: AppSpacing.cardGap),
                 ] else if (_inlineMessage != null) ...[
@@ -355,7 +347,9 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
                 ),
                 const SizedBox(height: AppSpacing.cardGap),
                 PrimaryButton(
-                  label: _generated ? 'Book this tour' : 'Generate my tour',
+                  label: _generated
+                      ? l10n.plannerBookThisTour
+                      : l10n.plannerGenerateMyTour,
                   onPressed: () {
                     if (_generated) {
                       _bookPlannedTour(context, exhibits: _generatedRoute);
@@ -393,8 +387,9 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
       setState(() {
         _generated = false;
         _showValidation = false;
-        _inlineMessage =
-            'This duration supports up to ${_targetStopsForDuration()} stops.';
+        _inlineMessage = AppLocalizations.of(
+          context,
+        )!.plannerDurationStopLimit(_targetStopsForDuration());
       });
       return;
     }
@@ -416,8 +411,7 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
         _selectedExhibitIds
           ..clear()
           ..addAll(kept);
-        _inlineMessage =
-            'Your route was adjusted to fit the selected duration.';
+        _inlineMessage = AppLocalizations.of(context)!.plannerRouteAdjusted;
       } else {
         _inlineMessage = null;
       }
@@ -435,8 +429,9 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
     if (_selectedInterests.isEmpty && selectedExhibits.isEmpty) {
       setState(() {
         _showValidation = true;
-        _inlineMessage =
-            'Select at least one interest or exhibit to generate your Horus-Bot tour.';
+        _inlineMessage = AppLocalizations.of(
+          context,
+        )!.plannerGenerateValidation;
         _generated = false;
       });
       return;
@@ -492,7 +487,8 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
         .toList();
   }
 
-  String _recommendationReason(Exhibit exhibit) {
+  String _recommendationReason(BuildContext context, Exhibit exhibit) {
+    final l10n = AppLocalizations.of(context)!;
     final tokens = <String>{
       _normalize(exhibit.category),
       ...exhibit.tags.map(_normalize),
@@ -504,13 +500,15 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
       if (tokens.any(
         (token) => token.contains(normalized) || normalized.contains(token),
       )) {
-        return 'Matches $interest';
+        return l10n.plannerMatchesInterest(
+          _localizedInterest(context, interest),
+        );
       }
     }
     if (_includePhotoStops && exhibit.photoSpot) {
-      return 'Includes photo opportunity';
+      return l10n.plannerIncludesPhotoOpportunity;
     }
-    return 'Related to selected themes';
+    return l10n.plannerRelatedThemes;
   }
 
   bool _matchesSelectedInterests(Exhibit exhibit) {
@@ -553,14 +551,28 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
     required int totalCount,
   }) {
     if (_showAllExhibits || _selectedInterests.isEmpty) {
-      return 'Showing all available exhibits. Selected: ${_selectedExhibitIds.length} / ${_targetStopsForDuration()} stops.';
+      return AppLocalizations.of(context)!.plannerShowingAll(
+        _selectedExhibitIds.length,
+        _targetStopsForDuration(),
+      );
     }
-    final interests = _selectedInterests.join(', ');
+    final interests = _selectedInterests
+        .map((interest) => _localizedInterest(context, interest))
+        .join(', ');
     final exactMatches = _filteredExhibitMatchCount();
     if (exactMatches == 0) {
-      return 'No exact matches. Showing all exhibits so you can still build your tour. Selected: ${_selectedExhibitIds.length} / ${_targetStopsForDuration()} stops.';
+      return AppLocalizations.of(context)!.plannerNoExactMatches(
+        _selectedExhibitIds.length,
+        _targetStopsForDuration(),
+      );
     }
-    return 'Showing exhibits matching: $interests. Selected: ${_selectedExhibitIds.length} / ${_targetStopsForDuration()} stops. $visibleCount of $totalCount shown.';
+    return AppLocalizations.of(context)!.plannerShowingMatches(
+      interests,
+      _selectedExhibitIds.length,
+      _targetStopsForDuration(),
+      visibleCount,
+      totalCount,
+    );
   }
 
   int _filteredExhibitMatchCount() {
@@ -575,25 +587,64 @@ class _TourPlannerScreenState extends State<TourPlannerScreen> {
     required List<Exhibit> routePreview,
     required List<Exhibit> recommended,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     final reasons = <String>[];
     for (final interest in _selectedInterests.take(2)) {
-      reasons.add('Matches $interest');
+      reasons.add(
+        l10n.plannerMatchesInterest(_localizedInterest(context, interest)),
+      );
     }
     if (_selectedExhibitIds.isNotEmpty) {
-      reasons.add('Includes selected exhibits');
+      reasons.add(l10n.plannerIncludesSelectedExhibits);
     }
     if (recommended.isNotEmpty) {
-      reasons.add('Includes museum highlights');
+      reasons.add(l10n.plannerIncludesMuseumHighlights);
     }
-    reasons.add('Fits $_durationMinutes minute duration');
+    reasons.add(l10n.plannerFitsDuration(_durationMinutes));
     if (_includePhotoStops &&
         routePreview.any((exhibit) => exhibit.photoSpot)) {
-      reasons.add('Includes recommended photo stops');
+      reasons.add(l10n.plannerIncludesRecommendedPhotoStops);
     }
     if (_accessibilityPreferences.isNotEmpty) {
-      reasons.add('Stores accessibility preferences');
+      reasons.add(l10n.plannerStoresAccessibilityPreferences);
     }
     return reasons.take(6).toList();
+  }
+
+  String _localizedInterest(BuildContext context, String interest) {
+    final l10n = AppLocalizations.of(context)!;
+    return switch (interest) {
+      'Pharaohs' => l10n.plannerInterestPharaohs,
+      'Daily life' => l10n.plannerInterestDailyLife,
+      'Royal artifacts' => l10n.plannerInterestRoyalArtifacts,
+      'Mummies' => l10n.plannerInterestMummies,
+      'Architecture' => l10n.plannerInterestArchitecture,
+      'Mythology' => l10n.plannerInterestMythology,
+      'Kids friendly' => l10n.plannerInterestKidsFriendly,
+      'Short tour' => l10n.plannerInterestShortTour,
+      'Photography spots' => l10n.plannerInterestPhotographySpots,
+      _ => interest,
+    };
+  }
+
+  String _localizedAccessibility(BuildContext context, String option) {
+    final l10n = AppLocalizations.of(context)!;
+    return switch (option) {
+      'Family Friendly' => l10n.plannerAccessFamilyFriendly,
+      'Rest Stops Preferred' => l10n.plannerAccessRestStopsPreferred,
+      _ => option,
+    };
+  }
+
+  String _localizedDuration(BuildContext context, String label) {
+    final l10n = AppLocalizations.of(context)!;
+    return switch (label) {
+      'Express' => l10n.plannerDurationExpress,
+      'Standard' => l10n.plannerDurationStandard,
+      'Extended' => l10n.plannerDurationExtended,
+      'Full Experience' => l10n.plannerDurationFullExperience,
+      _ => label,
+    };
   }
 
   int _matchScore(List<Exhibit> routePreview, List<Exhibit> recommended) {
@@ -842,7 +893,9 @@ class _HeroCard extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.premiumBody(context).copyWith(
-                          color: AppColors.whiteTitle.withValues(alpha: 0.84),
+                          color: AppColors.resolvedTitleText.withValues(
+                            alpha: 0.84,
+                          ),
                           height: 1.35,
                         ),
                       ),
@@ -889,7 +942,7 @@ class _SectionCard extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.metadata(
                 context,
-              ).copyWith(color: AppColors.neutralMedium),
+              ).copyWith(color: AppColors.resolvedMutedText),
             ),
           ],
           const SizedBox(height: 14),
@@ -966,7 +1019,7 @@ class _TourTypeTile extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.premiumCardTitle(
                 context,
-              ).copyWith(color: AppColors.whiteTitle, fontSize: 15),
+              ).copyWith(color: AppColors.resolvedTitleText, fontSize: 15),
             ),
             const SizedBox(height: 4),
             Text(
@@ -975,7 +1028,7 @@ class _TourTypeTile extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.metadata(
                 context,
-              ).copyWith(color: AppColors.neutralMedium),
+              ).copyWith(color: AppColors.resolvedMutedText),
             ),
           ],
         ),
@@ -987,11 +1040,13 @@ class _TourTypeTile extends StatelessWidget {
 class _DurationChip extends StatelessWidget {
   const _DurationChip({
     required this.option,
+    required this.label,
     required this.selected,
     required this.onTap,
   });
 
   final _DurationOption option;
+  final String label;
   final bool selected;
   final VoidCallback onTap;
 
@@ -1014,23 +1069,27 @@ class _DurationChip extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              option.label,
+              label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.premiumCardTitle(context).copyWith(
-                color: selected ? AppColors.softGold : Colors.white,
+                color: selected
+                    ? AppColors.softGold
+                    : AppColors.resolvedTitleText,
                 fontSize: 14,
                 fontWeight: FontWeight.w800,
               ),
             ),
             const SizedBox(height: 4),
             Text(
-              '${option.minutes} min - ${option.targetStops} stops',
+              AppLocalizations.of(
+                context,
+              )!.plannerDurationStopsMeta(option.minutes, option.targetStops),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.metadata(
                 context,
-              ).copyWith(color: AppColors.neutralMedium),
+              ).copyWith(color: AppColors.resolvedMutedText),
             ),
           ],
         ),
@@ -1058,9 +1117,9 @@ class _PlannerChip extends StatelessWidget {
       onSelected: onSelected,
       selectedColor: AppColors.primaryGold,
       checkmarkColor: AppColors.darkInk,
-      backgroundColor: AppColors.cinematicCard,
+      backgroundColor: AppColors.resolvedCard,
       labelStyle: AppTextStyles.metadata(context).copyWith(
-        color: selected ? AppColors.darkInk : Colors.white,
+        color: selected ? AppColors.darkInk : AppColors.resolvedTitleText,
         fontWeight: FontWeight.w700,
       ),
       shape: RoundedRectangleBorder(
@@ -1081,6 +1140,7 @@ class _PhotoExperienceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
       decoration: AppDecorations.premiumGlassCard(radius: 24, opacity: 0.58),
@@ -1105,19 +1165,19 @@ class _PhotoExperienceCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Photo Experience',
+                  l10n.plannerPhotoExperience,
                   style: AppTextStyles.premiumCardTitle(
                     context,
-                  ).copyWith(color: AppColors.whiteTitle, fontSize: 16),
+                  ).copyWith(color: AppColors.resolvedTitleText, fontSize: 16),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Include recommended photo stops for tour memories.',
+                  l10n.plannerPhotoExperienceBody,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.metadata(
                     context,
-                  ).copyWith(color: AppColors.neutralMedium),
+                  ).copyWith(color: AppColors.resolvedMutedText),
                 ),
               ],
             ),
@@ -1179,19 +1239,19 @@ class _ExhibitCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.premiumCardTitle(context).copyWith(
-                      color: Colors.white,
+                      color: AppColors.resolvedTitleText,
                       fontSize: 15,
                       fontWeight: FontWeight.w800,
                     ),
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    _periodLine(exhibit),
+                    _periodLine(context, exhibit),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.metadata(
                       context,
-                    ).copyWith(color: AppColors.neutralMedium),
+                    ).copyWith(color: AppColors.resolvedMutedText),
                   ),
                   if (exhibit.descriptionEn.isNotEmpty) ...[
                     const SizedBox(height: 4),
@@ -1201,7 +1261,7 @@ class _ExhibitCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.metadata(
                         context,
-                      ).copyWith(color: AppColors.neutralMedium),
+                      ).copyWith(color: AppColors.resolvedMutedText),
                     ),
                   ],
                 ],
@@ -1209,7 +1269,7 @@ class _ExhibitCard extends StatelessWidget {
             ),
             Icon(
               selected ? Icons.check_circle_rounded : Icons.add_circle_outline,
-              color: selected ? AppColors.primaryGold : AppColors.neutralMedium,
+              color: selected ? AppColors.primaryGold : AppColors.resolvedMutedText,
             ),
           ],
         ),
@@ -1248,7 +1308,7 @@ class _RecommendationCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.premiumCardTitle(
                     context,
-                  ).copyWith(color: Colors.white, fontSize: 15),
+                  ).copyWith(color: AppColors.resolvedTitleText, fontSize: 15),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -1257,7 +1317,7 @@ class _RecommendationCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.metadata(
                     context,
-                  ).copyWith(color: AppColors.neutralMedium),
+                  ).copyWith(color: AppColors.resolvedMutedText),
                 ),
               ],
             ),
@@ -1265,7 +1325,7 @@ class _RecommendationCard extends StatelessWidget {
           IconButton(
             onPressed: onAdd,
             icon: const Icon(Icons.add_rounded, color: AppColors.primaryGold),
-            tooltip: 'Add exhibit',
+            tooltip: AppLocalizations.of(context)!.plannerAddExhibit,
           ),
         ],
       ),
@@ -1273,12 +1333,13 @@ class _RecommendationCard extends StatelessWidget {
   }
 }
 
-String _periodLine(Exhibit exhibit) {
+String _periodLine(BuildContext context, Exhibit exhibit) {
   final parts = <String>[
     if (exhibit.category.trim().isNotEmpty) exhibit.category.trim(),
     if (exhibit.floor.trim().isNotEmpty) exhibit.floor.trim(),
   ];
-  if (parts.isEmpty) return 'Museum highlight';
+  if (parts.isEmpty)
+    return AppLocalizations.of(context)!.plannerMuseumHighlight;
   return parts.join(' - ');
 }
 
@@ -1290,6 +1351,7 @@ class _SelectionCounter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final remaining = (max - selected).clamp(0, max);
     return Container(
       width: double.infinity,
@@ -1301,21 +1363,21 @@ class _SelectionCounter extends StatelessWidget {
           const SizedBox(width: 10),
           Expanded(
             child: Text(
-              'Selected: $selected / $max stops',
+              l10n.plannerSelectedStops(selected, max),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.premiumCardTitle(
                 context,
-              ).copyWith(color: AppColors.whiteTitle, fontSize: 15),
+              ).copyWith(color: AppColors.resolvedTitleText, fontSize: 15),
             ),
           ),
           Text(
-            '$remaining stops remaining',
+            l10n.plannerStopsRemaining(remaining),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: AppTextStyles.metadata(
               context,
-            ).copyWith(color: AppColors.neutralMedium),
+            ).copyWith(color: AppColors.resolvedMutedText),
           ),
         ],
       ),
@@ -1416,10 +1478,11 @@ class _GeneratedRouteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final stops = <String>[
-      'Entrance',
+      l10n.plannerEntrance,
       ...route.map((exhibit) => exhibit.getName(isArabic ? 'ar' : 'en')),
-      'Exit',
+      l10n.plannerExit,
     ];
     return Container(
       width: double.infinity,
@@ -1436,7 +1499,7 @@ class _GeneratedRouteCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  'Your Horus Route',
+                  l10n.plannerYourHorusRoute,
                   style: AppTextStyles.premiumSectionLabel(
                     context,
                   ).copyWith(color: AppColors.softGold),
@@ -1452,7 +1515,7 @@ class _GeneratedRouteCard extends StatelessWidget {
                   gradient: AppGradients.premiumGold,
                 ),
                 child: Text(
-                  '$matchScore% Match',
+                  l10n.plannerMatch(matchScore),
                   style: AppTextStyles.metadata(context).copyWith(
                     color: AppColors.darkInk,
                     fontWeight: FontWeight.w900,
@@ -1468,10 +1531,10 @@ class _GeneratedRouteCard extends StatelessWidget {
           }),
           const SizedBox(height: 14),
           Text(
-            'Why Horus selected this route',
+            l10n.plannerWhySelected,
             style: AppTextStyles.premiumCardTitle(
               context,
-            ).copyWith(color: AppColors.whiteTitle, fontSize: 16),
+            ).copyWith(color: AppColors.resolvedTitleText, fontSize: 16),
           ),
           const SizedBox(height: 8),
           ...reasons.map(
@@ -1492,7 +1555,7 @@ class _GeneratedRouteCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.metadata(
                         context,
-                      ).copyWith(color: AppColors.neutralMedium),
+                      ).copyWith(color: AppColors.resolvedMutedText),
                     ),
                   ),
                 ],
@@ -1501,13 +1564,19 @@ class _GeneratedRouteCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '${tourType.name} - $duration minutes - ${route.length} stops'
-            '${includePhotoStops ? ' - photo stops enabled' : ''}',
+            l10n.plannerRouteMeta(
+                  tourType == RobotTourType.personalized
+                      ? l10n.plannerPersonalizedTour
+                      : l10n.plannerStandardTour,
+                  duration,
+                  route.length,
+                ) +
+                (includePhotoStops ? l10n.plannerPhotoStopsEnabledSuffix : ''),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: AppTextStyles.metadata(
               context,
-            ).copyWith(color: AppColors.neutralMedium),
+            ).copyWith(color: AppColors.resolvedMutedText),
           ),
         ],
       ),
@@ -1553,7 +1622,7 @@ class _RouteStop extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.bodyPrimary(context).copyWith(
-                color: AppColors.whiteTitle,
+                color: AppColors.resolvedTitleText,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -1593,9 +1662,10 @@ class _SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final typeLabel = tourType == RobotTourType.personalized
-        ? 'Personalized Tour'
-        : 'Standard Tour';
+        ? l10n.plannerPersonalizedTour
+        : l10n.plannerStandardTour;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.cardPaddingCompact),
@@ -1610,34 +1680,58 @@ class _SummaryCard extends StatelessWidget {
             : CrossAxisAlignment.start,
         children: [
           Text(
-            'Tour Summary',
+            l10n.plannerTourSummary,
             style: AppTextStyles.premiumSectionLabel(
               context,
             ).copyWith(color: AppColors.softGold),
           ),
           const SizedBox(height: 12),
-          _SummaryLine(label: 'Tour type', value: typeLabel),
-          _SummaryLine(label: 'Tour match', value: '$matchScore% Match'),
-          _SummaryLine(label: 'Duration', value: '$duration minutes'),
-          _SummaryLine(label: 'Selected exhibits', value: '$exhibits'),
-          _SummaryLine(label: 'Selected interests', value: '$interests'),
+          _SummaryLine(label: l10n.plannerTourType, value: typeLabel),
           _SummaryLine(
-            label: 'Accessibility',
+            label: l10n.plannerTourMatch,
+            value: l10n.plannerMatch(matchScore),
+          ),
+          _SummaryLine(
+            label: l10n.duration,
+            value: l10n.ticketsDurationValue(duration),
+          ),
+          _SummaryLine(label: l10n.plannerSelectedExhibits, value: '$exhibits'),
+          _SummaryLine(
+            label: l10n.plannerSelectedInterests,
+            value: '$interests',
+          ),
+          _SummaryLine(
+            label: l10n.accessibility,
             value: accessibility.isEmpty
-                ? 'None selected'
-                : accessibility.join(', '),
+                ? l10n.plannerNoneSelected
+                : accessibility
+                      .map(
+                        (option) => switch (option) {
+                          'Family Friendly' => l10n.plannerAccessFamilyFriendly,
+                          'Rest Stops Preferred' =>
+                            l10n.plannerAccessRestStopsPreferred,
+                          _ => option,
+                        },
+                      )
+                      .join(', '),
           ),
           _SummaryLine(
-            label: 'Photo stops',
-            value: photoStopsEnabled ? 'Enabled' : 'Disabled',
+            label: l10n.plannerPhotoStops,
+            value: photoStopsEnabled ? l10n.enabled : l10n.disabled,
           ),
-          _SummaryLine(label: 'Language', value: languageLabel),
-          _SummaryLine(label: 'Robot tour', value: '$price EGP'),
-          const _SummaryLine(label: 'Museum entry', value: 'Included'),
+          _SummaryLine(label: l10n.language, value: languageLabel),
+          _SummaryLine(
+            label: l10n.plannerRobotTour,
+            value: l10n.plannerPriceEgp(price),
+          ),
+          _SummaryLine(
+            label: l10n.plannerMuseumEntry,
+            value: l10n.plannerIncluded,
+          ),
           if (generated) ...[
             const SizedBox(height: 10),
             Text(
-              'Booking this plan will reserve museum entry and a personalized Horus-Bot robot tour.',
+              l10n.plannerBookingNote,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.bodyPrimary(
@@ -1670,7 +1764,7 @@ class _SummaryLine extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.metadata(
                 context,
-              ).copyWith(color: AppColors.neutralMedium),
+              ).copyWith(color: AppColors.resolvedMutedText),
             ),
           ),
           const SizedBox(width: 12),
@@ -1680,9 +1774,10 @@ class _SummaryLine extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.end,
-              style: AppTextStyles.metadata(
-                context,
-              ).copyWith(color: Colors.white, fontWeight: FontWeight.w800),
+              style: AppTextStyles.metadata(context).copyWith(
+                color: AppColors.resolvedTitleText,
+                fontWeight: FontWeight.w800,
+              ),
             ),
           ),
         ],
@@ -1730,7 +1825,7 @@ class _EmptyText extends StatelessWidget {
       text,
       style: AppTextStyles.bodyPrimary(
         context,
-      ).copyWith(color: AppColors.neutralMedium),
+      ).copyWith(color: AppColors.resolvedMutedText),
     );
   }
 }

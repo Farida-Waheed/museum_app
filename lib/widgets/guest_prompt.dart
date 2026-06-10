@@ -51,7 +51,7 @@ class GuestPrompt extends StatelessWidget {
               textAlign: TextAlign.center,
               style: AppTextStyles.premiumScreenTitle(
                 context,
-              ).copyWith(color: AppColors.whiteTitle, fontSize: 24),
+              ).copyWith(color: AppColors.resolvedTitleText, fontSize: 24),
             ),
             const SizedBox(height: 10),
             ConstrainedBox(
@@ -61,7 +61,7 @@ class GuestPrompt extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: AppTextStyles.bodyPrimary(
                   context,
-                ).copyWith(color: AppColors.neutralMedium, height: 1.45),
+                ).copyWith(color: AppColors.resolvedMutedText, height: 1.45),
               ),
             ),
             const SizedBox(height: 24),

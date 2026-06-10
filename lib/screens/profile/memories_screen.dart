@@ -24,11 +24,11 @@ class MemoriesScreen extends StatelessWidget {
 
     return AppMenuShell(
       title: (isArabic ? 'ذكريات الجولة' : 'Tour Memories').toUpperCase(),
-      backgroundColor: AppColors.cinematicBackground,
+      backgroundColor: AppColors.resolvedBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 3),
       showChatButton: true,
       body: DecoratedBox(
-        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
+        decoration: BoxDecoration(color: AppColors.resolvedBackground),
         child: SafeArea(
           child: userId == null || userId.isEmpty
               ? _StateMessage(
@@ -191,14 +191,14 @@ class _HeroCount extends StatelessWidget {
                       : 'Horus saved moments from your tour',
                   style: AppTextStyles.premiumCardTitle(
                     context,
-                  ).copyWith(color: AppColors.whiteTitle, fontSize: 17),
+                  ).copyWith(color: AppColors.resolvedTitleText, fontSize: 17),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   isArabic ? '$count صورة محفوظة' : '$count captured photos',
                   style: AppTextStyles.metadata(
                     context,
-                  ).copyWith(color: AppColors.neutralMedium),
+                  ).copyWith(color: AppColors.resolvedMutedText),
                 ),
               ],
             ),
@@ -254,7 +254,7 @@ class _PhotoSection extends StatelessWidget {
                   emptyText,
                   style: AppTextStyles.bodyPrimary(
                     context,
-                  ).copyWith(color: AppColors.neutralMedium),
+                  ).copyWith(color: AppColors.resolvedMutedText),
                 ),
               )
             else
@@ -309,7 +309,7 @@ class _MemoryCard extends StatelessWidget {
               width: double.infinity,
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(
-                color: AppColors.cinematicSection,
+                color: AppColors.resolvedCard,
                 child: const Center(
                   child: Icon(
                     Icons.broken_image_outlined,
@@ -331,7 +331,7 @@ class _MemoryCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.premiumCardTitle(
                     context,
-                  ).copyWith(color: Colors.white, fontSize: 14),
+                  ).copyWith(color: AppColors.resolvedTitleText, fontSize: 14),
                 ),
                 const SizedBox(height: 5),
                 Text(
@@ -340,7 +340,7 @@ class _MemoryCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.metadata(
                     context,
-                  ).copyWith(color: AppColors.neutralMedium, fontSize: 11),
+                  ).copyWith(color: AppColors.resolvedMutedText, fontSize: 11),
                 ),
                 const SizedBox(height: 6),
                 Text(
@@ -395,7 +395,7 @@ class _StateMessage extends StatelessWidget {
               textAlign: TextAlign.center,
               style: AppTextStyles.premiumScreenTitle(
                 context,
-              ).copyWith(color: AppColors.whiteTitle, fontSize: 24),
+              ).copyWith(color: AppColors.resolvedTitleText, fontSize: 24),
             ),
             const SizedBox(height: 10),
             Text(
@@ -403,7 +403,7 @@ class _StateMessage extends StatelessWidget {
               textAlign: TextAlign.center,
               style: AppTextStyles.bodyPrimary(
                 context,
-              ).copyWith(color: AppColors.neutralMedium, height: 1.45),
+              ).copyWith(color: AppColors.resolvedMutedText, height: 1.45),
             ),
           ],
         ),

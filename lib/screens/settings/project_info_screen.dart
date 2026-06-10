@@ -49,12 +49,12 @@ class _ProjectInfoScreenState extends State<ProjectInfoScreen> {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final teamOnly = widget.targetSection == 'team';
 
-    const textColor = Colors.white;
-    const secondaryTextColor = AppColors.bodyText;
+    final textColor = AppColors.resolvedTitleText;
+    final secondaryTextColor = AppColors.resolvedBodyText;
 
     return AppMenuShell(
       title: (teamOnly ? l10n.team : l10n.aboutHorusBot).toUpperCase(),
-      backgroundColor: AppColors.cinematicBackground,
+      backgroundColor: AppColors.resolvedBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
@@ -302,9 +302,7 @@ class _TeamMember extends StatelessWidget {
               name,
               style: AppTextStyles.bodyPrimary(context).copyWith(
                 fontSize: 15,
-                color: Theme.of(context).brightness == Brightness.dark
-                    ? Colors.white
-                    : AppColors.darkInk,
+                color: AppColors.resolvedTitleText,
                 fontWeight: FontWeight.w500,
               ),
             ),

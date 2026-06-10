@@ -1,4 +1,4 @@
-import 'dart:ui';
+﻿import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -79,7 +79,7 @@ class BottomNav extends StatelessWidget {
                   border: Border.all(
                     color: isDark
                         ? AppColors.goldBorder(0.18)
-                        : AppColors.mutedText.withValues(alpha: 0.14),
+                        : AppColors.resolvedMutedText.withValues(alpha: 0.14),
                   ),
                 ),
                 child: Row(
@@ -129,7 +129,7 @@ class _NavButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final color = selected
         ? AppColors.primaryGold
-        : (isDark ? AppColors.darkMutedText : AppColors.mutedText);
+        : (isDark ? AppColors.resolvedMutedText : AppColors.resolvedMutedText);
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(22),

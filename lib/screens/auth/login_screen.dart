@@ -76,23 +76,24 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _showStaffAccountDialog(AuthProvider authProvider) async {
+    final l10n = AppLocalizations.of(context)!;
     await showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (dialogContext) {
         return AlertDialog(
-          backgroundColor: AppColors.cinematicCard,
+          backgroundColor: AppColors.resolvedCard,
           title: Text(
             'Staff account',
             style: AppTextStyles.titleLarge(
               dialogContext,
-            ).copyWith(color: Colors.white),
+            ).copyWith(color: AppColors.resolvedTitleText),
           ),
           content: Text(
             AuthProvider.staffAccountMessage,
             style: AppTextStyles.premiumBody(
               dialogContext,
-            ).copyWith(color: AppColors.bodyText),
+            ).copyWith(color: AppColors.resolvedBodyText),
           ),
           actions: [
             FilledButton(
@@ -102,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Navigator.pop(dialogContext);
                 }
               },
-              child: const Text('Sign Out'),
+              child: Text(l10n.signOut),
             ),
           ],
         );
@@ -122,17 +123,17 @@ class _LoginScreenState extends State<LoginScreen> {
         context: context,
         builder: (dialogContext) {
           return AlertDialog(
-            backgroundColor: AppColors.cinematicCard,
+            backgroundColor: AppColors.resolvedCard,
             title: Text(
               isArabic ? 'إعادة تعيين كلمة المرور' : 'Reset password',
               style: AppTextStyles.titleLarge(
                 dialogContext,
-              ).copyWith(color: Colors.white),
+              ).copyWith(color: AppColors.resolvedTitleText),
             ),
             content: TextField(
               controller: controller,
               keyboardType: TextInputType.emailAddress,
-              style: const TextStyle(color: Colors.white),
+              style: TextStyle(color: AppColors.resolvedTitleText),
               decoration: InputDecoration(
                 labelText: l10n.email,
                 hintText: l10n.emailHint,
@@ -195,7 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return Scaffold(
-      backgroundColor: AppColors.baseBlack,
+      backgroundColor: AppColors.resolvedBackground,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -289,7 +290,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     textAlign: TextAlign.center,
                                     style: AppTextStyles.premiumBody(context)
                                         .copyWith(
-                                          color: AppColors.whiteTitle
+                                          color: AppColors.resolvedTitleText
                                               .withValues(alpha: 0.76),
                                         ),
                                   ),
@@ -328,9 +329,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             Align(
-                              alignment: isArabic
-                                  ? Alignment.centerLeft
-                                  : Alignment.centerRight,
+                              alignment: AlignmentDirectional.centerEnd,
                               child: TextButton(
                                 onPressed: _isLoading
                                     ? null
@@ -383,7 +382,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 text: TextSpan(
                                   style: AppTextStyles.premiumMutedBody(
                                     context,
-                                  ).copyWith(color: AppColors.bodyText),
+                                  ).copyWith(color: AppColors.resolvedBodyText),
                                   children: [
                                     TextSpan(text: '${l10n.noAccount} '),
                                     TextSpan(
@@ -408,7 +407,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 l10n.continueAsGuest,
                                 style: AppTextStyles.premiumMutedBody(
                                   context,
-                                ).copyWith(color: AppColors.bodyText),
+                                ).copyWith(color: AppColors.resolvedBodyText),
                               ),
                             ),
                           ],
@@ -456,22 +455,22 @@ class _GlassField extends StatelessWidget {
       textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
       style: AppTextStyles.premiumBody(
         context,
-      ).copyWith(color: AppColors.whiteTitle),
+      ).copyWith(color: AppColors.resolvedTitleText),
       decoration: InputDecoration(
         labelText: label,
         hintText: hintText,
         labelStyle: AppTextStyles.premiumMutedBody(
           context,
-        ).copyWith(color: AppColors.bodyText),
+        ).copyWith(color: AppColors.resolvedBodyText),
         hintStyle: AppTextStyles.premiumMutedBody(
           context,
-        ).copyWith(color: AppColors.bodyText.withValues(alpha: 0.70)),
+        ).copyWith(color: AppColors.resolvedBodyText.withValues(alpha: 0.70)),
         prefixIcon: icon == null
             ? null
             : Icon(icon, color: AppColors.softGold, size: 20),
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: AppColors.panelGlassBase.withValues(alpha: 0.74),
+        fillColor: AppColors.resolvedCard.withValues(alpha: 0.74),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 18,
           vertical: 18,

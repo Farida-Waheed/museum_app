@@ -61,11 +61,11 @@ class _QuizScreenState extends State<QuizScreen> {
       final elapsed = DateTime.now();
       final points = _score * 10;
       final earnedBadges = <String>[];
-      final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+      final l10n = AppLocalizations.of(context)!;
       if (_score == _questions.length) {
-        earnedBadges.add(isArabic ? 'متعلم متميز' : 'Perfect Score');
+        earnedBadges.add(l10n.perfectScoreBadge);
       } else if (_score >= (_questions.length * 0.75).ceil()) {
-        earnedBadges.add(isArabic ? 'مستكشف ذكي' : 'Quiz Warrior');
+        earnedBadges.add(l10n.quizWarriorBadge);
       }
       final result = QuizResult(
         id: widget.exhibitId != null
@@ -94,16 +94,13 @@ class _QuizScreenState extends State<QuizScreen> {
 
   void _showResultDialog(QuizResult result) {
     final l10n = AppLocalizations.of(context)!;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     final isPass = _score >= (_questions.length / 2);
 
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => PremiumDialog(
-        title: isPass
-            ? l10n.congrats
-            : (isArabic ? 'استمر في التعلم!' : 'Keep Learning!'),
+        title: isPass ? l10n.congrats : l10n.keepLearning,
         showCloseButton: false,
         icon: Icon(
           isPass ? Icons.emoji_events_rounded : Icons.menu_book_rounded,
@@ -114,31 +111,28 @@ class _QuizScreenState extends State<QuizScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              isArabic
-                  ? 'لقد حصلت على $_score من ${_questions.length}'
-                  : 'You scored $_score out of ${_questions.length}',
+              l10n.youScored(_score, _questions.length),
               style: AppTextStyles.bodyPrimary(
                 context,
-              ).copyWith(color: Colors.white70, fontSize: 18),
+              ).copyWith(color: AppColors.resolvedBodyText, fontSize: 18),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             Text(
-              isArabic
-                  ? 'النقاط المكتسبة: ${result.pointsEarned}'
-                  : 'Points earned: ${result.pointsEarned}',
+              l10n.pointsEarned(result.pointsEarned),
               style: AppTextStyles.bodyPrimary(
                 context,
-              ).copyWith(color: Colors.white70, fontSize: 16),
+              ).copyWith(color: AppColors.resolvedBodyText, fontSize: 16),
               textAlign: TextAlign.center,
             ),
             if (result.earnedBadges.isNotEmpty) ...[
               const SizedBox(height: 12),
               Text(
-                isArabic ? 'الشارات المكتسبة:' : 'Badges earned:',
-                style: AppTextStyles.bodyPrimary(
-                  context,
-                ).copyWith(color: Colors.white70, fontWeight: FontWeight.bold),
+                l10n.badgesEarned,
+                style: AppTextStyles.bodyPrimary(context).copyWith(
+                  color: AppColors.resolvedBodyText,
+                  fontWeight: FontWeight.bold,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
@@ -182,10 +176,10 @@ class _QuizScreenState extends State<QuizScreen> {
               });
             },
             child: Text(
-              isArabic ? 'إعادة' : 'Retry',
+              l10n.retry,
               style: AppTextStyles.buttonLabel(
                 context,
-              ).copyWith(color: Colors.white60),
+              ).copyWith(color: AppColors.resolvedMutedText),
             ),
           ),
           ElevatedButton(
@@ -211,18 +205,19 @@ class _QuizScreenState extends State<QuizScreen> {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final isArabic = prefs.language == 'ar';
+    final l10n = AppLocalizations.of(context)!;
     if (_questions.isEmpty) {
       return AppMenuShell(
-        title: (isArabic ? 'اختبار المعلومات' : 'Museum Quiz').toUpperCase(),
-        backgroundColor: AppColors.cinematicBackground,
-        body: DecoratedBox(
-          decoration: const BoxDecoration(
-            gradient: AppGradients.screenBackground,
-          ),
+        title: l10n.museumQuiz.toUpperCase(),
+        backgroundColor: AppColors.resolvedBackground,
+        body: Container(
+          color: AppColors.resolvedBackground,
           child: Center(
             child: Text(
-              isArabic ? 'لا توجد أسئلة' : 'No questions',
-              style: const TextStyle(color: Colors.white),
+              l10n.noQuestions,
+              style: AppTextStyles.bodyPrimary(
+                context,
+              ).copyWith(color: AppColors.resolvedTitleText),
             ),
           ),
         ),
@@ -233,12 +228,10 @@ class _QuizScreenState extends State<QuizScreen> {
     final options = question.getOptions(prefs.language);
 
     return AppMenuShell(
-      title: (isArabic ? 'اختبار المعلومات' : 'Museum Quiz').toUpperCase(),
-      backgroundColor: AppColors.cinematicBackground,
-      body: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: AppGradients.screenBackground,
-        ),
+      title: l10n.museumQuiz.toUpperCase(),
+      backgroundColor: AppColors.resolvedBackground,
+      body: Container(
+        color: AppColors.resolvedBackground,
         child: Directionality(
           textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: Column(
@@ -259,7 +252,7 @@ class _QuizScreenState extends State<QuizScreen> {
                           question.getQuestion(prefs.language),
                           style: AppTextStyles.titleLarge(context).copyWith(
                             fontSize: 20,
-                            color: Colors.white,
+                            color: AppColors.resolvedTitleText,
                             height: 1.4,
                           ),
                         ),
@@ -294,12 +287,12 @@ class _QuizScreenState extends State<QuizScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                isArabic
-                    ? 'السؤال ${_currentIndex + 1} من ${_questions.length}'
-                    : 'Question ${_currentIndex + 1} of ${_questions.length}',
+                AppLocalizations.of(
+                  context,
+                )!.quizQuestionProgress(_currentIndex + 1, _questions.length),
                 style: AppTextStyles.displaySectionTitle(
                   context,
-                ).copyWith(color: AppColors.neutralMedium, fontSize: 13),
+                ).copyWith(color: AppColors.resolvedMutedText, fontSize: 13),
               ),
               Text(
                 '${((_currentIndex + 1) / _questions.length * 100).round()}%',
@@ -315,7 +308,7 @@ class _QuizScreenState extends State<QuizScreen> {
             child: LinearProgressIndicator(
               value: (_currentIndex + 1) / _questions.length,
               minHeight: 6,
-              backgroundColor: AppColors.darkSurface,
+              backgroundColor: AppColors.resolvedCard,
               valueColor: const AlwaysStoppedAnimation<Color>(
                 AppColors.primaryGold,
               ),
@@ -329,8 +322,8 @@ class _QuizScreenState extends State<QuizScreen> {
   Widget _buildOptionTile(int index, String text, int correctIndex) {
     final isSelected = _selectedOptionIndex == index;
     final isCorrect = index == correctIndex;
-    Color color = AppColors.darkSurface;
-    Color border = AppColors.primaryGold.withOpacity(0.2);
+    Color color = AppColors.resolvedCard;
+    Color border = AppColors.goldBorder(0.2);
     Widget? icon;
 
     if (_isAnswered) {
@@ -368,7 +361,7 @@ class _QuizScreenState extends State<QuizScreen> {
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppColors.primaryGold
-                      : AppColors.darkBackground,
+                      : AppColors.resolvedElevated,
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: AppColors.primaryGold.withOpacity(0.2),
@@ -378,7 +371,9 @@ class _QuizScreenState extends State<QuizScreen> {
                   child: Text(
                     String.fromCharCode(65 + index),
                     style: AppTextStyles.bodyPrimary(context).copyWith(
-                      color: isSelected ? AppColors.darkInk : Colors.white70,
+                      color: isSelected
+                          ? AppColors.darkInk
+                          : AppColors.resolvedBodyText,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -391,7 +386,7 @@ class _QuizScreenState extends State<QuizScreen> {
                   style: AppTextStyles.bodyPrimary(context).copyWith(
                     fontSize: 16,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                    color: Colors.white,
+                    color: AppColors.resolvedTitleText,
                   ),
                 ),
               ),
@@ -407,7 +402,7 @@ class _QuizScreenState extends State<QuizScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.darkSurface,
+        color: AppColors.resolvedCard,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
@@ -433,8 +428,8 @@ class _QuizScreenState extends State<QuizScreen> {
             ),
             child: Text(
               _currentIndex == _questions.length - 1
-                  ? (isArabic ? 'إنهاء' : 'FINISH')
-                  : (isArabic ? 'السؤال التالي' : 'NEXT QUESTION'),
+                  ? AppLocalizations.of(context)!.finish
+                  : AppLocalizations.of(context)!.nextQuestion,
               style: AppTextStyles.buttonLabel(context),
             ),
           ),

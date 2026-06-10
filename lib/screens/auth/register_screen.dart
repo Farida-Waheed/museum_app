@@ -148,7 +148,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return Scaffold(
-      backgroundColor: AppColors.baseBlack,
+      backgroundColor: AppColors.resolvedBackground,
       body: Container(
         decoration: const BoxDecoration(
           gradient: AppGradients.screenBackground,
@@ -213,7 +213,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   textAlign: TextAlign.center,
                                   style: AppTextStyles.premiumBody(
                                     context,
-                                  ).copyWith(color: AppColors.bodyText),
+                                  ).copyWith(color: AppColors.resolvedBodyText),
                                 ),
                               ],
                             ),
@@ -346,7 +346,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               text: TextSpan(
                                 style: AppTextStyles.premiumMutedBody(
                                   context,
-                                ).copyWith(color: AppColors.bodyText),
+                                ).copyWith(color: AppColors.resolvedBodyText),
                                 children: [
                                   TextSpan(text: '${l10n.alreadyHaveAccount} '),
                                   TextSpan(
@@ -403,22 +403,22 @@ class _GlassField extends StatelessWidget {
       textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
       style: AppTextStyles.premiumBody(
         context,
-      ).copyWith(color: AppColors.whiteTitle),
+      ).copyWith(color: AppColors.resolvedTitleText),
       decoration: InputDecoration(
         labelText: label,
         hintText: hintText,
         labelStyle: AppTextStyles.premiumMutedBody(
           context,
-        ).copyWith(color: AppColors.bodyText),
+        ).copyWith(color: AppColors.resolvedBodyText),
         hintStyle: AppTextStyles.premiumMutedBody(
           context,
-        ).copyWith(color: AppColors.bodyText.withValues(alpha: 0.70)),
+        ).copyWith(color: AppColors.resolvedBodyText.withValues(alpha: 0.70)),
         prefixIcon: icon == null
             ? null
             : Icon(icon, color: AppColors.softGold, size: 20),
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: AppColors.panelGlassBase.withValues(alpha: 0.70),
+        fillColor: AppColors.resolvedCard.withValues(alpha: 0.70),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 18,
           vertical: 18,
@@ -458,23 +458,23 @@ class _LanguageSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
       initialValue: value == 'arabic' ? 'arabic' : 'english',
-      dropdownColor: AppColors.panelGlassBase,
+      dropdownColor: AppColors.resolvedElevated,
       iconEnabledColor: AppColors.softGold,
       style: AppTextStyles.premiumBody(
         context,
-      ).copyWith(color: AppColors.whiteTitle),
+      ).copyWith(color: AppColors.resolvedTitleText),
       decoration: InputDecoration(
         labelText: isArabic ? 'لغة الواجهة' : 'UI language',
         labelStyle: AppTextStyles.premiumMutedBody(
           context,
-        ).copyWith(color: AppColors.bodyText),
+        ).copyWith(color: AppColors.resolvedBodyText),
         prefixIcon: const Icon(
           Icons.language_outlined,
           color: AppColors.softGold,
           size: 20,
         ),
         filled: true,
-        fillColor: AppColors.panelGlassBase.withValues(alpha: 0.70),
+        fillColor: AppColors.resolvedCard.withValues(alpha: 0.70),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 18,
           vertical: 18,

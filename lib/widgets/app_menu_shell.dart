@@ -154,7 +154,7 @@ class _SideMenu extends StatelessWidget {
                     child: ListView(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       children: [
-                        const _SectionHeader(label: 'Account & Preferences'),
+                        _SectionHeader(label: l10n.accountPreferences),
                         _MenuItem(
                           icon: Icons.person_outline,
                           label: l10n.profile,
@@ -178,7 +178,7 @@ class _SideMenu extends StatelessWidget {
                               onReplace(AppRoutes.notificationSettings),
                         ),
                         const SizedBox(height: 16),
-                        const _SectionHeader(label: 'Visitor Services'),
+                        _SectionHeader(label: l10n.visitorServices),
                         _MenuItem(
                           icon: Icons.support_agent_outlined,
                           label: l10n.supportInboxTitle,
@@ -193,7 +193,7 @@ class _SideMenu extends StatelessWidget {
                             onTap: () => onReplace(AppRoutes.feedback),
                           ),
                         const SizedBox(height: 16),
-                        const _SectionHeader(label: 'Information'),
+                        _SectionHeader(label: l10n.information),
                         _MenuItem(
                           icon: Icons.info_outline,
                           label: l10n.about,
@@ -275,14 +275,16 @@ class _MenuItem extends StatelessWidget {
         leading: Icon(
           icon,
           size: 23,
-          color: selected ? AppColors.primaryGold : AppColors.bodyText,
+          color: selected ? AppColors.primaryGold : AppColors.resolvedBodyText,
         ),
         title: Text(
           label,
           style: AppTextStyles.premiumBody(context).copyWith(
             fontSize: 15,
             fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-            color: selected ? AppColors.primaryGold : AppColors.bodyText,
+            color: selected
+                ? AppColors.primaryGold
+                : AppColors.resolvedBodyText,
           ),
         ),
         tileColor: selected
@@ -313,10 +315,11 @@ class _ShellBrandTitle extends StatelessWidget {
             style: AppTextStyles.premiumBrandTitle(context).copyWith(
               fontSize: 17.5,
               shadows: [
-                Shadow(
-                  color: Colors.black.withValues(alpha: 0.70),
-                  blurRadius: 10,
-                ),
+                if (!AppColors.useLightSurfaces)
+                  Shadow(
+                    color: Colors.black.withValues(alpha: 0.70),
+                    blurRadius: 10,
+                  ),
               ],
             ),
           ),
@@ -373,7 +376,7 @@ class _ShellCircleButton extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Icon(icon, color: AppColors.whiteTitle, size: 22),
+                child: Icon(icon, color: AppColors.resolvedTitleText, size: 22),
               ),
             ),
           ),
@@ -562,7 +565,15 @@ class AppMenuShellState extends State<AppMenuShell>
     final l10n = AppLocalizations.of(context)!;
     final currentRoute = ModalRoute.of(context)?.settings.name;
 
-    final bgColor = widget.backgroundColor ?? AppColors.cinematicBackground;
+    final isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    final requestedBg = widget.backgroundColor;
+    final bgColor =
+        !isDarkTheme &&
+            (requestedBg == null ||
+                requestedBg == AppColors.cinematicBackground ||
+                requestedBg == AppColors.baseBlack)
+        ? Theme.of(context).scaffoldBackgroundColor
+        : (requestedBg ?? AppColors.cinematicBackground);
 
     return Scaffold(
       backgroundColor: bgColor,

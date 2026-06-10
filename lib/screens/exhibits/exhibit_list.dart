@@ -26,7 +26,7 @@ class ExhibitListScreen extends StatelessWidget {
 
     return AppMenuShell(
       title: l10n.exhibits.toUpperCase(),
-      backgroundColor: AppColors.darkBackground,
+      backgroundColor: AppColors.resolvedBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 1),
       showChatButton: true,
       actions: [
@@ -37,7 +37,7 @@ class ExhibitListScreen extends StatelessWidget {
         ),
       ],
       body: DecoratedBox(
-        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
+        decoration: BoxDecoration(color: AppColors.resolvedBackground),
         child: exhibitProvider.isLoading && exhibits.isEmpty
             ? _ExhibitStateCard(
                 isArabic: isArabic,
@@ -135,8 +135,8 @@ class _HeaderCircleAction extends StatelessWidget {
                     ],
                   ),
                   child: IconTheme(
-                    data: const IconThemeData(
-                      color: AppColors.whiteTitle,
+                    data: IconThemeData(
+                      color: AppColors.resolvedTitleText,
                       size: 22,
                     ),
                     child: icon,
@@ -262,11 +262,7 @@ class _ExhibitThumbPlaceholder extends StatelessWidget {
         gradient: AppGradients.premiumGold,
         border: Border.all(color: AppColors.goldBorder(0.22)),
       ),
-      child: const Icon(
-        Icons.museum_outlined,
-        size: 30,
-        color: AppColors.darkInk,
-      ),
+      child: Icon(Icons.museum_outlined, size: 30, color: AppColors.darkInk),
     );
   }
 }
@@ -324,7 +320,7 @@ class _ExhibitStateCard extends StatelessWidget {
                       title,
                       textAlign: TextAlign.start,
                       style: AppTextStyles.bodyPrimary(context).copyWith(
-                        color: Colors.white,
+                        color: AppColors.resolvedTitleText,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
@@ -375,7 +371,7 @@ class _SavedContentBanner extends StatelessWidget {
                 textAlign: TextAlign.start,
                 style: AppTextStyles.metadata(
                   context,
-                ).copyWith(color: AppColors.neutralMedium),
+                ).copyWith(color: AppColors.resolvedMutedText),
               ),
             ),
           ],

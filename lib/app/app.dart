@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../l10n/app_localizations.dart';
 
+import '../core/constants/colors.dart';
 import '../models/user_preferences.dart';
 import 'theme/light_theme.dart';
 import 'theme/dark_theme.dart';
@@ -44,6 +45,15 @@ class MuseumApp extends StatelessWidget {
             ? getHighContrastTheme(prefs.language)
             : getDarkTheme(prefs.language);
 
+        final platformBrightness =
+            WidgetsBinding.instance.platformDispatcher.platformBrightness;
+        final resolvedBrightness = switch (themeMode) {
+          ThemeMode.light => Brightness.light,
+          ThemeMode.dark => Brightness.dark,
+          ThemeMode.system => platformBrightness,
+        };
+        AppColors.configureResolvedBrightness(resolvedBrightness);
+
         return MaterialApp(
           title: 'Museum Guide',
           debugShowCheckedModeBanner: false,
@@ -60,6 +70,7 @@ class MuseumApp extends StatelessWidget {
 
           // 3. Accessibility (Font Scaling)
           builder: (context, child) {
+            AppColors.configureResolvedBrightness(Theme.of(context).brightness);
             final textDirection = prefs.language == 'ar'
                 ? TextDirection.rtl
                 : TextDirection.ltr;

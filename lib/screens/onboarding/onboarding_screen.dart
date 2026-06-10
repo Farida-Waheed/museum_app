@@ -1,4 +1,4 @@
-import 'dart:math' as math;
+﻿import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -271,7 +271,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                         .copyWith(
                                           fontSize: isArabic ? 30 : 29,
                                           fontWeight: FontWeight.w500,
-                                          color: AppColors.whiteTitle,
+                                          color: AppColors.resolvedTitleText,
                                           letterSpacing: isArabic ? 0 : 0.5,
                                           height: isArabic ? 1.22 : 1.16,
                                         ),
@@ -289,9 +289,8 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                         AppTextStyles.premiumMutedBody(
                                           context,
                                         ).copyWith(
-                                          color: AppColors.bodyText.withValues(
-                                            alpha: 0.76,
-                                          ),
+                                          color: AppColors.resolvedBodyText
+                                              .withValues(alpha: 0.76),
                                           fontSize: 14,
                                           height: 1.46,
                                           letterSpacing: isArabic ? 0 : 0.15,
@@ -322,7 +321,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                 decoration: BoxDecoration(
                                   color: active
                                       ? AppColors.primaryGold
-                                      : AppColors.mutedText.withValues(
+                                      : AppColors.resolvedMutedText.withValues(
                                           alpha: 0.38,
                                         ),
                                   borderRadius: BorderRadius.circular(10),
@@ -391,9 +390,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         });
                       },
                       offset: const Offset(0, 48),
-                      color: AppColors.cinematicElevated.withValues(
-                        alpha: 0.96,
-                      ),
+                      color: AppColors.resolvedElevated.withValues(alpha: 0.96),
                       elevation: 8,
                       constraints: const BoxConstraints(minWidth: 160),
                       shape: RoundedRectangleBorder(
@@ -415,11 +412,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                 color: AppColors.softGold,
                               ),
                               const SizedBox(width: 10),
-                              const Flexible(
+                              Flexible(
                                 child: Text(
                                   'English',
                                   style: TextStyle(
-                                    color: AppColors.whiteTitle,
+                                    color: AppColors.resolvedTitleText,
                                     fontWeight: FontWeight.w500,
                                   ),
                                   overflow: TextOverflow.ellipsis,
@@ -446,11 +443,11 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                 color: AppColors.softGold,
                               ),
                               const SizedBox(width: 10),
-                              const Flexible(
+                              Flexible(
                                 child: Text(
                                   'العربية',
                                   style: TextStyle(
-                                    color: AppColors.whiteTitle,
+                                    color: AppColors.resolvedTitleText,
                                     fontWeight: FontWeight.w500,
                                   ),
                                   overflow: TextOverflow.ellipsis,
@@ -486,7 +483,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                               l10n.language,
                               style: AppTextStyles.premiumMutedBody(context)
                                   .copyWith(
-                                    color: AppColors.whiteTitle,
+                                    color: AppColors.resolvedTitleText,
                                     fontSize: 13,
                                     fontWeight: FontWeight.w500,
                                   ),

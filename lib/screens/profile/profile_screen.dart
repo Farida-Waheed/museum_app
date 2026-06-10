@@ -49,12 +49,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          backgroundColor: AppColors.cinematicCard,
+          backgroundColor: AppColors.resolvedCard,
           title: Text(
             isArabic ? 'تسجيل الخروج' : 'Sign out',
             style: AppTextStyles.titleLarge(
               dialogContext,
-            ).copyWith(color: Colors.white),
+            ).copyWith(color: AppColors.resolvedTitleText),
           ),
           content: Text(
             isArabic
@@ -62,7 +62,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 : 'Are you sure you want to sign out?',
             style: AppTextStyles.bodyPrimary(
               dialogContext,
-            ).copyWith(color: AppColors.bodyText),
+            ).copyWith(color: AppColors.resolvedBodyText),
           ),
           actions: [
             TextButton(
@@ -132,12 +132,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              backgroundColor: AppColors.cinematicCard,
+              backgroundColor: AppColors.resolvedCard,
               title: Text(
                 isArabic ? 'تعديل الملف الشخصي' : 'Edit profile',
                 style: AppTextStyles.titleLarge(
                   dialogContext,
-                ).copyWith(color: Colors.white),
+                ).copyWith(color: AppColors.resolvedTitleText),
               ),
               content: SingleChildScrollView(
                 child: Column(
@@ -167,7 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     DropdownButtonFormField<String>(
                       initialValue: language,
-                      dropdownColor: AppColors.cinematicElevated,
+                      dropdownColor: AppColors.resolvedElevated,
                       decoration: _profileInputDecoration(
                         isArabic ? 'لغة الواجهة' : 'UI language',
                       ),
@@ -194,7 +194,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         isArabic
                             ? 'أخبار وعروض المتحف'
                             : 'Museum news and offers',
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(color: AppColors.resolvedTitleText),
                       ),
                       onChanged: (value) {
                         setDialogState(() => marketingOptIn = value ?? false);
@@ -293,11 +293,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return AppMenuShell(
       title: l10n.profile.toUpperCase(),
       bottomNavigationBar: const BottomNav(currentIndex: 4),
-      backgroundColor: AppColors.darkBackground,
+      backgroundColor: AppColors.resolvedBackground,
       body: Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
         child: DecoratedBox(
-          decoration: const BoxDecoration(color: AppColors.cinematicBackground),
+          decoration: BoxDecoration(color: AppColors.resolvedBackground),
           child: SafeArea(
             child:
                 user == null &&
@@ -496,7 +496,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           label: Text(isArabic ? 'تسجيل الخروج' : 'Sign out'),
                           style: TextButton.styleFrom(
                             foregroundColor: AppColors.alertRed,
-                            backgroundColor: AppColors.cinematicCard,
+                            backgroundColor: AppColors.resolvedCard,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(18),
                               side: BorderSide(
@@ -555,7 +555,7 @@ class _ProfileHeader extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.premiumScreenTitle(
                     context,
-                  ).copyWith(color: AppColors.whiteTitle, fontSize: 24),
+                  ).copyWith(color: AppColors.resolvedTitleText, fontSize: 24),
                 ),
                 const SizedBox(height: 5),
                 Text(
@@ -564,7 +564,7 @@ class _ProfileHeader extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.metadata(
                     context,
-                  ).copyWith(color: AppColors.neutralMedium),
+                  ).copyWith(color: AppColors.resolvedMutedText),
                 ),
               ],
             ),
@@ -622,9 +622,10 @@ class _ProfileStateCard extends StatelessWidget {
                 child: Text(
                   title,
                   textAlign: TextAlign.start,
-                  style: AppTextStyles.bodyPrimary(
-                    context,
-                  ).copyWith(color: Colors.white, fontWeight: FontWeight.w800),
+                  style: AppTextStyles.bodyPrimary(context).copyWith(
+                    color: AppColors.resolvedTitleText,
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
               ),
             ],
@@ -636,7 +637,7 @@ class _ProfileStateCard extends StatelessWidget {
               textAlign: TextAlign.start,
               style: AppTextStyles.metadata(
                 context,
-              ).copyWith(color: AppColors.neutralMedium),
+              ).copyWith(color: AppColors.resolvedMutedText),
             ),
           ],
           if (buttonLabel != null && onPressed != null) ...[
@@ -667,7 +668,7 @@ class _ProfileTextField extends StatelessWidget {
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: AppColors.resolvedTitleText),
         decoration: _profileInputDecoration(label),
       ),
     );
@@ -677,7 +678,7 @@ class _ProfileTextField extends StatelessWidget {
 InputDecoration _profileInputDecoration(String label) {
   return InputDecoration(
     labelText: label,
-    labelStyle: const TextStyle(color: AppColors.neutralMedium),
+    labelStyle: TextStyle(color: AppColors.resolvedMutedText),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
       borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.12)),
@@ -745,7 +746,7 @@ class _InfoCard extends StatelessWidget {
                         row.label,
                         style: AppTextStyles.metadata(
                           context,
-                        ).copyWith(color: AppColors.neutralMedium),
+                        ).copyWith(color: AppColors.resolvedMutedText),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -755,7 +756,7 @@ class _InfoCard extends StatelessWidget {
                         textAlign: TextAlign.end,
                         style: AppTextStyles.bodyPrimary(
                           context,
-                        ).copyWith(color: Colors.white),
+                        ).copyWith(color: AppColors.resolvedTitleText),
                       ),
                     ),
                   ],
@@ -852,7 +853,7 @@ class _StatCard extends StatelessWidget {
             value,
             style: AppTextStyles.titleLarge(
               context,
-            ).copyWith(color: Colors.white),
+            ).copyWith(color: AppColors.resolvedTitleText),
           ),
           const SizedBox(height: 4),
           Text(
@@ -861,7 +862,7 @@ class _StatCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: AppTextStyles.metadata(
               context,
-            ).copyWith(color: AppColors.neutralMedium, fontSize: 11),
+            ).copyWith(color: AppColors.resolvedMutedText, fontSize: 11),
           ),
         ],
       ),
@@ -969,7 +970,7 @@ class _ActionTile extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.metadata(
                           context,
-                        ).copyWith(color: AppColors.neutralMedium),
+                        ).copyWith(color: AppColors.resolvedMutedText),
                       ),
                     ],
                   ),

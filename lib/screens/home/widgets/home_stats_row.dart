@@ -1,4 +1,4 @@
-import 'dart:ui';
+﻿import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -82,7 +82,7 @@ class _StatCard extends StatelessWidget {
                 item.value,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                textAlign: TextAlign.start,
                 style: AppTextStyles.premiumScreenTitle(
                   context,
                 ).copyWith(fontSize: 19),
@@ -92,7 +92,7 @@ class _StatCard extends StatelessWidget {
                 item.label,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                textAlign: TextAlign.start,
                 style: AppTextStyles.premiumMutedBody(
                   context,
                 ).copyWith(fontSize: 13),

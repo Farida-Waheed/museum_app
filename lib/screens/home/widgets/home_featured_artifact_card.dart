@@ -1,4 +1,4 @@
-import 'dart:ui';
+﻿import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -63,13 +63,11 @@ class HomeFeaturedArtifactCard extends StatelessWidget {
                               artifact.title,
                               maxLines: 2,
                               overflow: TextOverflow.fade,
-                              textAlign: isArabic
-                                  ? TextAlign.right
-                                  : TextAlign.left,
+                              textAlign: TextAlign.start,
                               style: AppTextStyles.premiumScreenTitle(context)
                                   .copyWith(
                                     fontSize: 20,
-                                    color: AppColors.whiteTitle,
+                                    color: AppColors.resolvedTitleText,
                                   ),
                             ),
                             const SizedBox(height: 4),
@@ -77,21 +75,17 @@ class HomeFeaturedArtifactCard extends StatelessWidget {
                               artifact.subtitle,
                               maxLines: 2,
                               overflow: TextOverflow.fade,
-                              textAlign: isArabic
-                                  ? TextAlign.right
-                                  : TextAlign.left,
+                              textAlign: TextAlign.start,
                               style: AppTextStyles.premiumMutedBody(
                                 context,
-                              ).copyWith(color: AppColors.bodyText),
+                              ).copyWith(color: AppColors.resolvedBodyText),
                             ),
                             const SizedBox(height: 6),
                             Text(
                               artifact.contextHint,
                               maxLines: 2,
                               overflow: TextOverflow.fade,
-                              textAlign: isArabic
-                                  ? TextAlign.right
-                                  : TextAlign.left,
+                              textAlign: TextAlign.start,
                               style: AppTextStyles.premiumMutedBody(context)
                                   .copyWith(
                                     fontSize: 13,

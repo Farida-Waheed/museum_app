@@ -332,57 +332,57 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (snapshot.dashboardState) {
       case HomeDashboardState.staffBlocked:
         return (
-          label: 'Staff account',
-          title: 'Use the staff portal',
+          label: l10n.homeStaffAccountLabel,
+          title: l10n.homeUseStaffPortal,
           subtitle: AuthProvider.staffAccountMessage,
           icon: Icons.admin_panel_settings_outlined,
           onTap: () => Navigator.pushNamed(context, AppRoutes.login),
         );
       case HomeDashboardState.guest:
         return (
-          label: 'Explore the museum',
-          title: 'Plan your visit',
-          subtitle: 'Sign in to plan and save your personalized museum route.',
+          label: l10n.exploreTheMuseum,
+          title: l10n.planMyVisit,
+          subtitle: l10n.homeGuestPlanSubtitle,
           icon: Icons.museum_outlined,
           onTap: () => Navigator.pushNamed(context, AppRoutes.login),
         );
       case HomeDashboardState.loggedInNoTickets:
         return (
-          label: 'Plan visit',
-          title: 'Welcome back, ${snapshot.userName}',
-          subtitle: 'Book a museum entry and Horus-Bot tour when ready.',
+          label: l10n.planMyVisit,
+          title: l10n.homeWelcomeBackUser(snapshot.userName),
+          subtitle: l10n.homeBookTourWhenReady,
           icon: Icons.explore_rounded,
           onTap: () => Navigator.pushNamed(context, AppRoutes.buyTickets),
         );
       case HomeDashboardState.paymentPending:
         return (
-          label: 'Payment pending',
-          title: 'Pay at the counter',
-          subtitle: 'Your QR code unlocks after cashier confirmation.',
+          label: l10n.paymentStatusPayAtCounter,
+          title: l10n.homePayAtCounterTitle,
+          subtitle: l10n.homeQrUnlocksAfterPayment,
           icon: Icons.payments_outlined,
           onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
         );
       case HomeDashboardState.ticketReady:
         return (
-          label: 'Ticket ready',
-          title: 'Your tickets are ready',
-          subtitle: 'View your QR now. Scan the robot QR when you arrive.',
+          label: l10n.homeMuseumTicketReadyLabel,
+          title: l10n.homeTicketsReadyTitle,
+          subtitle: l10n.homeViewQrScanRobot,
           icon: Icons.confirmation_number_outlined,
           onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
         );
       case HomeDashboardState.awaitingRobotPairing:
         return (
-          label: 'At the museum',
-          title: 'Find your Horus-Bot',
-          subtitle: 'Scan the robot QR nearby to start your guided tour.',
+          label: l10n.homeAtMuseumLabel,
+          title: l10n.homeFindHorusBotTitle,
+          subtitle: l10n.homeScanNearbyRobot,
           icon: Icons.qr_code_scanner_rounded,
           onTap: () => _openRobotPairing(context),
         );
       case HomeDashboardState.tourCompleted:
         return (
           label: l10n.homeTourCompletedLabel,
-          title: 'Tour completed',
-          subtitle: 'Your visit summary, memories, and achievements are ready.',
+          title: l10n.homeTourCompletedTitle,
+          subtitle: l10n.homeSummaryMemoriesReady,
           icon: Icons.verified_rounded,
           onTap: () => _openSummary(context),
         );
@@ -391,7 +391,7 @@ class _HomeScreenState extends State<HomeScreen> {
           return (
             label: l10n.homeTourPausedLabel,
             title: snapshot.currentExhibitName ?? l10n.homeTourPausedTitle,
-            subtitle: 'Resume your live Horus-Bot tour.',
+            subtitle: l10n.homeResumeLiveTour,
             icon: Icons.pause_circle_outline_rounded,
             onTap: () => _openTourFlow(context, snapshot),
           );
@@ -440,7 +440,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (snapshot.lastRobotSyncTime != null) {
       parts.add(_syncLabel(snapshot.lastRobotSyncTime!, l10n));
     }
-    return parts.join(' • ');
+    return parts.join(' - ');
   }
 
   String _syncLabel(DateTime time, AppLocalizations l10n) {
@@ -470,9 +470,7 @@ class _HomeScreenState extends State<HomeScreen> {
         HomeQuickActionItem(
           icon: Icons.route_outlined,
           label: l10n.tourPlanner,
-          subtitle: isArabic
-              ? 'جهز مسارك قبل الحجز'
-              : 'Plan your route before booking',
+          subtitle: l10n.homePlanRouteBeforeBooking,
           onTap: () => Navigator.pushNamed(context, AppRoutes.tourPlanner),
         ),
         HomeQuickActionItem(
@@ -484,9 +482,7 @@ class _HomeScreenState extends State<HomeScreen> {
         HomeQuickActionItem(
           icon: Icons.confirmation_number_outlined,
           label: l10n.buyTickets,
-          subtitle: isArabic
-              ? 'اشتر تذاكر المتحف وجولة الروبوت'
-              : 'Purchase museum and robot tour tickets',
+          subtitle: l10n.homePurchaseMuseumRobotTickets,
           onTap: () => Navigator.pushNamed(context, AppRoutes.buyTickets),
         ),
       ];
@@ -497,7 +493,7 @@ class _HomeScreenState extends State<HomeScreen> {
         HomeQuickActionItem(
           icon: Icons.confirmation_number_outlined,
           label: l10n.myTickets,
-          subtitle: 'View payment status and counter instructions',
+          subtitle: l10n.homePaymentStatusInstructions,
           onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
         ),
         HomeQuickActionItem(
@@ -514,9 +510,7 @@ class _HomeScreenState extends State<HomeScreen> {
         HomeQuickActionItem(
           icon: Icons.route_outlined,
           label: l10n.tourPlanner,
-          subtitle: isArabic
-              ? 'جهز مسارك قبل الحجز'
-              : 'Plan your route before booking',
+          subtitle: l10n.homePlanRouteBeforeBooking,
           onTap: () => Navigator.pushNamed(context, AppRoutes.tourPlanner),
         ),
         HomeQuickActionItem(
@@ -573,21 +567,19 @@ class _HomeScreenState extends State<HomeScreen> {
         HomeQuickActionItem(
           icon: Icons.map_outlined,
           label: l10n.map,
-          subtitle: 'See where you and Horus are now',
+          subtitle: l10n.homeSeeWhereHorusNow,
           onTap: () => _openMap(context),
         ),
         HomeQuickActionItem(
           icon: Icons.chat_bubble_outline_rounded,
-          label: 'Ask Horus',
-          subtitle: 'Ask about the current stop or route',
+          label: l10n.askTheGuide,
+          subtitle: l10n.homeAskCurrentStopRoute,
           onTap: () => _openChat(context),
         ),
         HomeQuickActionItem(
           icon: Icons.photo_library_outlined,
-          label: isArabic ? 'الذكريات' : 'Memories',
-          subtitle: isArabic
-              ? 'شاهد لحظات جولتك الحالية'
-              : 'Review moments from your current tour',
+          label: l10n.memories,
+          subtitle: l10n.homeReviewCurrentTourMoments,
           onTap: () => Navigator.pushNamed(context, AppRoutes.memories),
         ),
         HomeQuickActionItem(
@@ -603,26 +595,26 @@ class _HomeScreenState extends State<HomeScreen> {
       return [
         HomeQuickActionItem(
           icon: Icons.summarize_outlined,
-          label: 'Summary',
-          subtitle: 'Review the stops and highlights from your tour',
+          label: l10n.visitSummary,
+          subtitle: l10n.homeReviewTourHighlights,
           onTap: () => _openSummary(context),
         ),
         HomeQuickActionItem(
           icon: Icons.photo_library_outlined,
-          label: isArabic ? 'Ø§Ù„Ø°ÙƒØ±ÙŠØ§Øª' : 'Memories',
-          subtitle: 'Revisit photos and saved tour moments',
+          label: l10n.memories,
+          subtitle: l10n.homeRevisitPhotosMoments,
           onTap: () => Navigator.pushNamed(context, AppRoutes.memories),
         ),
         HomeQuickActionItem(
           icon: Icons.rate_review_outlined,
           label: l10n.feedback,
-          subtitle: 'Tell us how your Horus-Bot visit felt',
+          subtitle: l10n.homeShareVisitFeedback,
           onTap: () => Navigator.pushNamed(context, AppRoutes.feedback),
         ),
         HomeQuickActionItem(
           icon: Icons.emoji_events_outlined,
           label: l10n.achievements,
-          subtitle: 'See badges and progress from your visit',
+          subtitle: l10n.homeSeeBadgesProgress,
           onTap: () => Navigator.pushNamed(context, AppRoutes.achievements),
         ),
       ];
@@ -633,19 +625,19 @@ class _HomeScreenState extends State<HomeScreen> {
         HomeQuickActionItem(
           icon: Icons.qr_code_scanner_rounded,
           label: l10n.homeScanRobotQr,
-          subtitle: 'Pair with the Horus-Bot beside you',
+          subtitle: l10n.homePairWithNearbyHorus,
           onTap: () => _openRobotPairing(context),
         ),
         HomeQuickActionItem(
           icon: Icons.map_outlined,
           label: l10n.map,
-          subtitle: 'Use the map to orient yourself before starting',
+          subtitle: l10n.homeUseMapBeforeStarting,
           onTap: () => _openMap(context),
         ),
         HomeQuickActionItem(
           icon: Icons.confirmation_number_outlined,
           label: l10n.myTickets,
-          subtitle: 'Keep your entry QR and tour ticket handy',
+          subtitle: l10n.homeKeepQrHandy,
           onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
         ),
         HomeQuickActionItem(
@@ -668,17 +660,13 @@ class _HomeScreenState extends State<HomeScreen> {
         HomeQuickActionItem(
           icon: Icons.confirmation_number_outlined,
           label: l10n.myTickets,
-          subtitle: isArabic
-              ? 'عرض تذاكر دخول المتحف وجولة الروبوت'
-              : 'View your museum entry and robot tour tickets',
+          subtitle: l10n.homeViewMuseumRobotTickets,
           onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
         ),
         HomeQuickActionItem(
           icon: Icons.photo_library_outlined,
-          label: isArabic ? 'الذكريات' : 'Memories',
-          subtitle: isArabic
-              ? 'شاهد صور جولتك وذكريات زياراتك السابقة.'
-              : 'View your captured tour photos and past visits.',
+          label: l10n.memories,
+          subtitle: l10n.homeViewCapturedPhotos,
           onTap: () => Navigator.pushNamed(context, AppRoutes.memories),
         ),
         HomeQuickActionItem(
@@ -732,10 +720,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return [
       HomeQuickActionItem(
         icon: Icons.photo_library_outlined,
-        label: isArabic ? 'الذكريات' : 'Memories',
-        subtitle: isArabic
-            ? 'شاهد صور جولتك وذكريات زياراتك السابقة.'
-            : 'View your captured tour photos and past visits.',
+        label: l10n.memories,
+        subtitle: l10n.homeViewCapturedPhotos,
         onTap: () => Navigator.pushNamed(context, AppRoutes.memories),
       ),
       HomeQuickActionItem(
@@ -749,10 +735,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _ticketStatusLine(HomeSnapshot snapshot, AppLocalizations l10n) {
     if (snapshot.dashboardState == HomeDashboardState.paymentPending) {
-      return 'Payment pending - pay at the museum counter';
+      return l10n.homePaymentPendingStatusLine;
     }
     if (snapshot.dashboardState == HomeDashboardState.tourCompleted) {
-      return 'Tour completed - summary and memories ready';
+      return l10n.homeTourCompletedStatusLine;
     }
     if (!snapshot.hasCompleteTicketBundle) {
       return l10n.homeNoTicketsYet;
@@ -841,48 +827,25 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   String _heroSubtitle(HomeSnapshot snapshot) {
-    final language = Localizations.localeOf(context).languageCode;
+    final l10n = AppLocalizations.of(context)!;
     switch (snapshot.dashboardState) {
       case HomeDashboardState.staffBlocked:
-        return 'Staff accounts continue on the Horus-Bot website portal.';
+        return l10n.homeStaffWebsitePortal;
       case HomeDashboardState.guest:
-        return language == 'ar'
-            ? 'Ø®Ø·Ø· Ù„Ø±Ø­Ù„ØªÙƒ ÙÙŠ Ø§Ù„Ù…ØªØ­Ù Ù‚Ø¨Ù„ Ø§Ù„Ø²ÙŠØ§Ø±Ø©.'
-            : 'Explore the museum and plan your Horus-Bot visit.';
+        return l10n.homeGuestHeroSubtitle;
       case HomeDashboardState.loggedInNoTickets:
-        return 'Welcome, ${snapshot.userName}. Plan your Horus-Bot visit.';
+        return l10n.homeWelcomePlanVisit(snapshot.userName);
       case HomeDashboardState.paymentPending:
-        return 'Payment is pending. Your QR activates after counter confirmation.';
+        return l10n.homePaymentPendingHero;
       case HomeDashboardState.ticketReady:
-        return 'Ticket ready. Keep your QR handy for museum entry.';
+        return l10n.homeTicketReadyHero;
       case HomeDashboardState.awaitingRobotPairing:
-        return 'Find your Horus-Bot and scan its QR to begin.';
+        return l10n.homeFindScanHero;
       case HomeDashboardState.activeTour:
-        return language == 'ar'
-            ? 'Ø§ØªØ¨Ø¹ Ø­ÙˆØ±Ø³ Ø®Ù„Ø§Ù„ Ø¬ÙˆÙ„ØªÙƒ Ø§Ù„Ù…Ø¨Ø§Ø´Ø±Ø© ÙÙŠ Ø§Ù„Ù…ØªØ­Ù.'
-            : 'Follow Horus through your live museum tour.';
+        return l10n.homeFollowLiveTourHero;
       case HomeDashboardState.tourCompleted:
-        return 'Your Horus-Bot tour is complete. Relive the visit.';
+        return l10n.homeCompletedReliveHero;
     }
-    // ignore: dead_code
-    if (snapshot.isActiveTourState) {
-      return language == 'ar'
-          ? 'اتبع حورس خلال جولتك المباشرة في المتحف.'
-          : 'Follow Horus through your live museum tour.';
-    }
-    if (snapshot.isTicketReady) {
-      return language == 'ar'
-          ? 'جولتك مع Horus-Bot جاهزة.'
-          : 'Your Horus-Bot tour is ready.';
-    }
-    if (snapshot.isLoggedIn) {
-      return language == 'ar'
-          ? 'مرحبا، ${snapshot.userName}. جهز زيارتك مع Horus-Bot.'
-          : 'Welcome, ${snapshot.userName}. Prepare your Horus-Bot visit.';
-    }
-    return language == 'ar'
-        ? 'خطط لرحلتك في المتحف قبل الزيارة.'
-        : 'Plan your museum journey before your visit.';
   }
 
   ({
@@ -903,9 +866,9 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (snapshot.dashboardState) {
       case HomeDashboardState.staffBlocked:
         return (
-          title: 'Staff account detected',
+          title: l10n.homeStaffAccountDetected,
           subtitle: AuthProvider.staffAccountMessage,
-          statusLine: 'Visitor app access is blocked for staff roles',
+          statusLine: l10n.homeStaffBlockedStatus,
           primaryLabel: l10n.login,
           secondaryLabel: l10n.about,
           onPrimary: () => Navigator.pushNamed(context, AppRoutes.login),
@@ -914,9 +877,8 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       case HomeDashboardState.guest:
         return (
-          title: 'Explore before you book',
-          subtitle:
-              'Create an account or log in to save tickets, tours, and memories.',
+          title: l10n.homeExploreBeforeBook,
+          subtitle: l10n.homeCreateAccountSave,
           statusLine: l10n.homeNoTicketsYet,
           primaryLabel: l10n.buyTickets,
           secondaryLabel: l10n.login,
@@ -925,9 +887,8 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       case HomeDashboardState.loggedInNoTickets:
         return (
-          title: 'Plan your museum visit',
-          subtitle:
-              'Choose museum entry and a Horus-Bot tour package before your visit.',
+          title: l10n.homePlanMuseumVisitTitle,
+          subtitle: l10n.homeChooseEntryTourPackage,
           statusLine: l10n.homeNoTicketsYet,
           primaryLabel: l10n.buyTickets,
           secondaryLabel: l10n.exhibits,
@@ -936,9 +897,8 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       case HomeDashboardState.paymentPending:
         return (
-          title: 'Payment pending',
-          subtitle:
-              'Please pay at the museum counter. Your QR code and robot pairing unlock after cashier confirmation.',
+          title: l10n.homePaymentPendingTitle,
+          subtitle: l10n.homePayCounterUnlockSubtitle,
           statusLine: _ticketStatusLine(snapshot, l10n),
           primaryLabel: l10n.myTickets,
           secondaryLabel: l10n.exhibits,
@@ -947,9 +907,8 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       case HomeDashboardState.ticketReady:
         return (
-          title: 'Ticket ready',
-          subtitle:
-              'Your museum entry and Horus-Bot tour are confirmed. Keep the QR ready for entry.',
+          title: l10n.homeTicketReadyTitle,
+          subtitle: l10n.homeEntryTourConfirmedSubtitle,
           statusLine: _ticketStatusLine(snapshot, l10n),
           primaryLabel: l10n.myTickets,
           secondaryLabel: l10n.homeScanRobotQr,
@@ -958,9 +917,8 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       case HomeDashboardState.awaitingRobotPairing:
         return (
-          title: 'Find your Horus-Bot',
-          subtitle:
-              'When you are beside the robot, scan its QR to pair and start the tour.',
+          title: l10n.homeFindHorusBotTitle,
+          subtitle: l10n.homeBesideRobotScanSubtitle,
           statusLine: _ticketStatusLine(snapshot, l10n),
           primaryLabel: l10n.homeScanRobotQr,
           secondaryLabel: l10n.map,
@@ -972,7 +930,7 @@ class _HomeScreenState extends State<HomeScreen> {
           title: snapshot.currentExhibitName ?? l10n.homeContinueTourAction,
           subtitle: snapshot.nextStopName == null
               ? l10n.homeAskOrContinueSubtitle
-              : 'Next stop: ${snapshot.nextStopName}',
+              : l10n.homeCurrentStopValue(snapshot.nextStopName!),
           statusLine: _ticketStatusLine(snapshot, l10n),
           primaryLabel: snapshot.isTourPaused
               ? l10n.resume
@@ -983,12 +941,11 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       case HomeDashboardState.tourCompleted:
         return (
-          title: 'Tour completed',
-          subtitle:
-              'Review your route, revisit memories, share feedback, and keep your achievements.',
+          title: l10n.homeTourCompletedTitle,
+          subtitle: l10n.homeReviewRouteMemoriesFeedback,
           statusLine: _ticketStatusLine(snapshot, l10n),
-          primaryLabel: 'View Summary',
-          secondaryLabel: 'Book another tour',
+          primaryLabel: l10n.myTicketsViewSummary,
+          secondaryLabel: l10n.homeBookAnotherTour,
           onPrimary: () => _openSummary(context),
           onSecondary: () => Navigator.pushNamed(context, AppRoutes.buyTickets),
         );
@@ -1058,7 +1015,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return AppMenuShell(
       hideDefaultAppBar: true,
-      backgroundColor: AppColors.baseBlack,
+      backgroundColor: AppColors.resolvedBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 0),
       showChatButton: false,
       body: Builder(
@@ -1198,7 +1155,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             title: l10n.didYouKnow,
                             body: snapshot.didYouKnowText,
                             icon: Icons.auto_awesome_rounded,
-                            bodyColor: AppColors.whiteTitle,
+                            bodyColor: AppColors.resolvedTitleText,
                           ),
                         ),
                       if (snapshot.smallUpdateCard != null) ...[
@@ -1211,7 +1168,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             title: l10n.homeMuseumUpdate,
                             body: snapshot.smallUpdateCard!,
                             icon: Icons.campaign_outlined,
-                            bodyColor: AppColors.bodyText,
+                            bodyColor: AppColors.resolvedBodyText,
                           ),
                         ),
                       ],
@@ -1336,7 +1293,7 @@ class _HeroSection extends StatelessWidget {
                         title,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                        textAlign: TextAlign.start,
                         style: AppTextStyles.premiumHero(context).copyWith(
                           fontSize: isArabic ? 30 : 32,
                           height: 1.08,
@@ -1360,12 +1317,10 @@ class _HeroSection extends StatelessWidget {
                             subtitle,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            textAlign: isArabic
-                                ? TextAlign.right
-                                : TextAlign.left,
+                            textAlign: TextAlign.start,
                             style: AppTextStyles.premiumBody(context).copyWith(
                               fontSize: 14.5,
-                              color: AppColors.whiteTitle.withValues(
+                              color: AppColors.resolvedTitleText.withValues(
                                 alpha: 0.84,
                               ),
                             ),
@@ -1391,7 +1346,6 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isArabic = Directionality.of(context) == TextDirection.rtl;
     return Padding(
       padding: const EdgeInsetsDirectional.fromSTEB(
         AppSpacing.screenHorizontal,
@@ -1401,7 +1355,7 @@ class _SectionLabel extends StatelessWidget {
       ),
       child: Text(
         label,
-        textAlign: isArabic ? TextAlign.right : TextAlign.left,
+        textAlign: TextAlign.start,
         style: AppTextStyles.premiumSectionLabel(
           context,
         ).copyWith(color: AppColors.softGold),
@@ -1458,7 +1412,7 @@ class _PrimaryActionCard extends StatelessWidget {
             children: [
               Text(
                 title,
-                textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                textAlign: TextAlign.start,
                 style: AppTextStyles.premiumScreenTitle(
                   context,
                 ).copyWith(fontSize: 22),
@@ -1466,10 +1420,10 @@ class _PrimaryActionCard extends StatelessWidget {
               const SizedBox(height: 10),
               Text(
                 subtitle,
-                textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                textAlign: TextAlign.start,
                 style: AppTextStyles.premiumBody(
                   context,
-                ).copyWith(fontSize: 14, color: AppColors.bodyText),
+                ).copyWith(fontSize: 14, color: AppColors.resolvedBodyText),
               ),
               const SizedBox(height: 16),
               _TicketStatusPill(label: statusLine, isArabic: isArabic),
@@ -1555,7 +1509,7 @@ class _TicketStatusPill extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.premiumMutedBody(
                   context,
-                ).copyWith(color: AppColors.bodyText, fontSize: 12.5),
+                ).copyWith(color: AppColors.resolvedBodyText, fontSize: 12.5),
               ),
             ),
           ],

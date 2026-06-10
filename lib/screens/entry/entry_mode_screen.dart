@@ -1,4 +1,4 @@
-import 'dart:ui';
+﻿import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +39,7 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
     final isArabic = prefs.language == 'ar';
 
     return Scaffold(
-      backgroundColor: AppColors.baseBlack,
+      backgroundColor: AppColors.resolvedBackground,
       body: Stack(
         fit: StackFit.expand,
         children: [
@@ -95,9 +95,7 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
                             ),
                             const SizedBox(height: 54),
                             Text(
-                              isArabic
-                                  ? 'اختر تجربتك'
-                                  : 'Choose Your Experience',
+                              l10n.entryChooseExperience,
                               textAlign: TextAlign.center,
                               style: AppTextStyles.premiumHero(context)
                                   .copyWith(
@@ -117,15 +115,12 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
                             ConstrainedBox(
                               constraints: const BoxConstraints(maxWidth: 360),
                               child: Text(
-                                isArabic
-                                    ? 'خطط لزيارتك أو ابدأ جولتك الإرشادية مع حورس-بوت.'
-                                    : 'Plan your visit or begin your guided tour with Horus-Bot.',
+                                l10n.entryExperienceSubtitle,
                                 textAlign: TextAlign.center,
                                 style: AppTextStyles.premiumBody(context)
                                     .copyWith(
-                                      color: AppColors.whiteTitle.withValues(
-                                        alpha: 0.76,
-                                      ),
+                                      color: AppColors.resolvedTitleText
+                                          .withValues(alpha: 0.76),
                                     ),
                               ),
                             ),
@@ -149,9 +144,7 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
                             _buildPremiumCard(
                               context: context,
                               title: l10n.startMyTour,
-                              description: isArabic
-                                  ? 'خصص مسارك واتصل بحورس-بوت.'
-                                  : 'Customize your route and connect to Horus-Bot.',
+                              description: l10n.entryStartTourDescription,
                               icon: Icons.route_outlined,
                               onTap: () async {
                                 final authProvider = context
@@ -273,9 +266,7 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
                         children: [
                           Text(
                             title,
-                            textAlign: isArabic
-                                ? TextAlign.right
-                                : TextAlign.left,
+                            textAlign: TextAlign.start,
                             style: AppTextStyles.premiumCardTitle(context),
                           ),
                           const SizedBox(height: 8),
@@ -283,12 +274,10 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
                             description,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
-                            textAlign: isArabic
-                                ? TextAlign.right
-                                : TextAlign.left,
+                            textAlign: TextAlign.start,
                             style: AppTextStyles.premiumMutedBody(context)
                                 .copyWith(
-                                  color: AppColors.bodyText.withValues(
+                                  color: AppColors.resolvedBodyText.withValues(
                                     alpha: 0.92,
                                   ),
                                 ),
@@ -355,7 +344,7 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
                       l10n.createOrLoginToPreserve,
                       style: AppTextStyles.premiumMutedBody(
                         context,
-                      ).copyWith(color: AppColors.bodyText),
+                      ).copyWith(color: AppColors.resolvedBodyText),
                     ),
                     const SizedBox(height: 18),
                     TextButton(
@@ -363,14 +352,14 @@ class _EntryModeScreenState extends State<EntryModeScreen> {
                       style: TextButton.styleFrom(
                         minimumSize: const Size.fromHeight(46),
                         padding: const EdgeInsets.symmetric(horizontal: 4),
-                        foregroundColor: AppColors.whiteTitle,
-                        alignment: Alignment.centerLeft,
+                        foregroundColor: AppColors.resolvedTitleText,
+                        alignment: AlignmentDirectional.centerStart,
                       ),
                       child: Text(
                         l10n.continueAsGuest,
                         style: AppTextStyles.premiumButtonLabel(
                           context,
-                        ).copyWith(color: AppColors.bodyText),
+                        ).copyWith(color: AppColors.resolvedBodyText),
                       ),
                     ),
                     const SizedBox(height: 10),

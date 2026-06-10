@@ -257,7 +257,7 @@ class _TicketScreenState extends State<TicketScreen> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          backgroundColor: AppColors.cinematicCard,
+          backgroundColor: AppColors.resolvedCard,
           title: Text(
             AppLocalizations.of(dialogContext)!.cashPaymentAtCounterTitle,
           ),
@@ -293,7 +293,7 @@ class _TicketScreenState extends State<TicketScreen> {
       builder: (dialogContext) => Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
         child: AlertDialog(
-          backgroundColor: AppColors.cinematicCard,
+          backgroundColor: AppColors.resolvedCard,
           title: Text(
             isArabic
                 ? '\u062a\u0645 \u062a\u0623\u0643\u064a\u062f \u0627\u0644\u062d\u062c\u0632'
@@ -334,7 +334,7 @@ class _TicketScreenState extends State<TicketScreen> {
     return AppMenuShell(
       title: 'HORUS-BOT',
       bottomNavigationBar: const BottomNav(currentIndex: 2),
-      backgroundColor: AppColors.baseBlack,
+      backgroundColor: AppColors.resolvedBackground,
       showChatButton: true,
       body: Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
@@ -353,7 +353,7 @@ class _TicketScreenState extends State<TicketScreen> {
 
   Widget _buildAccountGate(BuildContext context, AppLocalizations l10n) {
     return Container(
-      decoration: const BoxDecoration(color: AppColors.cinematicBackground),
+      decoration: BoxDecoration(color: AppColors.resolvedBackground),
       child: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsetsDirectional.fromSTEB(24, 20, 24, 144),
@@ -381,7 +381,7 @@ class _TicketScreenState extends State<TicketScreen> {
                   textAlign: TextAlign.center,
                   style: AppTextStyles.bodyPrimary(
                     context,
-                  ).copyWith(color: AppColors.bodyText, height: 1.45),
+                  ).copyWith(color: AppColors.resolvedBodyText, height: 1.45),
                 ),
                 const SizedBox(height: AppSpacing.cardPaddingCompact),
                 Row(
@@ -424,7 +424,7 @@ class _TicketScreenState extends State<TicketScreen> {
         : DateFormat('EEEE, MMM d, yyyy').format(draft.visitDate);
 
     return Container(
-      decoration: const BoxDecoration(color: AppColors.cinematicBackground),
+      decoration: BoxDecoration(color: AppColors.resolvedBackground),
       child: Column(
         children: [
           Expanded(
@@ -546,7 +546,7 @@ class _PageIntroCard extends StatelessWidget {
               shape: BoxShape.circle,
               gradient: AppGradients.premiumGold,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.confirmation_number_outlined,
               color: AppColors.darkInk,
               size: 24,
@@ -557,7 +557,7 @@ class _PageIntroCard extends StatelessWidget {
             l10n.ticketsPlanVisitTitle,
             style: AppTextStyles.premiumScreenTitle(
               context,
-            ).copyWith(color: AppColors.whiteTitle, fontSize: 24),
+            ).copyWith(color: AppColors.resolvedTitleText, fontSize: 24),
           ),
           const SizedBox(height: 8),
           Text(
@@ -565,7 +565,7 @@ class _PageIntroCard extends StatelessWidget {
             textAlign: TextAlign.start,
             style: AppTextStyles.bodyPrimary(
               context,
-            ).copyWith(color: AppColors.bodyText, height: 1.45),
+            ).copyWith(color: AppColors.resolvedBodyText, height: 1.45),
           ),
         ],
       ),
@@ -628,7 +628,7 @@ class _VisitDetailsCard extends StatelessWidget {
                 _noRemainingVisitTimesMessage(isArabic),
                 style: AppTextStyles.metadata(
                   context,
-                ).copyWith(color: AppColors.neutralMedium),
+                ).copyWith(color: AppColors.resolvedMutedText),
               ),
             ),
             const SizedBox(height: 8),
@@ -781,9 +781,10 @@ class _CategoryQuantityRow extends StatelessWidget {
                   Text(
                     note,
                     textAlign: TextAlign.start,
-                    style: AppTextStyles.metadata(
-                      context,
-                    ).copyWith(color: AppColors.neutralMedium, fontSize: 11),
+                    style: AppTextStyles.metadata(context).copyWith(
+                      color: AppColors.resolvedMutedText,
+                      fontSize: 11,
+                    ),
                   ),
                 ],
               ],
@@ -927,7 +928,7 @@ class _RecommendedRoutesCard extends StatelessWidget {
                               : Icons.radio_button_off_rounded,
                           color: selected
                               ? AppColors.primaryGold
-                              : AppColors.bodyText,
+                              : AppColors.resolvedBodyText,
                         ),
                       ],
                     ),
@@ -935,9 +936,10 @@ class _RecommendedRoutesCard extends StatelessWidget {
                     Text(
                       route.description(isArabic ? 'ar' : 'en'),
                       textAlign: TextAlign.start,
-                      style: AppTextStyles.metadata(
-                        context,
-                      ).copyWith(color: AppColors.neutralMedium, height: 1.35),
+                      style: AppTextStyles.metadata(context).copyWith(
+                        color: AppColors.resolvedMutedText,
+                        height: 1.35,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -1025,7 +1027,7 @@ class _RecommendedRoutesLoadingCard extends StatelessWidget {
               textAlign: TextAlign.start,
               style: AppTextStyles.metadata(
                 context,
-              ).copyWith(color: AppColors.bodyText),
+              ).copyWith(color: AppColors.resolvedBodyText),
             ),
           ),
         ],
@@ -1086,7 +1088,7 @@ class _NarrationLanguageCard extends StatelessWidget {
               onChanged: ticketProvider.updateTourLanguageOther,
               style: AppTextStyles.bodyPrimary(
                 context,
-              ).copyWith(color: AppColors.whiteTitle),
+              ).copyWith(color: AppColors.resolvedTitleText),
               decoration: InputDecoration(
                 labelText: isArabic
                     ? '\u0644\u063a\u0629 \u0623\u062e\u0631\u0649'
@@ -1095,7 +1097,7 @@ class _NarrationLanguageCard extends StatelessWidget {
                     ? '\u0627\u0643\u062a\u0628 \u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u062a\u064a \u062a\u0641\u0636\u0644\u0647\u0627'
                     : 'Type your preferred language',
                 filled: true,
-                fillColor: AppColors.cinematicCard.withValues(alpha: 0.48),
+                fillColor: AppColors.resolvedCard.withValues(alpha: 0.48),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
@@ -1162,7 +1164,7 @@ class _PersonalizedTourCard extends StatelessWidget {
             textAlign: TextAlign.start,
             style: AppTextStyles.bodyPrimary(
               context,
-            ).copyWith(color: AppColors.bodyText, height: 1.4),
+            ).copyWith(color: AppColors.resolvedBodyText, height: 1.4),
           ),
           if (hasPlannerRoute) ...[
             const SizedBox(height: 12),
@@ -1233,7 +1235,7 @@ class _OrderSummaryCard extends StatelessWidget {
             label: l10n.ticketsRobotSubtotal,
             value: _money(ticketProvider.robotTourSubtotal),
           ),
-          const Divider(color: AppColors.darkDivider, height: 24),
+          Divider(color: AppColors.resolvedDivider, height: 24),
           _SummaryLine(
             label: l10n.totalLabel,
             value: _money(ticketProvider.orderTotal),
@@ -1269,7 +1271,7 @@ class _PaymentNoticeCard extends StatelessWidget {
               textAlign: TextAlign.start,
               style: AppTextStyles.metadata(
                 context,
-              ).copyWith(color: AppColors.bodyText),
+              ).copyWith(color: AppColors.resolvedBodyText),
             ),
           ),
         ],
@@ -1379,7 +1381,7 @@ class _SectionCard extends StatelessWidget {
               textAlign: TextAlign.start,
               style: AppTextStyles.metadata(
                 context,
-              ).copyWith(color: AppColors.neutralMedium, height: 1.35),
+              ).copyWith(color: AppColors.resolvedMutedText, height: 1.35),
             ),
           ],
           const SizedBox(height: 14),
@@ -1493,7 +1495,7 @@ class _ChoicePill extends StatelessWidget {
       child: CustomPaint(
         foregroundPainter: !enabled
             ? _DashedRRectPainter(
-                color: AppColors.neutralMedium.withValues(alpha: 0.45),
+                color: AppColors.resolvedMutedText.withValues(alpha: 0.45),
                 radius: 16,
               )
             : null,
@@ -1524,10 +1526,10 @@ class _ChoicePill extends StatelessWidget {
                 label,
                 style: AppTextStyles.metadata(context).copyWith(
                   color: !enabled
-                      ? AppColors.neutralMedium.withValues(alpha: 0.65)
+                      ? AppColors.resolvedMutedText.withValues(alpha: 0.65)
                       : selected
                       ? AppColors.primaryGold
-                      : AppColors.bodyText,
+                      : AppColors.resolvedBodyText,
                   fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
                   decoration: !enabled ? TextDecoration.lineThrough : null,
                 ),
@@ -1537,7 +1539,7 @@ class _ChoicePill extends StatelessWidget {
                 Text(
                   detailLabel!,
                   style: AppTextStyles.metadata(context).copyWith(
-                    color: AppColors.neutralMedium.withValues(alpha: 0.70),
+                    color: AppColors.resolvedMutedText.withValues(alpha: 0.70),
                     fontSize: 10,
                     fontWeight: FontWeight.w700,
                   ),
@@ -1683,7 +1685,7 @@ class _TourOptionTile extends StatelessWidget {
                       textAlign: TextAlign.start,
                       style: AppTextStyles.metadata(
                         context,
-                      ).copyWith(color: AppColors.neutralMedium),
+                      ).copyWith(color: AppColors.resolvedMutedText),
                     ),
                   ],
                 ),
@@ -1692,7 +1694,9 @@ class _TourOptionTile extends StatelessWidget {
                 selected
                     ? Icons.radio_button_checked_rounded
                     : Icons.radio_button_off_rounded,
-                color: selected ? AppColors.primaryGold : AppColors.bodyText,
+                color: selected
+                    ? AppColors.primaryGold
+                    : AppColors.resolvedBodyText,
               ),
             ],
           ),
@@ -1744,7 +1748,7 @@ class _RouteSummary extends StatelessWidget {
         textAlign: TextAlign.start,
         style: AppTextStyles.bodyPrimary(
           context,
-        ).copyWith(color: AppColors.bodyText, height: 1.35),
+        ).copyWith(color: AppColors.resolvedBodyText, height: 1.35),
       ),
     );
   }
@@ -1772,7 +1776,7 @@ class _SummaryLine extends StatelessWidget {
               label,
               style: AppTextStyles.metadata(
                 context,
-              ).copyWith(color: AppColors.neutralMedium),
+              ).copyWith(color: AppColors.resolvedMutedText),
             ),
           ),
           Text(
@@ -1963,13 +1967,13 @@ String _routesLoadingMessage(bool isArabic) {
 
 String _standardRouteRequiredMessage(bool isArabic) {
   return isArabic
-      ? 'اختر مساراً مقترحاً للجولة القياسية.'
+      ? 'اختر مسارًا مقترحًا للجولة القياسية.'
       : 'Choose a recommended route for the standard tour.';
 }
 
 String _personalizedExhibitRequiredMessage(bool isArabic) {
   return isArabic
-      ? 'اختر معروضاً واحداً على الأقل لجولتك المخصصة.'
+      ? 'اختر معروضًا واحدًا على الأقل لجولتك المخصصة.'
       : 'Choose at least one exhibit for your personalized tour.';
 }
 
@@ -2008,7 +2012,7 @@ String _friendlyBookingFailure(String? error, bool isArabic) {
 
 String _preferredLanguageRequiredMessage(bool isArabic) {
   return isArabic
-      ? '\u064a\u0631\u062c\u0649 \u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u062a\u064a \u062a\u0641\u0636\u0644\u0647\u0627.'
+      ? 'يرجى كتابة اللغة التي تفضلها.'
       : 'Please type your preferred language.';
 }
 

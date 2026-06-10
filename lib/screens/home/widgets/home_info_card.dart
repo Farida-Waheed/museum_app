@@ -1,4 +1,4 @@
-import 'dart:ui';
+﻿import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -62,7 +62,7 @@ class HomeInfoCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                      textAlign: TextAlign.start,
                       style: AppTextStyles.premiumSectionLabel(
                         context,
                       ).copyWith(fontSize: 12),
@@ -72,10 +72,10 @@ class HomeInfoCard extends StatelessWidget {
                       body,
                       maxLines: 3,
                       overflow: TextOverflow.fade,
-                      textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                      textAlign: TextAlign.start,
                       style: AppTextStyles.premiumBody(context).copyWith(
                         fontSize: 14,
-                        color: bodyColor ?? AppColors.whiteTitle,
+                        color: bodyColor ?? AppColors.resolvedTitleText,
                       ),
                     ),
                   ],

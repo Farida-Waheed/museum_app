@@ -22,18 +22,17 @@ class AchievementsScreen extends StatelessWidget {
 
     return AppMenuShell(
       title: l10n.myJourney.toUpperCase(),
-      backgroundColor: AppColors.cinematicBackground,
+      backgroundColor: AppColors.resolvedBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: DecoratedBox(
-        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
+        decoration: BoxDecoration(color: AppColors.resolvedBackground),
         child: Directionality(
           textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: !authProvider.isLoggedIn
-              ? const GuestPrompt(
+              ? GuestPrompt(
                   icon: Icons.emoji_events_outlined,
-                  title: 'Your Journey Starts Here',
-                  body:
-                      'Sign in and complete tours to unlock achievements as you explore the museum.',
+                  title: l10n.achievementsJourneyStartsHere,
+                  body: l10n.achievementsGuestBody,
                 )
               : SingleChildScrollView(
                   padding: const EdgeInsetsDirectional.fromSTEB(
@@ -140,22 +139,26 @@ class AchievementsScreen extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         leading: Icon(
           icon,
-          color: isUnlocked ? AppColors.primaryGold : AppColors.neutralDark,
+          color: isUnlocked
+              ? AppColors.primaryGold
+              : AppColors.resolvedMutedText,
         ),
         title: Text(
           title,
           style: AppTextStyles.titleMedium(context).copyWith(
             fontSize: 16,
-            color: isUnlocked ? Colors.white : AppColors.neutralMedium,
+            color: isUnlocked
+                ? AppColors.resolvedTitleText
+                : AppColors.resolvedMutedText,
           ),
         ),
         subtitle: Text(subtitle, style: AppTextStyles.metadata(context)),
         trailing: isUnlocked
             ? const Icon(Icons.check_circle, color: Colors.green)
-            : const Icon(
+            : Icon(
                 Icons.lock_outline,
                 size: 18,
-                color: AppColors.neutralDark,
+                color: AppColors.resolvedMutedText,
               ),
       ),
     );

@@ -1,15 +1,15 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../l10n/app_localizations.dart';
 
 import '../../app/router.dart';
-import '../../models/auth_provider.dart';
-import '../../models/user_preferences.dart';
-import '../../widgets/bottom_nav.dart';
-import '../../widgets/app_menu_shell.dart';
-import '../../widgets/guest_prompt.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
+import '../../l10n/app_localizations.dart';
+import '../../models/auth_provider.dart';
+import '../../models/user_preferences.dart';
+import '../../widgets/app_menu_shell.dart';
+import '../../widgets/bottom_nav.dart';
+import '../../widgets/guest_prompt.dart';
 
 class FeedbackScreen extends StatefulWidget {
   const FeedbackScreen({super.key});
@@ -21,25 +21,8 @@ class FeedbackScreen extends StatefulWidget {
 class _FeedbackScreenState extends State<FeedbackScreen> {
   int _rating = 0;
   final TextEditingController _commentController = TextEditingController();
-  bool _isSubmitting = false;
-
-  // Simple quick-tags for “what was this about?”
-  final List<String> _tagsEn = [
-    "Robot guide",
-    "Exhibits",
-    "Navigation",
-    "Tickets",
-    "Facilities",
-  ];
-  final List<String> _tagsAr = [
-    "الروبوت",
-    "المعارض",
-    "الخريطة",
-    "التذاكر",
-    "الخدمات",
-  ];
-
   final Set<int> _selectedTagIndexes = {};
+  bool _isSubmitting = false;
 
   @override
   void dispose() {
@@ -57,18 +40,15 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     });
   }
 
-  Future<void> _handleSubmit(bool isArabic) async {
+  Future<void> _handleSubmit() async {
+    final l10n = AppLocalizations.of(context)!;
     final authProvider = context.read<AuthProvider>();
     if (!authProvider.isLoggedIn) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            isArabic
-                ? 'يرجى تسجيل الدخول لإرسال الملاحظات.'
-                : 'Please sign in to submit feedback.',
-          ),
+          content: Text(l10n.feedbackSignInRequired),
           action: SnackBarAction(
-            label: isArabic ? 'تسجيل الدخول' : 'Sign in',
+            label: l10n.login,
             onPressed: () {
               Navigator.pushNamed(
                 context,
@@ -83,23 +63,14 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
     }
 
     if (_rating == 0 && _commentController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            isArabic
-                ? "من فضلك أضف تقييماً أو تعليقاً أولاً."
-                : "Please add a rating or a short comment first.",
-          ),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.pleaseAddRatingOrComment)));
       return;
     }
 
     setState(() => _isSubmitting = true);
-
-    // TODO: send to backend / Firestore / whatever you use.
     await Future.delayed(const Duration(seconds: 1));
-
     if (!mounted) return;
 
     setState(() {
@@ -109,11 +80,10 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       _selectedTagIndexes.clear();
     });
 
-    _showThankYouDialog(isArabic);
+    _showThankYouDialog();
   }
 
-  // ==== POPPING CARD DIALOG (like ticket checkout) ====
-  void _showThankYouDialog(bool isArabic) {
+  void _showThankYouDialog() {
     final l10n = AppLocalizations.of(context)!;
     showGeneralDialog(
       context: context,
@@ -122,7 +92,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       barrierColor: Colors.black54,
       transitionDuration: const Duration(milliseconds: 280),
       pageBuilder: (ctx, anim, secondaryAnim) {
-        return Center(child: _FeedbackThankYouDialog(isArabic: isArabic));
+        return const Center(child: _FeedbackThankYouDialog());
       },
       transitionBuilder: (ctx, animation, secondary, child) {
         final curved = CurvedAnimation(
@@ -144,23 +114,27 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
   Widget build(BuildContext context) {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final authProvider = context.watch<AuthProvider>();
-    final isArabic = prefs.language == "ar";
+    final isArabic = prefs.language == 'ar';
     final l10n = AppLocalizations.of(context)!;
-
-    final tags = isArabic ? _tagsAr : _tagsEn;
+    final tags = [
+      l10n.feedbackTagRobotGuide,
+      l10n.feedbackTagExhibits,
+      l10n.feedbackTagNavigation,
+      l10n.feedbackTagTickets,
+      l10n.feedbackTagFacilities,
+    ];
 
     if (!authProvider.isLoggedIn) {
       return AppMenuShell(
         title: l10n.feedback.toUpperCase(),
-        backgroundColor: AppColors.cinematicBackground,
+        backgroundColor: AppColors.resolvedBackground,
         bottomNavigationBar: const BottomNav(currentIndex: 4),
-        body: const DecoratedBox(
-          decoration: BoxDecoration(color: AppColors.cinematicBackground),
+        body: DecoratedBox(
+          decoration: BoxDecoration(color: AppColors.resolvedBackground),
           child: GuestPrompt(
             icon: Icons.rate_review_outlined,
-            title: 'Share Your Experience',
-            body:
-                'Sign in after your visit to rate exhibits, tickets, navigation, and the Horus-Bot guide.',
+            title: l10n.feedbackShareExperience,
+            body: l10n.feedbackGuestBody,
           ),
         ),
       );
@@ -168,275 +142,282 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
     return AppMenuShell(
       title: l10n.feedback.toUpperCase(),
-      backgroundColor: AppColors.cinematicBackground,
+      backgroundColor: AppColors.resolvedBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       floatingActionButton: null,
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // HEADER CARD
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: AppDecorations.secondaryGlassCard(radius: 24),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: AppColors.primaryGold.withValues(
-                              alpha: 0.12,
-                            ),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(
-                            Icons.feedback_outlined,
-                            color: AppColors.primaryGold,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                isArabic
-                                    ? "كيف كانت زيارتك اليوم؟"
-                                    : "How was your visit today?",
-                                style: AppTextStyles.titleMedium(
-                                  context,
-                                ).copyWith(fontSize: 16),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                isArabic
-                                    ? "قيّم تجربتك مع المتحف وحوروس."
-                                    : "Rate your experience with the museum and Horus-Bot.",
-                                style: AppTextStyles.metadata(
-                                  context,
-                                ).copyWith(fontSize: 13),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
+      body: Directionality(
+        textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _HeaderCard(
+                      title: l10n.howWasYourVisit,
+                      subtitle: l10n.rateYourExperience,
                     ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // RATING CARD
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: AppDecorations.secondaryGlassCard(radius: 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          (isArabic ? "التقييم العام" : "Overall rating")
-                              .toUpperCase(),
-                          style: AppTextStyles.displaySectionTitle(context),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(5, (index) {
-                            final star = index + 1;
-                            final isFilled = star <= _rating;
-                            return IconButton(
-                              onPressed: () => setState(() => _rating = star),
-                              icon: Icon(
-                                isFilled
-                                    ? Icons.star_rounded
-                                    : Icons.star_border_rounded,
-                                color: isFilled
-                                    ? AppColors.primaryGold
-                                    : AppColors.neutralDark,
-                                size: 40,
-                              ),
-                            );
-                          }),
-                        ),
-                        if (_rating > 0)
-                          Center(
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 8),
-                              child: Text(
-                                _ratingLabel(_rating, isArabic),
-                                style: AppTextStyles.metadata(context).copyWith(
-                                  color: AppColors.primaryGold,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              ),
-                            ),
-                          ),
-                        const SizedBox(height: 24),
-                        Text(
-                          isArabic
-                              ? "اختر ما تريد التعليق عليه (اختياري):"
-                              : "What is this feedback about? (optional)",
-                          style: AppTextStyles.bodyPrimary(
-                            context,
-                          ).copyWith(color: Colors.white70, fontSize: 13),
-                        ),
-                        const SizedBox(height: 16),
-                        Wrap(
-                          spacing: 10,
-                          runSpacing: 10,
-                          children: List.generate(tags.length, (i) {
-                            final selected = _selectedTagIndexes.contains(i);
-                            return GestureDetector(
-                              onTap: () => _toggleTag(i),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 14,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: selected
-                                      ? AppColors.primaryGold.withValues(
-                                          alpha: 0.12,
-                                        )
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: selected
-                                        ? AppColors.primaryGold
-                                        : AppColors.goldBorder(0.16),
-                                  ),
-                                ),
-                                child: Text(
-                                  tags[i],
-                                  style: AppTextStyles.metadata(context)
-                                      .copyWith(
-                                        fontSize: 12,
-                                        fontWeight: selected
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
-                                        color: selected
-                                            ? AppColors.primaryGold
-                                            : AppColors.neutralMedium,
-                                      ),
-                                ),
-                              ),
-                            );
-                          }),
-                        ),
-                      ],
+                    const SizedBox(height: 32),
+                    _RatingCard(
+                      title: l10n.overallRating.toUpperCase(),
+                      rating: _rating,
+                      label: _ratingLabel(_rating),
+                      onRatingChanged: (rating) {
+                        setState(() => _rating = rating);
+                      },
+                      tagTitle: l10n.feedbackAboutOptional,
+                      tags: tags,
+                      selectedTagIndexes: _selectedTagIndexes,
+                      onToggleTag: _toggleTag,
                     ),
-                  ),
-
-                  const SizedBox(height: 32),
-
-                  // COMMENT CARD
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: AppDecorations.secondaryGlassCard(radius: 24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          (isArabic
-                                  ? "أخبرنا المزيد (اختياري)"
-                                  : "Tell us more (optional)")
-                              .toUpperCase(),
-                          style: AppTextStyles.displaySectionTitle(context),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          isArabic
-                              ? "ما الشيء الذي أعجبك أو تحتاج تحسينه؟"
-                              : "What worked well or could be improved?",
-                          style: AppTextStyles.metadata(context),
-                        ),
-                        const SizedBox(height: 20),
-                        TextField(
-                          controller: _commentController,
-                          maxLines: 4,
-                          style: AppTextStyles.bodyPrimary(
-                            context,
-                          ).copyWith(color: Colors.white),
-                          decoration: InputDecoration(
-                            hintText: isArabic
-                                ? "اكتب ملاحظاتك هنا..."
-                                : "Write your feedback here...",
-                            hintStyle: AppTextStyles.metadata(
-                              context,
-                            ).copyWith(color: Colors.white24),
-                            filled: true,
-                            fillColor: AppColors.cardGlass(0.30),
-                            contentPadding: const EdgeInsets.all(16),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: BorderSide(
-                                color: AppColors.goldBorder(0.16),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(16),
-                              borderSide: const BorderSide(
-                                color: AppColors.primaryGold,
-                                width: 1.2,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 32),
+                    _CommentCard(controller: _commentController),
+                    const SizedBox(height: 24),
+                    Text(
+                      l10n.feedbackUsedNote,
+                      style: AppTextStyles.metadata(
+                        context,
+                      ).copyWith(fontSize: 11),
                     ),
-                  ),
-
-                  const SizedBox(height: 24),
-                  Text(
-                    isArabic
-                        ? "تُستخدم الملاحظات للأبحاث وتحسين تجربة الزوار فقط."
-                        : "Feedback is used only for research and improving the visitor experience.",
-                    style: AppTextStyles.metadata(
-                      context,
-                    ).copyWith(fontSize: 11, color: Colors.white24),
-                  ),
-
-                  const SizedBox(height: 100),
-                ],
+                    const SizedBox(height: 100),
+                  ],
+                ),
               ),
+            ),
+            _SubmitBar(isSubmitting: _isSubmitting, onSubmit: _handleSubmit),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _ratingLabel(int rating) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (rating) {
+      case 5:
+        return l10n.excellentThankYou;
+      case 4:
+        return l10n.greatExperience;
+      case 3:
+        return l10n.overallGood;
+      case 2:
+        return l10n.needsImprovement;
+      case 1:
+        return l10n.notGoodExperience;
+      default:
+        return '';
+    }
+  }
+}
+
+class _HeaderCard extends StatelessWidget {
+  const _HeaderCard({required this.title, required this.subtitle});
+
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: AppDecorations.secondaryGlassCard(radius: 24),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: AppColors.primaryGold.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.feedback_outlined,
+              color: AppColors.primaryGold,
             ),
           ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: AppTextStyles.titleMedium(
+                    context,
+                  ).copyWith(fontSize: 16),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: AppTextStyles.metadata(context).copyWith(fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
-          // BOTTOM SUBMIT BAR
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColors.cardGlass(0.66),
-              border: Border(
-                top: BorderSide(color: AppColors.goldBorder(0.16)),
+class _RatingCard extends StatelessWidget {
+  const _RatingCard({
+    required this.title,
+    required this.rating,
+    required this.label,
+    required this.onRatingChanged,
+    required this.tagTitle,
+    required this.tags,
+    required this.selectedTagIndexes,
+    required this.onToggleTag,
+  });
+
+  final String title;
+  final int rating;
+  final String label;
+  final ValueChanged<int> onRatingChanged;
+  final String tagTitle;
+  final List<String> tags;
+  final Set<int> selectedTagIndexes;
+  final ValueChanged<int> onToggleTag;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: AppDecorations.secondaryGlassCard(radius: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: AppTextStyles.displaySectionTitle(context)),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(5, (index) {
+              final star = index + 1;
+              final isFilled = star <= rating;
+              return IconButton(
+                onPressed: () => onRatingChanged(star),
+                icon: Icon(
+                  isFilled ? Icons.star_rounded : Icons.star_border_rounded,
+                  color: isFilled
+                      ? AppColors.primaryGold
+                      : AppColors.resolvedMutedText,
+                  size: 40,
+                ),
+              );
+            }),
+          ),
+          if (rating > 0)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  label,
+                  style: AppTextStyles.metadata(context).copyWith(
+                    color: AppColors.primaryGold,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
               ),
             ),
-            child: SafeArea(
-              top: false,
-              child: SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _isSubmitting
-                      ? null
-                      : () => _handleSubmit(isArabic),
-                  style: AppDecorations.primaryButton(),
-                  child: _isSubmitting
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            color: AppColors.darkInk,
-                            strokeWidth: 2.5,
-                          ),
-                        )
-                      : Text(
-                          isArabic ? "إرسال الملاحظات" : "Submit feedback",
-                          style: AppTextStyles.buttonLabel(context),
-                        ),
+          const SizedBox(height: 24),
+          Text(
+            tagTitle,
+            style: AppTextStyles.bodyPrimary(context).copyWith(fontSize: 13),
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 10,
+            runSpacing: 10,
+            children: List.generate(tags.length, (index) {
+              final selected = selectedTagIndexes.contains(index);
+              return GestureDetector(
+                onTap: () => onToggleTag(index),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? AppColors.primaryGold.withValues(alpha: 0.12)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: selected
+                          ? AppColors.primaryGold
+                          : AppColors.goldBorder(0.16),
+                    ),
+                  ),
+                  child: Text(
+                    tags[index],
+                    style: AppTextStyles.metadata(context).copyWith(
+                      fontSize: 12,
+                      fontWeight: selected
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                      color: selected
+                          ? AppColors.primaryGold
+                          : AppColors.resolvedMutedText,
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CommentCard extends StatelessWidget {
+  const _CommentCard({required this.controller});
+
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.all(24),
+      decoration: AppDecorations.secondaryGlassCard(radius: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.tellUsMoreOptional.toUpperCase(),
+            style: AppTextStyles.displaySectionTitle(context),
+          ),
+          const SizedBox(height: 8),
+          Text(l10n.feedbackPrompt, style: AppTextStyles.metadata(context)),
+          const SizedBox(height: 20),
+          TextField(
+            controller: controller,
+            maxLines: 4,
+            textAlign: TextAlign.start,
+            style: AppTextStyles.bodyPrimary(
+              context,
+            ).copyWith(color: AppColors.resolvedTitleText),
+            decoration: InputDecoration(
+              hintText: l10n.writeFeedbackHere,
+              hintStyle: AppTextStyles.metadata(
+                context,
+              ).copyWith(color: AppColors.resolvedMutedText),
+              filled: true,
+              fillColor: AppColors.cardGlass(0.30),
+              contentPadding: const EdgeInsets.all(16),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide(color: AppColors.goldBorder(0.16)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(
+                  color: AppColors.primaryGold,
+                  width: 1.2,
                 ),
               ),
             ),
@@ -445,34 +426,57 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
       ),
     );
   }
-
-  String _ratingLabel(int rating, bool isArabic) {
-    switch (rating) {
-      case 5:
-        return isArabic ? "ممتاز، شكراً لك!" : "Excellent, thank you!";
-      case 4:
-        return isArabic ? "تجربة رائعة." : "Great experience.";
-      case 3:
-        return isArabic ? "جيدة بشكل عام." : "Overall good.";
-      case 2:
-        return isArabic ? "تحتاج لبعض التحسين." : "Needs some improvement.";
-      case 1:
-        return isArabic ? "تجربة غير مرضية." : "Not a good experience.";
-      default:
-        return "";
-    }
-  }
 }
 
-// ================== POPUP CARD WIDGET ===================
+class _SubmitBar extends StatelessWidget {
+  const _SubmitBar({required this.isSubmitting, required this.onSubmit});
 
-class _FeedbackThankYouDialog extends StatelessWidget {
-  final bool isArabic;
-
-  const _FeedbackThankYouDialog({required this.isArabic});
+  final bool isSubmitting;
+  final VoidCallback onSubmit;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppColors.cardGlass(0.66),
+        border: Border(top: BorderSide(color: AppColors.goldBorder(0.16))),
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          width: double.infinity,
+          height: 56,
+          child: ElevatedButton(
+            onPressed: isSubmitting ? null : onSubmit,
+            style: AppDecorations.primaryButton(),
+            child: isSubmitting
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: AppColors.darkInk,
+                      strokeWidth: 2.5,
+                    ),
+                  )
+                : Text(
+                    l10n.submitFeedback,
+                    style: AppTextStyles.buttonLabel(context),
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _FeedbackThankYouDialog extends StatelessWidget {
+  const _FeedbackThankYouDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Material(
       color: Colors.transparent,
       child: Container(
@@ -507,7 +511,7 @@ class _FeedbackThankYouDialog extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             Text(
-              isArabic ? "تم إرسال الملاحظات" : "Feedback submitted",
+              l10n.feedbackSubmittedTitle,
               style: AppTextStyles.displayScreenTitle(
                 context,
               ).copyWith(fontSize: 22, fontWeight: FontWeight.w900),
@@ -515,12 +519,10 @@ class _FeedbackThankYouDialog extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              isArabic
-                  ? "شكراً لمساعدتك في تحسين حوروس وتجربة المتحف."
-                  : "Thanks for helping us improve Horus-Bot and the museum visit.",
+              l10n.feedbackSubmittedBody,
               textAlign: TextAlign.center,
               style: AppTextStyles.bodyPrimary(context).copyWith(
-                color: AppColors.helperText,
+                color: AppColors.resolvedMutedText,
                 fontSize: 15,
                 height: 1.4,
               ),
@@ -535,7 +537,7 @@ class _FeedbackThankYouDialog extends StatelessWidget {
                 },
                 style: AppDecorations.primaryButton(),
                 child: Text(
-                  isArabic ? "إغلاق" : "Close",
+                  l10n.close,
                   style: AppTextStyles.buttonLabel(context),
                 ),
               ),

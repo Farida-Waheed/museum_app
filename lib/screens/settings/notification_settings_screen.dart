@@ -73,7 +73,6 @@ class _NotificationSettingsScreenState
 
     return AppMenuShell(
       title: l10n.notificationSettings.toUpperCase(),
-      backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
@@ -186,6 +185,7 @@ class _IntroCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isArabic = Directionality.of(context) == TextDirection.rtl;
+    final titleColor = Theme.of(context).colorScheme.onSurface;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: AppDecorations.premiumGlassCard(
@@ -218,7 +218,7 @@ class _IntroCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTextStyles.titleMedium(
                     context,
-                  ).copyWith(color: Colors.white),
+                  ).copyWith(color: titleColor),
                 ),
                 const SizedBox(height: 6),
                 Text(subtitle, style: AppTextStyles.metadata(context)),
@@ -244,6 +244,7 @@ class _MasterToggleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final titleColor = Theme.of(context).colorScheme.onSurface;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: AppDecorations.secondaryGlassCard(radius: 18),
@@ -254,7 +255,7 @@ class _MasterToggleCard extends StatelessWidget {
               title,
               style: AppTextStyles.titleMedium(
                 context,
-              ).copyWith(color: Colors.white, fontSize: 16),
+              ).copyWith(color: titleColor, fontSize: 16),
             ),
           ),
           Switch.adaptive(
@@ -306,7 +307,9 @@ class _CategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isArabic = Directionality.of(context) == TextDirection.rtl;
-    final textColor = disabledByMaster ? AppColors.neutralMedium : Colors.white;
+    final textColor = disabledByMaster
+        ? Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.46)
+        : Theme.of(context).colorScheme.onSurface;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(18),

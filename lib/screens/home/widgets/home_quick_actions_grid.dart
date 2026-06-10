@@ -1,4 +1,4 @@
-import 'dart:ui';
+﻿import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -99,9 +99,7 @@ class HomeQuickActionsGrid extends StatelessWidget {
                             item.label,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            textAlign: isArabic
-                                ? TextAlign.right
-                                : TextAlign.left,
+                            textAlign: TextAlign.start,
                             style: AppTextStyles.premiumCardTitle(
                               context,
                             ).copyWith(fontSize: 16),
@@ -112,9 +110,7 @@ class HomeQuickActionsGrid extends StatelessWidget {
                               item.subtitle!,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              textAlign: isArabic
-                                  ? TextAlign.right
-                                  : TextAlign.left,
+                              textAlign: TextAlign.start,
                               style: AppTextStyles.premiumMutedBody(
                                 context,
                               ).copyWith(fontSize: 12),

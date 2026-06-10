@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../app/router.dart';
 import '../../models/exhibit.dart';
@@ -297,9 +297,7 @@ class _MapScreenState extends State<MapScreen>
                               style: AppTextStyles.premiumSectionLabel(
                                 context,
                               ).copyWith(color: AppColors.softGold),
-                              textAlign: isArabic
-                                  ? TextAlign.right
-                                  : TextAlign.left,
+                              textAlign: TextAlign.start,
                             ),
                             const SizedBox(height: 6),
                             Text(
@@ -308,10 +306,8 @@ class _MapScreenState extends State<MapScreen>
                               overflow: TextOverflow.ellipsis,
                               style: AppTextStyles.premiumMutedBody(
                                 context,
-                              ).copyWith(color: AppColors.bodyText),
-                              textAlign: isArabic
-                                  ? TextAlign.right
-                                  : TextAlign.left,
+                              ).copyWith(color: AppColors.resolvedBodyText),
+                              textAlign: TextAlign.start,
                             ),
                           ],
                         ),
@@ -384,7 +380,7 @@ class _MapScreenState extends State<MapScreen>
                                         : l10n.mapExploreOwnPace,
                                     style: AppTextStyles.bodyPrimary(context)
                                         .copyWith(
-                                          color: AppColors.whiteTitle,
+                                          color: AppColors.resolvedTitleText,
                                           fontWeight: FontWeight.w800,
                                         ),
                                   ),
@@ -393,9 +389,10 @@ class _MapScreenState extends State<MapScreen>
                                     tourProvider.getProximityText(
                                       l10n.localeName,
                                     ),
-                                    style: AppTextStyles.metadata(
-                                      context,
-                                    ).copyWith(color: AppColors.neutralMedium),
+                                    style: AppTextStyles.metadata(context)
+                                        .copyWith(
+                                          color: AppColors.resolvedMutedText,
+                                        ),
                                   ),
                                 ],
                               ),
@@ -416,7 +413,7 @@ class _MapScreenState extends State<MapScreen>
                     children: [
                       // --- INTERACTIVE MAP AREA ---
                       Container(
-                        color: AppColors.darkBackground,
+                        color: AppColors.resolvedBackground,
                         child: InteractiveViewer(
                           transformationController: _transformController,
                           boundaryMargin: const EdgeInsets.all(100),
@@ -429,9 +426,9 @@ class _MapScreenState extends State<MapScreen>
                               width: mapWidth,
                               height: mapHeight,
                               decoration: BoxDecoration(
-                                color: AppColors.darkSurface,
+                                color: AppColors.resolvedCard,
                                 border: Border.all(
-                                  color: AppColors.darkDivider,
+                                  color: AppColors.resolvedDivider,
                                   width: 2,
                                 ),
                                 borderRadius: BorderRadius.circular(22),
@@ -474,7 +471,8 @@ class _MapScreenState extends State<MapScreen>
                                           style: AppTextStyles.metadata(context)
                                               .copyWith(
                                                 fontWeight: FontWeight.bold,
-                                                color: AppColors.neutralMedium,
+                                                color:
+                                                    AppColors.resolvedMutedText,
                                               ),
                                         ),
                                       ),
@@ -539,10 +537,10 @@ class _MapScreenState extends State<MapScreen>
                         child: Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: AppColors.cinematicCard,
+                            color: AppColors.resolvedCard,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: AppColors.darkBorder,
+                              color: AppColors.resolvedBorder,
                               width: 0.5,
                             ),
                             boxShadow: [
@@ -589,7 +587,7 @@ class _MapScreenState extends State<MapScreen>
                                 const SizedBox(height: 8),
                               ],
                               _buildLegendItem(
-                                AppColors.neutralMedium,
+                                AppColors.resolvedMutedText,
                                 l10n.exhibit,
                               ),
                             ],
@@ -869,7 +867,7 @@ class _MapActionBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.darkSurface,
+        color: AppColors.resolvedCard,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
@@ -964,17 +962,19 @@ class _MapStatusPanel extends StatelessWidget {
                   children: [
                     Text(
                       status.title,
-                      style: AppTextStyles.premiumCardTitle(
-                        context,
-                      ).copyWith(color: AppColors.whiteTitle, fontSize: 16),
+                      style: AppTextStyles.premiumCardTitle(context).copyWith(
+                        color: AppColors.resolvedTitleText,
+                        fontSize: 16,
+                      ),
                       textAlign: TextAlign.start,
                     ),
                     const SizedBox(height: 3),
                     Text(
                       status.subtitle,
-                      style: AppTextStyles.metadata(
-                        context,
-                      ).copyWith(color: AppColors.neutralMedium, height: 1.25),
+                      style: AppTextStyles.metadata(context).copyWith(
+                        color: AppColors.resolvedMutedText,
+                        height: 1.25,
+                      ),
                       textAlign: TextAlign.start,
                     ),
                   ],
@@ -1094,7 +1094,7 @@ class _MapStatusPanel extends StatelessWidget {
         }
         return _MapStatusCopy(
           icon: Icons.explore_rounded,
-          color: AppColors.neutralMedium,
+          color: AppColors.resolvedMutedText,
           title: l10n.mapExploreExhibitsTitle,
           subtitle: l10n.mapExplorePreviewSubtitle,
         );
@@ -1156,7 +1156,7 @@ class _StatusPill extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
       decoration: BoxDecoration(
-        color: AppColors.darkBackground.withValues(alpha: 0.52),
+        color: AppColors.resolvedBackground.withValues(alpha: 0.52),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: AppColors.primaryGold.withValues(alpha: 0.16),
@@ -1171,7 +1171,7 @@ class _StatusPill extends StatelessWidget {
             '$label: ',
             style: AppTextStyles.metadata(
               context,
-            ).copyWith(color: AppColors.neutralMedium, fontSize: 10),
+            ).copyWith(color: AppColors.resolvedMutedText, fontSize: 10),
           ),
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 145),
@@ -1307,7 +1307,7 @@ class _HeaderCircleButton extends StatelessWidget {
               ),
             ],
           ),
-          child: Icon(icon, color: AppColors.whiteTitle, size: 22),
+          child: Icon(icon, color: AppColors.resolvedTitleText, size: 22),
         ),
       ),
     );
@@ -1422,7 +1422,7 @@ class _ExhibitPreviewOverlay extends StatelessWidget {
                                 textAlign: TextAlign.start,
                                 style: AppTextStyles.bodyPrimary(context)
                                     .copyWith(
-                                      color: AppColors.bodyText,
+                                      color: AppColors.resolvedBodyText,
                                       height: 1.35,
                                     ),
                               ),

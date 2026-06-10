@@ -42,12 +42,51 @@
   "robotArrivalIn": "وصول خلال {time}",
   "chatLoading": "حورس يفكر...",
   "chatInputHint": "اسأل حورس أثناء جولتك الحية.",
+  "chatSuggestionTickets": "التذاكر",
+  "chatSuggestionTicketsQuery": "ما أسعار التذاكر وأنواعها؟",
+  "chatSuggestionHours": "المواعيد",
+  "chatSuggestionHoursQuery": "ما هي أوقات عمل المتحف اليوم؟",
+  "chatSuggestionEvents": "الفعاليات",
+  "chatSuggestionEventsQuery": "ما الفعاليات المتاحة اليوم؟",
+  "chatSuggestionDuration": "المدة",
+  "chatSuggestionDurationQuery": "كم تستغرق الزيارة عادة؟",
+  "chatSuggestionDirections": "الاتجاهات",
+  "chatSuggestionDirectionsQuery": "كيف أصل إلى المعرض التالي؟",
+  "chatSuggestionAccessibility": "إمكانية الوصول",
+  "chatSuggestionAccessibilityQuery": "هل توجد وسائل وصول لذوي الاحتياجات الخاصة؟",
   "guestUser": "زائر",
   "exploreMuseum": "استكشف المتحف",
   "profile": "الملف الشخصي",
   "memories": "الذكريات",
   "map": "الخريطة",
   "quiz": "الاختبار",
+  "museumQuiz": "اختبار المعلومات",
+  "noQuestions": "لا توجد أسئلة",
+  "keepLearning": "استمر في التعلم!",
+  "pointsEarned": "النقاط المكتسبة: {points}",
+  "@pointsEarned": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "badgesEarned": "الشارات المكتسبة:",
+  "perfectScoreBadge": "متعلم متميز",
+  "quizWarriorBadge": "مستكشف ذكي",
+  "finish": "إنهاء",
+  "nextQuestion": "السؤال التالي",
+  "quizQuestionProgress": "السؤال {current} من {total}",
+  "@quizQuestionProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "liveTour": "الجولة الحية",
   "tourPlanner": "مخطط الجولة",
   "events": "الفعاليات",
@@ -160,9 +199,43 @@
   "takeQuickQuiz": "أجب على اختبار سريع حول هذا المعروض!",
   "startQuiz": "بدء الاختبار",
   "visitSummary": "ملخص الزيارة",
+  "visitSummaryConnectionTitle": "حدثت مشكلة في الاتصال. يرجى التحقق من الإنترنت والمحاولة مرة أخرى.",
+  "visitSummaryGenericError": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+  "visitSummaryNoSessionTitle": "لا توجد جولة نشطة",
+  "visitSummaryNoSessionBody": "سيظهر ملخص الزيارة بعد انتهاء جولة حورس.",
+  "visitSummaryNotAvailable": "غير متاح",
+  "visitSummaryHorusTour": "جولة حورس",
+  "visitSummaryCompleted": "اكتملت",
+  "visitSummarySkipped": "تم تخطيها",
+  "visitSummaryPhotos": "الصور",
+  "visitSummaryQuestions": "الأسئلة",
+  "visitSummaryEndTime": "وقت الانتهاء",
+  "visitSummarySession": "معرف الجلسة",
+  "visitSummaryRouteSummary": "ملخص المسار",
+  "visitSummaryViewMemories": "عرض ذكرياتي",
+  "visitSummaryMinutes": "{minutes} د",
+  "@visitSummaryMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "visitSummaryHoursMinutes": "{hours} س {minutes} د",
+  "@visitSummaryHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "endTour": "إنهاء الجولة",
   "congrats": "تهانينا!",
   "visitComplete": "لقد أكملت رحلتك في المتحف.",
+  "visitSummaryHorusCompleted": "أنهى حورس جولتك وحفظ أبرز لحظاتها.",
   "exhibitsVisited": "المعروضات التي زرتها",
   "totalTime": "الوقت الإجمالي",
   "shareVisit": "مشاركة زيارتي",
@@ -452,6 +525,9 @@
   "planMyVisitDescription": "استكشف المتحف، اشترِ التذاكر، واستعد لزيارتك.",
   "startMyTour": "ابدأ جولتي",
   "startMyTourDescription": "استخدم تذاكرك، اتصل بحورس-بوت، وابدأ التجربة الموجهة.",
+  "entryChooseExperience": "اختر تجربتك",
+  "entryExperienceSubtitle": "خطط لزيارتك أو ابدأ جولتك الإرشادية مع Horus-Bot.",
+  "entryStartTourDescription": "خصص مسارك واتصل بـ Horus-Bot.",
   "login": "تسجيل الدخول",
   "register": "إنشاء حساب",
   "continueAsGuest": "المتابعة كزائر",
@@ -718,6 +794,74 @@
   "homePlanVisitSubtitle": "اشتر التذاكر، حضّر جولتك، أو ابدأ عند الوصول.",
   "homeQuickActions": "إجراءات سريعة",
   "homeMuseumUpdate": "تحديث المتحف",
+  "visitorServices": "خدمات الزوار",
+  "information": "المعلومات",
+  "homeStaffAccountLabel": "حساب فريق العمل",
+  "homeUseStaffPortal": "استخدم بوابة فريق العمل",
+  "homeGuestPlanSubtitle": "سجّل الدخول لتخطيط مسارك الشخصي في المتحف وحفظه.",
+  "homeWelcomeBackUser": "مرحبًا بعودتك، {name}",
+  "@homeWelcomeBackUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeBookTourWhenReady": "احجز دخول المتحف وجولة Horus-Bot عندما تكون جاهزًا.",
+  "homePayAtCounterTitle": "ادفع عند الشباك",
+  "homeQrUnlocksAfterPayment": "سيتم تفعيل رمز QR بعد تأكيد الدفع من أمين الصندوق.",
+  "homeTicketsReadyTitle": "تذاكرك جاهزة",
+  "homeViewQrScanRobot": "اعرض رمز QR الآن. امسح رمز الروبوت عند الوصول.",
+  "homeAtMuseumLabel": "داخل المتحف",
+  "homeFindHorusBotTitle": "اعثر على Horus-Bot",
+  "homeScanNearbyRobot": "امسح رمز QR القريب على الروبوت لبدء جولتك الإرشادية.",
+  "homeSummaryMemoriesReady": "ملخص الزيارة والذكريات والإنجازات جاهزة.",
+  "homeResumeLiveTour": "استأنف جولتك الحية مع Horus-Bot.",
+  "homePlanRouteBeforeBooking": "خطط مسارك قبل الحجز",
+  "homePurchaseMuseumRobotTickets": "اشتر تذاكر المتحف وجولة الروبوت",
+  "homePaymentStatusInstructions": "اعرض حالة الدفع وتعليمات الشباك",
+  "homeSeeWhereHorusNow": "اعرف مكانك ومكان حورس الآن",
+  "homeAskCurrentStopRoute": "اسأل عن المحطة الحالية أو المسار",
+  "homeReviewCurrentTourMoments": "راجع لحظات جولتك الحالية",
+  "homeReviewTourHighlights": "راجع المحطات وأبرز لحظات جولتك",
+  "homeRevisitPhotosMoments": "استعد الصور ولحظات الجولة المحفوظة",
+  "homeShareVisitFeedback": "أخبرنا كيف كانت زيارتك مع Horus-Bot",
+  "homeSeeBadgesProgress": "اعرض الشارات وتقدم زيارتك",
+  "homePairWithNearbyHorus": "اربط التطبيق بروبوت Horus-Bot بجانبك",
+  "homeUseMapBeforeStarting": "استخدم الخريطة لتحديد اتجاهك قبل البدء",
+  "homeKeepQrHandy": "احتفظ برمز الدخول وتذكرة الجولة في متناولك",
+  "homeViewMuseumRobotTickets": "اعرض تذاكر دخول المتحف وجولة الروبوت",
+  "homeViewCapturedPhotos": "اعرض صور جولتك وذكريات زياراتك السابقة.",
+  "homePaymentPendingStatusLine": "الدفع معلق - ادفع عند شباك المتحف",
+  "homeTourCompletedStatusLine": "اكتملت الجولة - الملخص والذكريات جاهزة",
+  "homeStaffWebsitePortal": "تستمر حسابات فريق العمل عبر بوابة موقع Horus-Bot.",
+  "homeGuestHeroSubtitle": "استكشف المتحف وخطط زيارتك مع Horus-Bot.",
+  "homeWelcomePlanVisit": "مرحبًا، {name}. خطط زيارتك مع Horus-Bot.",
+  "@homeWelcomePlanVisit": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homePaymentPendingHero": "الدفع معلق. سيتم تفعيل رمز QR بعد تأكيد الشباك.",
+  "homeTicketReadyHero": "التذكرة جاهزة. احتفظ برمز QR لدخول المتحف.",
+  "homeFindScanHero": "اعثر على Horus-Bot وامسح رمزه للبدء.",
+  "homeFollowLiveTourHero": "اتبع حورس خلال جولتك الحية في المتحف.",
+  "homeCompletedReliveHero": "اكتملت جولتك مع Horus-Bot. استعد الزيارة.",
+  "homeStaffAccountDetected": "تم اكتشاف حساب فريق عمل",
+  "homeStaffBlockedStatus": "تطبيق الزوار محجوب لأدوار فريق العمل",
+  "homeExploreBeforeBook": "استكشف قبل الحجز",
+  "homeCreateAccountSave": "أنشئ حسابًا أو سجّل الدخول لحفظ التذاكر والجولات والذكريات.",
+  "homePlanMuseumVisitTitle": "خطط زيارتك للمتحف",
+  "homeChooseEntryTourPackage": "اختر دخول المتحف وباقة جولة Horus-Bot قبل زيارتك.",
+  "homePaymentPendingTitle": "الدفع معلق",
+  "homePayCounterUnlockSubtitle": "يرجى الدفع عند شباك المتحف. سيتم تفعيل رمز QR وربط الروبوت بعد تأكيد أمين الصندوق.",
+  "homeTicketReadyTitle": "التذكرة جاهزة",
+  "homeEntryTourConfirmedSubtitle": "تم تأكيد دخول المتحف وجولة Horus-Bot. احتفظ برمز QR جاهزًا للدخول.",
+  "homeBesideRobotScanSubtitle": "عندما تكون بجانب الروبوت، امسح رمز QR الخاص به للربط وبدء الجولة.",
+  "homeReviewRouteMemoriesFeedback": "راجع مسارك، واستعد الذكريات، وشارك ملاحظاتك، واحتفظ بإنجازاتك.",
+  "homeBookAnotherTour": "احجز جولة أخرى",
   "liveTourCompletedTitle": "اكتملت الجولة",
   "liveTourCompletedSubtitle": "يمكنك عرض الملخص والذكريات.",
   "liveTourPausedTitle": "الجولة متوقفة",
@@ -731,6 +875,18 @@
   "liveTourGuidingTitle": "Horus-Bot يرشدك الآن",
   "liveTourGuidingSubtitle": "ابق قريبًا واستمتع بالقصة.",
   "liveTourTranscriptIntro": "يروي Horus-Bot شرح هذه المحطة. ستظهر التحديثات هنا أثناء الجولة.",
+  "liveTourMemoryCaptured": "التقط حورس ذكرى جديدة لك.",
+  "liveTourMemoriesTitle": "ذكريات الجولة",
+  "liveTourMemoriesEmpty": "سيظهر هنا ما يلتقطه حورس أثناء الجولة.",
+  "liveTourMemoriesCount": "{count} صور التقطها حورس",
+  "@liveTourMemoriesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "openMemories": "فتح الذكريات",
   "liveTourSimWelcome": "مرحبًا بك في {exhibit}.",
   "liveTourSimSignificance": "هذه القطعة مهمة جدًا في تاريخنا.",
   "liveTourSimDetails": "لاحظ التفاصيل الدقيقة على السطح.",
@@ -772,5 +928,227 @@
   "mapConnectForTourSubtitle": "يمكنك أيضًا استكشاف المعروضات بحرية من هنا.",
   "mapExploreExhibitsTitle": "استكشف المعروضات",
   "mapViewDetails": "عرض التفاصيل",
-  "mapFindHorusOnMap": "اعثر على Horus على الخريطة"
+  "mapFindHorusOnMap": "اعثر على Horus على الخريطة",
+  "back": "رجوع",
+  "achievementsJourneyStartsHere": "تبدأ رحلتك من هنا",
+  "achievementsGuestBody": "سجّل الدخول وأكمل الجولات لفتح الإنجازات أثناء استكشاف المتحف.",
+  "feedbackShareExperience": "شارك تجربتك",
+  "feedbackGuestBody": "سجّل الدخول بعد زيارتك لتقييم المعروضات والتذاكر والملاحة ودليل Horus-Bot.",
+  "feedbackSignInRequired": "يرجى تسجيل الدخول لإرسال الملاحظات.",
+  "feedbackTagRobotGuide": "دليل الروبوت",
+  "feedbackTagExhibits": "المعروضات",
+  "feedbackTagNavigation": "الملاحة",
+  "feedbackTagTickets": "التذاكر",
+  "feedbackTagFacilities": "الخدمات",
+  "feedbackSubmittedTitle": "تم إرسال الملاحظات",
+  "feedbackSubmittedBody": "شكرًا لمساعدتنا في تحسين Horus-Bot وتجربة زيارة المتحف.",
+  "supportNeedHelp": "هل تحتاج إلى مساعدة؟",
+  "supportGuestBody": "سجّل الدخول للتواصل مع دعم المتحف وتتبع محادثاتك.",
+  "tourRouteUnavailable": "مسار هذه الجولة لم يعد متاحًا.",
+  "tourAlertDefaultHall": "القاعة (أ)",
+  "tourAlertTitle": "ستبدأ الجولة قريبًا",
+  "tourAlertBody": "تبدأ الجولة في {hall} خلال {minutes} دقائق.\nيرجى التوجه إلى نقطة البداية.",
+  "@tourAlertBody": {
+    "placeholders": {
+      "hall": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "tourAlertLater": "لاحقًا",
+  "tourAlertOpenMap": "فتح الخريطة",
+  "plannerGuestTitle": "خطط جولتك مع Horus-Bot",
+  "plannerGuestBody": "سجّل الدخول لإنشاء مسار شخصي داخل المتحف وحفظه.",
+  "plannerTourType": "نوع الجولة",
+  "plannerStandard": "قياسية",
+  "plannerPersonalized": "مخصصة",
+  "plannerRecommendedRoutePrice": "مسار موصى به - 200 جنيه",
+  "plannerCustomRoutePrice": "معروضات واهتمامات مخصصة - 350 جنيه",
+  "plannerTourDuration": "مدة الجولة",
+  "plannerTourDurationSubtitle": "تحدد المدة عدد المحطات التي يخطط لها حورس.",
+  "plannerInterests": "الاهتمامات",
+  "plannerInterestsSubtitle": "اختر ما تريد أن يركز عليه حورس.",
+  "plannerInterestPharaohs": "الفراعنة",
+  "plannerInterestDailyLife": "الحياة اليومية",
+  "plannerInterestRoyalArtifacts": "القطع الملكية",
+  "plannerInterestMummies": "المومياوات",
+  "plannerInterestArchitecture": "العمارة",
+  "plannerInterestMythology": "الأساطير",
+  "plannerInterestKidsFriendly": "مناسب للأطفال",
+  "plannerInterestShortTour": "جولة قصيرة",
+  "plannerInterestPhotographySpots": "نقاط التصوير",
+  "plannerAccessibilityPreferences": "تفضيلات الوصول",
+  "plannerAccessibilitySubtitle": "تُحفظ هذه التفضيلات مع خطة الجولة المولدة.",
+  "plannerAccessFamilyFriendly": "مناسب للعائلة",
+  "plannerAccessRestStopsPreferred": "استراحات مفضلة",
+  "plannerDurationExpress": "سريعة",
+  "plannerDurationStandard": "قياسية",
+  "plannerDurationExtended": "ممتدة",
+  "plannerDurationFullExperience": "التجربة الكاملة",
+  "plannerDurationStopsMeta": "{minutes} د - {stops} محطات",
+  "@plannerDurationStopsMeta": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "stops": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerSelectExhibits": "اختر المعروضات",
+  "plannerNoExhibitsAvailable": "لا توجد معروضات متاحة الآن.",
+  "plannerShowAllExhibits": "عرض كل المعروضات",
+  "plannerRecommendedForYou": "موصى به لك",
+  "plannerRecommendedForYouSubtitle": "بناءً على الاهتمامات المختارة وبيانات المعروضات.",
+  "plannerMatchesInterest": "يطابق {interest}",
+  "@plannerMatchesInterest": {
+    "placeholders": {
+      "interest": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerIncludesPhotoOpportunity": "يتضمن فرصة تصوير",
+  "plannerRelatedThemes": "مرتبط بالموضوعات المختارة",
+  "plannerIncludesSelectedExhibits": "يتضمن المعروضات المختارة",
+  "plannerIncludesMuseumHighlights": "يتضمن أبرز معروضات المتحف",
+  "plannerFitsDuration": "يناسب مدة {duration} دقيقة",
+  "@plannerFitsDuration": {
+    "placeholders": {
+      "duration": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerIncludesRecommendedPhotoStops": "يتضمن نقاط تصوير موصى بها",
+  "plannerStoresAccessibilityPreferences": "يحفظ تفضيلات الوصول",
+  "plannerChooseInterests": "اختر اهتماماتك لرؤية المعروضات المناسبة.",
+  "plannerGenerateValidation": "اختر اهتمامًا واحدًا أو معروضًا واحدًا على الأقل لتوليد جولتك مع Horus-Bot.",
+  "plannerBookThisTour": "احجز هذه الجولة",
+  "plannerGenerateMyTour": "ولّد جولتي",
+  "plannerDurationStopLimit": "هذه المدة تدعم حتى {count} محطات.",
+  "@plannerDurationStopLimit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerRouteAdjusted": "تم تعديل مسارك ليناسب المدة المختارة.",
+  "plannerShowingAll": "يتم عرض كل المعروضات المتاحة. المختار: {selected} / {max} محطات.",
+  "@plannerShowingAll": {
+    "placeholders": {
+      "selected": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerNoExactMatches": "لا توجد مطابقات دقيقة. نعرض كل المعروضات حتى تتمكن من بناء جولتك. المختار: {selected} / {max} محطات.",
+  "@plannerNoExactMatches": {
+    "placeholders": {
+      "selected": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerShowingMatches": "يتم عرض المعروضات المطابقة: {interests}. المختار: {selected} / {max} محطات. المعروض {visible} من {total}.",
+  "@plannerShowingMatches": {
+    "placeholders": {
+      "interests": {
+        "type": "String"
+      },
+      "selected": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerPhotoExperience": "تجربة التصوير",
+  "plannerPhotoExperienceBody": "تضمين نقاط تصوير موصى بها لذكريات الجولة.",
+  "plannerMuseumHighlight": "معلم من المتحف",
+  "plannerSelectedStops": "المختار: {selected} / {max} محطات",
+  "@plannerSelectedStops": {
+    "placeholders": {
+      "selected": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerStopsRemaining": "{remaining} محطات متبقية",
+  "@plannerStopsRemaining": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerAddExhibit": "إضافة معروض",
+  "plannerEntrance": "المدخل",
+  "plannerExit": "الخروج",
+  "plannerYourHorusRoute": "مسارك مع حورس",
+  "plannerMatch": "{score}% مطابق",
+  "@plannerMatch": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerWhySelected": "لماذا اختار حورس هذا المسار",
+  "plannerRouteMeta": "{type} - {duration} دقيقة - {stops} محطات",
+  "@plannerRouteMeta": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "int"
+      },
+      "stops": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerPhotoStopsEnabledSuffix": " - نقاط التصوير مفعلة",
+  "plannerTourSummary": "ملخص الجولة",
+  "plannerPersonalizedTour": "جولة مخصصة",
+  "plannerStandardTour": "جولة قياسية",
+  "plannerTourMatch": "مطابقة الجولة",
+  "plannerSelectedExhibits": "المعروضات المختارة",
+  "plannerSelectedInterests": "الاهتمامات المختارة",
+  "plannerNoneSelected": "لا يوجد اختيار",
+  "plannerPhotoStops": "نقاط التصوير",
+  "plannerRobotTour": "جولة الروبوت",
+  "plannerPriceEgp": "{price} جنيه",
+  "@plannerPriceEgp": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerMuseumEntry": "دخول المتحف",
+  "plannerIncluded": "مشمول",
+  "plannerBookingNote": "حجز هذه الخطة سيحجز دخول المتحف وجولة روبوت Horus-Bot مخصصة."
 }

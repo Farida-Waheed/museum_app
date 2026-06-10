@@ -204,7 +204,7 @@ class _HeaderButton extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Icon(icon, color: AppColors.whiteTitle, size: 22),
+              child: Icon(icon, color: AppColors.resolvedTitleText, size: 22),
             ),
           ),
         ),

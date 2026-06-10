@@ -45,11 +45,50 @@
     "supportStatusResolved": "Resolved",
     "chatLoading": "Horus is thinking...",
     "chatInputHint": "Ask Horus during your live tour.",
+  "chatSuggestionTickets": "Tickets",
+  "chatSuggestionTicketsQuery": "Tell me about ticket prices and types.",
+  "chatSuggestionHours": "Hours",
+  "chatSuggestionHoursQuery": "What are today's opening hours?",
+  "chatSuggestionEvents": "Events",
+  "chatSuggestionEventsQuery": "What events are happening today?",
+  "chatSuggestionDuration": "Duration",
+  "chatSuggestionDurationQuery": "How long does a visit usually take?",
+  "chatSuggestionDirections": "Directions",
+  "chatSuggestionDirectionsQuery": "How do I get to the next exhibit?",
+  "chatSuggestionAccessibility": "Accessibility",
+  "chatSuggestionAccessibilityQuery": "What accessibility support is available?",
   "exploreMuseum": "Explore the museum",
   "profile": "Profile",
   "memories": "Memories",
   "map": "Map",
   "quiz": "Quiz",
+  "museumQuiz": "Museum Quiz",
+  "noQuestions": "No questions",
+  "keepLearning": "Keep Learning!",
+  "pointsEarned": "Points earned: {points}",
+  "@pointsEarned": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "badgesEarned": "Badges earned:",
+  "perfectScoreBadge": "Perfect Score",
+  "quizWarriorBadge": "Quiz Warrior",
+  "finish": "FINISH",
+  "nextQuestion": "NEXT QUESTION",
+  "quizQuestionProgress": "Question {current} of {total}",
+  "@quizQuestionProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "liveTour": "Live Tour",
   "tourPlanner": "Tour Planner",
   "events": "Events",
@@ -162,9 +201,43 @@
   "takeQuickQuiz": "Take a quick quiz about this exhibit!",
   "startQuiz": "Start Quiz",
   "visitSummary": "Visit Summary",
+  "visitSummaryConnectionTitle": "Connection issue. Please check your internet connection and try again.",
+  "visitSummaryGenericError": "Something went wrong. Please try again.",
+  "visitSummaryNoSessionTitle": "No tour session found",
+  "visitSummaryNoSessionBody": "Your visit summary appears after a Horus guided tour.",
+  "visitSummaryNotAvailable": "Not available",
+  "visitSummaryHorusTour": "Horus tour",
+  "visitSummaryCompleted": "Completed",
+  "visitSummarySkipped": "Skipped",
+  "visitSummaryPhotos": "Photos",
+  "visitSummaryQuestions": "Questions",
+  "visitSummaryEndTime": "End time",
+  "visitSummarySession": "Session",
+  "visitSummaryRouteSummary": "Route summary",
+  "visitSummaryViewMemories": "View My Memories",
+  "visitSummaryMinutes": "{minutes} min",
+  "@visitSummaryMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "visitSummaryHoursMinutes": "{hours}h {minutes}m",
+  "@visitSummaryHoursMinutes": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "endTour": "End Tour",
   "congrats": "Congratulations!",
   "visitComplete": "You have completed your museum journey.",
+  "visitSummaryHorusCompleted": "Horus completed your tour and saved the highlights.",
   "exhibitsVisited": "Exhibits Visited",
   "totalTime": "Total Time",
   "shareVisit": "Share my visit",
@@ -462,6 +535,9 @@
   "planMyVisitDescription": "Explore the museum, buy tickets, and prepare your visit.",
   "startMyTour": "Start My Tour",
   "startMyTourDescription": "Use your tickets, connect to Horus-Bot, and begin the guided experience.",
+  "entryChooseExperience": "Choose Your Experience",
+  "entryExperienceSubtitle": "Plan your visit or begin your guided tour with Horus-Bot.",
+  "entryStartTourDescription": "Customize your route and connect to Horus-Bot.",
   "login": "Log In",
   "register": "Create Account",
   "continueAsGuest": "Continue as Guest",
@@ -736,6 +812,74 @@
   "homePlanVisitSubtitle": "Buy tickets, prepare your tour, or start when you arrive.",
   "homeQuickActions": "QUICK ACTIONS",
   "homeMuseumUpdate": "MUSEUM UPDATE",
+  "visitorServices": "Visitor Services",
+  "information": "Information",
+  "homeStaffAccountLabel": "Staff account",
+  "homeUseStaffPortal": "Use the staff portal",
+  "homeGuestPlanSubtitle": "Sign in to plan and save your personalized museum route.",
+  "homeWelcomeBackUser": "Welcome back, {name}",
+  "@homeWelcomeBackUser": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeBookTourWhenReady": "Book a museum entry and Horus-Bot tour when ready.",
+  "homePayAtCounterTitle": "Pay at the counter",
+  "homeQrUnlocksAfterPayment": "Your QR code unlocks after cashier confirmation.",
+  "homeTicketsReadyTitle": "Your tickets are ready",
+  "homeViewQrScanRobot": "View your QR now. Scan the robot QR when you arrive.",
+  "homeAtMuseumLabel": "At the museum",
+  "homeFindHorusBotTitle": "Find your Horus-Bot",
+  "homeScanNearbyRobot": "Scan the robot QR nearby to start your guided tour.",
+  "homeSummaryMemoriesReady": "Your visit summary, memories, and achievements are ready.",
+  "homeResumeLiveTour": "Resume your live Horus-Bot tour.",
+  "homePlanRouteBeforeBooking": "Plan your route before booking",
+  "homePurchaseMuseumRobotTickets": "Purchase museum and robot tour tickets",
+  "homePaymentStatusInstructions": "View payment status and counter instructions",
+  "homeSeeWhereHorusNow": "See where you and Horus are now",
+  "homeAskCurrentStopRoute": "Ask about the current stop or route",
+  "homeReviewCurrentTourMoments": "Review moments from your current tour",
+  "homeReviewTourHighlights": "Review the stops and highlights from your tour",
+  "homeRevisitPhotosMoments": "Revisit photos and saved tour moments",
+  "homeShareVisitFeedback": "Tell us how your Horus-Bot visit felt",
+  "homeSeeBadgesProgress": "See badges and progress from your visit",
+  "homePairWithNearbyHorus": "Pair with the Horus-Bot beside you",
+  "homeUseMapBeforeStarting": "Use the map to orient yourself before starting",
+  "homeKeepQrHandy": "Keep your entry QR and tour ticket handy",
+  "homeViewMuseumRobotTickets": "View your museum entry and robot tour tickets",
+  "homeViewCapturedPhotos": "View your captured tour photos and past visits.",
+  "homePaymentPendingStatusLine": "Payment pending - pay at the museum counter",
+  "homeTourCompletedStatusLine": "Tour completed - summary and memories ready",
+  "homeStaffWebsitePortal": "Staff accounts continue on the Horus-Bot website portal.",
+  "homeGuestHeroSubtitle": "Explore the museum and plan your Horus-Bot visit.",
+  "homeWelcomePlanVisit": "Welcome, {name}. Plan your Horus-Bot visit.",
+  "@homeWelcomePlanVisit": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homePaymentPendingHero": "Payment is pending. Your QR activates after counter confirmation.",
+  "homeTicketReadyHero": "Ticket ready. Keep your QR handy for museum entry.",
+  "homeFindScanHero": "Find your Horus-Bot and scan its QR to begin.",
+  "homeFollowLiveTourHero": "Follow Horus through your live museum tour.",
+  "homeCompletedReliveHero": "Your Horus-Bot tour is complete. Relive the visit.",
+  "homeStaffAccountDetected": "Staff account detected",
+  "homeStaffBlockedStatus": "Visitor app access is blocked for staff roles",
+  "homeExploreBeforeBook": "Explore before you book",
+  "homeCreateAccountSave": "Create an account or log in to save tickets, tours, and memories.",
+  "homePlanMuseumVisitTitle": "Plan your museum visit",
+  "homeChooseEntryTourPackage": "Choose museum entry and a Horus-Bot tour package before your visit.",
+  "homePaymentPendingTitle": "Payment pending",
+  "homePayCounterUnlockSubtitle": "Please pay at the museum counter. Your QR code and robot pairing unlock after cashier confirmation.",
+  "homeTicketReadyTitle": "Ticket ready",
+  "homeEntryTourConfirmedSubtitle": "Your museum entry and Horus-Bot tour are confirmed. Keep the QR ready for entry.",
+  "homeBesideRobotScanSubtitle": "When you are beside the robot, scan its QR to pair and start the tour.",
+  "homeReviewRouteMemoriesFeedback": "Review your route, revisit memories, share feedback, and keep your achievements.",
+  "homeBookAnotherTour": "Book another tour",
   "liveTourCompletedTitle": "Tour completed",
   "liveTourCompletedSubtitle": "You can view your summary and memories.",
   "liveTourPausedTitle": "Tour paused",
@@ -749,6 +893,18 @@
   "liveTourGuidingTitle": "Horus-Bot is guiding now",
   "liveTourGuidingSubtitle": "Stay nearby and enjoy the story.",
   "liveTourTranscriptIntro": "Horus-Bot is narrating this stop. New lines appear here during the tour.",
+  "liveTourMemoryCaptured": "Horus captured a new memory for you.",
+  "liveTourMemoriesTitle": "Tour memories",
+  "liveTourMemoriesEmpty": "Photos captured by Horus during the tour appear here.",
+  "liveTourMemoriesCount": "{count} photos captured by Horus",
+  "@liveTourMemoriesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "openMemories": "Open memories",
   "liveTourSimWelcome": "Welcome to the {exhibit}.",
   "liveTourSimSignificance": "This artifact is extremely significant to our history.",
   "liveTourSimDetails": "Notice the intricate details on the surface.",
@@ -790,5 +946,227 @@
   "mapConnectForTourSubtitle": "You can also explore exhibits freely from here.",
   "mapExploreExhibitsTitle": "Explore exhibits",
   "mapViewDetails": "View Details",
-  "mapFindHorusOnMap": "Find Horus on Map"
+  "mapFindHorusOnMap": "Find Horus on Map",
+  "back": "Back",
+  "achievementsJourneyStartsHere": "Your Journey Starts Here",
+  "achievementsGuestBody": "Sign in and complete tours to unlock achievements as you explore the museum.",
+  "feedbackShareExperience": "Share Your Experience",
+  "feedbackGuestBody": "Sign in after your visit to rate exhibits, tickets, navigation, and the Horus-Bot guide.",
+  "feedbackSignInRequired": "Please sign in to submit feedback.",
+  "feedbackTagRobotGuide": "Robot guide",
+  "feedbackTagExhibits": "Exhibits",
+  "feedbackTagNavigation": "Navigation",
+  "feedbackTagTickets": "Tickets",
+  "feedbackTagFacilities": "Facilities",
+  "feedbackSubmittedTitle": "Feedback submitted",
+  "feedbackSubmittedBody": "Thanks for helping us improve Horus-Bot and the museum visit.",
+  "supportNeedHelp": "Need Help?",
+  "supportGuestBody": "Sign in to contact museum support and track your conversations.",
+  "tourRouteUnavailable": "This tour route is no longer available.",
+  "tourAlertDefaultHall": "Hall A",
+  "tourAlertTitle": "Tour Starting Soon",
+  "tourAlertBody": "The tour in {hall} begins in {minutes} minutes.\nPlease head to the starting point.",
+  "@tourAlertBody": {
+    "placeholders": {
+      "hall": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "tourAlertLater": "Later",
+  "tourAlertOpenMap": "Open Map",
+  "plannerGuestTitle": "Plan Your Horus-Bot Tour",
+  "plannerGuestBody": "Sign in to create and save a personalized route through the museum.",
+  "plannerTourType": "Tour type",
+  "plannerStandard": "Standard",
+  "plannerPersonalized": "Personalized",
+  "plannerRecommendedRoutePrice": "Recommended route - 200 EGP",
+  "plannerCustomRoutePrice": "Custom exhibits and interests - 350 EGP",
+  "plannerTourDuration": "Tour duration",
+  "plannerTourDurationSubtitle": "Duration controls the number of stops Horus plans.",
+  "plannerInterests": "Interests",
+  "plannerInterestsSubtitle": "Select what you want Horus to focus on.",
+  "plannerInterestPharaohs": "Pharaohs",
+  "plannerInterestDailyLife": "Daily life",
+  "plannerInterestRoyalArtifacts": "Royal artifacts",
+  "plannerInterestMummies": "Mummies",
+  "plannerInterestArchitecture": "Architecture",
+  "plannerInterestMythology": "Mythology",
+  "plannerInterestKidsFriendly": "Kids friendly",
+  "plannerInterestShortTour": "Short tour",
+  "plannerInterestPhotographySpots": "Photography spots",
+  "plannerAccessibilityPreferences": "Accessibility preferences",
+  "plannerAccessibilitySubtitle": "These preferences are saved with the generated tour plan.",
+  "plannerAccessFamilyFriendly": "Family Friendly",
+  "plannerAccessRestStopsPreferred": "Rest Stops Preferred",
+  "plannerDurationExpress": "Express",
+  "plannerDurationStandard": "Standard",
+  "plannerDurationExtended": "Extended",
+  "plannerDurationFullExperience": "Full Experience",
+  "plannerDurationStopsMeta": "{minutes} min - {stops} stops",
+  "@plannerDurationStopsMeta": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "stops": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerSelectExhibits": "Select exhibits",
+  "plannerNoExhibitsAvailable": "No exhibits are available right now.",
+  "plannerShowAllExhibits": "Show all exhibits",
+  "plannerRecommendedForYou": "Recommended for you",
+  "plannerRecommendedForYouSubtitle": "Based on selected interests and exhibit data.",
+  "plannerMatchesInterest": "Matches {interest}",
+  "@plannerMatchesInterest": {
+    "placeholders": {
+      "interest": {
+        "type": "String"
+      }
+    }
+  },
+  "plannerIncludesPhotoOpportunity": "Includes photo opportunity",
+  "plannerRelatedThemes": "Related to selected themes",
+  "plannerIncludesSelectedExhibits": "Includes selected exhibits",
+  "plannerIncludesMuseumHighlights": "Includes museum highlights",
+  "plannerFitsDuration": "Fits {duration} minute duration",
+  "@plannerFitsDuration": {
+    "placeholders": {
+      "duration": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerIncludesRecommendedPhotoStops": "Includes recommended photo stops",
+  "plannerStoresAccessibilityPreferences": "Stores accessibility preferences",
+  "plannerChooseInterests": "Choose interests to see matching exhibits.",
+  "plannerGenerateValidation": "Select at least one interest or exhibit to generate your Horus-Bot tour.",
+  "plannerBookThisTour": "Book this tour",
+  "plannerGenerateMyTour": "Generate my tour",
+  "plannerDurationStopLimit": "This duration supports up to {count} stops.",
+  "@plannerDurationStopLimit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerRouteAdjusted": "Your route was adjusted to fit the selected duration.",
+  "plannerShowingAll": "Showing all available exhibits. Selected: {selected} / {max} stops.",
+  "@plannerShowingAll": {
+    "placeholders": {
+      "selected": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerNoExactMatches": "No exact matches. Showing all exhibits so you can still build your tour. Selected: {selected} / {max} stops.",
+  "@plannerNoExactMatches": {
+    "placeholders": {
+      "selected": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerShowingMatches": "Showing exhibits matching: {interests}. Selected: {selected} / {max} stops. {visible} of {total} shown.",
+  "@plannerShowingMatches": {
+    "placeholders": {
+      "interests": {
+        "type": "String"
+      },
+      "selected": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      },
+      "visible": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerPhotoExperience": "Photo Experience",
+  "plannerPhotoExperienceBody": "Include recommended photo stops for tour memories.",
+  "plannerMuseumHighlight": "Museum highlight",
+  "plannerSelectedStops": "Selected: {selected} / {max} stops",
+  "@plannerSelectedStops": {
+    "placeholders": {
+      "selected": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerStopsRemaining": "{remaining} stops remaining",
+  "@plannerStopsRemaining": {
+    "placeholders": {
+      "remaining": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerAddExhibit": "Add exhibit",
+  "plannerEntrance": "Entrance",
+  "plannerExit": "Exit",
+  "plannerYourHorusRoute": "Your Horus Route",
+  "plannerMatch": "{score}% Match",
+  "@plannerMatch": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerWhySelected": "Why Horus selected this route",
+  "plannerRouteMeta": "{type} - {duration} minutes - {stops} stops",
+  "@plannerRouteMeta": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      },
+      "duration": {
+        "type": "int"
+      },
+      "stops": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerPhotoStopsEnabledSuffix": " - photo stops enabled",
+  "plannerTourSummary": "Tour Summary",
+  "plannerPersonalizedTour": "Personalized Tour",
+  "plannerStandardTour": "Standard Tour",
+  "plannerTourMatch": "Tour match",
+  "plannerSelectedExhibits": "Selected exhibits",
+  "plannerSelectedInterests": "Selected interests",
+  "plannerNoneSelected": "None selected",
+  "plannerPhotoStops": "Photo stops",
+  "plannerRobotTour": "Robot tour",
+  "plannerPriceEgp": "{price} EGP",
+  "@plannerPriceEgp": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "plannerMuseumEntry": "Museum entry",
+  "plannerIncluded": "Included",
+  "plannerBookingNote": "Booking this plan will reserve museum entry and a personalized Horus-Bot robot tour."
 }

@@ -29,18 +29,17 @@ class _SupportInboxScreenState extends State<SupportInboxScreen> {
     final isArabic = Localizations.localeOf(context).languageCode == 'ar';
     return AppMenuShell(
       title: l10n.supportInboxTitle.toUpperCase(),
-      backgroundColor: AppColors.cinematicBackground,
+      backgroundColor: AppColors.resolvedBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: DecoratedBox(
-        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
+        decoration: BoxDecoration(color: AppColors.resolvedBackground),
         child: Directionality(
           textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: !authProvider.isLoggedIn
-              ? const GuestPrompt(
+              ? GuestPrompt(
                   icon: Icons.support_agent_outlined,
-                  title: 'Need Help?',
-                  body:
-                      'Sign in to contact museum support and track your conversations.',
+                  title: l10n.supportNeedHelp,
+                  body: l10n.supportGuestBody,
                 )
               : requests.isEmpty
               ? _EmptySupportState(message: l10n.supportNoRequests)
@@ -101,7 +100,7 @@ class _EmptySupportState extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: AppTextStyles.titleLarge(
                   context,
-                ).copyWith(color: Colors.white),
+                ).copyWith(color: AppColors.resolvedTitleText),
               ),
             ],
           ),
@@ -140,7 +139,7 @@ class _SupportRequestCard extends StatelessWidget {
                     child: Text(
                       request.requesterName,
                       style: AppTextStyles.titleMedium(context).copyWith(
-                        color: Colors.white,
+                        color: AppColors.resolvedTitleText,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -176,7 +175,7 @@ class _SupportRequestCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: AppTextStyles.bodyPrimary(
                   context,
-                ).copyWith(color: Colors.white70, height: 1.5),
+                ).copyWith(color: AppColors.resolvedBodyText, height: 1.5),
               ),
               const SizedBox(height: 12),
               Row(

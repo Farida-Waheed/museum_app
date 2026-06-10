@@ -127,10 +127,13 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
     final prefs = Provider.of<UserPreferencesModel>(context);
     final l10n = AppLocalizations.of(context)!;
     final isArabic = prefs.language == 'ar';
+    final titleColor = Theme.of(context).colorScheme.onSurface;
+    final mutedDotColor = Theme.of(
+      context,
+    ).colorScheme.onSurface.withValues(alpha: 0.24);
 
     return AppMenuShell(
       title: l10n.settings.toUpperCase(),
-      backgroundColor: AppColors.cinematicBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
@@ -167,7 +170,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                           Text(
                             l10n.comfortableApp,
                             style: AppTextStyles.bodyPrimary(context).copyWith(
-                              color: Colors.white,
+                              color: titleColor,
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
                             ),
@@ -320,8 +323,8 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                           (i) => Container(
                             width: 3,
                             height: 3,
-                            decoration: const BoxDecoration(
-                              color: Colors.white24,
+                            decoration: BoxDecoration(
+                              color: mutedDotColor,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -379,11 +382,11 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                         value: prefs.language,
                         icon: const Icon(
                           Icons.arrow_drop_down,
-                          color: Colors.white54,
+                          color: AppColors.primaryGold,
                         ),
-                        dropdownColor: AppColors.cinematicElevated,
+                        dropdownColor: Theme.of(context).colorScheme.surface,
                         style: AppTextStyles.bodyPrimary(context).copyWith(
-                          color: Colors.white,
+                          color: titleColor,
                           fontWeight: FontWeight.bold,
                         ),
                         onChanged: (v) async {
@@ -458,7 +461,7 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
                     Text(
                       l10n.organization,
                       style: AppTextStyles.bodyPrimary(context).copyWith(
-                        color: Colors.white,
+                        color: titleColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
                       ),
@@ -519,6 +522,7 @@ class _SwitchItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isArabic = Directionality.of(context) == TextDirection.rtl;
+    final titleColor = Theme.of(context).colorScheme.onSurface;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: Row(
@@ -532,7 +536,7 @@ class _SwitchItem extends StatelessWidget {
                 Text(
                   title,
                   style: AppTextStyles.bodyPrimary(context).copyWith(
-                    color: Colors.white,
+                    color: titleColor,
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
                   ),
@@ -572,6 +576,10 @@ class _PermissionItem extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final isGranted = status == l10n.notificationPermissionGranted;
     final isArabic = Directionality.of(context) == TextDirection.rtl;
+    final titleColor = Theme.of(context).colorScheme.onSurface;
+    final disabledColor = Theme.of(
+      context,
+    ).colorScheme.onSurface.withValues(alpha: 0.46);
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -593,7 +601,7 @@ class _PermissionItem extends StatelessWidget {
                     Text(
                       title,
                       style: AppTextStyles.bodyPrimary(context).copyWith(
-                        color: Colors.white,
+                        color: titleColor,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
@@ -614,7 +622,7 @@ class _PermissionItem extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    color: isGranted ? Colors.green : Colors.white38,
+                    color: isGranted ? Colors.green : disabledColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 13,
                   ),
@@ -657,6 +665,10 @@ class _AboutNavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final isArabic = Directionality.of(context) == TextDirection.rtl;
     final enabled = onTap != null;
+    final titleColor = Theme.of(context).colorScheme.onSurface;
+    final disabledColor = Theme.of(
+      context,
+    ).colorScheme.onSurface.withValues(alpha: 0.46);
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -667,7 +679,7 @@ class _AboutNavItem extends StatelessWidget {
             Text(
               title,
               style: AppTextStyles.bodyPrimary(context).copyWith(
-                color: enabled ? Colors.white : AppColors.neutralMedium,
+                color: enabled ? titleColor : disabledColor,
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
               ),
@@ -702,6 +714,7 @@ class _AppearanceChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final titleColor = Theme.of(context).colorScheme.onSurface;
     return SizedBox(
       width: 104,
       child: GestureDetector(
@@ -716,14 +729,14 @@ class _AppearanceChip extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                color: selected ? AppColors.darkInk : Colors.white,
+                color: selected ? AppColors.darkInk : titleColor,
                 size: 22,
               ),
               const SizedBox(height: 8),
               Text(
                 label,
                 style: TextStyle(
-                  color: selected ? AppColors.darkInk : Colors.white,
+                  color: selected ? AppColors.darkInk : titleColor,
                   fontWeight: selected ? FontWeight.bold : FontWeight.normal,
                   fontSize: 12,
                 ),

@@ -144,6 +144,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chatInputHint => 'Ask Horus during your live tour.';
 
   @override
+  String get chatSuggestionTickets => 'Tickets';
+
+  @override
+  String get chatSuggestionTicketsQuery =>
+      'Tell me about ticket prices and types.';
+
+  @override
+  String get chatSuggestionHours => 'Hours';
+
+  @override
+  String get chatSuggestionHoursQuery => 'What are today\'s opening hours?';
+
+  @override
+  String get chatSuggestionEvents => 'Events';
+
+  @override
+  String get chatSuggestionEventsQuery => 'What events are happening today?';
+
+  @override
+  String get chatSuggestionDuration => 'Duration';
+
+  @override
+  String get chatSuggestionDurationQuery =>
+      'How long does a visit usually take?';
+
+  @override
+  String get chatSuggestionDirections => 'Directions';
+
+  @override
+  String get chatSuggestionDirectionsQuery =>
+      'How do I get to the next exhibit?';
+
+  @override
+  String get chatSuggestionAccessibility => 'Accessibility';
+
+  @override
+  String get chatSuggestionAccessibilityQuery =>
+      'What accessibility support is available?';
+
+  @override
   String get exploreMuseum => 'Explore the museum';
 
   @override
@@ -157,6 +197,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get quiz => 'Quiz';
+
+  @override
+  String get museumQuiz => 'Museum Quiz';
+
+  @override
+  String get noQuestions => 'No questions';
+
+  @override
+  String get keepLearning => 'Keep Learning!';
+
+  @override
+  String pointsEarned(int points) {
+    return 'Points earned: $points';
+  }
+
+  @override
+  String get badgesEarned => 'Badges earned:';
+
+  @override
+  String get perfectScoreBadge => 'Perfect Score';
+
+  @override
+  String get quizWarriorBadge => 'Quiz Warrior';
+
+  @override
+  String get finish => 'FINISH';
+
+  @override
+  String get nextQuestion => 'NEXT QUESTION';
+
+  @override
+  String quizQuestionProgress(int current, int total) {
+    return 'Question $current of $total';
+  }
 
   @override
   String get liveTour => 'Live Tour';
@@ -523,6 +597,61 @@ class AppLocalizationsEn extends AppLocalizations {
   String get visitSummary => 'Visit Summary';
 
   @override
+  String get visitSummaryConnectionTitle =>
+      'Connection issue. Please check your internet connection and try again.';
+
+  @override
+  String get visitSummaryGenericError =>
+      'Something went wrong. Please try again.';
+
+  @override
+  String get visitSummaryNoSessionTitle => 'No tour session found';
+
+  @override
+  String get visitSummaryNoSessionBody =>
+      'Your visit summary appears after a Horus guided tour.';
+
+  @override
+  String get visitSummaryNotAvailable => 'Not available';
+
+  @override
+  String get visitSummaryHorusTour => 'Horus tour';
+
+  @override
+  String get visitSummaryCompleted => 'Completed';
+
+  @override
+  String get visitSummarySkipped => 'Skipped';
+
+  @override
+  String get visitSummaryPhotos => 'Photos';
+
+  @override
+  String get visitSummaryQuestions => 'Questions';
+
+  @override
+  String get visitSummaryEndTime => 'End time';
+
+  @override
+  String get visitSummarySession => 'Session';
+
+  @override
+  String get visitSummaryRouteSummary => 'Route summary';
+
+  @override
+  String get visitSummaryViewMemories => 'View My Memories';
+
+  @override
+  String visitSummaryMinutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String visitSummaryHoursMinutes(int hours, int minutes) {
+    return '${hours}h ${minutes}m';
+  }
+
+  @override
   String get endTour => 'End Tour';
 
   @override
@@ -530,6 +659,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get visitComplete => 'You have completed your museum journey.';
+
+  @override
+  String get visitSummaryHorusCompleted =>
+      'Horus completed your tour and saved the highlights.';
 
   @override
   String get exhibitsVisited => 'Exhibits Visited';
@@ -1437,6 +1570,17 @@ class AppLocalizationsEn extends AppLocalizations {
       'Use your tickets, connect to Horus-Bot, and begin the guided experience.';
 
   @override
+  String get entryChooseExperience => 'Choose Your Experience';
+
+  @override
+  String get entryExperienceSubtitle =>
+      'Plan your visit or begin your guided tour with Horus-Bot.';
+
+  @override
+  String get entryStartTourDescription =>
+      'Customize your route and connect to Horus-Bot.';
+
+  @override
   String get login => 'Log In';
 
   @override
@@ -2236,6 +2380,202 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeMuseumUpdate => 'MUSEUM UPDATE';
 
   @override
+  String get visitorServices => 'Visitor Services';
+
+  @override
+  String get information => 'Information';
+
+  @override
+  String get homeStaffAccountLabel => 'Staff account';
+
+  @override
+  String get homeUseStaffPortal => 'Use the staff portal';
+
+  @override
+  String get homeGuestPlanSubtitle =>
+      'Sign in to plan and save your personalized museum route.';
+
+  @override
+  String homeWelcomeBackUser(String name) {
+    return 'Welcome back, $name';
+  }
+
+  @override
+  String get homeBookTourWhenReady =>
+      'Book a museum entry and Horus-Bot tour when ready.';
+
+  @override
+  String get homePayAtCounterTitle => 'Pay at the counter';
+
+  @override
+  String get homeQrUnlocksAfterPayment =>
+      'Your QR code unlocks after cashier confirmation.';
+
+  @override
+  String get homeTicketsReadyTitle => 'Your tickets are ready';
+
+  @override
+  String get homeViewQrScanRobot =>
+      'View your QR now. Scan the robot QR when you arrive.';
+
+  @override
+  String get homeAtMuseumLabel => 'At the museum';
+
+  @override
+  String get homeFindHorusBotTitle => 'Find your Horus-Bot';
+
+  @override
+  String get homeScanNearbyRobot =>
+      'Scan the robot QR nearby to start your guided tour.';
+
+  @override
+  String get homeSummaryMemoriesReady =>
+      'Your visit summary, memories, and achievements are ready.';
+
+  @override
+  String get homeResumeLiveTour => 'Resume your live Horus-Bot tour.';
+
+  @override
+  String get homePlanRouteBeforeBooking => 'Plan your route before booking';
+
+  @override
+  String get homePurchaseMuseumRobotTickets =>
+      'Purchase museum and robot tour tickets';
+
+  @override
+  String get homePaymentStatusInstructions =>
+      'View payment status and counter instructions';
+
+  @override
+  String get homeSeeWhereHorusNow => 'See where you and Horus are now';
+
+  @override
+  String get homeAskCurrentStopRoute => 'Ask about the current stop or route';
+
+  @override
+  String get homeReviewCurrentTourMoments =>
+      'Review moments from your current tour';
+
+  @override
+  String get homeReviewTourHighlights =>
+      'Review the stops and highlights from your tour';
+
+  @override
+  String get homeRevisitPhotosMoments =>
+      'Revisit photos and saved tour moments';
+
+  @override
+  String get homeShareVisitFeedback => 'Tell us how your Horus-Bot visit felt';
+
+  @override
+  String get homeSeeBadgesProgress => 'See badges and progress from your visit';
+
+  @override
+  String get homePairWithNearbyHorus => 'Pair with the Horus-Bot beside you';
+
+  @override
+  String get homeUseMapBeforeStarting =>
+      'Use the map to orient yourself before starting';
+
+  @override
+  String get homeKeepQrHandy => 'Keep your entry QR and tour ticket handy';
+
+  @override
+  String get homeViewMuseumRobotTickets =>
+      'View your museum entry and robot tour tickets';
+
+  @override
+  String get homeViewCapturedPhotos =>
+      'View your captured tour photos and past visits.';
+
+  @override
+  String get homePaymentPendingStatusLine =>
+      'Payment pending - pay at the museum counter';
+
+  @override
+  String get homeTourCompletedStatusLine =>
+      'Tour completed - summary and memories ready';
+
+  @override
+  String get homeStaffWebsitePortal =>
+      'Staff accounts continue on the Horus-Bot website portal.';
+
+  @override
+  String get homeGuestHeroSubtitle =>
+      'Explore the museum and plan your Horus-Bot visit.';
+
+  @override
+  String homeWelcomePlanVisit(String name) {
+    return 'Welcome, $name. Plan your Horus-Bot visit.';
+  }
+
+  @override
+  String get homePaymentPendingHero =>
+      'Payment is pending. Your QR activates after counter confirmation.';
+
+  @override
+  String get homeTicketReadyHero =>
+      'Ticket ready. Keep your QR handy for museum entry.';
+
+  @override
+  String get homeFindScanHero =>
+      'Find your Horus-Bot and scan its QR to begin.';
+
+  @override
+  String get homeFollowLiveTourHero =>
+      'Follow Horus through your live museum tour.';
+
+  @override
+  String get homeCompletedReliveHero =>
+      'Your Horus-Bot tour is complete. Relive the visit.';
+
+  @override
+  String get homeStaffAccountDetected => 'Staff account detected';
+
+  @override
+  String get homeStaffBlockedStatus =>
+      'Visitor app access is blocked for staff roles';
+
+  @override
+  String get homeExploreBeforeBook => 'Explore before you book';
+
+  @override
+  String get homeCreateAccountSave =>
+      'Create an account or log in to save tickets, tours, and memories.';
+
+  @override
+  String get homePlanMuseumVisitTitle => 'Plan your museum visit';
+
+  @override
+  String get homeChooseEntryTourPackage =>
+      'Choose museum entry and a Horus-Bot tour package before your visit.';
+
+  @override
+  String get homePaymentPendingTitle => 'Payment pending';
+
+  @override
+  String get homePayCounterUnlockSubtitle =>
+      'Please pay at the museum counter. Your QR code and robot pairing unlock after cashier confirmation.';
+
+  @override
+  String get homeTicketReadyTitle => 'Ticket ready';
+
+  @override
+  String get homeEntryTourConfirmedSubtitle =>
+      'Your museum entry and Horus-Bot tour are confirmed. Keep the QR ready for entry.';
+
+  @override
+  String get homeBesideRobotScanSubtitle =>
+      'When you are beside the robot, scan its QR to pair and start the tour.';
+
+  @override
+  String get homeReviewRouteMemoriesFeedback =>
+      'Review your route, revisit memories, share feedback, and keep your achievements.';
+
+  @override
+  String get homeBookAnotherTour => 'Book another tour';
+
+  @override
   String get liveTourCompletedTitle => 'Tour completed';
 
   @override
@@ -2278,6 +2618,24 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get liveTourTranscriptIntro =>
       'Horus-Bot is narrating this stop. New lines appear here during the tour.';
+
+  @override
+  String get liveTourMemoryCaptured => 'Horus captured a new memory for you.';
+
+  @override
+  String get liveTourMemoriesTitle => 'Tour memories';
+
+  @override
+  String get liveTourMemoriesEmpty =>
+      'Photos captured by Horus during the tour appear here.';
+
+  @override
+  String liveTourMemoriesCount(int count) {
+    return '$count photos captured by Horus';
+  }
+
+  @override
+  String get openMemories => 'Open memories';
 
   @override
   String liveTourSimWelcome(Object exhibit) {
@@ -2419,4 +2777,348 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mapFindHorusOnMap => 'Find Horus on Map';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get achievementsJourneyStartsHere => 'Your Journey Starts Here';
+
+  @override
+  String get achievementsGuestBody =>
+      'Sign in and complete tours to unlock achievements as you explore the museum.';
+
+  @override
+  String get feedbackShareExperience => 'Share Your Experience';
+
+  @override
+  String get feedbackGuestBody =>
+      'Sign in after your visit to rate exhibits, tickets, navigation, and the Horus-Bot guide.';
+
+  @override
+  String get feedbackSignInRequired => 'Please sign in to submit feedback.';
+
+  @override
+  String get feedbackTagRobotGuide => 'Robot guide';
+
+  @override
+  String get feedbackTagExhibits => 'Exhibits';
+
+  @override
+  String get feedbackTagNavigation => 'Navigation';
+
+  @override
+  String get feedbackTagTickets => 'Tickets';
+
+  @override
+  String get feedbackTagFacilities => 'Facilities';
+
+  @override
+  String get feedbackSubmittedTitle => 'Feedback submitted';
+
+  @override
+  String get feedbackSubmittedBody =>
+      'Thanks for helping us improve Horus-Bot and the museum visit.';
+
+  @override
+  String get supportNeedHelp => 'Need Help?';
+
+  @override
+  String get supportGuestBody =>
+      'Sign in to contact museum support and track your conversations.';
+
+  @override
+  String get tourRouteUnavailable => 'This tour route is no longer available.';
+
+  @override
+  String get tourAlertDefaultHall => 'Hall A';
+
+  @override
+  String get tourAlertTitle => 'Tour Starting Soon';
+
+  @override
+  String tourAlertBody(String hall, int minutes) {
+    return 'The tour in $hall begins in $minutes minutes.\nPlease head to the starting point.';
+  }
+
+  @override
+  String get tourAlertLater => 'Later';
+
+  @override
+  String get tourAlertOpenMap => 'Open Map';
+
+  @override
+  String get plannerGuestTitle => 'Plan Your Horus-Bot Tour';
+
+  @override
+  String get plannerGuestBody =>
+      'Sign in to create and save a personalized route through the museum.';
+
+  @override
+  String get plannerTourType => 'Tour type';
+
+  @override
+  String get plannerStandard => 'Standard';
+
+  @override
+  String get plannerPersonalized => 'Personalized';
+
+  @override
+  String get plannerRecommendedRoutePrice => 'Recommended route - 200 EGP';
+
+  @override
+  String get plannerCustomRoutePrice =>
+      'Custom exhibits and interests - 350 EGP';
+
+  @override
+  String get plannerTourDuration => 'Tour duration';
+
+  @override
+  String get plannerTourDurationSubtitle =>
+      'Duration controls the number of stops Horus plans.';
+
+  @override
+  String get plannerInterests => 'Interests';
+
+  @override
+  String get plannerInterestsSubtitle =>
+      'Select what you want Horus to focus on.';
+
+  @override
+  String get plannerInterestPharaohs => 'Pharaohs';
+
+  @override
+  String get plannerInterestDailyLife => 'Daily life';
+
+  @override
+  String get plannerInterestRoyalArtifacts => 'Royal artifacts';
+
+  @override
+  String get plannerInterestMummies => 'Mummies';
+
+  @override
+  String get plannerInterestArchitecture => 'Architecture';
+
+  @override
+  String get plannerInterestMythology => 'Mythology';
+
+  @override
+  String get plannerInterestKidsFriendly => 'Kids friendly';
+
+  @override
+  String get plannerInterestShortTour => 'Short tour';
+
+  @override
+  String get plannerInterestPhotographySpots => 'Photography spots';
+
+  @override
+  String get plannerAccessibilityPreferences => 'Accessibility preferences';
+
+  @override
+  String get plannerAccessibilitySubtitle =>
+      'These preferences are saved with the generated tour plan.';
+
+  @override
+  String get plannerAccessFamilyFriendly => 'Family Friendly';
+
+  @override
+  String get plannerAccessRestStopsPreferred => 'Rest Stops Preferred';
+
+  @override
+  String get plannerDurationExpress => 'Express';
+
+  @override
+  String get plannerDurationStandard => 'Standard';
+
+  @override
+  String get plannerDurationExtended => 'Extended';
+
+  @override
+  String get plannerDurationFullExperience => 'Full Experience';
+
+  @override
+  String plannerDurationStopsMeta(int minutes, int stops) {
+    return '$minutes min - $stops stops';
+  }
+
+  @override
+  String get plannerSelectExhibits => 'Select exhibits';
+
+  @override
+  String get plannerNoExhibitsAvailable =>
+      'No exhibits are available right now.';
+
+  @override
+  String get plannerShowAllExhibits => 'Show all exhibits';
+
+  @override
+  String get plannerRecommendedForYou => 'Recommended for you';
+
+  @override
+  String get plannerRecommendedForYouSubtitle =>
+      'Based on selected interests and exhibit data.';
+
+  @override
+  String plannerMatchesInterest(String interest) {
+    return 'Matches $interest';
+  }
+
+  @override
+  String get plannerIncludesPhotoOpportunity => 'Includes photo opportunity';
+
+  @override
+  String get plannerRelatedThemes => 'Related to selected themes';
+
+  @override
+  String get plannerIncludesSelectedExhibits => 'Includes selected exhibits';
+
+  @override
+  String get plannerIncludesMuseumHighlights => 'Includes museum highlights';
+
+  @override
+  String plannerFitsDuration(int duration) {
+    return 'Fits $duration minute duration';
+  }
+
+  @override
+  String get plannerIncludesRecommendedPhotoStops =>
+      'Includes recommended photo stops';
+
+  @override
+  String get plannerStoresAccessibilityPreferences =>
+      'Stores accessibility preferences';
+
+  @override
+  String get plannerChooseInterests =>
+      'Choose interests to see matching exhibits.';
+
+  @override
+  String get plannerGenerateValidation =>
+      'Select at least one interest or exhibit to generate your Horus-Bot tour.';
+
+  @override
+  String get plannerBookThisTour => 'Book this tour';
+
+  @override
+  String get plannerGenerateMyTour => 'Generate my tour';
+
+  @override
+  String plannerDurationStopLimit(int count) {
+    return 'This duration supports up to $count stops.';
+  }
+
+  @override
+  String get plannerRouteAdjusted =>
+      'Your route was adjusted to fit the selected duration.';
+
+  @override
+  String plannerShowingAll(int selected, int max) {
+    return 'Showing all available exhibits. Selected: $selected / $max stops.';
+  }
+
+  @override
+  String plannerNoExactMatches(int selected, int max) {
+    return 'No exact matches. Showing all exhibits so you can still build your tour. Selected: $selected / $max stops.';
+  }
+
+  @override
+  String plannerShowingMatches(
+    String interests,
+    int selected,
+    int max,
+    int visible,
+    int total,
+  ) {
+    return 'Showing exhibits matching: $interests. Selected: $selected / $max stops. $visible of $total shown.';
+  }
+
+  @override
+  String get plannerPhotoExperience => 'Photo Experience';
+
+  @override
+  String get plannerPhotoExperienceBody =>
+      'Include recommended photo stops for tour memories.';
+
+  @override
+  String get plannerMuseumHighlight => 'Museum highlight';
+
+  @override
+  String plannerSelectedStops(int selected, int max) {
+    return 'Selected: $selected / $max stops';
+  }
+
+  @override
+  String plannerStopsRemaining(int remaining) {
+    return '$remaining stops remaining';
+  }
+
+  @override
+  String get plannerAddExhibit => 'Add exhibit';
+
+  @override
+  String get plannerEntrance => 'Entrance';
+
+  @override
+  String get plannerExit => 'Exit';
+
+  @override
+  String get plannerYourHorusRoute => 'Your Horus Route';
+
+  @override
+  String plannerMatch(int score) {
+    return '$score% Match';
+  }
+
+  @override
+  String get plannerWhySelected => 'Why Horus selected this route';
+
+  @override
+  String plannerRouteMeta(String type, int duration, int stops) {
+    return '$type - $duration minutes - $stops stops';
+  }
+
+  @override
+  String get plannerPhotoStopsEnabledSuffix => ' - photo stops enabled';
+
+  @override
+  String get plannerTourSummary => 'Tour Summary';
+
+  @override
+  String get plannerPersonalizedTour => 'Personalized Tour';
+
+  @override
+  String get plannerStandardTour => 'Standard Tour';
+
+  @override
+  String get plannerTourMatch => 'Tour match';
+
+  @override
+  String get plannerSelectedExhibits => 'Selected exhibits';
+
+  @override
+  String get plannerSelectedInterests => 'Selected interests';
+
+  @override
+  String get plannerNoneSelected => 'None selected';
+
+  @override
+  String get plannerPhotoStops => 'Photo stops';
+
+  @override
+  String get plannerRobotTour => 'Robot tour';
+
+  @override
+  String plannerPriceEgp(int price) {
+    return '$price EGP';
+  }
+
+  @override
+  String get plannerMuseumEntry => 'Museum entry';
+
+  @override
+  String get plannerIncluded => 'Included';
+
+  @override
+  String get plannerBookingNote =>
+      'Booking this plan will reserve museum entry and a personalized Horus-Bot robot tour.';
 }

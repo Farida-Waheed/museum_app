@@ -94,7 +94,9 @@ class PremiumDialog extends StatelessWidget {
                       children: actions!.map((a) {
                         final isLast = a == actions!.last;
                         return Padding(
-                          padding: EdgeInsets.only(left: isLast ? 0 : 12),
+                          padding: EdgeInsetsDirectional.only(
+                            start: isLast ? 0 : 12,
+                          ),
                           child: a,
                         );
                       }).toList(),

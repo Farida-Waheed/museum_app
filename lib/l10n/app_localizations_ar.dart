@@ -142,6 +142,43 @@ class AppLocalizationsAr extends AppLocalizations {
   String get chatInputHint => 'اسأل حورس أثناء جولتك الحية.';
 
   @override
+  String get chatSuggestionTickets => 'التذاكر';
+
+  @override
+  String get chatSuggestionTicketsQuery => 'ما أسعار التذاكر وأنواعها؟';
+
+  @override
+  String get chatSuggestionHours => 'المواعيد';
+
+  @override
+  String get chatSuggestionHoursQuery => 'ما هي أوقات عمل المتحف اليوم؟';
+
+  @override
+  String get chatSuggestionEvents => 'الفعاليات';
+
+  @override
+  String get chatSuggestionEventsQuery => 'ما الفعاليات المتاحة اليوم؟';
+
+  @override
+  String get chatSuggestionDuration => 'المدة';
+
+  @override
+  String get chatSuggestionDurationQuery => 'كم تستغرق الزيارة عادة؟';
+
+  @override
+  String get chatSuggestionDirections => 'الاتجاهات';
+
+  @override
+  String get chatSuggestionDirectionsQuery => 'كيف أصل إلى المعرض التالي؟';
+
+  @override
+  String get chatSuggestionAccessibility => 'إمكانية الوصول';
+
+  @override
+  String get chatSuggestionAccessibilityQuery =>
+      'هل توجد وسائل وصول لذوي الاحتياجات الخاصة؟';
+
+  @override
   String get exploreMuseum => 'استكشف المتحف';
 
   @override
@@ -155,6 +192,40 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get quiz => 'الاختبار';
+
+  @override
+  String get museumQuiz => 'اختبار المعلومات';
+
+  @override
+  String get noQuestions => 'لا توجد أسئلة';
+
+  @override
+  String get keepLearning => 'استمر في التعلم!';
+
+  @override
+  String pointsEarned(int points) {
+    return 'النقاط المكتسبة: $points';
+  }
+
+  @override
+  String get badgesEarned => 'الشارات المكتسبة:';
+
+  @override
+  String get perfectScoreBadge => 'متعلم متميز';
+
+  @override
+  String get quizWarriorBadge => 'مستكشف ذكي';
+
+  @override
+  String get finish => 'إنهاء';
+
+  @override
+  String get nextQuestion => 'السؤال التالي';
+
+  @override
+  String quizQuestionProgress(int current, int total) {
+    return 'السؤال $current من $total';
+  }
 
   @override
   String get liveTour => 'الجولة الحية';
@@ -516,6 +587,60 @@ class AppLocalizationsAr extends AppLocalizations {
   String get visitSummary => 'ملخص الزيارة';
 
   @override
+  String get visitSummaryConnectionTitle =>
+      'حدثت مشكلة في الاتصال. يرجى التحقق من الإنترنت والمحاولة مرة أخرى.';
+
+  @override
+  String get visitSummaryGenericError => 'حدث خطأ ما. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get visitSummaryNoSessionTitle => 'لا توجد جولة نشطة';
+
+  @override
+  String get visitSummaryNoSessionBody =>
+      'سيظهر ملخص الزيارة بعد انتهاء جولة حورس.';
+
+  @override
+  String get visitSummaryNotAvailable => 'غير متاح';
+
+  @override
+  String get visitSummaryHorusTour => 'جولة حورس';
+
+  @override
+  String get visitSummaryCompleted => 'اكتملت';
+
+  @override
+  String get visitSummarySkipped => 'تم تخطيها';
+
+  @override
+  String get visitSummaryPhotos => 'الصور';
+
+  @override
+  String get visitSummaryQuestions => 'الأسئلة';
+
+  @override
+  String get visitSummaryEndTime => 'وقت الانتهاء';
+
+  @override
+  String get visitSummarySession => 'معرف الجلسة';
+
+  @override
+  String get visitSummaryRouteSummary => 'ملخص المسار';
+
+  @override
+  String get visitSummaryViewMemories => 'عرض ذكرياتي';
+
+  @override
+  String visitSummaryMinutes(int minutes) {
+    return '$minutes د';
+  }
+
+  @override
+  String visitSummaryHoursMinutes(int hours, int minutes) {
+    return '$hours س $minutes د';
+  }
+
+  @override
   String get endTour => 'إنهاء الجولة';
 
   @override
@@ -523,6 +648,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get visitComplete => 'لقد أكملت رحلتك في المتحف.';
+
+  @override
+  String get visitSummaryHorusCompleted => 'أنهى حورس جولتك وحفظ أبرز لحظاتها.';
 
   @override
   String get exhibitsVisited => 'المعروضات التي زرتها';
@@ -1417,6 +1545,16 @@ class AppLocalizationsAr extends AppLocalizations {
       'استخدم تذاكرك، اتصل بحورس-بوت، وابدأ التجربة الموجهة.';
 
   @override
+  String get entryChooseExperience => 'اختر تجربتك';
+
+  @override
+  String get entryExperienceSubtitle =>
+      'خطط لزيارتك أو ابدأ جولتك الإرشادية مع Horus-Bot.';
+
+  @override
+  String get entryStartTourDescription => 'خصص مسارك واتصل بـ Horus-Bot.';
+
+  @override
   String get login => 'تسجيل الدخول';
 
   @override
@@ -2214,6 +2352,194 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeMuseumUpdate => 'تحديث المتحف';
 
   @override
+  String get visitorServices => 'خدمات الزوار';
+
+  @override
+  String get information => 'المعلومات';
+
+  @override
+  String get homeStaffAccountLabel => 'حساب فريق العمل';
+
+  @override
+  String get homeUseStaffPortal => 'استخدم بوابة فريق العمل';
+
+  @override
+  String get homeGuestPlanSubtitle =>
+      'سجّل الدخول لتخطيط مسارك الشخصي في المتحف وحفظه.';
+
+  @override
+  String homeWelcomeBackUser(String name) {
+    return 'مرحبًا بعودتك، $name';
+  }
+
+  @override
+  String get homeBookTourWhenReady =>
+      'احجز دخول المتحف وجولة Horus-Bot عندما تكون جاهزًا.';
+
+  @override
+  String get homePayAtCounterTitle => 'ادفع عند الشباك';
+
+  @override
+  String get homeQrUnlocksAfterPayment =>
+      'سيتم تفعيل رمز QR بعد تأكيد الدفع من أمين الصندوق.';
+
+  @override
+  String get homeTicketsReadyTitle => 'تذاكرك جاهزة';
+
+  @override
+  String get homeViewQrScanRobot =>
+      'اعرض رمز QR الآن. امسح رمز الروبوت عند الوصول.';
+
+  @override
+  String get homeAtMuseumLabel => 'داخل المتحف';
+
+  @override
+  String get homeFindHorusBotTitle => 'اعثر على Horus-Bot';
+
+  @override
+  String get homeScanNearbyRobot =>
+      'امسح رمز QR القريب على الروبوت لبدء جولتك الإرشادية.';
+
+  @override
+  String get homeSummaryMemoriesReady =>
+      'ملخص الزيارة والذكريات والإنجازات جاهزة.';
+
+  @override
+  String get homeResumeLiveTour => 'استأنف جولتك الحية مع Horus-Bot.';
+
+  @override
+  String get homePlanRouteBeforeBooking => 'خطط مسارك قبل الحجز';
+
+  @override
+  String get homePurchaseMuseumRobotTickets =>
+      'اشتر تذاكر المتحف وجولة الروبوت';
+
+  @override
+  String get homePaymentStatusInstructions => 'اعرض حالة الدفع وتعليمات الشباك';
+
+  @override
+  String get homeSeeWhereHorusNow => 'اعرف مكانك ومكان حورس الآن';
+
+  @override
+  String get homeAskCurrentStopRoute => 'اسأل عن المحطة الحالية أو المسار';
+
+  @override
+  String get homeReviewCurrentTourMoments => 'راجع لحظات جولتك الحالية';
+
+  @override
+  String get homeReviewTourHighlights => 'راجع المحطات وأبرز لحظات جولتك';
+
+  @override
+  String get homeRevisitPhotosMoments => 'استعد الصور ولحظات الجولة المحفوظة';
+
+  @override
+  String get homeShareVisitFeedback => 'أخبرنا كيف كانت زيارتك مع Horus-Bot';
+
+  @override
+  String get homeSeeBadgesProgress => 'اعرض الشارات وتقدم زيارتك';
+
+  @override
+  String get homePairWithNearbyHorus => 'اربط التطبيق بروبوت Horus-Bot بجانبك';
+
+  @override
+  String get homeUseMapBeforeStarting =>
+      'استخدم الخريطة لتحديد اتجاهك قبل البدء';
+
+  @override
+  String get homeKeepQrHandy => 'احتفظ برمز الدخول وتذكرة الجولة في متناولك';
+
+  @override
+  String get homeViewMuseumRobotTickets =>
+      'اعرض تذاكر دخول المتحف وجولة الروبوت';
+
+  @override
+  String get homeViewCapturedPhotos =>
+      'اعرض صور جولتك وذكريات زياراتك السابقة.';
+
+  @override
+  String get homePaymentPendingStatusLine =>
+      'الدفع معلق - ادفع عند شباك المتحف';
+
+  @override
+  String get homeTourCompletedStatusLine =>
+      'اكتملت الجولة - الملخص والذكريات جاهزة';
+
+  @override
+  String get homeStaffWebsitePortal =>
+      'تستمر حسابات فريق العمل عبر بوابة موقع Horus-Bot.';
+
+  @override
+  String get homeGuestHeroSubtitle => 'استكشف المتحف وخطط زيارتك مع Horus-Bot.';
+
+  @override
+  String homeWelcomePlanVisit(String name) {
+    return 'مرحبًا، $name. خطط زيارتك مع Horus-Bot.';
+  }
+
+  @override
+  String get homePaymentPendingHero =>
+      'الدفع معلق. سيتم تفعيل رمز QR بعد تأكيد الشباك.';
+
+  @override
+  String get homeTicketReadyHero =>
+      'التذكرة جاهزة. احتفظ برمز QR لدخول المتحف.';
+
+  @override
+  String get homeFindScanHero => 'اعثر على Horus-Bot وامسح رمزه للبدء.';
+
+  @override
+  String get homeFollowLiveTourHero => 'اتبع حورس خلال جولتك الحية في المتحف.';
+
+  @override
+  String get homeCompletedReliveHero =>
+      'اكتملت جولتك مع Horus-Bot. استعد الزيارة.';
+
+  @override
+  String get homeStaffAccountDetected => 'تم اكتشاف حساب فريق عمل';
+
+  @override
+  String get homeStaffBlockedStatus => 'تطبيق الزوار محجوب لأدوار فريق العمل';
+
+  @override
+  String get homeExploreBeforeBook => 'استكشف قبل الحجز';
+
+  @override
+  String get homeCreateAccountSave =>
+      'أنشئ حسابًا أو سجّل الدخول لحفظ التذاكر والجولات والذكريات.';
+
+  @override
+  String get homePlanMuseumVisitTitle => 'خطط زيارتك للمتحف';
+
+  @override
+  String get homeChooseEntryTourPackage =>
+      'اختر دخول المتحف وباقة جولة Horus-Bot قبل زيارتك.';
+
+  @override
+  String get homePaymentPendingTitle => 'الدفع معلق';
+
+  @override
+  String get homePayCounterUnlockSubtitle =>
+      'يرجى الدفع عند شباك المتحف. سيتم تفعيل رمز QR وربط الروبوت بعد تأكيد أمين الصندوق.';
+
+  @override
+  String get homeTicketReadyTitle => 'التذكرة جاهزة';
+
+  @override
+  String get homeEntryTourConfirmedSubtitle =>
+      'تم تأكيد دخول المتحف وجولة Horus-Bot. احتفظ برمز QR جاهزًا للدخول.';
+
+  @override
+  String get homeBesideRobotScanSubtitle =>
+      'عندما تكون بجانب الروبوت، امسح رمز QR الخاص به للربط وبدء الجولة.';
+
+  @override
+  String get homeReviewRouteMemoriesFeedback =>
+      'راجع مسارك، واستعد الذكريات، وشارك ملاحظاتك، واحتفظ بإنجازاتك.';
+
+  @override
+  String get homeBookAnotherTour => 'احجز جولة أخرى';
+
+  @override
   String get liveTourCompletedTitle => 'اكتملت الجولة';
 
   @override
@@ -2253,6 +2579,23 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get liveTourTranscriptIntro =>
       'يروي Horus-Bot شرح هذه المحطة. ستظهر التحديثات هنا أثناء الجولة.';
+
+  @override
+  String get liveTourMemoryCaptured => 'التقط حورس ذكرى جديدة لك.';
+
+  @override
+  String get liveTourMemoriesTitle => 'ذكريات الجولة';
+
+  @override
+  String get liveTourMemoriesEmpty => 'سيظهر هنا ما يلتقطه حورس أثناء الجولة.';
+
+  @override
+  String liveTourMemoriesCount(int count) {
+    return '$count صور التقطها حورس';
+  }
+
+  @override
+  String get openMemories => 'فتح الذكريات';
 
   @override
   String liveTourSimWelcome(Object exhibit) {
@@ -2390,4 +2733,343 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get mapFindHorusOnMap => 'اعثر على Horus على الخريطة';
+
+  @override
+  String get back => 'رجوع';
+
+  @override
+  String get achievementsJourneyStartsHere => 'تبدأ رحلتك من هنا';
+
+  @override
+  String get achievementsGuestBody =>
+      'سجّل الدخول وأكمل الجولات لفتح الإنجازات أثناء استكشاف المتحف.';
+
+  @override
+  String get feedbackShareExperience => 'شارك تجربتك';
+
+  @override
+  String get feedbackGuestBody =>
+      'سجّل الدخول بعد زيارتك لتقييم المعروضات والتذاكر والملاحة ودليل Horus-Bot.';
+
+  @override
+  String get feedbackSignInRequired => 'يرجى تسجيل الدخول لإرسال الملاحظات.';
+
+  @override
+  String get feedbackTagRobotGuide => 'دليل الروبوت';
+
+  @override
+  String get feedbackTagExhibits => 'المعروضات';
+
+  @override
+  String get feedbackTagNavigation => 'الملاحة';
+
+  @override
+  String get feedbackTagTickets => 'التذاكر';
+
+  @override
+  String get feedbackTagFacilities => 'الخدمات';
+
+  @override
+  String get feedbackSubmittedTitle => 'تم إرسال الملاحظات';
+
+  @override
+  String get feedbackSubmittedBody =>
+      'شكرًا لمساعدتنا في تحسين Horus-Bot وتجربة زيارة المتحف.';
+
+  @override
+  String get supportNeedHelp => 'هل تحتاج إلى مساعدة؟';
+
+  @override
+  String get supportGuestBody =>
+      'سجّل الدخول للتواصل مع دعم المتحف وتتبع محادثاتك.';
+
+  @override
+  String get tourRouteUnavailable => 'مسار هذه الجولة لم يعد متاحًا.';
+
+  @override
+  String get tourAlertDefaultHall => 'القاعة (أ)';
+
+  @override
+  String get tourAlertTitle => 'ستبدأ الجولة قريبًا';
+
+  @override
+  String tourAlertBody(String hall, int minutes) {
+    return 'تبدأ الجولة في $hall خلال $minutes دقائق.\nيرجى التوجه إلى نقطة البداية.';
+  }
+
+  @override
+  String get tourAlertLater => 'لاحقًا';
+
+  @override
+  String get tourAlertOpenMap => 'فتح الخريطة';
+
+  @override
+  String get plannerGuestTitle => 'خطط جولتك مع Horus-Bot';
+
+  @override
+  String get plannerGuestBody =>
+      'سجّل الدخول لإنشاء مسار شخصي داخل المتحف وحفظه.';
+
+  @override
+  String get plannerTourType => 'نوع الجولة';
+
+  @override
+  String get plannerStandard => 'قياسية';
+
+  @override
+  String get plannerPersonalized => 'مخصصة';
+
+  @override
+  String get plannerRecommendedRoutePrice => 'مسار موصى به - 200 جنيه';
+
+  @override
+  String get plannerCustomRoutePrice => 'معروضات واهتمامات مخصصة - 350 جنيه';
+
+  @override
+  String get plannerTourDuration => 'مدة الجولة';
+
+  @override
+  String get plannerTourDurationSubtitle =>
+      'تحدد المدة عدد المحطات التي يخطط لها حورس.';
+
+  @override
+  String get plannerInterests => 'الاهتمامات';
+
+  @override
+  String get plannerInterestsSubtitle => 'اختر ما تريد أن يركز عليه حورس.';
+
+  @override
+  String get plannerInterestPharaohs => 'الفراعنة';
+
+  @override
+  String get plannerInterestDailyLife => 'الحياة اليومية';
+
+  @override
+  String get plannerInterestRoyalArtifacts => 'القطع الملكية';
+
+  @override
+  String get plannerInterestMummies => 'المومياوات';
+
+  @override
+  String get plannerInterestArchitecture => 'العمارة';
+
+  @override
+  String get plannerInterestMythology => 'الأساطير';
+
+  @override
+  String get plannerInterestKidsFriendly => 'مناسب للأطفال';
+
+  @override
+  String get plannerInterestShortTour => 'جولة قصيرة';
+
+  @override
+  String get plannerInterestPhotographySpots => 'نقاط التصوير';
+
+  @override
+  String get plannerAccessibilityPreferences => 'تفضيلات الوصول';
+
+  @override
+  String get plannerAccessibilitySubtitle =>
+      'تُحفظ هذه التفضيلات مع خطة الجولة المولدة.';
+
+  @override
+  String get plannerAccessFamilyFriendly => 'مناسب للعائلة';
+
+  @override
+  String get plannerAccessRestStopsPreferred => 'استراحات مفضلة';
+
+  @override
+  String get plannerDurationExpress => 'سريعة';
+
+  @override
+  String get plannerDurationStandard => 'قياسية';
+
+  @override
+  String get plannerDurationExtended => 'ممتدة';
+
+  @override
+  String get plannerDurationFullExperience => 'التجربة الكاملة';
+
+  @override
+  String plannerDurationStopsMeta(int minutes, int stops) {
+    return '$minutes د - $stops محطات';
+  }
+
+  @override
+  String get plannerSelectExhibits => 'اختر المعروضات';
+
+  @override
+  String get plannerNoExhibitsAvailable => 'لا توجد معروضات متاحة الآن.';
+
+  @override
+  String get plannerShowAllExhibits => 'عرض كل المعروضات';
+
+  @override
+  String get plannerRecommendedForYou => 'موصى به لك';
+
+  @override
+  String get plannerRecommendedForYouSubtitle =>
+      'بناءً على الاهتمامات المختارة وبيانات المعروضات.';
+
+  @override
+  String plannerMatchesInterest(String interest) {
+    return 'يطابق $interest';
+  }
+
+  @override
+  String get plannerIncludesPhotoOpportunity => 'يتضمن فرصة تصوير';
+
+  @override
+  String get plannerRelatedThemes => 'مرتبط بالموضوعات المختارة';
+
+  @override
+  String get plannerIncludesSelectedExhibits => 'يتضمن المعروضات المختارة';
+
+  @override
+  String get plannerIncludesMuseumHighlights => 'يتضمن أبرز معروضات المتحف';
+
+  @override
+  String plannerFitsDuration(int duration) {
+    return 'يناسب مدة $duration دقيقة';
+  }
+
+  @override
+  String get plannerIncludesRecommendedPhotoStops =>
+      'يتضمن نقاط تصوير موصى بها';
+
+  @override
+  String get plannerStoresAccessibilityPreferences => 'يحفظ تفضيلات الوصول';
+
+  @override
+  String get plannerChooseInterests =>
+      'اختر اهتماماتك لرؤية المعروضات المناسبة.';
+
+  @override
+  String get plannerGenerateValidation =>
+      'اختر اهتمامًا واحدًا أو معروضًا واحدًا على الأقل لتوليد جولتك مع Horus-Bot.';
+
+  @override
+  String get plannerBookThisTour => 'احجز هذه الجولة';
+
+  @override
+  String get plannerGenerateMyTour => 'ولّد جولتي';
+
+  @override
+  String plannerDurationStopLimit(int count) {
+    return 'هذه المدة تدعم حتى $count محطات.';
+  }
+
+  @override
+  String get plannerRouteAdjusted => 'تم تعديل مسارك ليناسب المدة المختارة.';
+
+  @override
+  String plannerShowingAll(int selected, int max) {
+    return 'يتم عرض كل المعروضات المتاحة. المختار: $selected / $max محطات.';
+  }
+
+  @override
+  String plannerNoExactMatches(int selected, int max) {
+    return 'لا توجد مطابقات دقيقة. نعرض كل المعروضات حتى تتمكن من بناء جولتك. المختار: $selected / $max محطات.';
+  }
+
+  @override
+  String plannerShowingMatches(
+    String interests,
+    int selected,
+    int max,
+    int visible,
+    int total,
+  ) {
+    return 'يتم عرض المعروضات المطابقة: $interests. المختار: $selected / $max محطات. المعروض $visible من $total.';
+  }
+
+  @override
+  String get plannerPhotoExperience => 'تجربة التصوير';
+
+  @override
+  String get plannerPhotoExperienceBody =>
+      'تضمين نقاط تصوير موصى بها لذكريات الجولة.';
+
+  @override
+  String get plannerMuseumHighlight => 'معلم من المتحف';
+
+  @override
+  String plannerSelectedStops(int selected, int max) {
+    return 'المختار: $selected / $max محطات';
+  }
+
+  @override
+  String plannerStopsRemaining(int remaining) {
+    return '$remaining محطات متبقية';
+  }
+
+  @override
+  String get plannerAddExhibit => 'إضافة معروض';
+
+  @override
+  String get plannerEntrance => 'المدخل';
+
+  @override
+  String get plannerExit => 'الخروج';
+
+  @override
+  String get plannerYourHorusRoute => 'مسارك مع حورس';
+
+  @override
+  String plannerMatch(int score) {
+    return '$score% مطابق';
+  }
+
+  @override
+  String get plannerWhySelected => 'لماذا اختار حورس هذا المسار';
+
+  @override
+  String plannerRouteMeta(String type, int duration, int stops) {
+    return '$type - $duration دقيقة - $stops محطات';
+  }
+
+  @override
+  String get plannerPhotoStopsEnabledSuffix => ' - نقاط التصوير مفعلة';
+
+  @override
+  String get plannerTourSummary => 'ملخص الجولة';
+
+  @override
+  String get plannerPersonalizedTour => 'جولة مخصصة';
+
+  @override
+  String get plannerStandardTour => 'جولة قياسية';
+
+  @override
+  String get plannerTourMatch => 'مطابقة الجولة';
+
+  @override
+  String get plannerSelectedExhibits => 'المعروضات المختارة';
+
+  @override
+  String get plannerSelectedInterests => 'الاهتمامات المختارة';
+
+  @override
+  String get plannerNoneSelected => 'لا يوجد اختيار';
+
+  @override
+  String get plannerPhotoStops => 'نقاط التصوير';
+
+  @override
+  String get plannerRobotTour => 'جولة الروبوت';
+
+  @override
+  String plannerPriceEgp(int price) {
+    return '$price جنيه';
+  }
+
+  @override
+  String get plannerMuseumEntry => 'دخول المتحف';
+
+  @override
+  String get plannerIncluded => 'مشمول';
+
+  @override
+  String get plannerBookingNote =>
+      'حجز هذه الخطة سيحجز دخول المتحف وجولة روبوت Horus-Bot مخصصة.';
 }

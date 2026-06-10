@@ -1,4 +1,4 @@
-import 'dart:ui';
+﻿import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -73,7 +73,7 @@ class LiveStatusCard extends StatelessWidget {
                         label,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                        textAlign: TextAlign.start,
                         style: AppTextStyles.premiumSectionLabel(
                           context,
                         ).copyWith(fontSize: 11),
@@ -83,7 +83,7 @@ class LiveStatusCard extends StatelessWidget {
                         title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                        textAlign: TextAlign.start,
                         style: AppTextStyles.premiumCardTitle(
                           context,
                         ).copyWith(fontSize: 20),
@@ -93,10 +93,10 @@ class LiveStatusCard extends StatelessWidget {
                         subtitle,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                        textAlign: TextAlign.start,
                         style: AppTextStyles.premiumMutedBody(
                           context,
-                        ).copyWith(color: AppColors.bodyText),
+                        ).copyWith(color: AppColors.resolvedBodyText),
                       ),
                     ],
                   ),

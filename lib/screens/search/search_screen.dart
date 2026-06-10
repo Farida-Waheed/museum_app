@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/router.dart';
@@ -69,11 +69,11 @@ class _SearchScreenState extends State<SearchScreen> {
 
     return AppMenuShell(
       title: l10n.searchExhibits,
-      backgroundColor: AppColors.cinematicBackground,
+      backgroundColor: AppColors.resolvedBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 1),
       showChatButton: true,
       body: DecoratedBox(
-        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
+        decoration: BoxDecoration(color: AppColors.resolvedBackground),
         child: ListView(
           padding: const EdgeInsetsDirectional.fromSTEB(
             AppSpacing.screenHorizontalCompact,
@@ -87,7 +87,7 @@ class _SearchScreenState extends State<SearchScreen> {
               child: TextField(
                 controller: _searchController,
                 onChanged: _filter,
-                textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                textAlign: TextAlign.start,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(
                     Icons.search,
@@ -108,7 +108,7 @@ class _SearchScreenState extends State<SearchScreen> {
                     context,
                   ).copyWith(fontSize: 14),
                   filled: true,
-                  fillColor: AppColors.cinematicCard.withValues(alpha: 0.82),
+                  fillColor: AppColors.resolvedCard.withValues(alpha: 0.82),
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 20,
                     vertical: 16,

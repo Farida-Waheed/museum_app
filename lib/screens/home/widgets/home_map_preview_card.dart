@@ -54,14 +54,14 @@ class HomeMapPreviewCard extends StatelessWidget {
                 const Positioned.fill(
                   child: CustomPaint(painter: _GridPainter()),
                 ),
-                const Positioned.fill(
+                Positioned.fill(
                   child: Opacity(
                     opacity: 0.08,
                     child: Center(
                       child: Icon(
                         Icons.museum_outlined,
                         size: 100,
-                        color: AppColors.whiteTitle,
+                        color: AppColors.resolvedTitleText,
                       ),
                     ),
                   ),
@@ -132,7 +132,7 @@ class HomeMapPreviewCard extends StatelessWidget {
                         textAlign: TextAlign.center,
                         style: AppTextStyles.premiumMutedBody(
                           context,
-                        ).copyWith(color: AppColors.bodyText),
+                        ).copyWith(color: AppColors.resolvedBodyText),
                       ),
                     ),
                   ),
@@ -208,7 +208,7 @@ class _LiveStatusPill extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
         style: AppTextStyles.premiumMutedBody(
           context,
-        ).copyWith(color: AppColors.whiteTitle, fontSize: 12),
+        ).copyWith(color: AppColors.resolvedTitleText, fontSize: 12),
       ),
     );
   }

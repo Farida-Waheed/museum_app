@@ -422,9 +422,11 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                   Expanded(
                     child: Text(
                       title,
-                      style: AppTextStyles.displaySectionTitle(
-                        context,
-                      ).copyWith(color: Colors.white, fontSize: 19),
+                      style: AppTextStyles.displaySectionTitle(context)
+                          .copyWith(
+                            color: AppColors.resolvedTitleText,
+                            fontSize: 19,
+                          ),
                       textAlign: TextAlign.start,
                     ),
                   ),
@@ -439,7 +441,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                 subtitle,
                 style: AppTextStyles.bodyPrimary(
                   context,
-                ).copyWith(color: Colors.white70, height: 1.35),
+                ).copyWith(color: AppColors.resolvedBodyText, height: 1.35),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -477,7 +479,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                               l10n.qrAlignCode,
                               style: AppTextStyles.metadata(
                                 context,
-                              ).copyWith(color: Colors.white),
+                              ).copyWith(color: AppColors.resolvedTitleText),
                               textAlign: TextAlign.start,
                             ),
                           ),
@@ -495,8 +497,9 @@ class _QrScannerScreenState extends State<QrScannerScreen>
   }
 
   Widget _buildWebRobotFallback(BuildContext context, bool isArabic) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: AppColors.cinematicBackground,
+      backgroundColor: AppColors.resolvedBackground,
       body: Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
         child: SafeArea(
@@ -508,7 +511,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                 child: Container(
                   padding: const EdgeInsets.all(22),
                   decoration: BoxDecoration(
-                    color: AppColors.cinematicCard,
+                    color: AppColors.resolvedCard,
                     borderRadius: BorderRadius.circular(28),
                     border: Border.all(color: AppColors.goldBorder(0.18)),
                     boxShadow: [
@@ -554,7 +557,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                               textAlign: TextAlign.start,
                               style: AppTextStyles.displaySectionTitle(context)
                                   .copyWith(
-                                    color: AppColors.whiteTitle,
+                                    color: AppColors.resolvedTitleText,
                                     fontSize: 22,
                                   ),
                             ),
@@ -567,9 +570,10 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                             ? '\u064a\u0633\u062a\u062e\u062f\u0645 \u0631\u0628\u0637 \u0627\u0644\u0631\u0648\u0628\u0648\u062a \u0643\u0627\u0645\u064a\u0631\u0627 \u062a\u0637\u0628\u064a\u0642 \u0627\u0644\u0647\u0627\u062a\u0641. \u0641\u064a \u0639\u0631\u0636 \u0627\u0644\u0648\u064a\u0628\u060c \u064a\u0645\u0643\u0646\u0643 \u0625\u062f\u062e\u0627\u0644 \u0643\u0648\u062f \u0627\u0644\u0631\u0648\u0628\u0648\u062a \u0644\u0644\u062a\u062c\u0631\u0628\u0629.'
                             : 'Robot pairing uses the mobile camera. For the web demo, enter the robot code below.',
                         textAlign: TextAlign.start,
-                        style: AppTextStyles.bodyPrimary(
-                          context,
-                        ).copyWith(color: AppColors.bodyText, height: 1.45),
+                        style: AppTextStyles.bodyPrimary(context).copyWith(
+                          color: AppColors.resolvedBodyText,
+                          height: 1.45,
+                        ),
                       ),
                       const SizedBox(height: 18),
                       TextField(
@@ -580,7 +584,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                         onSubmitted: (_) => _submitManualRobotCode(),
                         style: AppTextStyles.bodyPrimary(
                           context,
-                        ).copyWith(color: AppColors.whiteTitle),
+                        ).copyWith(color: AppColors.resolvedTitleText),
                         decoration: InputDecoration(
                           hintText: 'ROBOT-HORUS-001',
                           prefixIcon: const Icon(
@@ -629,7 +633,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                                   borderRadius: BorderRadius.circular(16),
                                 ),
                               ),
-                              child: const Text('Back'),
+                              child: Text(l10n.back),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -710,7 +714,7 @@ class _ResultPopup extends StatelessWidget {
         width: MediaQuery.of(context).size.width * 0.8,
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
-          color: AppColors.cinematicCard,
+          color: AppColors.resolvedCard,
           borderRadius: BorderRadius.circular(32),
           border: Border.all(color: AppColors.goldBorder(0.18)),
           boxShadow: [
@@ -753,7 +757,7 @@ class _ResultPopup extends StatelessWidget {
               result.message,
               style: AppTextStyles.bodyPrimary(
                 context,
-              ).copyWith(color: AppColors.bodyText, height: 1.35),
+              ).copyWith(color: AppColors.resolvedBodyText, height: 1.35),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
@@ -761,7 +765,7 @@ class _ResultPopup extends StatelessWidget {
               '${l10n.qrReference}: $code',
               style: AppTextStyles.metadata(
                 context,
-              ).copyWith(color: AppColors.neutralMedium),
+              ).copyWith(color: AppColors.resolvedMutedText),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),

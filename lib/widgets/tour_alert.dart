@@ -6,6 +6,7 @@ import '../core/constants/assets.dart';
 import '../core/constants/sizes.dart';
 import '../core/constants/text_styles.dart';
 import '../core/constants/colors.dart';
+import '../l10n/app_localizations.dart';
 
 /// Shows tour alerts safely and avoids random glitches.
 /// You can show it "once per key" (e.g., once per hall or tour).
@@ -50,12 +51,10 @@ void showTourAlertOnce(
     await SystemSound.play(SystemSoundType.alert);
     HapticFeedback.mediumImpact();
 
-    final title = isArabic ? "تنبيه الجولة" : "Tour Starting Soon";
+    final l10n = AppLocalizations.of(navigator.context)!;
+    final title = l10n.tourAlertTitle;
     final hallName = isArabic ? hallNameAr : hallNameEn;
-
-    final bodyText = isArabic
-        ? "تبدأ الجولة في $hallName خلال $minutes دقائق.\nيرجى التوجه لنوقة البداية."
-        : "The tour in $hallName begins in $minutes minutes.\nPlease head to the starting point.";
+    final bodyText = l10n.tourAlertBody(hallName, minutes);
 
     if (!navigator.context.mounted) return;
 
@@ -74,7 +73,7 @@ void showTourAlertOnce(
               child: Material(
                 elevation: 12,
                 borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-                color: AppColors.cinematicElevated,
+                color: AppColors.resolvedElevated,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(
                     AppSizes.md,
@@ -105,28 +104,24 @@ void showTourAlertOnce(
                           ),
                           IconButton(
                             onPressed: () => navigator.pop(),
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.close,
                               size: 18,
-                              color: Colors.white54,
+                              color: AppColors.resolvedMutedText,
                             ),
-                            tooltip: 'Close',
+                            tooltip: l10n.close,
                           ),
                         ],
                       ),
                       const SizedBox(height: 6),
                       Align(
-                        alignment: isArabic
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
+                        alignment: AlignmentDirectional.centerStart,
                         child: Text(
                           bodyText,
-                          textAlign: isArabic
-                              ? TextAlign.right
-                              : TextAlign.left,
+                          textAlign: TextAlign.start,
                           style: AppTextStyles.bodyPrimary(
                             ctx,
-                          ).copyWith(color: Colors.white.withOpacity(0.92)),
+                          ).copyWith(color: AppColors.resolvedBodyText),
                         ),
                       ),
                       const SizedBox(height: AppSizes.md),
@@ -136,10 +131,10 @@ void showTourAlertOnce(
                           TextButton(
                             onPressed: () => navigator.pop(),
                             child: Text(
-                              isArabic ? "لاحقاً" : "Later",
+                              l10n.tourAlertLater,
                               style: AppTextStyles.button(
                                 ctx,
-                              ).copyWith(color: AppColors.neutralMedium),
+                              ).copyWith(color: AppColors.resolvedMutedText),
                             ),
                           ),
                           const SizedBox(width: AppSizes.sm),
@@ -158,7 +153,7 @@ void showTourAlertOnce(
                               onViewMap?.call();
                             },
                             child: Text(
-                              isArabic ? "افتح الخريطة" : "Open Map",
+                              l10n.tourAlertOpenMap,
                               style: AppTextStyles.button(ctx),
                             ),
                           ),

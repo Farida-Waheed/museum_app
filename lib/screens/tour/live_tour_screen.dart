@@ -324,11 +324,10 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       context.read<ExhibitProvider>().exhibits,
     );
     if (route.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('This tour route is no longer available.'),
-        ),
-      );
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.tourRouteUnavailable)));
       return;
     }
     final currentExhibit = route.first;
@@ -389,7 +388,9 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     if (!kIsWeb) return false;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Live robot tour controls are available only in the mobile app.'),
+        content: Text(
+          'Live robot tour controls are available only in the mobile app.',
+        ),
       ),
     );
     return true;
@@ -572,16 +573,11 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       setState(() => _sessionPhotos = photos);
 
       if (hadPreviousPhotos && newIds.isNotEmpty) {
-        final isArabic = Localizations.localeOf(context).languageCode == 'ar';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              isArabic
-                  ? 'التقط حورس ذكرى جديدة لك.'
-                  : 'Horus captured a new memory for you.',
-            ),
+            content: Text(AppLocalizations.of(context)!.liveTourMemoryCaptured),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: AppColors.cinematicElevated,
+            backgroundColor: AppColors.resolvedElevated,
           ),
         );
       }
@@ -670,9 +666,11 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         body: _buildLockedState(
           context,
           title: l10n.liveTourLockedTitle,
-          subtitle: 'Live robot tour controls are available only in the mobile app.',
+          subtitle:
+              'Live robot tour controls are available only in the mobile app.',
           primaryLabel: l10n.myTickets,
-          onPrimaryAction: () => Navigator.pushNamed(context, AppRoutes.myTickets),
+          onPrimaryAction: () =>
+              Navigator.pushNamed(context, AppRoutes.myTickets),
           showSecondaryQrAction: false,
         ),
       );
@@ -906,7 +904,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                     tourProvider.getProximityText(l10n.localeName),
                     style: AppTextStyles.metadata(
                       context,
-                    ).copyWith(color: AppColors.neutralMedium),
+                    ).copyWith(color: AppColors.resolvedMutedText),
                   ),
                   if (commandStatusText != null) ...[
                     const SizedBox(height: 6),
@@ -914,7 +912,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                       commandStatusText,
                       style: AppTextStyles.metadata(
                         context,
-                      ).copyWith(color: AppColors.neutralMedium),
+                      ).copyWith(color: AppColors.resolvedMutedText),
                     ),
                   ],
                   const SizedBox(height: 16),
@@ -995,7 +993,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
   }
 
   Widget _buildMemoryStrip(BuildContext context, List<TourPhoto> photos) {
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
+    final l10n = AppLocalizations.of(context)!;
     final latest = photos.isEmpty ? null : photos.first;
     return AnimatedSwitcher(
       duration: const Duration(milliseconds: 280),
@@ -1012,7 +1010,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                   ? Container(
                       width: 58,
                       height: 58,
-                      color: AppColors.cinematicSection,
+                      color: AppColors.resolvedCard,
                       child: const Icon(
                         Icons.photo_camera_outlined,
                         color: AppColors.primaryGold,
@@ -1026,7 +1024,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                       errorBuilder: (_, __, ___) => Container(
                         width: 58,
                         height: 58,
-                        color: AppColors.cinematicSection,
+                        color: AppColors.resolvedCard,
                         child: const Icon(
                           Icons.photo_camera_outlined,
                           color: AppColors.primaryGold,
@@ -1040,29 +1038,26 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isArabic ? 'ذكريات الجولة' : 'Tour memories',
-                    style: AppTextStyles.titleMedium(
-                      context,
-                    ).copyWith(color: Colors.white, fontSize: 15),
+                    l10n.liveTourMemoriesTitle,
+                    style: AppTextStyles.titleMedium(context).copyWith(
+                      color: AppColors.resolvedTitleText,
+                      fontSize: 15,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     photos.isEmpty
-                        ? (isArabic
-                              ? 'سيظهر هنا ما يلتقطه حورس أثناء الجولة.'
-                              : 'Photos Horus captures will appear here.')
-                        : (isArabic
-                              ? '${photos.length} صورة التقطها حورس'
-                              : '${photos.length} photos captured by Horus'),
+                        ? l10n.liveTourMemoriesEmpty
+                        : l10n.liveTourMemoriesCount(photos.length),
                     style: AppTextStyles.metadata(
                       context,
-                    ).copyWith(color: AppColors.neutralMedium),
+                    ).copyWith(color: AppColors.resolvedMutedText),
                   ),
                 ],
               ),
             ),
             IconButton(
-              tooltip: isArabic ? 'فتح الذكريات' : 'Open memories',
+              tooltip: l10n.openMemories,
               onPressed: () => Navigator.pushNamed(context, AppRoutes.memories),
               icon: const Icon(
                 Icons.chevron_right_rounded,
@@ -1107,7 +1102,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(22),
                   decoration: BoxDecoration(
-                    color: AppColors.cinematicCard.withOpacity(0.88),
+                    color: AppColors.resolvedCard.withOpacity(0.88),
                     borderRadius: BorderRadius.circular(28),
                     border: Border.all(color: AppColors.goldBorder(0.22)),
                     boxShadow: [
@@ -1147,7 +1142,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                       Text(
                         subtitle,
                         style: AppTextStyles.bodyPrimary(context).copyWith(
-                          color: AppColors.neutralMedium,
+                          color: AppColors.resolvedMutedText,
                           height: 1.45,
                         ),
                         textAlign: TextAlign.center,
@@ -1294,7 +1289,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                   subtitle,
                   style: AppTextStyles.metadata(
                     context,
-                  ).copyWith(color: AppColors.neutralMedium),
+                  ).copyWith(color: AppColors.resolvedMutedText),
                   textAlign: TextAlign.start,
                 ),
               ],
@@ -1315,7 +1310,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: AppColors.cinematicCard,
+        color: AppColors.resolvedCard,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppColors.goldBorder(0.2)),
       ),
@@ -1344,7 +1339,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
             l10n.followAndDiscover,
             style: AppTextStyles.bodyPrimary(
               context,
-            ).copyWith(color: AppColors.neutralMedium),
+            ).copyWith(color: AppColors.resolvedMutedText),
           ),
           const SizedBox(height: 18),
           PrimaryButton(
@@ -1385,7 +1380,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.cinematicCard,
+        color: AppColors.resolvedCard,
         borderRadius: BorderRadius.circular(26),
         border: Border.all(color: Colors.white.withOpacity(0.08)),
         boxShadow: [
@@ -1473,7 +1468,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                   statusText,
                   style: AppTextStyles.bodyPrimary(
                     context,
-                  ).copyWith(color: AppColors.bodyText),
+                  ).copyWith(color: AppColors.resolvedBodyText),
                 ),
                 const SizedBox(height: 14),
                 PrimaryButton(
@@ -1515,7 +1510,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.cinematicSection,
+        color: AppColors.resolvedCard,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.white.withOpacity(0.06)),
       ),
@@ -1535,7 +1530,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
             l10n.chatInfoPopup,
             style: AppTextStyles.metadata(
               context,
-            ).copyWith(color: AppColors.neutralMedium),
+            ).copyWith(color: AppColors.resolvedMutedText),
           ),
           const SizedBox(height: 10),
           SizedBox(
@@ -1552,7 +1547,9 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                     _transcript[index],
                     style: AppTextStyles.bodyPrimary(context).copyWith(
                       fontSize: 14,
-                      color: isLast ? Colors.white : AppColors.neutralMedium,
+                      color: isLast
+                          ? Colors.white
+                          : AppColors.resolvedMutedText,
                       fontWeight: isLast ? FontWeight.w600 : FontWeight.normal,
                     ),
                   ),
@@ -1616,7 +1613,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.cinematicCard,
+        color: AppColors.resolvedCard,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: Colors.white.withOpacity(0.06)),
       ),
@@ -1667,7 +1664,7 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
                       subtitle,
                       style: AppTextStyles.metadata(
                         context,
-                      ).copyWith(color: AppColors.neutralMedium),
+                      ).copyWith(color: AppColors.resolvedMutedText),
                     ),
                   ],
                 ),
@@ -1940,7 +1937,7 @@ class _TourProgressTimeline extends StatelessWidget {
               "${currentIndex + 1} / $total",
               style: AppTextStyles.metadata(
                 context,
-              ).copyWith(color: Colors.white70),
+              ).copyWith(color: AppColors.resolvedBodyText),
             ),
           ],
         ),

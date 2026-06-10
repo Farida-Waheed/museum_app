@@ -21,10 +21,10 @@ class EventsScreen extends StatelessWidget {
 
     return AppMenuShell(
       title: l10n.events.toUpperCase(),
-      backgroundColor: AppColors.cinematicBackground,
+      backgroundColor: AppColors.resolvedBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: DecoratedBox(
-        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
+        decoration: BoxDecoration(color: AppColors.resolvedBackground),
         child: Directionality(
           textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: SingleChildScrollView(
@@ -151,7 +151,7 @@ class _EventCard extends StatelessWidget {
                   textAlign: TextAlign.start,
                   style: AppTextStyles.titleMedium(
                     context,
-                  ).copyWith(fontSize: 16, color: Colors.white),
+                  ).copyWith(fontSize: 16, color: AppColors.resolvedTitleText),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -164,7 +164,7 @@ class _EventCard extends StatelessWidget {
           ),
           Icon(
             isArabic ? Icons.chevron_left_rounded : Icons.chevron_right_rounded,
-            color: AppColors.neutralDark,
+            color: AppColors.resolvedMutedText,
           ),
         ],
       ),

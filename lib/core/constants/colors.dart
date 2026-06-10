@@ -1,6 +1,48 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
+  static bool _useLightSurfaces = false;
+
+  static void configureResolvedBrightness(Brightness brightness) {
+    _useLightSurfaces = brightness == Brightness.light;
+  }
+
+  static bool get useLightSurfaces => _useLightSurfaces;
+
+  static Color get resolvedBackground =>
+      _useLightSurfaces ? websiteLightBackground : cinematicBackground;
+
+  static Color get resolvedCard =>
+      _useLightSurfaces ? websiteLightCard : cinematicCard;
+
+  static Color get resolvedElevated =>
+      _useLightSurfaces ? websiteLightPopover : cinematicElevated;
+
+  static Color get resolvedNav =>
+      _useLightSurfaces ? websiteLightCard : cinematicNav;
+
+  static Color get resolvedTitleText =>
+      _useLightSurfaces ? websiteLightForeground : whiteTitle;
+
+  static Color get resolvedBodyText =>
+      _useLightSurfaces ? websiteLightMutedForeground : bodyText;
+
+  static Color get resolvedMutedText =>
+      _useLightSurfaces ? websiteLightMutedForeground : mutedText;
+
+  static Color get resolvedBorder =>
+      _useLightSurfaces ? websiteLightBorder : darkBorder;
+
+  static Color get resolvedDivider =>
+      _useLightSurfaces ? websiteLightBorder : darkDivider;
+
+  static const Color websiteLightBackground = Color(0xFFF3EFE8);
+  static const Color websiteLightCard = Color(0xFFECE5DA);
+  static const Color websiteLightPopover = Color(0xFFF2ECE2);
+  static const Color websiteLightForeground = Color(0xFF2A2623);
+  static const Color websiteLightMutedForeground = Color(0xFF62584E);
+  static const Color websiteLightBorder = Color(0xFFD4C9BA);
+
   static const Color baseBlack = Color(0xFF050505);
   static const Color warmBlack = Color(0xFF0B0906);
   static const Color panelDark = Color(0xFF1A1814);
@@ -64,10 +106,15 @@ class AppColors {
   static const Color black = Colors.black;
 
   static Color cardGlass([double opacity = 0.72]) =>
-      cardGlassBase.withValues(alpha: opacity);
+      (_useLightSurfaces ? const Color(0xFFFFFBF3) : cardGlassBase).withValues(
+        alpha: _useLightSurfaces ? opacity.clamp(0.86, 1.0) : opacity,
+      );
 
   static Color secondaryGlass([double opacity = 0.62]) =>
-      secondaryCardBase.withValues(alpha: opacity);
+      (_useLightSurfaces ? const Color(0xFFF2E8D8) : secondaryCardBase)
+          .withValues(
+            alpha: _useLightSurfaces ? opacity.clamp(0.84, 1.0) : opacity,
+          );
 
   static Color goldBorder([double opacity = 0.22]) =>
       mutedGoldBorder.withValues(alpha: opacity);
@@ -142,6 +189,16 @@ class AppDecorations {
   static BoxDecoration cinematicBackground({
     Alignment glowCenter = const Alignment(0, -0.7),
   }) {
+    if (AppColors.useLightSurfaces) {
+      return const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFFFFFBF3), AppColors.warmSurface, Color(0xFFEFE5D4)],
+        ),
+      );
+    }
+
     return BoxDecoration(
       gradient: AppGradients.screenBackground,
       boxShadow: [
@@ -159,6 +216,7 @@ class AppDecorations {
     bool highlighted = false,
     double opacity = 0.66,
   }) {
+    final light = AppColors.useLightSurfaces;
     return BoxDecoration(
       color: AppColors.cardGlass(opacity),
       borderRadius: BorderRadius.circular(radius),
@@ -168,7 +226,7 @@ class AppDecorations {
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.24),
+          color: Colors.black.withValues(alpha: light ? 0.08 : 0.24),
           blurRadius: 18,
           offset: const Offset(0, 10),
         ),
@@ -190,13 +248,14 @@ class AppDecorations {
     double radius = 24,
     double opacity = 0.52,
   }) {
+    final light = AppColors.useLightSurfaces;
     return BoxDecoration(
       color: AppColors.secondaryGlass(opacity),
       borderRadius: BorderRadius.circular(radius),
       border: Border.all(color: AppColors.goldBorder(0.16), width: 1),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: 0.18),
+          color: Colors.black.withValues(alpha: light ? 0.06 : 0.18),
           blurRadius: 14,
           offset: const Offset(0, 7),
         ),

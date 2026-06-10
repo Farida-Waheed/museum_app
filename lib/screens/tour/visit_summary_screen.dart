@@ -51,11 +51,10 @@ class _VisitSummaryScreenState extends State<VisitSummaryScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final isArabic = Localizations.localeOf(context).languageCode == 'ar';
 
     return AppMenuShell(
       title: l10n.visitSummary.toUpperCase(),
-      backgroundColor: AppColors.darkBackground,
+      backgroundColor: AppColors.resolvedBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 3),
       showChatButton: true,
       body: DecoratedBox(
@@ -73,12 +72,8 @@ class _VisitSummaryScreenState extends State<VisitSummaryScreen> {
             if (snapshot.hasError) {
               return _StateMessage(
                 icon: Icons.cloud_off_rounded,
-                title: isArabic
-                    ? 'حدثت مشكلة في الاتصال. يرجى التحقق من الإنترنت والمحاولة مرة أخرى.'
-                    : 'Connection issue. Please check your internet connection and try again.',
-                body: isArabic
-                    ? 'حدث خطأ ما. يرجى المحاولة مرة أخرى.'
-                    : 'Something went wrong. Please try again.',
+                title: l10n.visitSummaryConnectionTitle,
+                body: l10n.visitSummaryGenericError,
               );
             }
 
@@ -86,10 +81,8 @@ class _VisitSummaryScreenState extends State<VisitSummaryScreen> {
             if (data == null || data.session == null) {
               return _StateMessage(
                 icon: Icons.route_outlined,
-                title: isArabic ? 'لا توجد جولة نشطة' : 'No tour session found',
-                body: isArabic
-                    ? 'سيظهر ملخص الزيارة بعد انتهاء جولة حورس.'
-                    : 'Your visit summary appears after a Horus guided tour.',
+                title: l10n.visitSummaryNoSessionTitle,
+                body: l10n.visitSummaryNoSessionBody,
               );
             }
 
@@ -110,7 +103,6 @@ class _SummaryContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final lang = Localizations.localeOf(context).languageCode;
-    final isArabic = lang == 'ar';
     final exhibits = context.watch<ExhibitProvider>().exhibits;
     final session = data.session!;
     final selectedIds = session.selectedExhibitIds;
@@ -124,17 +116,17 @@ class _SummaryContent extends StatelessWidget {
     final duration = _durationLabel(
       session.startedAt,
       session.completedAt ?? session.updatedAt,
-      isArabic,
+      l10n,
     );
     final endTime = session.completedAt == null
-        ? (isArabic ? 'غير متاح' : 'Not available')
+        ? l10n.visitSummaryNotAvailable
         : DateFormat.yMMMd(lang).add_jm().format(session.completedAt!);
     final ticket = data.robotTicket;
     final language = ticket?.languageCode == 'ar'
-        ? (isArabic ? 'العربية' : 'Arabic')
-        : (isArabic ? 'الإنجليزية' : 'English');
+        ? l10n.ticketsArabic
+        : l10n.ticketsEnglish;
     final tourType = ticket == null
-        ? (isArabic ? 'جولة حورس' : 'Horus tour')
+        ? l10n.visitSummaryHorusTour
         : ticket.tourType.name;
     final routeNames = selectedIds
         .map((id) => _exhibitName(exhibits, id, lang))
@@ -171,19 +163,17 @@ class _SummaryContent extends StatelessWidget {
             textAlign: TextAlign.center,
             style: AppTextStyles.displayArtifactTitle(context).copyWith(
               fontSize: 32,
-              color: Colors.white,
+              color: AppColors.resolvedTitleText,
               fontWeight: FontWeight.w900,
             ),
           ),
           const SizedBox(height: 10),
           Text(
-            isArabic
-                ? 'أنهى حورس جولتك وحفظ أبرز لحظاتها.'
-                : 'Horus completed your tour and saved the highlights.',
+            l10n.visitSummaryHorusCompleted,
             textAlign: TextAlign.center,
             style: AppTextStyles.bodyPrimary(
               context,
-            ).copyWith(color: AppColors.helperText, height: 1.5),
+            ).copyWith(color: AppColors.resolvedBodyText, height: 1.5),
           ),
           const SizedBox(height: 34),
           _MetricGrid(
@@ -194,12 +184,12 @@ class _SummaryContent extends StatelessWidget {
                 icon: Icons.museum_outlined,
               ),
               _MetricItem(
-                label: isArabic ? 'اكتملت' : 'Completed',
+                label: l10n.visitSummaryCompleted,
                 value: '${completedIds.length}',
                 icon: Icons.task_alt_rounded,
               ),
               _MetricItem(
-                label: isArabic ? 'تم تخطيها' : 'Skipped',
+                label: l10n.visitSummarySkipped,
                 value: '${skippedIds.length}',
                 icon: Icons.skip_next_rounded,
               ),
@@ -209,12 +199,12 @@ class _SummaryContent extends StatelessWidget {
                 icon: Icons.timer_outlined,
               ),
               _MetricItem(
-                label: isArabic ? 'الصور' : 'Photos',
+                label: l10n.visitSummaryPhotos,
                 value: '${data.photos.length}',
                 icon: Icons.photo_camera_outlined,
               ),
               _MetricItem(
-                label: isArabic ? 'الأسئلة' : 'Questions',
+                label: l10n.visitSummaryQuestions,
                 value: '${data.questions.length}',
                 icon: Icons.record_voice_over_outlined,
               ),
@@ -223,24 +213,21 @@ class _SummaryContent extends StatelessWidget {
           const SizedBox(height: 22),
           _DetailsPanel(
             rows: [
-              _DetailRow(isArabic ? 'اللغة' : 'Language', language),
-              _DetailRow(isArabic ? 'نوع الجولة' : 'Tour type', tourType),
-              _DetailRow(isArabic ? 'وقت الانتهاء' : 'End time', endTime),
+              _DetailRow(l10n.language, language),
+              _DetailRow(l10n.tourType, tourType),
+              _DetailRow(l10n.visitSummaryEndTime, endTime),
+              _DetailRow(l10n.visitSummarySession, session.sessionId),
               _DetailRow(
-                isArabic ? 'معرّف الجلسة' : 'Session',
-                session.sessionId,
-              ),
-              _DetailRow(
-                isArabic ? 'ملخص المسار' : 'Route summary',
+                l10n.visitSummaryRouteSummary,
                 routeNames.isEmpty
-                    ? (isArabic ? 'غير متاح' : 'Not available')
-                    : routeNames.join(' • '),
+                    ? l10n.visitSummaryNotAvailable
+                    : routeNames.join(' - '),
               ),
             ],
           ),
           const SizedBox(height: 26),
           _OutlineAction(
-            label: isArabic ? 'عرض ذكرياتي' : 'View My Memories',
+            label: l10n.visitSummaryViewMemories,
             onPressed: () => Navigator.pushNamed(context, AppRoutes.memories),
           ),
           const SizedBox(height: 12),
@@ -265,20 +252,20 @@ class _SummaryContent extends StatelessWidget {
   static String _durationLabel(
     DateTime? startedAt,
     DateTime? endedAt,
-    bool isArabic,
+    AppLocalizations l10n,
   ) {
     if (startedAt == null || endedAt == null) {
-      return isArabic ? 'غير متاح' : 'N/A';
+      return l10n.visitSummaryNotAvailable;
     }
     final minutes = endedAt
         .difference(startedAt)
         .inMinutes
         .clamp(0, 9999)
         .toInt();
-    if (minutes < 60) return isArabic ? '$minutes د' : '$minutes min';
+    if (minutes < 60) return l10n.visitSummaryMinutes(minutes);
     final hours = minutes ~/ 60;
     final rest = minutes % 60;
-    return isArabic ? '$hours س $rest د' : '${hours}h ${rest}m';
+    return l10n.visitSummaryHoursMinutes(hours, rest);
   }
 }
 
@@ -337,7 +324,7 @@ class _MetricCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: AppTextStyles.titleLarge(
               context,
-            ).copyWith(color: Colors.white, fontSize: 22),
+            ).copyWith(color: AppColors.resolvedTitleText, fontSize: 22),
           ),
           const SizedBox(height: 3),
           Text(
@@ -346,7 +333,7 @@ class _MetricCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: AppTextStyles.metadata(
               context,
-            ).copyWith(color: AppColors.neutralMedium),
+            ).copyWith(color: AppColors.resolvedMutedText),
           ),
         ],
       ),
@@ -378,7 +365,7 @@ class _DetailsPanel extends StatelessWidget {
                         row.label,
                         style: AppTextStyles.metadata(
                           context,
-                        ).copyWith(color: AppColors.neutralMedium),
+                        ).copyWith(color: AppColors.resolvedMutedText),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -387,9 +374,10 @@ class _DetailsPanel extends StatelessWidget {
                       child: Text(
                         row.value,
                         textAlign: TextAlign.end,
-                        style: AppTextStyles.bodyPrimary(
-                          context,
-                        ).copyWith(color: Colors.white, height: 1.35),
+                        style: AppTextStyles.bodyPrimary(context).copyWith(
+                          color: AppColors.resolvedTitleText,
+                          height: 1.35,
+                        ),
                       ),
                     ),
                   ],
@@ -455,7 +443,7 @@ class _StateMessage extends StatelessWidget {
               textAlign: TextAlign.center,
               style: AppTextStyles.titleLarge(
                 context,
-              ).copyWith(color: Colors.white),
+              ).copyWith(color: AppColors.resolvedTitleText),
             ),
             const SizedBox(height: 10),
             Text(
@@ -463,7 +451,7 @@ class _StateMessage extends StatelessWidget {
               textAlign: TextAlign.center,
               style: AppTextStyles.bodyPrimary(
                 context,
-              ).copyWith(color: AppColors.neutralMedium, height: 1.45),
+              ).copyWith(color: AppColors.resolvedMutedText, height: 1.45),
             ),
           ],
         ),

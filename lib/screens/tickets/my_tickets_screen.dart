@@ -60,13 +60,13 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
 
     return AppMenuShell(
       title: 'HORUS-BOT',
-      backgroundColor: AppColors.baseBlack,
+      backgroundColor: AppColors.resolvedBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 2),
       showChatButton: true,
       body: Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
         child: Container(
-          decoration: const BoxDecoration(color: AppColors.cinematicBackground),
+          decoration: BoxDecoration(color: AppColors.resolvedBackground),
           child: authProvider.isLoggedIn
               ? _buildWallet(
                   context,
@@ -115,7 +115,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
                   textAlign: TextAlign.start,
                   style: AppTextStyles.bodyPrimary(
                     context,
-                  ).copyWith(color: AppColors.bodyText, height: 1.45),
+                  ).copyWith(color: AppColors.resolvedBodyText, height: 1.45),
                 ),
               ],
             ),
@@ -207,10 +207,8 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
         if (pastOrders.isNotEmpty) ...[
           TextButton(
             style: TextButton.styleFrom(
-              alignment: isArabic
-                  ? Alignment.centerRight
-                  : Alignment.centerLeft,
-              foregroundColor: AppColors.bodyText,
+              alignment: AlignmentDirectional.centerStart,
+              foregroundColor: AppColors.resolvedBodyText,
               padding: const EdgeInsetsDirectional.symmetric(
                 horizontal: 6,
                 vertical: 8,
@@ -282,7 +280,7 @@ class _MyTicketsScreenState extends State<MyTicketsScreen> {
       builder: (dialogContext) => Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
         child: AlertDialog(
-          backgroundColor: AppColors.cinematicSection,
+          backgroundColor: AppColors.resolvedCard,
           title: Text(isArabic ? 'إلغاء الحجز؟' : 'Cancel booking?'),
           content: Text(
             isArabic
@@ -409,7 +407,7 @@ class _EmptyTicketsState extends StatelessWidget {
                     textAlign: TextAlign.start,
                     style: AppTextStyles.bodyPrimary(
                       context,
-                    ).copyWith(color: AppColors.bodyText, height: 1.45),
+                    ).copyWith(color: AppColors.resolvedBodyText, height: 1.45),
                   ),
                   const SizedBox(height: AppSpacing.cardPaddingCompact),
                   SizedBox(
@@ -474,7 +472,7 @@ class _TicketLoadErrorState extends StatelessWidget {
                 textAlign: TextAlign.start,
                 style: AppTextStyles.bodyPrimary(
                   context,
-                ).copyWith(color: AppColors.bodyText, height: 1.45),
+                ).copyWith(color: AppColors.resolvedBodyText, height: 1.45),
               ),
               if (onRetry != null) ...[
                 const SizedBox(height: AppSpacing.cardPaddingCompact),
@@ -633,7 +631,7 @@ class _TicketErrorBanner extends StatelessWidget {
               textAlign: TextAlign.start,
               style: AppTextStyles.metadata(
                 context,
-              ).copyWith(color: AppColors.bodyText, height: 1.35),
+              ).copyWith(color: AppColors.resolvedBodyText, height: 1.35),
             ),
           ),
           if (onRetry != null) ...[
@@ -676,7 +674,7 @@ class _SkippedBookingsNotice extends StatelessWidget {
               textAlign: TextAlign.start,
               style: AppTextStyles.metadata(
                 context,
-              ).copyWith(color: AppColors.bodyText, height: 1.35),
+              ).copyWith(color: AppColors.resolvedBodyText, height: 1.35),
             ),
           ),
         ],
@@ -731,7 +729,7 @@ class _OrderHeader extends StatelessWidget {
                 textAlign: TextAlign.start,
                 style: AppTextStyles.premiumCardTitle(
                   context,
-                ).copyWith(color: AppColors.whiteTitle, fontSize: 17),
+                ).copyWith(color: AppColors.resolvedTitleText, fontSize: 17),
               ),
             ),
             _StatusPill(
@@ -1181,7 +1179,7 @@ class _IntroCard extends StatelessWidget {
             textAlign: TextAlign.start,
             style: AppTextStyles.premiumScreenTitle(
               context,
-            ).copyWith(color: AppColors.whiteTitle, fontSize: 24),
+            ).copyWith(color: AppColors.resolvedTitleText, fontSize: 24),
           ),
           const SizedBox(height: 8),
           Text(
@@ -1189,7 +1187,7 @@ class _IntroCard extends StatelessWidget {
             textAlign: TextAlign.start,
             style: AppTextStyles.bodyPrimary(
               context,
-            ).copyWith(color: AppColors.bodyText, height: 1.45),
+            ).copyWith(color: AppColors.resolvedBodyText, height: 1.45),
           ),
         ],
       ),
@@ -1226,9 +1224,10 @@ class _InfoGrid extends StatelessWidget {
                   Text(
                     item.label,
                     textAlign: TextAlign.start,
-                    style: AppTextStyles.metadata(
-                      context,
-                    ).copyWith(color: AppColors.neutralMedium, fontSize: 11),
+                    style: AppTextStyles.metadata(context).copyWith(
+                      color: AppColors.resolvedMutedText,
+                      fontSize: 11,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -1303,7 +1302,7 @@ class _CodeBox extends StatelessWidget {
             textAlign: TextAlign.start,
             style: AppTextStyles.metadata(
               context,
-            ).copyWith(color: AppColors.neutralMedium, height: 1.35),
+            ).copyWith(color: AppColors.resolvedMutedText, height: 1.35),
           ),
         ],
       ),
@@ -1330,7 +1329,7 @@ class _BreakdownLine extends StatelessWidget {
               textAlign: TextAlign.start,
               style: AppTextStyles.metadata(
                 context,
-              ).copyWith(color: AppColors.neutralMedium),
+              ).copyWith(color: AppColors.resolvedMutedText),
             ),
           ),
           const SizedBox(width: 12),
@@ -1381,7 +1380,7 @@ class _MutedText extends StatelessWidget {
       textAlign: TextAlign.start,
       style: AppTextStyles.metadata(
         context,
-      ).copyWith(color: AppColors.neutralMedium, height: 1.35),
+      ).copyWith(color: AppColors.resolvedMutedText, height: 1.35),
     );
   }
 }
@@ -1660,7 +1659,7 @@ class _PaymentLockedNotice extends StatelessWidget {
                       : 'QR becomes available after counter confirmation.',
                   style: AppTextStyles.premiumCardTitle(
                     context,
-                  ).copyWith(color: AppColors.whiteTitle, fontSize: 14),
+                  ).copyWith(color: AppColors.resolvedTitleText, fontSize: 14),
                 ),
                 const SizedBox(height: 5),
                 Text(

@@ -68,7 +68,7 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
         SnackBar(
           content: Text(l10n.askDuringActiveTourOnly),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: AppColors.cinematicElevated,
+          backgroundColor: AppColors.resolvedElevated,
         ),
       );
       return;

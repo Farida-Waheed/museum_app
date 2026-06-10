@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -31,12 +31,12 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen> {
     final isBookmarked = provider.isBookmarked(exhibit.id);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        backgroundColor: AppColors.cinematicCard,
+        backgroundColor: AppColors.resolvedCard,
         content: Text(
           isBookmarked ? l10n.addedToBookmarks : l10n.removedFromBookmarks,
           style: AppTextStyles.bodyPrimary(
             context,
-          ).copyWith(color: Colors.white),
+          ).copyWith(color: AppColors.resolvedTitleText),
         ),
         duration: const Duration(milliseconds: 900),
         behavior: SnackBarBehavior.floating,
@@ -84,7 +84,7 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen> {
           ),
       ],
       body: DecoratedBox(
-        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
+        decoration: BoxDecoration(color: AppColors.resolvedBackground),
         child: ListView(
           padding: const EdgeInsets.fromLTRB(0, 0, 0, 144),
           children: [
@@ -208,7 +208,7 @@ class _ExhibitDetailsPanel extends StatelessWidget {
               description,
               style: AppTextStyles.premiumBody(
                 context,
-              ).copyWith(height: 1.58, color: AppColors.bodyText),
+              ).copyWith(height: 1.58, color: AppColors.resolvedBodyText),
             ),
           ),
         ],
@@ -228,7 +228,7 @@ class _ExhibitImageFallback extends StatelessWidget {
       imageAsset.isNotEmpty ? imageAsset : 'assets/images/museum_interior.jpg',
       fit: BoxFit.cover,
       errorBuilder: (_, __, ___) => Container(
-        color: AppColors.cinematicSection,
+        color: AppColors.resolvedCard,
         child: const Center(
           child: Icon(
             Icons.museum_outlined,
@@ -266,7 +266,7 @@ class _DetailRow extends StatelessWidget {
             width: 118,
             child: Text(
               data.label.toUpperCase(),
-              textAlign: isArabic ? TextAlign.right : TextAlign.left,
+              textAlign: TextAlign.start,
               style: AppTextStyles.premiumSectionLabel(
                 context,
               ).copyWith(fontSize: 10, color: AppColors.softGold),
@@ -276,10 +276,10 @@ class _DetailRow extends StatelessWidget {
           Expanded(
             child: Text(
               data.value,
-              textAlign: isArabic ? TextAlign.right : TextAlign.left,
+              textAlign: TextAlign.start,
               style: AppTextStyles.premiumBody(
                 context,
-              ).copyWith(color: AppColors.whiteTitle, height: 1.35),
+              ).copyWith(color: AppColors.resolvedTitleText, height: 1.35),
             ),
           ),
         ],

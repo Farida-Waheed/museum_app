@@ -161,7 +161,7 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
     return AppMenuShell(
       title: 'HORUS-BOT',
       bottomNavigationBar: const BottomNav(currentIndex: 2),
-      backgroundColor: AppColors.baseBlack,
+      backgroundColor: AppColors.resolvedBackground,
       body: Directionality(
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
         child: Container(
@@ -227,7 +227,7 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                         onChanged: (value) => _languageOther = value,
                         style: AppTextStyles.bodyPrimary(
                           context,
-                        ).copyWith(color: AppColors.whiteTitle),
+                        ).copyWith(color: AppColors.resolvedTitleText),
                         decoration: InputDecoration(
                           labelText: isArabic
                               ? '\u0644\u063a\u0629 \u0623\u062e\u0631\u0649'
@@ -236,7 +236,7 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                               ? '\u0627\u0643\u062a\u0628 \u0627\u0644\u0644\u063a\u0629 \u0627\u0644\u062a\u064a \u062a\u0641\u0636\u0644\u0647\u0627'
                               : 'Type your preferred language',
                           filled: true,
-                          fillColor: AppColors.cinematicCard.withValues(
+                          fillColor: AppColors.resolvedCard.withValues(
                             alpha: 0.48,
                           ),
                           border: OutlineInputBorder(
@@ -333,7 +333,7 @@ class _IntroCard extends StatelessWidget {
             l10n.tourCustomizeSubtitle,
             style: AppTextStyles.bodyPrimary(
               context,
-            ).copyWith(color: AppColors.bodyText, height: 1.45),
+            ).copyWith(color: AppColors.resolvedBodyText, height: 1.45),
             textAlign: TextAlign.start,
           ),
         ],
@@ -472,7 +472,7 @@ class _InlineStateMessage extends StatelessWidget {
               textAlign: TextAlign.start,
               style: AppTextStyles.metadata(
                 context,
-              ).copyWith(color: AppColors.neutralMedium),
+              ).copyWith(color: AppColors.resolvedMutedText),
             ),
           ),
         ],
@@ -569,7 +569,7 @@ class _SelectableExhibitTile extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: AppTextStyles.metadata(
                           context,
-                        ).copyWith(color: AppColors.neutralMedium),
+                        ).copyWith(color: AppColors.resolvedMutedText),
                         textAlign: TextAlign.start,
                       ),
                     ],
@@ -581,7 +581,9 @@ class _SelectableExhibitTile extends StatelessWidget {
                       : disabled
                       ? Icons.lock_outline_rounded
                       : Icons.radio_button_unchecked_rounded,
-                  color: selected ? AppColors.primaryGold : AppColors.bodyText,
+                  color: selected
+                      ? AppColors.primaryGold
+                      : AppColors.resolvedBodyText,
                 ),
               ],
             ),
@@ -604,7 +606,7 @@ class _MutedText extends StatelessWidget {
       textAlign: TextAlign.start,
       style: AppTextStyles.metadata(
         context,
-      ).copyWith(color: AppColors.bodyText),
+      ).copyWith(color: AppColors.resolvedBodyText),
     );
   }
 }
@@ -685,7 +687,7 @@ class _PreferenceSwitchCard extends StatelessWidget {
                   subtitle,
                   style: AppTextStyles.metadata(
                     context,
-                  ).copyWith(color: AppColors.neutralMedium),
+                  ).copyWith(color: AppColors.resolvedMutedText),
                   textAlign: TextAlign.start,
                 ),
               ],
@@ -833,7 +835,7 @@ class _SectionCard extends StatelessWidget {
               subtitle!,
               style: AppTextStyles.metadata(
                 context,
-              ).copyWith(color: AppColors.neutralMedium, height: 1.35),
+              ).copyWith(color: AppColors.resolvedMutedText, height: 1.35),
               textAlign: TextAlign.start,
             ),
           ],
@@ -904,7 +906,9 @@ class _ChoicePill extends StatelessWidget {
         child: Text(
           label,
           style: AppTextStyles.metadata(context).copyWith(
-            color: selected ? AppColors.primaryGold : AppColors.bodyText,
+            color: selected
+                ? AppColors.primaryGold
+                : AppColors.resolvedBodyText,
             fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
           ),
         ),
@@ -931,7 +935,7 @@ class _SummaryLine extends StatelessWidget {
               label,
               style: AppTextStyles.metadata(
                 context,
-              ).copyWith(color: AppColors.neutralMedium),
+              ).copyWith(color: AppColors.resolvedMutedText),
               textAlign: TextAlign.start,
             ),
           ),

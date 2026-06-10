@@ -52,18 +52,17 @@ class _SupportConversationScreenState extends State<SupportConversationScreen> {
 
     return AppMenuShell(
       title: l10n.supportConversationTitle.toUpperCase(),
-      backgroundColor: AppColors.cinematicBackground,
+      backgroundColor: AppColors.resolvedBackground,
       bottomNavigationBar: const BottomNav(currentIndex: 4),
       body: DecoratedBox(
-        decoration: const BoxDecoration(color: AppColors.cinematicBackground),
+        decoration: BoxDecoration(color: AppColors.resolvedBackground),
         child: Directionality(
           textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: !authProvider.isLoggedIn
-              ? const GuestPrompt(
+              ? GuestPrompt(
                   icon: Icons.support_agent_outlined,
-                  title: 'Support Inbox',
-                  body:
-                      'Sign in to contact museum support and track your conversations.',
+                  title: l10n.supportInboxTitle,
+                  body: l10n.supportGuestBody,
                 )
               : request == null
               ? _MissingRequestState(message: l10n.supportRequestNotFound)
@@ -115,7 +114,7 @@ class _MissingRequestState extends StatelessWidget {
           textAlign: TextAlign.center,
           style: AppTextStyles.bodyPrimary(
             context,
-          ).copyWith(color: Colors.white),
+          ).copyWith(color: AppColors.resolvedTitleText),
         ),
       ),
     );
@@ -142,9 +141,10 @@ class _RequestSummaryCard extends StatelessWidget {
           Text(
             request.requesterName,
             textAlign: TextAlign.start,
-            style: AppTextStyles.titleMedium(
-              context,
-            ).copyWith(color: Colors.white, fontWeight: FontWeight.w900),
+            style: AppTextStyles.titleMedium(context).copyWith(
+              color: AppColors.resolvedTitleText,
+              fontWeight: FontWeight.w900,
+            ),
           ),
           const SizedBox(height: 10),
           _SummaryLine(label: l10n.supportRequestFrom, value: request.screen),
@@ -168,7 +168,7 @@ class _RequestSummaryCard extends StatelessWidget {
             textAlign: TextAlign.start,
             style: AppTextStyles.bodyPrimary(
               context,
-            ).copyWith(color: Colors.white70, height: 1.5),
+            ).copyWith(color: AppColors.resolvedBodyText, height: 1.5),
           ),
         ],
       ),
@@ -191,7 +191,7 @@ class _SummaryLine extends StatelessWidget {
           '$label: ',
           style: AppTextStyles.metadata(
             context,
-          ).copyWith(color: Colors.white70),
+          ).copyWith(color: AppColors.resolvedBodyText),
         ),
         Expanded(
           child: Text(
@@ -199,7 +199,7 @@ class _SummaryLine extends StatelessWidget {
             textAlign: TextAlign.start,
             style: AppTextStyles.metadata(
               context,
-            ).copyWith(color: Colors.white),
+            ).copyWith(color: AppColors.resolvedTitleText),
           ),
         ),
       ],
@@ -216,8 +216,8 @@ class _SupportChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isUser = message.sender == SupportSender.user;
-    final bubbleColor = isUser ? AppColors.primaryGold : AppColors.darkSurface;
-    final textColor = isUser ? AppColors.darkInk : Colors.white;
+    final bubbleColor = isUser ? AppColors.primaryGold : AppColors.resolvedCard;
+    final textColor = isUser ? AppColors.darkInk : AppColors.resolvedTitleText;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -292,9 +292,9 @@ class _ReplyBar extends StatelessWidget {
                 hintText: l10n.supportReplyHint,
                 hintStyle: AppTextStyles.bodyPrimary(
                   context,
-                ).copyWith(color: Colors.white38),
+                ).copyWith(color: AppColors.resolvedMutedText),
                 filled: true,
-                fillColor: AppColors.cinematicCard,
+                fillColor: AppColors.resolvedCard,
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(18),
                   borderSide: BorderSide(color: AppColors.goldBorder(0.12)),
@@ -310,7 +310,7 @@ class _ReplyBar extends StatelessWidget {
               ),
               style: AppTextStyles.bodyPrimary(
                 context,
-              ).copyWith(color: Colors.white),
+              ).copyWith(color: AppColors.resolvedTitleText),
               onSubmitted: (_) => onSend(),
             ),
           ),

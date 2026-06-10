@@ -100,6 +100,7 @@ class _SuggestionChipsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Wrap(
       spacing: 10,
       runSpacing: 8,
@@ -132,34 +133,34 @@ class _SuggestionChipsCard extends StatelessWidget {
               String query;
               if (isArabic) {
                 switch (s) {
-                  case 'تذاكر':
-                    query = 'ما أسعار التذاكر وأنواعها؟';
+                  case var value when value == l10n.chatSuggestionTickets:
+                    query = l10n.chatSuggestionTicketsQuery;
                     break;
-                  case 'مواعيد':
-                    query = 'ما مواعيد العمل اليوم؟';
+                  case var value when value == l10n.chatSuggestionHours:
+                    query = l10n.chatSuggestionHoursQuery;
                     break;
-                  case 'فعاليات':
-                    query = 'ما الفعاليات المتاحة اليوم؟';
+                  case var value when value == l10n.chatSuggestionEvents:
+                    query = l10n.chatSuggestionEventsQuery;
                     break;
-                  case 'المدة':
-                    query = 'كم تستغرق الزيارة عادة؟';
+                  case var value when value == l10n.chatSuggestionDuration:
+                    query = l10n.chatSuggestionDurationQuery;
                     break;
                   default:
                     query = s;
                 }
               } else {
                 switch (s) {
-                  case 'Tickets':
-                    query = 'Tell me about ticket prices and ticket types.';
+                  case var value when value == l10n.chatSuggestionTickets:
+                    query = l10n.chatSuggestionTicketsQuery;
                     break;
-                  case 'Hours':
-                    query = 'What are today\'s opening hours?';
+                  case var value when value == l10n.chatSuggestionHours:
+                    query = l10n.chatSuggestionHoursQuery;
                     break;
-                  case 'Events':
-                    query = 'What events are happening today?';
+                  case var value when value == l10n.chatSuggestionEvents:
+                    query = l10n.chatSuggestionEventsQuery;
                     break;
-                  case 'Duration':
-                    query = 'How long does the visit usually take?';
+                  case var value when value == l10n.chatSuggestionDuration:
+                    query = l10n.chatSuggestionDurationQuery;
                     break;
                   default:
                     query = s;
@@ -171,9 +172,10 @@ class _SuggestionChipsCard extends StatelessWidget {
               fit: BoxFit.scaleDown,
               child: Text(
                 s,
-                style: AppTextStyles.bodyPrimary(
-                  context,
-                ).copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+                style: AppTextStyles.bodyPrimary(context).copyWith(
+                  color: AppColors.resolvedTitleText,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ),
@@ -228,7 +230,7 @@ class _TypingIndicatorState extends State<_TypingIndicator>
         Text(
           l10n.chatLoading,
           style: AppTextStyles.metadata(context).copyWith(
-            color: AppColors.neutralMedium,
+            color: AppColors.resolvedMutedText,
             fontSize: 11,
             fontStyle: FontStyle.italic,
           ),
@@ -439,7 +441,7 @@ class _InfoCardBubble extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "• ",
+                  "- ",
                   style: itemStyle.copyWith(fontWeight: FontWeight.bold),
                 ),
                 Expanded(child: Text(it, style: itemStyle)),
@@ -809,7 +811,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               textAlign: TextAlign.center,
               style: AppTextStyles.titleLarge(
                 context,
-              ).copyWith(color: Colors.white),
+              ).copyWith(color: AppColors.resolvedTitleText),
             ),
             const SizedBox(height: 10),
             Text(
@@ -817,7 +819,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               textAlign: TextAlign.center,
               style: AppTextStyles.bodyPrimary(
                 context,
-              ).copyWith(color: AppColors.neutralMedium, height: 1.5),
+              ).copyWith(color: AppColors.resolvedMutedText, height: 1.5),
             ),
           ],
         ),
@@ -830,15 +832,13 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               Padding(
                 padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
                 child: Align(
-                  alignment: isArabic
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
+                  alignment: AlignmentDirectional.centerStart,
                   child: Text(
                     l10n.chatHeaderSubtitle,
-                    textAlign: isArabic ? TextAlign.right : TextAlign.left,
+                    textAlign: TextAlign.start,
                     style: AppTextStyles.metadata(
                       context,
-                    ).copyWith(color: AppColors.neutralMedium),
+                    ).copyWith(color: AppColors.resolvedMutedText),
                   ),
                 ),
               ),
@@ -878,9 +878,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10),
                   child: Align(
-                    alignment: isArabic
-                        ? Alignment.centerRight
-                        : Alignment.centerLeft,
+                    alignment: AlignmentDirectional.centerStart,
                     child: _TypingIndicator(isArabic: isArabic),
                   ),
                 ),
@@ -1009,23 +1007,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           )
         : inactiveContent;
 
-    final helperItems = isArabic
-        ? {
-            'التذاكر': 'ما أسعار التذاكر وأنواعها؟',
-            'المواعيد': 'ما هي أوقات عمل المتحف اليوم؟',
-            'الفعاليات': 'ما الفعاليات المتاحة اليوم؟',
-            'المدة': 'كم تستغرق الزيارة عادة؟',
-            'الاتجاهات': 'كيف أصل إلى المعرض التالي؟',
-            'إمكانية الوصول': 'هل هناك وسائل وصول لذوي الاحتياجات الخاصة؟',
-          }
-        : {
-            'Tickets': 'Tell me about ticket prices and types.',
-            'Hours': 'What are today\'s opening hours?',
-            'Events': 'What events are happening today?',
-            'Duration': 'How long does a visit usually take?',
-            'Directions': 'How do I get to the next exhibit?',
-            'Accessibility': 'What accessibility support is available?',
-          };
+    final helperItems = {
+      l10n.chatSuggestionTickets: l10n.chatSuggestionTicketsQuery,
+      l10n.chatSuggestionHours: l10n.chatSuggestionHoursQuery,
+      l10n.chatSuggestionEvents: l10n.chatSuggestionEventsQuery,
+      l10n.chatSuggestionDuration: l10n.chatSuggestionDurationQuery,
+      l10n.chatSuggestionDirections: l10n.chatSuggestionDirectionsQuery,
+      l10n.chatSuggestionAccessibility: l10n.chatSuggestionAccessibilityQuery,
+    };
 
     final contentWithFloatingHelper = Stack(
       clipBehavior: Clip.none,
@@ -1043,7 +1032,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           CompositedTransformFollower(
             link: _infoLink,
             showWhenUnlinked: false,
-            targetAnchor: isArabic ? Alignment.topRight : Alignment.topLeft,
+            targetAnchor: AlignmentDirectional.topStart.resolve(
+              Directionality.of(context),
+            ),
             followerAnchor: isArabic
                 ? Alignment.bottomRight
                 : Alignment.bottomLeft,
@@ -1053,7 +1044,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
               child: Container(
                 width: math.min(MediaQuery.of(context).size.width * 0.72, 280),
                 decoration: BoxDecoration(
-                  color: AppColors.darkSurfaceSecondary,
+                  color: AppColors.resolvedElevated,
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(
                     color: AppColors.primaryGold.withOpacity(0.25),
