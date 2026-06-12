@@ -1299,7 +1299,7 @@ class _HeroSection extends StatelessWidget {
                           height: 1.08,
                           shadows: [
                             Shadow(
-                              color: Colors.black.withValues(alpha: 0.82),
+                              color: AppColors.darkInk.withValues(alpha: 0.82),
                               blurRadius: 22,
                               offset: const Offset(0, 4),
                             ),
@@ -1399,7 +1399,7 @@ class _PrimaryActionCard extends StatelessWidget {
             border: Border.all(color: AppColors.goldBorder(0.16)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.22),
+                color: AppColors.darkInk.withValues(alpha: 0.22),
                 blurRadius: 16,
                 offset: const Offset(0, 8),
               ),

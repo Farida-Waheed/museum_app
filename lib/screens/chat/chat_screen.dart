@@ -111,10 +111,10 @@ class _SuggestionChipsCard extends StatelessWidget {
           child: OutlinedButton(
             style:
                 TextButton.styleFrom(
-                  backgroundColor: AppColors.primaryGold.withOpacity(0.16),
+                  backgroundColor: AppColors.primaryGold.withValues(alpha: 0.16),
                   foregroundColor: Colors.white,
                   side: BorderSide(
-                    color: AppColors.primaryGold.withOpacity(0.85),
+                    color: AppColors.primaryGold.withValues(alpha: 0.85),
                     width: 1,
                   ),
                   shape: RoundedRectangleBorder(
@@ -126,7 +126,7 @@ class _SuggestionChipsCard extends StatelessWidget {
                   ),
                 ).copyWith(
                   overlayColor: MaterialStateProperty.all(
-                    AppColors.primaryGold.withOpacity(0.24),
+                    AppColors.primaryGold.withValues(alpha: 0.24),
                   ),
                 ),
             onPressed: () {
@@ -274,10 +274,10 @@ class ChatBubble extends StatelessWidget {
 
     final bubbleColor = isUser
         ? AppColors.primaryGold
-        : (isDark ? AppColors.darkSurfaceSecondary : Colors.grey.shade100);
+        : (isDark ? AppColors.darkSurfaceSecondary : AppColors.websiteLightPopover);
     final textColor = isUser
         ? AppColors.darkInk
-        : (isDark ? Colors.white : Colors.black87);
+        : (isDark ? AppColors.whiteTitle : AppColors.resolvedTitleText);
 
     final msgIsArabic = msg.kind == MessageKind.text
         ? _hasArabic(msg.text)
@@ -287,8 +287,10 @@ class ChatBubble extends StatelessWidget {
     final avatar = CircleAvatar(
       radius: 14,
       backgroundColor: isUser
-          ? AppColors.primaryGold.withOpacity(0.14)
-          : (isDark ? Colors.white.withOpacity(0.1) : Colors.blueGrey.shade50),
+          ? AppColors.primaryGold.withValues(alpha: 0.14)
+          : (isDark
+              ? AppColors.whiteTitle.withValues(alpha: 0.10)
+              : AppColors.cardGlass(0.80)),
       child: isUser
           ? const Icon(
               Icons.person_outline,
@@ -299,7 +301,9 @@ class ChatBubble extends StatelessWidget {
               "assets/icons/horus_eye.png",
               width: 16,
               height: 16,
-              color: isDark ? Colors.white70 : Colors.black54,
+              color: isDark
+                  ? AppColors.whiteTitle.withValues(alpha: 0.70)
+                  : AppColors.resolvedMutedText,
             ),
     );
 
@@ -354,12 +358,12 @@ class ChatBubble extends StatelessWidget {
                 bottomRight: Radius.circular(isUser ? 6 : 20),
               ),
               border: Border.all(
-                color: AppColors.primaryGold.withOpacity(0.16),
+                color: AppColors.primaryGold.withValues(alpha: 0.10),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 8,
+                  color: AppColors.surfaceShadow(0.06),
+                  blurRadius: 10,
                   offset: const Offset(0, 2),
                 ),
               ],
@@ -404,15 +408,17 @@ class _InfoCardBubble extends StatelessWidget {
       fontWeight: FontWeight.w900,
       color: isUser
           ? AppColors.darkInk
-          : (isDark ? Colors.white : Colors.black),
+          : (isDark ? AppColors.whiteTitle : AppColors.resolvedTitleText),
       fontSize: 15,
       letterSpacing: 0.2,
     );
 
     final itemStyle = AppTextStyles.bodyPrimary(context).copyWith(
       color: isUser
-          ? AppColors.darkInk.withOpacity(0.8)
-          : (isDark ? Colors.white.withOpacity(0.9) : Colors.black87),
+          ? AppColors.darkInk.withValues(alpha: 0.8)
+          : (isDark
+              ? AppColors.whiteTitle.withValues(alpha: 0.9)
+              : AppColors.resolvedBodyText),
       fontSize: 14,
       height: 1.5,
     );
@@ -896,17 +902,19 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                             : TextDirection.ltr,
                         onSubmitted: _submit,
                         style: AppTextStyles.bodyPrimary(context).copyWith(
-                          color: isDark ? Colors.white : AppColors.darkInk,
+                          color: isDark ? AppColors.whiteTitle : AppColors.darkInk,
                         ),
                         decoration: InputDecoration(
                           hintText: l10n.chatInputHint,
                           hintStyle: AppTextStyles.bodyPrimary(context)
                               .copyWith(
-                                color: isDark ? Colors.white54 : Colors.black45,
+                                color: isDark
+                                    ? AppColors.whiteTitle.withValues(alpha: 0.54)
+                                    : AppColors.resolvedMutedText,
                               ),
                           fillColor: isDark
-                              ? Colors.white.withOpacity(0.06)
-                              : Colors.grey.shade100,
+                              ? AppColors.whiteTitle.withValues(alpha: 0.06)
+                              : AppColors.websiteLightPopover,
                           filled: true,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(26),
@@ -926,7 +934,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                       child: CircleAvatar(
                         backgroundColor: _canSend
                             ? AppColors.primaryGold
-                            : (isDark ? Colors.white10 : Colors.grey.shade200),
+                            : (isDark
+                                ? AppColors.whiteTitle.withValues(alpha: 0.10)
+                                : AppColors.websiteLightBackground),
                         radius: 22,
                         child: IconButton(
                           onPressed: _canSend
@@ -934,7 +944,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                               : null,
                           icon: Icon(
                             Icons.send_rounded,
-                            color: _canSend ? AppColors.darkInk : Colors.grey,
+                            color: _canSend
+                                ? AppColors.darkInk
+                                : AppColors.resolvedMutedText,
                             size: 18,
                           ),
                         ),
@@ -1047,11 +1059,11 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                   color: AppColors.resolvedElevated,
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(
-                    color: AppColors.primaryGold.withOpacity(0.25),
+                    color: AppColors.primaryGold.withValues(alpha: 0.25),
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.25),
+                      color: AppColors.darkInk.withValues(alpha: 0.25),
                       blurRadius: 16,
                       offset: const Offset(0, 4),
                     ),
@@ -1070,7 +1082,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                     Text(
                       l10n.quickHelpTopics,
                       style: AppTextStyles.titleMedium(context).copyWith(
-                        color: Colors.white,
+                        color: AppColors.resolvedTitleText,
                         fontWeight: FontWeight.w900,
                       ),
                     ),
@@ -1091,14 +1103,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                               vertical: 10,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.primaryGold.withOpacity(0.18),
+                              color: AppColors.primaryGold.withValues(alpha: 0.18),
                               borderRadius: BorderRadius.circular(18),
                             ),
                             child: Text(
                               entry.key,
                               style: AppTextStyles.bodyPrimary(context)
                                   .copyWith(
-                                    color: Colors.white,
+                                    color: AppColors.resolvedTitleText,
                                     fontWeight: FontWeight.w700,
                                   ),
                             ),
@@ -1126,19 +1138,27 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     }
 
     return Scaffold(
-      backgroundColor: isDark ? AppColors.darkBackground : Colors.white,
+      backgroundColor: AppColors.resolvedBackground,
       appBar: AppBar(
         title: Text(
           l10n.askTheGuide.toUpperCase(),
           style: AppTextStyles.displayScreenTitle(
             context,
-          ).copyWith(fontWeight: FontWeight.w900, fontSize: 18),
+          ).copyWith(
+            fontWeight: FontWeight.w900,
+            fontSize: 18,
+            color: AppColors.resolvedTitleText,
+          ),
         ),
-        backgroundColor: isDark ? AppColors.darkHeader : Colors.white,
+        backgroundColor: AppColors.resolvedBackground,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          icon: Icon(
+            Icons.arrow_back_ios_new,
+            size: 20,
+            color: AppColors.resolvedTitleText,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
       ),

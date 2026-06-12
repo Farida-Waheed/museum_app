@@ -62,7 +62,7 @@ void showTourAlertOnce(
       context: navigator.context,
       barrierDismissible: true,
       barrierLabel: 'tour-alert',
-      barrierColor: Colors.black.withOpacity(0.45),
+      barrierColor: AppColors.dialogBarrier(0.45),
       transitionDuration: const Duration(milliseconds: 260),
       pageBuilder: (ctx, _, __) {
         return SafeArea(

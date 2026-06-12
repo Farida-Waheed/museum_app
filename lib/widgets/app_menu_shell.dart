@@ -32,6 +32,7 @@ class _SideMenu extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final authProvider = context.watch<AuthProvider>();
     final isGuest = !authProvider.isLoggedIn;
+    final useLightSurfaces = AppColors.useLightSurfaces;
     final userName = authProvider.currentUser?.name ?? l10n.guestUser;
     final userSubtitle = authProvider.isLoggedIn
         ? authProvider.currentUser?.email ?? l10n.exploreTheMuseum
@@ -53,9 +54,15 @@ class _SideMenu extends StatelessWidget {
                   ? AlignmentDirectional.centerStart
                   : AlignmentDirectional.centerEnd,
               colors: [
-                Colors.black.withValues(alpha: 0.90),
-                Colors.black.withValues(alpha: 0.74),
-                Colors.transparent,
+                if (useLightSurfaces) ...[
+                  AppColors.websiteLightPopover.withOpacity(0.98),
+                  AppColors.websiteLightCard.withOpacity(0.92),
+                  AppColors.websiteLightBackground.withOpacity(0.0),
+                ] else ...[
+                  Colors.black.withValues(alpha: 0.90),
+                  Colors.black.withValues(alpha: 0.74),
+                  Colors.transparent,
+                ],
               ],
               stops: const [0.0, 0.76, 1.0],
             ),
@@ -126,7 +133,7 @@ class _SideMenu extends StatelessWidget {
                                           context,
                                         ).copyWith(
                                           fontSize: 18,
-                                          color: Colors.white,
+                                          color: AppColors.resolvedTitleText,
                                         ),
                                   ),
                                   Text(
@@ -342,6 +349,7 @@ class _ShellCircleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final useLightSurfaces = AppColors.useLightSurfaces;
     return Center(
       child: Material(
         color: Colors.transparent,
@@ -358,9 +366,11 @@ class _ShellCircleButton extends StatelessWidget {
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: Colors.black.withValues(
-                    alpha: 0.09 + (0.15 * scrollStrength),
-                  ),
+                  color: useLightSurfaces
+                      ? AppColors.cardGlass(0.90 - (0.18 * scrollStrength))
+                      : Colors.black.withValues(
+                          alpha: 0.09 + (0.15 * scrollStrength),
+                        ),
                   shape: BoxShape.circle,
                   border: Border.all(
                     color: AppColors.goldBorder(0.18),
@@ -368,8 +378,10 @@ class _ShellCircleButton extends StatelessWidget {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(
-                        alpha: 0.10 + (0.10 * scrollStrength),
+                      color: AppColors.darkInk.withValues(
+                        alpha: useLightSurfaces
+                            ? 0.08 + (0.08 * scrollStrength)
+                            : 0.10 + (0.10 * scrollStrength),
                       ),
                       blurRadius: 8,
                       offset: const Offset(0, 4),
@@ -650,7 +662,9 @@ class AppMenuShellState extends State<AppMenuShell>
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
                       child: Container(
-                        color: Colors.black.withValues(alpha: 0.46 * v),
+                              color: AppColors.useLightSurfaces
+                                  ? AppColors.darkInk.withValues(alpha: 0.18 * v)
+                                  : Colors.black.withValues(alpha: 0.46 * v),
                       ),
                     ),
                   ),

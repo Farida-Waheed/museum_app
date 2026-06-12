@@ -57,7 +57,7 @@ class HomeQuickActionsGrid extends StatelessWidget {
                     border: Border.all(color: AppColors.goldBorder(0.16)),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.18),
+                        color: AppColors.surfaceShadow(0.10),
                         blurRadius: 14,
                         offset: const Offset(0, 7),
                       ),
@@ -78,7 +78,7 @@ class HomeQuickActionsGrid extends StatelessWidget {
                           border: Border.all(color: AppColors.goldBorder(0.18)),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.20),
+                              color: AppColors.surfaceShadow(0.12),
                               blurRadius: 12,
                               offset: const Offset(0, 6),
                             ),

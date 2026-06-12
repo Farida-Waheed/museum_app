@@ -19,39 +19,39 @@ ThemeData getLightTheme(String languageCode) {
     colorScheme: const ColorScheme.light(
       primary: AppColors.primaryGold,
       secondary: AppColors.darkGold,
-      surface: AppColors.warmSurface,
-      onSurface: AppColors.darkInk,
+      surface: AppColors.websiteLightCard,
+      onSurface: AppColors.websiteLightForeground,
       error: AppColors.alertRed,
     ),
 
-    scaffoldBackgroundColor: AppColors.warmSurface,
+    scaffoldBackgroundColor: AppColors.websiteLightBackground,
 
     appBarTheme: AppBarTheme(
-      backgroundColor: AppColors.warmSurface,
+      backgroundColor: AppColors.websiteLightBackground,
       elevation: 0,
-      iconTheme: const IconThemeData(color: AppColors.darkInk),
+      iconTheme: const IconThemeData(color: AppColors.websiteLightForeground),
       centerTitle: true,
       titleTextStyle: TextStyle(
         fontFamily: headingFont,
-        color: AppColors.darkInk,
+        color: AppColors.websiteLightForeground,
         fontSize: 20,
         fontWeight: FontWeight.bold,
       ),
     ),
 
     cardTheme: const CardThemeData(
-      color: Color(0xFFFFFBF3),
+      color: AppColors.websiteLightCard,
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(18)),
-        side: BorderSide(color: Color(0x1F8C6A2F), width: 1),
+        side: BorderSide(color: Color(0x1FD4C9BA), width: 1),
       ),
     ),
 
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-      backgroundColor: AppColors.warmSurface,
+      backgroundColor: AppColors.websiteLightBackground,
       selectedItemColor: AppColors.primaryGold,
-      unselectedItemColor: AppColors.mutedText,
+      unselectedItemColor: AppColors.websiteLightMutedForeground,
       showUnselectedLabels: true,
       type: BottomNavigationBarType.fixed,
     ),
@@ -61,42 +61,44 @@ ThemeData getLightTheme(String languageCode) {
         fontFamily: headingFont,
         fontSize: 28,
         fontWeight: FontWeight.bold,
-        color: AppColors.darkInk,
+        color: AppColors.websiteLightForeground,
       ),
       headlineMedium: TextStyle(
         fontFamily: headingFont,
         fontSize: 22,
         fontWeight: FontWeight.w600,
-        color: AppColors.darkInk,
+        color: AppColors.websiteLightForeground,
       ),
       titleMedium: TextStyle(
         fontFamily: headingFont,
         fontSize: 17,
         fontWeight: FontWeight.w600,
-        color: AppColors.darkInk,
+        color: AppColors.websiteLightForeground,
       ),
       bodyLarge: TextStyle(
         fontFamily: bodyFont,
         fontSize: 14,
-        color: AppColors.darkInk,
+        color: AppColors.websiteLightMutedForeground,
         height: 1.5,
       ),
       bodySmall: TextStyle(
         fontFamily: bodyFont,
         fontSize: 12,
-        color: AppColors.mutedText,
+        color: AppColors.websiteLightMutedForeground,
       ),
     ),
 
     dividerTheme: const DividerThemeData(
-      color: Color(0xFFE2D6BF),
+      color: AppColors.websiteLightBorder,
       thickness: 1,
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: const Color(0xFFFFFBF3),
-      labelStyle: TextStyle(fontFamily: bodyFont, color: AppColors.mutedText),
-      hintStyle: TextStyle(fontFamily: bodyFont, color: AppColors.mutedText),
+      fillColor: AppColors.websiteLightCard,
+      labelStyle:
+          TextStyle(fontFamily: bodyFont, color: AppColors.websiteLightMutedForeground),
+      hintStyle:
+          TextStyle(fontFamily: bodyFont, color: AppColors.websiteLightMutedForeground),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(color: Color(0x268C6A2F)),
@@ -107,8 +109,8 @@ ThemeData getLightTheme(String languageCode) {
       ),
     ),
     snackBarTheme: const SnackBarThemeData(
-      backgroundColor: AppColors.darkInk,
-      contentTextStyle: TextStyle(color: AppColors.whiteTitle),
+      backgroundColor: AppColors.websiteLightPopover,
+      contentTextStyle: TextStyle(color: AppColors.darkInk),
       actionTextColor: AppColors.primaryGold,
     ),
   );

@@ -34,7 +34,7 @@ class HomeInfoCard extends StatelessWidget {
             border: Border.all(color: AppColors.goldBorder(0.15)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.18),
+                color: AppColors.surfaceShadow(0.10),
                 blurRadius: 14,
                 offset: const Offset(0, 7),
               ),

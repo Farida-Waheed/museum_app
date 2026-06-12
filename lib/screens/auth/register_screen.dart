@@ -150,9 +150,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       backgroundColor: AppColors.resolvedBackground,
       body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppGradients.screenBackground,
-        ),
+        decoration: AppColors.useLightSurfaces
+            ? const BoxDecoration(
+                color: AppColors.websiteLightBackground,
+              )
+            : const BoxDecoration(
+                gradient: AppGradients.screenBackground,
+              ),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
@@ -196,9 +200,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         fontSize: isArabic ? 34 : 32,
                                         shadows: [
                                           Shadow(
-                                            color: Colors.black.withValues(
-                                              alpha: 0.45,
-                                            ),
+                                            color: AppColors.useLightSurfaces
+                                                ? AppColors.websiteLightForeground.withValues(
+                                                    alpha: 0.20,
+                                                  )
+                                                : Colors.black.withValues(
+                                                    alpha: 0.45,
+                                                  ),
                                             blurRadius: 12,
                                             offset: const Offset(0, 4),
                                           ),

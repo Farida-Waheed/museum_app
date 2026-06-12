@@ -205,12 +205,16 @@ class _LoginScreenState extends State<LoginScreen> {
             filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
             child: Container(color: Colors.transparent),
           ),
-          Container(color: Colors.black.withValues(alpha: 0.70)),
+          Container(
+            color: AppColors.useLightSurfaces
+                ? AppColors.websiteLightBackground.withOpacity(0.30)
+                : Colors.black.withValues(alpha: 0.70),
+          ),
           DecoratedBox(
             decoration: BoxDecoration(
               gradient: AppGradients.ambientGlow(
                 center: const Alignment(0, -0.10),
-                opacity: 0.10,
+                opacity: AppColors.useLightSurfaces ? 0.08 : 0.10,
               ),
             ),
           ),
@@ -236,7 +240,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ).copyWith(
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.40),
+                                  color: AppColors.surfaceShadow(0.18),
                                   blurRadius: 28,
                                   offset: const Offset(0, 14),
                                 ),
@@ -273,9 +277,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                           fontSize: isArabic ? 34 : 32,
                                           shadows: [
                                             Shadow(
-                                              color: Colors.black.withValues(
-                                                alpha: 0.52,
-                                              ),
+                                              color: AppColors.useLightSurfaces
+                                                  ? AppColors.websiteLightForeground.withValues(
+                                                      alpha: 0.22,
+                                                    )
+                                                  : Colors.black.withValues(
+                                                      alpha: 0.52,
+                                                    ),
                                               blurRadius: 14,
                                               offset: const Offset(0, 4),
                                             ),

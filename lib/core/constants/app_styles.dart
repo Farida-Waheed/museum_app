@@ -7,12 +7,12 @@ class AppStyles {
   // New pattern: Solid layered surfaces with subtle borders
 
   static final solidCardDecoration = BoxDecoration(
-    color: AppColors.cinematicCard,
+    color: AppColors.websiteLightCard,
     borderRadius: BorderRadius.circular(14),
-    border: Border.all(color: AppColors.darkBorder, width: 0.5),
+    border: Border.all(color: AppColors.websiteLightBorder.withOpacity(0.80), width: 0.5),
     boxShadow: [
       BoxShadow(
-        color: Colors.black.withOpacity(0.3),
+        color: AppColors.surfaceShadow(0.12),
         blurRadius: 6,
         offset: const Offset(0, 2),
       ),
@@ -36,12 +36,12 @@ class AppStyles {
 
   // Refined card decoration with better surface definition
   static final cardDecoration = BoxDecoration(
-    color: AppColors.cinematicCard,
+    color: AppColors.websiteLightCard,
     borderRadius: BorderRadius.circular(cardRadius),
-    border: Border.all(color: AppColors.darkBorder, width: 0.5),
+    border: Border.all(color: AppColors.websiteLightBorder.withOpacity(0.72), width: 0.5),
     boxShadow: [
       BoxShadow(
-        color: Colors.black.withOpacity(0.25),
+        color: AppColors.surfaceShadow(0.14),
         blurRadius: 8,
         offset: const Offset(0, 3),
       ),
@@ -50,15 +50,15 @@ class AppStyles {
 
   // NEW: Elevated surface for modals/top-layer content
   static final elevatedSurfaceDecoration = BoxDecoration(
-    color: AppColors.cinematicElevated,
+    color: AppColors.websiteLightPopover,
     borderRadius: BorderRadius.circular(16),
     border: Border.all(
-      color: AppColors.darkBorder.withOpacity(0.6),
+      color: AppColors.websiteLightBorder.withOpacity(0.60),
       width: 0.5,
     ),
     boxShadow: [
       BoxShadow(
-        color: Colors.black.withOpacity(0.4),
+        color: AppColors.surfaceShadow(0.16),
         blurRadius: 10,
         offset: const Offset(0, 4),
       ),
@@ -67,10 +67,10 @@ class AppStyles {
 
   // NEW: Subtle surface for secondary content
   static final subtleSurfaceDecoration = BoxDecoration(
-    color: AppColors.cinematicSection,
+    color: AppColors.websiteLightBackground,
     borderRadius: BorderRadius.circular(12),
     border: Border.all(
-      color: AppColors.darkBorder.withOpacity(0.3),
+      color: AppColors.websiteLightBorder.withOpacity(0.30),
       width: 0.5,
     ),
   );

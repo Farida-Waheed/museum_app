@@ -69,7 +69,7 @@ class _BrandedPermissionDialogState extends State<BrandedPermissionDialog>
     Color helperTextColor;
     Color goldAccent = AppColors.primaryGold;
     Color borderColor;
-    Color overlayColor = Colors.black.withOpacity(0.72);
+    Color overlayColor = AppColors.dialogBarrier(0.72);
 
     if (widget.isHighContrast) {
       surfaceColor = Colors.black;
@@ -85,12 +85,12 @@ class _BrandedPermissionDialogState extends State<BrandedPermissionDialog>
       helperTextColor = AppColors.helperText;
       borderColor = AppColors.primaryGold;
     } else {
-      surfaceColor = const Color(0xFFF7F2E8);
-      textColor = const Color(0xFF2A2118);
-      secondaryTextColor = const Color(0xFF5C5143);
-      helperTextColor = const Color(0xFF7A6E60);
-      goldAccent = const Color(0xFFC9A34A);
-      borderColor = goldAccent.withOpacity(0.15);
+      surfaceColor = AppColors.websiteLightCard;
+      textColor = AppColors.resolvedTitleText;
+      secondaryTextColor = AppColors.resolvedMutedText;
+      helperTextColor = AppColors.websiteLightMutedForeground;
+      goldAccent = AppColors.primaryGold;
+      borderColor = AppColors.goldBorder(0.18);
     }
 
     return Scaffold(
@@ -126,7 +126,7 @@ class _BrandedPermissionDialogState extends State<BrandedPermissionDialog>
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.5),
+                          color: AppColors.darkInk.withOpacity(0.5),
                           blurRadius: 30,
                           offset: const Offset(0, 12),
                         ),

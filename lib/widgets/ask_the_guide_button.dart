@@ -46,7 +46,7 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
     if (!authProvider.isLoggedIn) {
       showDialog(
         context: context,
-        barrierColor: Colors.black54,
+        barrierColor: AppColors.dialogBarrier(0.46),
         builder: (_) => ChatScreen(
           isPopup: true,
           screen: widget.screen,
@@ -76,7 +76,7 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
 
     showDialog(
       context: context,
-      barrierColor: Colors.black54,
+      barrierColor: AppColors.dialogBarrier(0.46),
       builder: (_) => ChatScreen(
         isPopup: true,
         screen: widget.screen,
@@ -108,7 +108,7 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
                 decoration: BoxDecoration(
                   color: widget.subtle
                       ? AppColors.cardGlass(0.46)
-                      : AppColors.cinematicElevated,
+                      : AppColors.resolvedElevated,
                   borderRadius: BorderRadius.circular(widget.subtle ? 26 : 30),
                   border: Border.all(
                     color: AppColors.primaryGold.withValues(
@@ -120,7 +120,7 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(
+                      color: AppColors.darkInk.withValues(
                         alpha: widget.subtle ? 0.18 : 0.6,
                       ),
                       blurRadius: widget.subtle ? 10 : 24,
@@ -153,9 +153,7 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
                     Text(
                       l10n.askTheGuide,
                       style: AppTextStyles.buttonLabel(context).copyWith(
-                        color: Colors.white.withValues(
-                          alpha: widget.subtle ? 0.92 : 1.0,
-                        ),
+                        color: AppColors.resolvedTitleText,
                         fontSize: widget.subtle ? 13 : 14,
                         fontWeight: FontWeight.w800,
                       ),

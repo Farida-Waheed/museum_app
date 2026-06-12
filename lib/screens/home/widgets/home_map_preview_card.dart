@@ -43,7 +43,7 @@ class HomeMapPreviewCard extends StatelessWidget {
               border: Border.all(color: AppColors.goldBorder(0.20)),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.20),
+                  color: AppColors.surfaceShadow(0.12),
                   blurRadius: 16,
                   offset: const Offset(0, 8),
                 ),

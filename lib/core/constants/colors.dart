@@ -36,6 +36,14 @@ class AppColors {
   static Color get resolvedDivider =>
       _useLightSurfaces ? websiteLightBorder : darkDivider;
 
+  static Color dialogBarrier([double alpha = 0.42]) =>
+      _useLightSurfaces
+          ? darkInk.withOpacity(alpha)
+          : Colors.black.withOpacity(alpha);
+
+  static Color surfaceShadow([double alpha = 0.12]) =>
+      darkInk.withOpacity(alpha);
+
   static const Color websiteLightBackground = Color(0xFFF3EFE8);
   static const Color websiteLightCard = Color(0xFFECE5DA);
   static const Color websiteLightPopover = Color(0xFFF2ECE2);
@@ -169,10 +177,10 @@ class AppGradients {
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [
-      Color(0x92000000),
-      Color(0x52000000),
-      Color(0xDA040404),
-      Color(0xFF050505),
+      Color(0x9212100C),
+      Color(0x5212100C),
+      Color(0xDA12100C),
+      Color(0xFF12100C),
     ],
     stops: [0.0, 0.28, 0.76, 1.0],
   );
@@ -180,7 +188,7 @@ class AppGradients {
   static const LinearGradient onboardingOverlay = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [Color(0x8C000000), Color(0x26000000), Color(0xDB000000)],
+    colors: [Color(0x8C12100C), Color(0x2612100C), Color(0xDB12100C)],
     stops: [0.0, 0.42, 1.0],
   );
 }
@@ -194,7 +202,7 @@ class AppDecorations {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFFFFFBF3), AppColors.warmSurface, Color(0xFFEFE5D4)],
+          colors: [AppColors.websiteLightBackground, AppColors.websiteLightCard, Color(0xFFEFE5D4)],
         ),
       );
     }
@@ -226,7 +234,7 @@ class AppDecorations {
       ),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: light ? 0.08 : 0.24),
+          color: AppColors.darkInk.withValues(alpha: light ? 0.08 : 0.24),
           blurRadius: 18,
           offset: const Offset(0, 10),
         ),
@@ -255,7 +263,7 @@ class AppDecorations {
       border: Border.all(color: AppColors.goldBorder(0.16), width: 1),
       boxShadow: [
         BoxShadow(
-          color: Colors.black.withValues(alpha: light ? 0.06 : 0.18),
+          color: AppColors.darkInk.withValues(alpha: light ? 0.06 : 0.18),
           blurRadius: 14,
           offset: const Offset(0, 7),
         ),

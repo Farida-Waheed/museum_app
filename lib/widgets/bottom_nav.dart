@@ -53,7 +53,7 @@ class BottomNav extends StatelessWidget {
             borderRadius: BorderRadius.circular(28),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.26),
+                color: AppColors.surfaceShadow(isDark ? 0.26 : 0.12),
                 blurRadius: 34,
                 spreadRadius: 2,
                 offset: const Offset(0, 16),
@@ -72,14 +72,12 @@ class BottomNav extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                 decoration: BoxDecoration(
-                  color:
-                      (isDark ? AppColors.cinematicNav : AppColors.warmSurface)
-                          .withValues(alpha: isDark ? 0.30 : 0.42),
+                  color: AppColors.resolvedNav.withOpacity(isDark ? 0.30 : 0.82),
                   borderRadius: BorderRadius.circular(28),
                   border: Border.all(
                     color: isDark
                         ? AppColors.goldBorder(0.18)
-                        : AppColors.resolvedMutedText.withValues(alpha: 0.14),
+                        : AppColors.resolvedBorder.withOpacity(0.14),
                   ),
                 ),
                 child: Row(

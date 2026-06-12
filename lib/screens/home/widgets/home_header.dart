@@ -116,12 +116,19 @@ class _HeaderProtectionLayer extends StatelessWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.black.withValues(alpha: 0.12 * scrollStrength),
-                      Colors.black.withValues(alpha: 0.18 * scrollStrength),
-                      Colors.black.withValues(alpha: 0.08 * scrollStrength),
-                      Colors.transparent,
-                    ],
+                    colors: AppColors.useLightSurfaces
+                        ? [
+                            AppColors.websiteLightForeground.withValues(alpha: 0.06 * scrollStrength),
+                            AppColors.websiteLightForeground.withValues(alpha: 0.08 * scrollStrength),
+                            AppColors.websiteLightForeground.withValues(alpha: 0.04 * scrollStrength),
+                            Colors.transparent,
+                          ]
+                        : [
+                            AppColors.darkInk.withValues(alpha: 0.12 * scrollStrength),
+                            AppColors.darkInk.withValues(alpha: 0.18 * scrollStrength),
+                            AppColors.darkInk.withValues(alpha: 0.08 * scrollStrength),
+                            Colors.transparent,
+                          ],
                     stops: const [0.0, 0.36, 0.68, 1.0],
                   ),
                 ),
@@ -150,7 +157,9 @@ class _HeaderBrand extends StatelessWidget {
             fontSize: 17.5,
             shadows: [
               Shadow(
-                color: Colors.black.withValues(alpha: 0.70),
+                color: AppColors.useLightSurfaces
+                    ? AppColors.websiteLightForeground.withValues(alpha: 0.16)
+                    : AppColors.darkInk.withValues(alpha: 0.50),
                 blurRadius: 10,
               ),
             ],
@@ -189,16 +198,22 @@ class _HeaderButton extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: Colors.black.withValues(
-                  alpha: 0.09 + (0.15 * scrollStrength),
-                ),
+                color: AppColors.useLightSurfaces
+                    ? AppColors.cardGlass(0.94)
+                    : Colors.black.withValues(
+                        alpha: 0.09 + (0.15 * scrollStrength),
+                      ),
                 shape: BoxShape.circle,
                 border: Border.all(color: AppColors.goldBorder(0.18), width: 1),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(
-                      alpha: 0.10 + (0.10 * scrollStrength),
-                    ),
+                    color: AppColors.useLightSurfaces
+                        ? AppColors.surfaceShadow(
+                            0.08 + (0.08 * scrollStrength),
+                          )
+                        : Colors.black.withValues(
+                            alpha: 0.10 + (0.10 * scrollStrength),
+                          ),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),

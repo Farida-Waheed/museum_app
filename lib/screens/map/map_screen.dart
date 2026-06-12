@@ -434,7 +434,7 @@ class _MapScreenState extends State<MapScreen>
                                 borderRadius: BorderRadius.circular(22),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withValues(alpha: .25),
+                                    color: AppColors.darkInk.withValues(alpha: 0.18),
                                     blurRadius: 25,
                                     offset: const Offset(0, 8),
                                   ),
@@ -545,7 +545,7 @@ class _MapScreenState extends State<MapScreen>
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withValues(alpha: 0.25),
+                                color: AppColors.darkInk.withValues(alpha: 0.18),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),
@@ -666,7 +666,7 @@ class _MapScreenState extends State<MapScreen>
     final iconColor = isCurrent || isNext
         ? AppColors.darkInk
         : isVisited
-        ? Colors.white
+        ? AppColors.whiteTitle
         : AppColors.primaryGold;
     return Positioned(
       left: x - 24,
@@ -761,7 +761,7 @@ class _MapScreenState extends State<MapScreen>
               decoration: BoxDecoration(
                 color: Colors.blue,
                 shape: BoxShape.circle,
-                border: Border.all(color: Colors.white, width: 3),
+                border: Border.all(color: AppColors.resolvedBorder.withValues(alpha: 0.40), width: 3),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.blue.withValues(alpha: 0.4),
@@ -772,7 +772,7 @@ class _MapScreenState extends State<MapScreen>
               ),
               child: const Icon(
                 Icons.person_pin_circle_rounded,
-                color: Colors.white,
+                color: AppColors.whiteTitle,
                 size: 14,
               ),
             ),
@@ -808,7 +808,7 @@ class _MapScreenState extends State<MapScreen>
                 width: 28,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: AppColors.darkInk,
+                  color: AppColors.resolvedTitleText,
                   shape: BoxShape.circle,
                   border: Border.all(color: AppColors.primaryGold, width: 2),
                   boxShadow: [
@@ -850,7 +850,7 @@ class _MapScreenState extends State<MapScreen>
           label,
           style: AppTextStyles.metadata(context).copyWith(
             fontSize: 11,
-            color: Colors.white,
+            color: AppColors.resolvedBodyText,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -869,7 +869,7 @@ class _MapActionBtn extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.resolvedCard,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: AppColors.resolvedBorder.withValues(alpha: 0.12)),
       ),
       child: IconButton(
         icon: Icon(icon, color: AppColors.primaryGold, size: 20),
@@ -1180,7 +1180,7 @@ class _StatusPill extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppTextStyles.metadata(context).copyWith(
-                color: Colors.white,
+                color: AppColors.resolvedTitleText,
                 fontSize: 10,
                 fontWeight: FontWeight.w800,
               ),
@@ -1212,8 +1212,8 @@ class _MapHomeStyleHeader extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      Colors.black.withValues(alpha: 0.26),
-                      Colors.black.withValues(alpha: 0.12),
+                      AppColors.darkInk.withValues(alpha: 0.22),
+                      AppColors.darkInk.withValues(alpha: 0.10),
                       Colors.transparent,
                     ],
                   ),
@@ -1270,7 +1270,7 @@ class _MapHeaderBrand extends StatelessWidget {
             fontSize: 17.5,
             shadows: [
               Shadow(
-                color: Colors.black.withValues(alpha: 0.70),
+                color: AppColors.darkInk.withValues(alpha: 0.50),
                 blurRadius: 10,
               ),
             ],
@@ -1296,12 +1296,14 @@ class _HeaderCircleButton extends StatelessWidget {
           width: 44,
           height: 44,
           decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.18),
+            color: AppColors.useLightSurfaces
+                ? AppColors.cardGlass(0.76)
+                : AppColors.darkInk.withValues(alpha: 0.18),
             shape: BoxShape.circle,
             border: Border.all(color: AppColors.goldBorder(0.18), width: 1),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.18),
+                color: AppColors.darkInk.withValues(alpha: 0.18),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
@@ -1348,7 +1350,7 @@ class _ExhibitPreviewOverlay extends StatelessWidget {
         children: [
           GestureDetector(
             onTap: onClose,
-            child: Container(color: Colors.black.withValues(alpha: 0.44)),
+            child: Container(color: AppColors.darkInk.withValues(alpha: 0.44)),
           ),
           Align(
             alignment: Alignment.bottomCenter,
@@ -1487,7 +1489,7 @@ class MapGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final linePaint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.02)
+      ..color = AppColors.whiteTitle.withValues(alpha: 0.02)
       ..strokeWidth = 1;
     double gridSize = 50;
     for (double i = 0; i <= size.width; i += gridSize) {

@@ -16,13 +16,13 @@ class AppTextStyles {
       Theme.of(context).brightness == Brightness.dark;
 
   static Color _titleColor(BuildContext context) =>
-      _isDark(context) ? AppColors.whiteTitle : AppColors.darkInk;
+      _isDark(context) ? AppColors.whiteTitle : AppColors.resolvedTitleText;
 
   static Color _bodyColor(BuildContext context) =>
-      _isDark(context) ? AppColors.bodyText : const Color(0xFF4E473B);
+      _isDark(context) ? AppColors.bodyText : AppColors.resolvedBodyText;
 
   static Color _mutedColor(BuildContext context) =>
-      _isDark(context) ? AppColors.mutedText : const Color(0xFF6E6455);
+      _isDark(context) ? AppColors.mutedText : AppColors.resolvedMutedText;
 
   // --- LEGACY TYPOGRAPHY (Intro & Onboarding ONLY) ---
   // Preservation of Playfair Display for English as per requirements.
@@ -190,13 +190,14 @@ class AppTextStyles {
     );
   }
 
-  static TextStyle brandTitle(BuildContext context, {bool isDark = true}) {
+  static TextStyle brandTitle(BuildContext context, {bool? isDark}) {
+    final bool useWhite = isDark ?? _isDark(context);
     if (_isArabic(context)) {
       return GoogleFonts.amiri(
         textStyle: TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 20,
-          color: isDark ? Colors.white : AppColors.darkInk,
+          color: useWhite ? Colors.white : AppColors.darkInk,
         ),
       );
     }
@@ -205,7 +206,7 @@ class AppTextStyles {
         fontWeight: FontWeight.w600,
         fontSize: 20,
         letterSpacing: 0.5,
-        color: isDark ? Colors.white : AppColors.darkInk,
+        color: useWhite ? Colors.white : AppColors.darkInk,
       ),
     );
   }
@@ -422,21 +423,22 @@ class AppTextStyles {
 
   /// Top Screen Titles (Museum Map, Live Tour, Profile, etc.)
   static TextStyle displayScreenTitle(BuildContext context) {
+    final color = _titleColor(context);
     if (_isArabic(context)) {
       return GoogleFonts.amiri(
-        textStyle: const TextStyle(
+        textStyle: TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 20,
-          color: Colors.white,
+          color: color,
           height: 1.1,
         ),
       );
     }
     return GoogleFonts.cinzel(
-      textStyle: const TextStyle(
+      textStyle: TextStyle(
         fontWeight: FontWeight.w600,
         fontSize: 20,
-        color: Colors.white,
+        color: color,
         height: 1.1,
         letterSpacing: 0.5,
       ),
@@ -468,21 +470,22 @@ class AppTextStyles {
 
   /// Artifact Names (Tutankhamun Mask, Rosetta Stone, etc.)
   static TextStyle displayArtifactTitle(BuildContext context) {
+    final color = _titleColor(context);
     if (_isArabic(context)) {
       return GoogleFonts.amiri(
-        textStyle: const TextStyle(
+        textStyle: TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 18,
-          color: Colors.white,
+          color: color,
           height: 1.1,
         ),
       );
     }
     return GoogleFonts.cinzel(
-      textStyle: const TextStyle(
+      textStyle: TextStyle(
         fontWeight: FontWeight.w600,
         fontSize: 18,
-        color: Colors.white,
+        color: color,
         height: 1.1,
       ),
     );
@@ -561,21 +564,22 @@ class AppTextStyles {
 
   /// Secondary body text, card subtitles
   static TextStyle bodySecondary(BuildContext context) {
+    final color = _bodyColor(context);
     if (_isArabic(context)) {
       return GoogleFonts.notoSansArabic(
-        textStyle: const TextStyle(
+        textStyle: TextStyle(
           fontWeight: FontWeight.w400,
           fontSize: 14,
-          color: Colors.white70,
+          color: color,
           height: 1.4,
         ),
       );
     }
     return GoogleFonts.inter(
-      textStyle: const TextStyle(
+      textStyle: TextStyle(
         fontWeight: FontWeight.w400,
         fontSize: 14,
-        color: Colors.white70,
+        color: color,
         height: 1.4,
       ),
     );

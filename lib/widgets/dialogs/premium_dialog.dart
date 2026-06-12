@@ -30,15 +30,19 @@ class PremiumDialog extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
           child: Container(
             decoration: BoxDecoration(
-              color: AppColors.darkInk.withOpacity(0.95),
+              color: AppColors.useLightSurfaces
+                  ? AppColors.cardGlass(0.90)
+                  : AppColors.darkInk.withOpacity(0.95),
               borderRadius: BorderRadius.circular(28),
               border: Border.all(
-                color: AppColors.primaryGold.withOpacity(0.4),
+                color: AppColors.primaryGold.withOpacity(
+                    AppColors.useLightSurfaces ? 0.22 : 0.4),
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
+                  color: AppColors.surfaceShadow(
+                      AppColors.useLightSurfaces ? 0.18 : 0.5),
                   blurRadius: 30,
                   offset: const Offset(0, 15),
                 ),
@@ -57,7 +61,7 @@ class PremiumDialog extends StatelessWidget {
                         child: Text(
                           title,
                           style: AppTextStyles.titleLarge(context).copyWith(
-                            color: Colors.white,
+                            color: AppColors.resolvedTitleText,
                             fontSize: 20,
                             fontWeight: FontWeight.w900,
                             letterSpacing: 0.5,
@@ -67,9 +71,9 @@ class PremiumDialog extends StatelessWidget {
                       if (showCloseButton)
                         IconButton(
                           onPressed: () => Navigator.pop(context),
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.close_rounded,
-                            color: Colors.white70,
+                            color: AppColors.resolvedMutedText,
                             size: 24,
                           ),
                         ),
