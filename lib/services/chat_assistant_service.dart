@@ -81,6 +81,195 @@ class LocalMuseumChatService implements ChatAiService {
         normalized.contains('الدخول');
   }
 
+  bool _containsAny(String normalized, List<String> terms) {
+    return terms.any(normalized.contains);
+  }
+
+  bool _isBookingIntent(String normalized) {
+    return _containsAny(normalized, [
+      'book',
+      'booking',
+      'buy',
+      'purchase',
+      'reserve',
+      'another ticket',
+      'more tickets',
+      'حجز',
+      'احجز',
+      'شراء',
+    ]);
+  }
+
+  bool _isPaymentIntent(String normalized) {
+    return _containsAny(normalized, [
+      'payment',
+      'pay',
+      'counter',
+      'cash',
+      'paid',
+      'pending',
+      'دفع',
+      'الشباك',
+      'كاش',
+    ]);
+  }
+
+  bool _isRulesIntent(String normalized) {
+    return _containsAny(normalized, [
+      'rule',
+      'entry',
+      'children',
+      'child',
+      'adult',
+      'student',
+      'id',
+      'قواعد',
+      'دخول',
+      'أطفال',
+      'طفل',
+      'بالغ',
+      'طالب',
+    ]);
+  }
+
+  bool _isFacilityIntent(String normalized) {
+    return _containsAny(normalized, [
+      'toilet',
+      'restroom',
+      'bathroom',
+      'wc',
+      'facility',
+      'facilities',
+      'دورة',
+      'حمام',
+      'مرافق',
+    ]);
+  }
+
+  bool _isAccessibilityIntent(String normalized) {
+    return _containsAny(normalized, [
+      'accessibility',
+      'wheelchair',
+      'disabled',
+      'mobility',
+      'accessible',
+      'إتاحة',
+      'كرسي',
+      'احتياجات',
+    ]);
+  }
+
+  bool _isQrIntent(String normalized) {
+    return _containsAny(normalized, [
+      'qr',
+      'scan',
+      'scanner',
+      'code',
+      'مسح',
+      'رمز',
+      'كود',
+    ]);
+  }
+
+  bool _isRobotTourIntent(String normalized) {
+    return _containsAny(normalized, [
+      'robot',
+      'horus',
+      'tour',
+      'start',
+      'pair',
+      'guide',
+      'روبوت',
+      'حورس',
+      'جولة',
+      'اقتران',
+    ]);
+  }
+
+  bool _isAppHelpIntent(String normalized) {
+    return _containsAny(normalized, [
+      'app',
+      'my tickets',
+      'wallet',
+      'profile',
+      'how to use',
+      'navigation',
+      'تذاكري',
+      'التطبيق',
+      'استخدم',
+    ]);
+  }
+
+  String _answerBooking(String language) {
+    if (language == 'ar') {
+      return 'للحجز: افتح شراء التذاكر، اختر عدد الزوار، اختر نوع جولة Horus-Bot، حدد التاريخ والوقت، ثم أكد الحجز. يمكنك حجز أكثر من زيارة مستقبلية، والتذاكر الحالية لا تمنع شراء تذاكر إضافية.';
+    }
+    return 'To book: open Buy Tickets, choose visitor quantities, choose the Horus-Bot tour type, select visit date and time, then confirm. You can book more than one future visit; existing tickets do not block extra tickets.';
+  }
+
+  String _answerTickets(String language) {
+    if (language == 'ar') {
+      return 'أسعار التذاكر: مصري بالغ 200 جنيه، مصري طالب أو طفل 100 جنيه، أجنبي بالغ 1450 جنيه، أجنبي طالب أو طفل 730 جنيه. جولة Horus-Bot القياسية 200 جنيه، والجولة المخصصة 350 جنيه.';
+    }
+    return 'Ticket prices: Egyptian Adult EGP 200, Egyptian Student/Child EGP 100, Foreigner Adult EGP 1450, Foreigner Student/Child EGP 730. Horus-Bot Standard Tour is EGP 200 and Personalized Tour is EGP 350.';
+  }
+
+  String _answerPayment(String language) {
+    if (language == 'ar') {
+      return 'الدفع الحالي عند شباك المتحف. ستظهر التذكرة كـ "بانتظار الدفع عند الشباك" حتى يؤكد الكاشير الدفع. بعد التأكيد تصبح التذكرة جاهزة للاستخدام.';
+    }
+    return 'Payment is currently at the museum counter. Your ticket stays "Pending payment at counter" until a cashier confirms it. After confirmation, it becomes ready to use.';
+  }
+
+  String _answerRules(String language) {
+    if (language == 'ar') {
+      return 'قواعد الدخول: اختر تاريخ ووقت الزيارة، والتزم بالحد الأقصى للزوار في الحجز. لا يمكن حجز تذاكر أطفال فقط؛ يجب أن يكون مع الأطفال تذكرة بالغ واحدة على الأقل. تذاكر الطلاب منفصلة وقد تتطلب بطاقة طالب.';
+    }
+    return 'Entry rules: choose a visit date and time and stay within the visitor limit. Child-only bookings are not allowed; children must be accompanied by at least one adult in the same booking. Student tickets are separate and may require student ID.';
+  }
+
+  String _answerFacilities(String language) {
+    if (language == 'ar') {
+      return 'دورات المياه والمرافق تكون عادة قرب المدخل والممرات الرئيسية. إذا كنت داخل المتحف، اتبع لافتات WC أو اسأل أحد موظفي القاعة عن أقرب دورة مياه.';
+    }
+    return 'Restrooms and facilities are usually near the entrance and main corridors. Inside the museum, follow WC signs or ask hall staff for the nearest restroom.';
+  }
+
+  String _answerAccessibility(String language) {
+    if (language == 'ar') {
+      return 'يمكنك ضبط اللغة والتباين وحجم النص من الإعدادات. إذا كانت لديك احتياجات وصول أثناء الجولة، أضفها في تخصيص الجولة أو اطلب مساعدة الموظفين عند الوصول.';
+    }
+    return 'You can adjust language, contrast, and text size in Settings. For tour accessibility needs, add them during tour customization or ask museum staff when you arrive.';
+  }
+
+  String _answerQr(String language) {
+    if (language == 'ar') {
+      return 'لاستخدام QR: ادفع عند الشباك أولاً حتى تصبح التذكرة جاهزة. بعد التأكيد افتح تذاكري واعرض QR دخول المتحف. لبدء جولة الروبوت امسح QR الفعلي الموجود على Horus-Bot.';
+    }
+    return 'To use QR: pay at the counter first so the ticket becomes ready. After confirmation, open My Tickets and show the Museum Entry QR. To start a robot tour, scan the physical QR on Horus-Bot.';
+  }
+
+  String _answerRobotTour(String language, ChatContext context) {
+    final tour = context.tourState;
+    final hasTourContext =
+        tour?.currentExhibitId != null || tour?.nextExhibitId != null;
+    if (language == 'ar') {
+      return hasTourContext
+          ? 'أنت في وضع الجولة. يمكنني مساعدتك في المعروض الحالي، المحطة التالية، وأسئلة استخدام الروبوت. إذا لم يتوفر اتصال الروبوت، سأعتمد على معلومات المتحف المحلية.'
+          : 'لبدء جولة الروبوت: احجز تذكرة جولة، ادفع عند الشباك، ثم من التطبيق امسح QR الفعلي على Horus-Bot عند الوصول. بعد الاقتران افتح الجولة الحية.';
+    }
+    return hasTourContext
+        ? 'You are in tour mode. I can help with the current exhibit, next stop, and robot-guide questions. If robot services are unavailable, I will fall back to local museum knowledge.'
+        : 'To start a robot tour: book a robot tour ticket, pay at the counter, then scan the physical QR on Horus-Bot when you arrive. After pairing, open Live Tour.';
+  }
+
+  String _answerAppHelp(String language) {
+    if (language == 'ar') {
+      return 'استخدم تذاكري لمتابعة حالة الحجز، الدفع، تذكرة دخول المتحف، وتذكرة جولة الروبوت. استخدم شراء التذاكر لحجز زيارة أخرى في أي وقت.';
+    }
+    return 'Use My Tickets to track booking status, payment, the Museum Entry Ticket, and the Robot Tour Ticket. Use Buy Tickets any time to book another visit.';
+  }
+
   bool _isHoursIntent(String normalized) {
     return normalized.contains('hour') ||
         normalized.contains('ساعات') ||
@@ -216,8 +405,56 @@ class LocalMuseumChatService implements ChatAiService {
       return answer;
     }
 
+    if (_isBookingIntent(normalized)) {
+      final answer = _answerBooking(language);
+      _memory.addAssistantMessage(answer);
+      return answer;
+    }
+
+    if (_isPaymentIntent(normalized)) {
+      final answer = _answerPayment(language);
+      _memory.addAssistantMessage(answer);
+      return answer;
+    }
+
     if (_isTicketIntent(normalized)) {
-      final answer = _knowledge.getTicketInfo(language: language);
+      final answer = _answerTickets(language);
+      _memory.addAssistantMessage(answer);
+      return answer;
+    }
+
+    if (_isRulesIntent(normalized)) {
+      final answer = _answerRules(language);
+      _memory.addAssistantMessage(answer);
+      return answer;
+    }
+
+    if (_isFacilityIntent(normalized)) {
+      final answer = _answerFacilities(language);
+      _memory.addAssistantMessage(answer);
+      return answer;
+    }
+
+    if (_isAccessibilityIntent(normalized)) {
+      final answer = _answerAccessibility(language);
+      _memory.addAssistantMessage(answer);
+      return answer;
+    }
+
+    if (_isQrIntent(normalized)) {
+      final answer = _answerQr(language);
+      _memory.addAssistantMessage(answer);
+      return answer;
+    }
+
+    if (_isRobotTourIntent(normalized)) {
+      final answer = _answerRobotTour(language, context);
+      _memory.addAssistantMessage(answer);
+      return answer;
+    }
+
+    if (_isAppHelpIntent(normalized)) {
+      final answer = _answerAppHelp(language);
       _memory.addAssistantMessage(answer);
       return answer;
     }

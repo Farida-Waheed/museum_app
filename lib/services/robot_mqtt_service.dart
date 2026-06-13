@@ -18,6 +18,8 @@ enum RobotMqttConnectionState {
 }
 
 class RobotMqttService extends ChangeNotifier {
+  static const String bridgeRobotId = 'ROBOT-HORUS-001';
+
   // MQTT defaults for the Horus robot broker. These can still be overridden
   // per build with --dart-define values.
   static const String devBrokerHost = String.fromEnvironment(
@@ -94,6 +96,13 @@ class RobotMqttService extends ChangeNotifier {
       debugPrint('MQTT connect skipped: robotId or sessionId is missing.');
       return false;
     }
+    if (robotId != bridgeRobotId) {
+      debugPrint(
+        'MQTT connect skipped: robotId "$robotId" does not match '
+        '$bridgeRobotId.',
+      );
+      return false;
+    }
 
     _activeRobotId = robotId;
     _activeSessionId = sessionId;
@@ -110,6 +119,12 @@ class RobotMqttService extends ChangeNotifier {
       clientId: clientId,
       brokerPort: brokerPort,
       useTls: useTls,
+    );
+    client.setProtocolV311();
+    debugPrint(
+      'MQTT connecting: protocol=MQTT v3.1.1 host=$brokerHost '
+      'port=$brokerPort tls=$useTls username=$username '
+      'robotId=$robotId sessionId=$sessionId clientId=$clientId',
     );
     client.keepAlivePeriod = 30;
     client.logging(on: false);
@@ -175,6 +190,27 @@ class RobotMqttService extends ChangeNotifier {
       return false;
     }
 
+    if (command.robotId != bridgeRobotId) {
+      debugPrint(
+        'MQTT publish skipped: robotId "${command.robotId}" does not match '
+        '$bridgeRobotId.',
+      );
+      return false;
+    }
+    if (!command.hasValidCommandId) {
+      debugPrint(
+        'MQTT publish skipped: commandId is not a UUID: '
+        '${command.commandId}.',
+      );
+      return false;
+    }
+    if (command.isStale()) {
+      debugPrint(
+        'MQTT publish skipped: ${command.commandId} is older than 120 seconds.',
+      );
+      return false;
+    }
+
     if (!isConnected) {
       final connected = await connectForSession(
         robotId: command.robotId,
@@ -191,6 +227,13 @@ class RobotMqttService extends ChangeNotifier {
     final client = _client;
     if (client == null) {
       debugPrint('MQTT publish failed: client is unavailable.');
+      return false;
+    }
+    if (command.isStale()) {
+      debugPrint(
+        'MQTT publish skipped after reconnect: ${command.commandId} is older '
+        'than 120 seconds.',
+      );
       return false;
     }
 
@@ -223,7 +266,7 @@ class RobotMqttService extends ChangeNotifier {
     final client = _client;
     if (client == null || !isConnected) return;
     client.subscribe(ackTopic(robotId), MqttQos.atLeastOnce);
-    client.subscribe(statusTopic(robotId), MqttQos.atLeastOnce);
+    client.subscribe(statusTopic(robotId), MqttQos.atMostOnce);
     client.subscribe(eventTopic(sessionId), MqttQos.atLeastOnce);
   }
 

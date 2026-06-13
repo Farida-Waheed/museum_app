@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +22,8 @@ import '../../services/support_request_service.dart';
 import '../../models/support_message.dart';
 import '../../services/chat_context_builder.dart';
 import '../../services/question_repository.dart';
+import '../../services/robot_mqtt_service.dart';
+import '../../models/robot_command.dart';
 
 // ======================= Chat Screen ==========================
 class ChatScreen extends StatefulWidget {
@@ -502,7 +505,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     Future.delayed(const Duration(milliseconds: 500), () {
       if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
-      _chatProvider.ensureGreeting(l10n.chatHeaderSubtitle);
+      _chatProvider.ensureGreeting(_modeGreeting(l10n));
       // Ensure we scroll to bottom once the greeting message is added.
       Future.delayed(const Duration(milliseconds: 50), () {
         if (!mounted) return;
@@ -526,6 +529,30 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
   }
 
   String _id() => DateTime.now().microsecondsSinceEpoch.toString();
+
+  String _modeGreeting(AppLocalizations l10n) {
+    final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
+    final sessionProvider = Provider.of<session.AppSessionProvider>(
+      context,
+      listen: false,
+    );
+    final tourProvider = Provider.of<TourProvider>(context, listen: false);
+    final isTourMode =
+        widget.currentExhibitId != null ||
+        sessionProvider.hasRestorableTourSession ||
+        (tourProvider.activeSessionId != null &&
+            tourProvider.tourLifecycleState != TourLifecycleState.completed);
+
+    if (prefs.language == 'ar') {
+      return isTourMode
+          ? 'وضع الجولة: اسأل حورس عن المعروض الحالي، المحطة التالية، أو دليل الروبوت.'
+          : 'اسأل حورس عن التذاكر، الأسعار، المرافق، المعروضات، واستخدام التطبيق.';
+    }
+    return isTourMode
+        ? 'Tour mode: Ask Horus about this exhibit, the next stop, or the robot guide.'
+        : 'Ask Horus about tickets, prices, facilities, exhibits, and app help.';
+  }
+
   void _scrollChecker() {
     if (!_scroll.hasClients) return;
     final atBottom =
@@ -754,6 +781,15 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         language: prefs.language,
       );
       _listenForQuestionAnswer(createdQuestion.questionId);
+      unawaited(
+        _sendAppQuestionToRobotBridge(
+          question: question,
+          sessionId: sessionId,
+          userId: userId,
+          robotId:
+              sessionProvider.connectedRobotId ?? tourProvider.connectedRobotId,
+        ),
+      );
     } on QuestionRepositoryException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -763,6 +799,28 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           behavior: SnackBarBehavior.floating,
         ),
       );
+    }
+  }
+
+  Future<void> _sendAppQuestionToRobotBridge({
+    required String question,
+    required String sessionId,
+    required String userId,
+    required String? robotId,
+  }) async {
+    if (kIsWeb || robotId == null || robotId.isEmpty) return;
+    final command = RobotCommand(
+      type: RobotCommandType.appQuestion,
+      sessionId: sessionId,
+      robotId: robotId,
+      userId: userId,
+      payload: {'text': question.trim()},
+    );
+    final published = await context.read<RobotMqttService>().publishCommand(
+      command,
+    );
+    if (!published) {
+      debugPrint('MQTT app_question publish skipped or failed.');
     }
   }
 

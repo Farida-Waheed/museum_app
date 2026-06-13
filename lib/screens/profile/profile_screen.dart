@@ -439,6 +439,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Navigator.pushNamed(context, AppRoutes.myTickets),
                       ),
                       _ActionTile(
+                        icon: Icons.add_card_outlined,
+                        title: isArabic ? 'احجز زيارة أخرى' : 'Book Another Visit',
+                        subtitle: isArabic
+                            ? 'شراء تذاكر إضافية لوقت آخر'
+                            : 'Buy extra museum and Horus-Bot tickets',
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.buyTickets),
+                      ),
+                      _ActionTile(
                         icon: Icons.photo_library_outlined,
                         title: isArabic ? 'الذكريات' : 'Memories',
                         subtitle: isArabic

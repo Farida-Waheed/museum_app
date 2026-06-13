@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,10 +11,12 @@ import '../../l10n/app_localizations.dart';
 import '../../app/router.dart';
 import '../../models/app_session_provider.dart';
 import '../../models/auth_provider.dart';
+import '../../models/robot_command.dart';
 import '../../models/tour_provider.dart' as tour;
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 import '../../services/robot_pairing_service.dart';
+import '../../services/robot_mqtt_service.dart';
 import '../../services/ticket_repository.dart';
 
 enum QRScanMode { museumTicket, robotConnection }
@@ -182,12 +185,19 @@ class _QrScannerScreenState extends State<QrScannerScreen>
         );
       } else {
         try {
-          final pairing = await _robotPairingService.pairRobot(
-            userId: authProvider.currentUser!.id,
-            scannedCode: code,
-            robotTourTicketId: widget.robotTourTicketId,
-          );
+          final pairing =
+              await _robotPairingService
+                  .pairRobot(
+                    userId: authProvider.currentUser!.id,
+                    scannedCode: code,
+                    robotTourTicketId: widget.robotTourTicketId,
+                  )
+                  .timeout(const Duration(seconds: 20));
           if (!mounted) return;
+          debugPrint(
+            'Pairing committed in QR flow: robotId=${pairing.robotId} '
+            'sessionId=${pairing.sessionId}',
+          );
           sessionProvider.completeRobotConnection(
             robotId: pairing.robotId,
             sessionId: pairing.sessionId,
@@ -211,12 +221,30 @@ class _QrScannerScreenState extends State<QrScannerScreen>
               nextExhibitId: pairing.nextExhibitId,
             );
           }
+          await _sendStartTourCommand(
+            pairing: pairing,
+            userId: authProvider.currentUser!.id,
+          );
           result = _ScanResult(
             isValid: true,
             title: l10n.qrRobotConnectedTitle,
             message: l10n.qrRobotConnectedMessage,
             primaryLabel: l10n.qrOpenLiveTour,
             opensLiveTour: true,
+          );
+        } on TimeoutException catch (_) {
+          if (!mounted) return;
+          debugPrint('Robot pairing timed out before transaction commit.');
+          sessionProvider.failRobotConnection();
+          tourProvider.setConnectionState(
+            tour.RobotConnectionState.disconnected,
+          );
+          result = _ScanResult(
+            isValid: false,
+            title: l10n.invalidQr,
+            message:
+                'Robot pairing timed out before the session was created. Please try again.',
+            primaryLabel: l10n.done,
           );
         } on RobotPairingException catch (e) {
           if (!mounted) return;
@@ -230,8 +258,9 @@ class _QrScannerScreenState extends State<QrScannerScreen>
             message: _pairingErrorMessage(l10n, e.code, code),
             primaryLabel: l10n.done,
           );
-        } catch (_) {
+        } catch (e) {
           if (!mounted) return;
+          debugPrint('Robot pairing failed unexpectedly: $e');
           sessionProvider.failRobotConnection();
           tourProvider.setConnectionState(
             tour.RobotConnectionState.disconnected,
@@ -292,6 +321,46 @@ class _QrScannerScreenState extends State<QrScannerScreen>
         );
       },
     );
+  }
+
+  Future<void> _sendStartTourCommand({
+    required RobotPairingResult pairing,
+    required String userId,
+  }) async {
+    final mqttService = context.read<RobotMqttService>();
+    debugPrint(
+      'Pairing flow sending start_tour: topic='
+      '${mqttService.commandTopic(pairing.robotId)} sessionId=${pairing.sessionId}',
+    );
+    final connected = await mqttService
+        .connectForSession(robotId: pairing.robotId, sessionId: pairing.sessionId)
+        .timeout(const Duration(seconds: 12), onTimeout: () => false);
+    if (!connected) {
+      debugPrint(
+        'Pairing completed but MQTT connect failed for ${pairing.robotId}.',
+      );
+      return;
+    }
+
+    final command = RobotCommand(
+      type: RobotCommandType.startTour,
+      robotId: pairing.robotId,
+      sessionId: pairing.sessionId,
+      userId: userId,
+      payload: const <String, dynamic>{},
+    );
+    debugPrint('Pairing flow command JSON: ${command.toJson()}');
+    final published = await mqttService
+        .publishCommand(command)
+        .timeout(const Duration(seconds: 12), onTimeout: () => false);
+    if (!published) {
+      debugPrint(
+        'Pairing completed but start_tour MQTT publish failed '
+        'for ${pairing.sessionId}.',
+      );
+    } else {
+      debugPrint('Pairing flow start_tour MQTT publish succeeded.');
+    }
   }
 
   String _pairingErrorTitle(

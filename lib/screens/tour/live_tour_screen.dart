@@ -194,7 +194,6 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         sessionProvider.resumeTour();
       }
       setState(() => _isPaused = false);
-      unawaited(_publishRobotCommand(RobotCommandType.resume));
     } else {
       final sessionId = sessionProvider.activeSessionId;
       if (sessionId != null) {
@@ -209,7 +208,6 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         sessionProvider.pauseTour();
       }
       setState(() => _isPaused = true);
-      unawaited(_publishRobotCommand(RobotCommandType.pause));
     }
   }
 

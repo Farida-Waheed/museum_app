@@ -700,6 +700,7 @@ enum TicketSetDisplayStatus {
 TicketSetDisplayStatus deriveTicketSetDisplayStatus(PurchasedTicketSet set) {
   final museumStatus = set.museumTicket?.status;
   final robotStatus = set.robotTourTicket?.status;
+  final paymentStatus = set.paymentRecord.status;
 
   if (_isClosedTicketStatus(museumStatus) ||
       _isClosedTicketStatus(robotStatus)) {
@@ -724,6 +725,9 @@ TicketSetDisplayStatus deriveTicketSetDisplayStatus(PurchasedTicketSet set) {
   if (_isTicketSetVisitExpired(set)) {
     return TicketSetDisplayStatus.expired;
   }
+  if (!_isTicketSetPaymentConfirmed(paymentStatus)) {
+    return TicketSetDisplayStatus.pending;
+  }
   if (museumStatus == TicketStatus.active &&
       robotStatus == TicketStatus.active) {
     return TicketSetDisplayStatus.active;
@@ -734,6 +738,11 @@ TicketSetDisplayStatus deriveTicketSetDisplayStatus(PurchasedTicketSet set) {
   }
 
   return TicketSetDisplayStatus.partial;
+}
+
+bool _isTicketSetPaymentConfirmed(String status) {
+  final normalized = status.trim().toLowerCase().replaceAll('-', '_');
+  return normalized == 'paid' || normalized == 'confirmed';
 }
 
 bool _isTicketSetVisitExpired(PurchasedTicketSet set) {

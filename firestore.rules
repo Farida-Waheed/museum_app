@@ -51,9 +51,32 @@ service cloud.firestore {
         && !(resource.data.status in ['used', 'cancelled', 'canceled', 'declined', 'rejected', 'archived', 'inactive', 'disabled', 'expired']);
     }
 
-    function ownedRobotTourTicketCancelUpdate() {
+    function pairedRobotTicketCancelCleanup(ticketId) {
+      return resource.data.status in ['paired', 'in_progress']
+        && resource.data.session_id is string
+        && resource.data.session_id != ''
+        && resource.data.paired_robot_id is string
+        && resource.data.paired_robot_id != ''
+        && exists(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id))
+        && get(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.status == 'assigned'
+        && existsAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id))
+        && getAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id)).data.status == 'cancelled'
+        && getAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id)).data.userId == request.auth.uid
+        && getAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id)).data.robot_tour_ticket_id == ticketId
+        && existsAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id))
+        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.status == 'available'
+        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.active_session_id == null
+        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.activeSessionId == null
+        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.active_user_id == null
+        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.currentUserId == null
+        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.active_robot_tour_ticket_id == null
+        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.activeRobotTourTicketId == null;
+    }
+
+    function ownedRobotTourTicketCancelUpdate(ticketId) {
       return ownedCancelUpdateBase()
-        && !(resource.data.status in ['paired', 'in_progress', 'completed', 'cancelled', 'canceled', 'declined', 'rejected', 'archived', 'inactive', 'disabled', 'expired']);
+        && !(resource.data.status in ['completed', 'cancelled', 'canceled', 'declined', 'rejected', 'archived', 'inactive', 'disabled', 'expired'])
+        && (!(resource.data.status in ['paired', 'in_progress']) || pairedRobotTicketCancelCleanup(ticketId));
     }
 
     function usableTicketStatus(status) {
@@ -331,7 +354,7 @@ service cloud.firestore {
     match /robotTourTickets/{ticketId} {
       allow read: if ownsExisting() || isAdminOrCashier();
       allow create: if bookingContractCreateValid();
-      allow update: if ownedRobotTourTicketCancelUpdate()
+      allow update: if ownedRobotTourTicketCancelUpdate(ticketId)
         || adminPaymentUpdate()
         || validRobotTourTicketPairUpdate(ticketId)
         || validRobotTourTicketStartUpdate(ticketId)

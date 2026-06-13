@@ -497,6 +497,14 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
         ),
         HomeQuickActionItem(
+          icon: Icons.add_card_outlined,
+          label: isArabic ? 'شراء تذاكر إضافية' : 'Buy More Tickets',
+          subtitle: isArabic
+              ? 'احجز زيارة أخرى دون التأثير على تذاكرك الحالية'
+              : 'Book another visit without changing current tickets',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.buyTickets),
+        ),
+        HomeQuickActionItem(
           icon: Icons.museum_outlined,
           label: l10n.exhibits,
           subtitle: l10n.homeExploreArtifacts,
@@ -612,10 +620,12 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: () => Navigator.pushNamed(context, AppRoutes.feedback),
         ),
         HomeQuickActionItem(
-          icon: Icons.emoji_events_outlined,
-          label: l10n.achievements,
-          subtitle: l10n.homeSeeBadgesProgress,
-          onTap: () => Navigator.pushNamed(context, AppRoutes.achievements),
+          icon: Icons.add_card_outlined,
+          label: isArabic ? 'احجز زيارة أخرى' : 'Book Another Visit',
+          subtitle: isArabic
+              ? 'اشتر تذاكر إضافية لوقت آخر'
+              : 'Buy extra tickets for another time slot',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.buyTickets),
         ),
       ];
     }
@@ -641,10 +651,12 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
         ),
         HomeQuickActionItem(
-          icon: Icons.museum_outlined,
-          label: l10n.exhibits,
-          subtitle: l10n.homeExploreArtifacts,
-          onTap: () => Navigator.pushNamed(context, AppRoutes.exhibits),
+          icon: Icons.add_card_outlined,
+          label: isArabic ? 'شراء تذاكر إضافية' : 'Buy More Tickets',
+          subtitle: isArabic
+              ? 'احجز زيارة أخرى دون التأثير على هذه التذاكر'
+              : 'Book another visit without changing these tickets',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.buyTickets),
         ),
       ];
     }
@@ -664,10 +676,12 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: () => Navigator.pushNamed(context, AppRoutes.myTickets),
         ),
         HomeQuickActionItem(
-          icon: Icons.photo_library_outlined,
-          label: l10n.memories,
-          subtitle: l10n.homeViewCapturedPhotos,
-          onTap: () => Navigator.pushNamed(context, AppRoutes.memories),
+          icon: Icons.add_card_outlined,
+          label: isArabic ? 'شراء تذاكر إضافية' : 'Buy More Tickets',
+          subtitle: isArabic
+              ? 'احجز زيارة أخرى دون التأثير على هذه التذاكر'
+              : 'Book another visit without changing these tickets',
+          onTap: () => Navigator.pushNamed(context, AppRoutes.buyTickets),
         ),
         HomeQuickActionItem(
           icon: Icons.museum_outlined,
