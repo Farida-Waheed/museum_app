@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/router.dart';
@@ -83,10 +83,11 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           children: [
             Padding(
-              padding: const EdgeInsets.only(bottom: 18),
+              padding: const EdgeInsetsDirectional.only(bottom: 18),
               child: TextField(
                 controller: _searchController,
                 onChanged: _filter,
+                textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
                 textAlign: TextAlign.start,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(
@@ -109,7 +110,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   ).copyWith(fontSize: 14),
                   filled: true,
                   fillColor: AppColors.resolvedCard.withValues(alpha: 0.82),
-                  contentPadding: const EdgeInsets.symmetric(
+                  contentPadding: const EdgeInsetsDirectional.symmetric(
                     horizontal: 20,
                     vertical: 16,
                   ),
@@ -238,7 +239,7 @@ class _SearchResultTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsetsDirectional.only(bottom: 12),
       decoration: AppDecorations.secondaryGlassCard(radius: 22, opacity: 0.54),
       child: InkWell(
         onTap: onTap,
@@ -261,6 +262,7 @@ class _SearchResultTile extends StatelessWidget {
                   children: [
                     Text(
                       exhibit.getName(prefs.language),
+                      textAlign: TextAlign.start,
                       style: AppTextStyles.premiumCardTitle(
                         context,
                       ).copyWith(fontSize: 16),
@@ -270,6 +272,7 @@ class _SearchResultTile extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       l10n.tapToViewDetailsAudioGuide,
+                      textAlign: TextAlign.start,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.premiumMutedBody(

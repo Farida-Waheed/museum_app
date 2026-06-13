@@ -1023,11 +1023,9 @@ class _HomeScreenState extends State<HomeScreen> {
           textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
           child: Stack(
             children: [
-              const Positioned.fill(
+              Positioned.fill(
                 child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: AppGradients.screenBackground,
-                  ),
+                  decoration: AppDecorations.cinematicBackground(),
                 ),
               ),
               Positioned.fill(
@@ -1036,7 +1034,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   physics: const BouncingScrollPhysics(
                     parent: AlwaysScrollableScrollPhysics(),
                   ),
-                  padding: const EdgeInsets.only(bottom: 144),
+                  padding: const EdgeInsetsDirectional.only(bottom: 144),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -1259,7 +1257,7 @@ class _HeroSection extends StatelessWidget {
                     ),
                   ),
                 ),
-                const Positioned(
+                Positioned(
                   left: 0,
                   right: 0,
                   bottom: 0,
@@ -1269,12 +1267,21 @@ class _HeroSection extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
-                        colors: [
-                          Color(0xF2000000),
-                          Color(0xD1000000),
-                          Color(0x66000000),
-                          Color(0x00000000),
-                        ],
+                        colors: AppColors.useLightSurfaces
+                            ? [
+                                AppColors.websiteLightBackground,
+                                AppColors.websiteLightBackground.withValues(
+                                  alpha: 0.82,
+                                ),
+                                AppColors.darkInk.withValues(alpha: 0.18),
+                                Colors.transparent,
+                              ]
+                            : [
+                                Color(0xF2000000),
+                                Color(0xD1000000),
+                                Color(0x66000000),
+                                Color(0x00000000),
+                              ],
                         stops: [0.0, 0.32, 0.68, 1.0],
                       ),
                     ),
@@ -1297,9 +1304,14 @@ class _HeroSection extends StatelessWidget {
                         style: AppTextStyles.premiumHero(context).copyWith(
                           fontSize: isArabic ? 30 : 32,
                           height: 1.08,
+                          color: AppColors.useLightSurfaces
+                              ? AppColors.websiteLightForeground
+                              : AppColors.whiteTitle,
                           shadows: [
                             Shadow(
-                              color: AppColors.darkInk.withValues(alpha: 0.82),
+                              color: AppColors.darkInk.withValues(
+                                alpha: AppColors.useLightSurfaces ? 0.18 : 0.82,
+                              ),
                               blurRadius: 22,
                               offset: const Offset(0, 4),
                             ),
@@ -1320,9 +1332,11 @@ class _HeroSection extends StatelessWidget {
                             textAlign: TextAlign.start,
                             style: AppTextStyles.premiumBody(context).copyWith(
                               fontSize: 14.5,
-                              color: AppColors.resolvedTitleText.withValues(
-                                alpha: 0.84,
-                              ),
+                              color: AppColors.useLightSurfaces
+                                  ? AppColors.websiteLightMutedForeground
+                                  : AppColors.whiteTitle.withValues(
+                                      alpha: 0.84,
+                                    ),
                             ),
                           ),
                         ),
@@ -1399,7 +1413,9 @@ class _PrimaryActionCard extends StatelessWidget {
             border: Border.all(color: AppColors.goldBorder(0.16)),
             boxShadow: [
               BoxShadow(
-                color: AppColors.darkInk.withValues(alpha: 0.22),
+                color: AppColors.darkInk.withValues(
+                  alpha: AppColors.useLightSurfaces ? 0.10 : 0.22,
+                ),
                 blurRadius: 16,
                 offset: const Offset(0, 8),
               ),

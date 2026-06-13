@@ -5,11 +5,9 @@ import '../../core/constants/colors.dart';
 ThemeData getDarkTheme(String languageCode) {
   final bool isArabic = languageCode == 'ar';
   final String? bodyFont = isArabic
-      ? GoogleFonts.notoSansArabic().fontFamily
+      ? 'HorusArabic'
       : GoogleFonts.inter().fontFamily;
-  final String? headingFont = isArabic
-      ? GoogleFonts.amiri().fontFamily
-      : 'Playfair Display';
+  final String? headingFont = isArabic ? 'HorusArabic' : 'Playfair Display';
 
   return ThemeData(
     useMaterial3: true,

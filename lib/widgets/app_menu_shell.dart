@@ -56,8 +56,8 @@ class _SideMenu extends StatelessWidget {
               colors: [
                 if (useLightSurfaces) ...[
                   AppColors.websiteLightPopover.withOpacity(0.98),
-                  AppColors.websiteLightCard.withOpacity(0.92),
-                  AppColors.websiteLightBackground.withOpacity(0.0),
+                  AppColors.websiteLightCard.withOpacity(0.98),
+                  AppColors.websiteLightBackground.withOpacity(0.96),
                 ] else ...[
                   Colors.black.withValues(alpha: 0.90),
                   Colors.black.withValues(alpha: 0.74),
@@ -98,6 +98,7 @@ class _SideMenu extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 l10n.appTitle.toUpperCase(),
+                                textAlign: TextAlign.start,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: AppTextStyles.premiumBrandTitle(
@@ -128,6 +129,7 @@ class _SideMenu extends StatelessWidget {
                                 children: [
                                   Text(
                                     userName,
+                                    textAlign: TextAlign.start,
                                     style:
                                         AppTextStyles.premiumCardTitle(
                                           context,
@@ -138,6 +140,7 @@ class _SideMenu extends StatelessWidget {
                                   ),
                                   Text(
                                     userSubtitle,
+                                    textAlign: TextAlign.start,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: AppTextStyles.premiumMutedBody(
@@ -243,6 +246,7 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsetsDirectional.fromSTEB(28, 24, 24, 12),
       child: Text(
         label.toUpperCase(),
+        textAlign: TextAlign.start,
         style: AppTextStyles.premiumSectionLabel(context).copyWith(
           fontSize: 12,
           letterSpacing: 2.1,
@@ -286,6 +290,7 @@ class _MenuItem extends StatelessWidget {
         ),
         title: Text(
           label,
+          textAlign: TextAlign.start,
           style: AppTextStyles.premiumBody(context).copyWith(
             fontSize: 15,
             fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
@@ -439,6 +444,7 @@ class _ShellFloatingHeader extends StatelessWidget {
                         alignment: Alignment.center,
                         children: [
                           Row(
+                            textDirection: Directionality.of(context),
                             children: [
                               _ShellCircleButton(
                                 icon: leadingIcon,
@@ -662,9 +668,9 @@ class AppMenuShellState extends State<AppMenuShell>
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
                       child: Container(
-                              color: AppColors.useLightSurfaces
-                                  ? AppColors.darkInk.withValues(alpha: 0.18 * v)
-                                  : Colors.black.withValues(alpha: 0.46 * v),
+                        color: AppColors.useLightSurfaces
+                            ? AppColors.darkInk.withValues(alpha: 0.10 * v)
+                            : Colors.black.withValues(alpha: 0.46 * v),
                       ),
                     ),
                   ),

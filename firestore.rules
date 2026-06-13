@@ -114,7 +114,10 @@ service cloud.firestore {
     function unassignedRobot() {
       return (!('active_session_id' in resource.data) || resource.data.active_session_id == null || resource.data.active_session_id == '')
         && (!('active_user_id' in resource.data) || resource.data.active_user_id == null || resource.data.active_user_id == '')
-        && (!('active_robot_tour_ticket_id' in resource.data) || resource.data.active_robot_tour_ticket_id == null || resource.data.active_robot_tour_ticket_id == '');
+        && (!('active_robot_tour_ticket_id' in resource.data) || resource.data.active_robot_tour_ticket_id == null || resource.data.active_robot_tour_ticket_id == '')
+        && (!('activeSessionId' in resource.data) || resource.data.activeSessionId == null || resource.data.activeSessionId == '')
+        && (!('currentUserId' in resource.data) || resource.data.currentUserId == null || resource.data.currentUserId == '')
+        && (!('activeRobotTourTicketId' in resource.data) || resource.data.activeRobotTourTicketId == null || resource.data.activeRobotTourTicketId == '');
     }
 
     function validFinalRobotAssign(robotId) {
@@ -122,13 +125,18 @@ service cloud.firestore {
         && resource.data.status == 'available'
         && unassignedRobot()
         && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['status', 'active_session_id', 'active_user_id', 'active_robot_tour_ticket_id', 'updated_at'])
+          .hasOnly(['status', 'active_session_id', 'activeSessionId', 'active_user_id', 'currentUserId', 'active_robot_tour_ticket_id', 'activeRobotTourTicketId', 'updated_at', 'updatedAt', 'robot_code', 'robotId'])
         && request.resource.data.status == 'assigned'
         && request.resource.data.active_session_id is string
         && request.resource.data.active_session_id != ''
+        && request.resource.data.activeSessionId == request.resource.data.active_session_id
         && request.resource.data.active_user_id == request.auth.uid
+        && request.resource.data.currentUserId == request.auth.uid
         && request.resource.data.active_robot_tour_ticket_id is string
         && request.resource.data.active_robot_tour_ticket_id != ''
+        && request.resource.data.activeRobotTourTicketId == request.resource.data.active_robot_tour_ticket_id
+        && request.resource.data.robotId == robotId
+        && request.resource.data.robot_code is string
         && existsAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.active_session_id))
         && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.active_session_id)).data.userId == request.auth.uid
         && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.active_session_id)).data.robotId == robotId
@@ -171,13 +179,16 @@ service cloud.firestore {
     function validFinalRobotRelease() {
       return signedIn()
         && resource.data.status in ['assigned', 'in_tour']
-        && resource.data.active_user_id == request.auth.uid
+        && (resource.data.active_user_id == request.auth.uid || resource.data.currentUserId == request.auth.uid)
         && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['status', 'active_session_id', 'active_user_id', 'active_robot_tour_ticket_id', 'updated_at'])
+          .hasOnly(['status', 'active_session_id', 'activeSessionId', 'active_user_id', 'currentUserId', 'active_robot_tour_ticket_id', 'activeRobotTourTicketId', 'updated_at', 'updatedAt'])
         && request.resource.data.status == 'available'
         && request.resource.data.active_session_id == null
+        && request.resource.data.activeSessionId == null
         && request.resource.data.active_user_id == null
-        && request.resource.data.active_robot_tour_ticket_id == null;
+        && request.resource.data.currentUserId == null
+        && request.resource.data.active_robot_tour_ticket_id == null
+        && request.resource.data.activeRobotTourTicketId == null;
     }
 
     function unpairedExistingTicket() {

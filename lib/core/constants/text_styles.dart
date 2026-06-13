@@ -9,6 +9,27 @@ import 'colors.dart';
 /// - English: Headings (Cinzel/Playfair), Body/UI (Inter)
 /// - Arabic: Headings (Amiri), Body/UI (Noto Sans Arabic)
 class AppTextStyles {
+  static const List<String> _arabicFontFallback = [
+    'Segoe UI',
+    'Tahoma',
+    'Arial',
+    'sans-serif',
+  ];
+
+  static TextStyle _arabicHeading({required TextStyle textStyle}) {
+    return textStyle.copyWith(
+      fontFamily: 'HorusArabic',
+      fontFamilyFallback: _arabicFontFallback,
+    );
+  }
+
+  static TextStyle _arabicBody({required TextStyle textStyle}) {
+    return textStyle.copyWith(
+      fontFamily: 'HorusArabic',
+      fontFamilyFallback: _arabicFontFallback,
+    );
+  }
+
   static bool _isArabic(BuildContext context) =>
       Localizations.localeOf(context).languageCode == 'ar';
 
@@ -29,7 +50,7 @@ class AppTextStyles {
 
   static TextStyle heroTitle(BuildContext context) {
     if (_isArabic(context)) {
-      return GoogleFonts.amiri(
+      return _arabicHeading(
         textStyle: const TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 40,
@@ -51,7 +72,7 @@ class AppTextStyles {
 
   static TextStyle heroSubtitle(BuildContext context) {
     if (_isArabic(context)) {
-      return GoogleFonts.notoSansArabic(
+      return _arabicBody(
         textStyle: const TextStyle(
           fontWeight: FontWeight.w400,
           fontSize: 14,
@@ -72,7 +93,7 @@ class AppTextStyles {
 
   static TextStyle screenTitle(BuildContext context) {
     if (_isArabic(context)) {
-      return GoogleFonts.amiri(
+      return _arabicHeading(
         textStyle: const TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 25,
@@ -94,7 +115,7 @@ class AppTextStyles {
 
   static TextStyle sectionTitle(BuildContext context) {
     if (_isArabic(context)) {
-      return GoogleFonts.amiri(
+      return _arabicHeading(
         textStyle: const TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 13,
@@ -115,7 +136,7 @@ class AppTextStyles {
 
   static TextStyle cardTitle(BuildContext context) {
     if (_isArabic(context)) {
-      return GoogleFonts.amiri(
+      return _arabicHeading(
         textStyle: const TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 18,
@@ -134,7 +155,7 @@ class AppTextStyles {
 
   static TextStyle statNumber(BuildContext context) {
     if (_isArabic(context)) {
-      return GoogleFonts.notoSansArabic(
+      return _arabicBody(
         textStyle: const TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 20,
@@ -153,7 +174,7 @@ class AppTextStyles {
 
   static TextStyle helper(BuildContext context) {
     if (_isArabic(context)) {
-      return GoogleFonts.notoSansArabic(
+      return _arabicBody(
         textStyle: const TextStyle(
           fontWeight: FontWeight.w400,
           fontSize: 12,
@@ -172,7 +193,7 @@ class AppTextStyles {
 
   static TextStyle button(BuildContext context) {
     if (_isArabic(context)) {
-      return GoogleFonts.notoSansArabic(
+      return _arabicBody(
         textStyle: const TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 16,
@@ -193,7 +214,7 @@ class AppTextStyles {
   static TextStyle brandTitle(BuildContext context, {bool? isDark}) {
     final bool useWhite = isDark ?? _isDark(context);
     if (_isArabic(context)) {
-      return GoogleFonts.amiri(
+      return _arabicHeading(
         textStyle: TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 20,
@@ -214,7 +235,7 @@ class AppTextStyles {
   static TextStyle premiumHero(BuildContext context) {
     final color = _titleColor(context);
     if (_isArabic(context)) {
-      return GoogleFonts.amiri(
+      return _arabicHeading(
         textStyle: TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 32,
@@ -237,7 +258,7 @@ class AppTextStyles {
   static TextStyle premiumScreenTitle(BuildContext context) {
     final color = _titleColor(context);
     if (_isArabic(context)) {
-      return GoogleFonts.amiri(
+      return _arabicHeading(
         textStyle: TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 23,
@@ -259,7 +280,7 @@ class AppTextStyles {
 
   static TextStyle premiumSectionLabel(BuildContext context) {
     if (_isArabic(context)) {
-      return GoogleFonts.amiri(
+      return _arabicHeading(
         textStyle: const TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 12,
@@ -282,7 +303,7 @@ class AppTextStyles {
   static TextStyle premiumCardTitle(BuildContext context) {
     final color = _titleColor(context);
     if (_isArabic(context)) {
-      return GoogleFonts.amiri(
+      return _arabicHeading(
         textStyle: TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 21,
@@ -305,7 +326,7 @@ class AppTextStyles {
   static TextStyle premiumBody(BuildContext context) {
     final color = _bodyColor(context);
     if (_isArabic(context)) {
-      return GoogleFonts.notoSansArabic(
+      return _arabicBody(
         textStyle: TextStyle(
           fontWeight: FontWeight.w400,
           fontSize: 15,
@@ -327,7 +348,7 @@ class AppTextStyles {
   static TextStyle premiumMutedBody(BuildContext context) {
     final color = _mutedColor(context);
     if (_isArabic(context)) {
-      return GoogleFonts.notoSansArabic(
+      return _arabicBody(
         textStyle: TextStyle(
           fontWeight: FontWeight.w400,
           fontSize: 14,
@@ -348,7 +369,7 @@ class AppTextStyles {
 
   static TextStyle premiumButtonLabel(BuildContext context) {
     if (_isArabic(context)) {
-      return GoogleFonts.notoSansArabic(
+      return _arabicBody(
         textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
       );
     }
@@ -363,7 +384,7 @@ class AppTextStyles {
 
   static TextStyle premiumNavLabel(BuildContext context) {
     if (_isArabic(context)) {
-      return GoogleFonts.notoSansArabic(
+      return _arabicBody(
         textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 11),
       );
     }
@@ -374,7 +395,7 @@ class AppTextStyles {
 
   static TextStyle premiumBrandTitle(BuildContext context) {
     if (_isArabic(context)) {
-      return GoogleFonts.amiri(
+      return _arabicHeading(
         textStyle: const TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 18,
@@ -401,7 +422,7 @@ class AppTextStyles {
   /// Home Hero: "Explore Egypt With Horus-Bot"
   static TextStyle displayHero(BuildContext context) {
     if (_isArabic(context)) {
-      return GoogleFonts.amiri(
+      return _arabicHeading(
         textStyle: const TextStyle(
           fontWeight: FontWeight.w700,
           fontSize: 30,
@@ -425,7 +446,7 @@ class AppTextStyles {
   static TextStyle displayScreenTitle(BuildContext context) {
     final color = _titleColor(context);
     if (_isArabic(context)) {
-      return GoogleFonts.amiri(
+      return _arabicHeading(
         textStyle: TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 20,
@@ -448,7 +469,7 @@ class AppTextStyles {
   /// Major Section Headings (EXHIBITS, DISCOVER ARTIFACTS, etc.)
   static TextStyle displaySectionTitle(BuildContext context) {
     if (_isArabic(context)) {
-      return GoogleFonts.amiri(
+      return _arabicHeading(
         textStyle: const TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 13,
@@ -472,7 +493,7 @@ class AppTextStyles {
   static TextStyle displayArtifactTitle(BuildContext context) {
     final color = _titleColor(context);
     if (_isArabic(context)) {
-      return GoogleFonts.amiri(
+      return _arabicHeading(
         textStyle: TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 18,
@@ -495,7 +516,7 @@ class AppTextStyles {
   static TextStyle titleLarge(BuildContext context) {
     final color = _titleColor(context);
     if (_isArabic(context)) {
-      return GoogleFonts.amiri(
+      return _arabicHeading(
         textStyle: TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 20,
@@ -518,7 +539,7 @@ class AppTextStyles {
   static TextStyle titleMedium(BuildContext context) {
     final color = _titleColor(context);
     if (_isArabic(context)) {
-      return GoogleFonts.amiri(
+      return _arabicHeading(
         textStyle: TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 18,
@@ -543,7 +564,7 @@ class AppTextStyles {
   static TextStyle bodyPrimary(BuildContext context) {
     final color = _bodyColor(context);
     if (_isArabic(context)) {
-      return GoogleFonts.notoSansArabic(
+      return _arabicBody(
         textStyle: TextStyle(
           fontWeight: FontWeight.w400,
           fontSize: 14,
@@ -566,7 +587,7 @@ class AppTextStyles {
   static TextStyle bodySecondary(BuildContext context) {
     final color = _bodyColor(context);
     if (_isArabic(context)) {
-      return GoogleFonts.notoSansArabic(
+      return _arabicBody(
         textStyle: TextStyle(
           fontWeight: FontWeight.w400,
           fontSize: 14,
@@ -589,7 +610,7 @@ class AppTextStyles {
   static TextStyle metadata(BuildContext context) {
     final color = _mutedColor(context);
     if (_isArabic(context)) {
-      return GoogleFonts.notoSansArabic(
+      return _arabicBody(
         textStyle: TextStyle(
           fontWeight: FontWeight.w500,
           fontSize: 12,
@@ -609,7 +630,7 @@ class AppTextStyles {
   /// Button labels
   static TextStyle buttonLabel(BuildContext context) {
     if (_isArabic(context)) {
-      return GoogleFonts.notoSansArabic(
+      return _arabicBody(
         textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
       );
     }
@@ -625,7 +646,7 @@ class AppTextStyles {
   /// Bottom Navigation labels
   static TextStyle navLabel(BuildContext context) {
     if (_isArabic(context)) {
-      return GoogleFonts.notoSansArabic(
+      return _arabicBody(
         textStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
       );
     }
@@ -637,7 +658,7 @@ class AppTextStyles {
   /// Captions, helper labels, settings rows
   static TextStyle caption(BuildContext context) {
     if (_isArabic(context)) {
-      return GoogleFonts.notoSansArabic(
+      return _arabicBody(
         textStyle: const TextStyle(
           fontWeight: FontWeight.w400,
           fontSize: 12,

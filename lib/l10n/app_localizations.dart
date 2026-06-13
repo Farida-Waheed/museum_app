@@ -2009,7 +2009,7 @@ abstract class AppLocalizations {
   /// No description provided for @tapToViewDetailsAudioGuide.
   ///
   /// In en, this message translates to:
-  /// **'Tap to view details and audio guide'**
+  /// **'Tap to view details'**
   String get tapToViewDetailsAudioGuide;
 
   /// No description provided for @noResultsFound.
@@ -2027,7 +2027,7 @@ abstract class AppLocalizations {
   /// No description provided for @tapToViewDetailsAndAudioGuide.
   ///
   /// In en, this message translates to:
-  /// **'Tap to view details and audio guide'**
+  /// **'Tap to view details'**
   String get tapToViewDetailsAndAudioGuide;
 
   /// No description provided for @currentTour.

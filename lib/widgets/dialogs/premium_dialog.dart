@@ -36,13 +36,15 @@ class PremiumDialog extends StatelessWidget {
               borderRadius: BorderRadius.circular(28),
               border: Border.all(
                 color: AppColors.primaryGold.withOpacity(
-                    AppColors.useLightSurfaces ? 0.22 : 0.4),
+                  AppColors.useLightSurfaces ? 0.22 : 0.4,
+                ),
                 width: 1.5,
               ),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.surfaceShadow(
-                      AppColors.useLightSurfaces ? 0.18 : 0.5),
+                    AppColors.useLightSurfaces ? 0.18 : 0.5,
+                  ),
                   blurRadius: 30,
                   offset: const Offset(0, 15),
                 ),
@@ -51,15 +53,16 @@ class PremiumDialog extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Header
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 24, 16, 16),
+                  padding: const EdgeInsetsDirectional.fromSTEB(24, 24, 16, 16),
                   child: Row(
+                    textDirection: Directionality.of(context),
                     children: [
                       if (icon != null) ...[icon!, const SizedBox(width: 12)],
                       Expanded(
                         child: Text(
                           title,
+                          textAlign: TextAlign.start,
                           style: AppTextStyles.titleLarge(context).copyWith(
                             color: AppColors.resolvedTitleText,
                             fontSize: 20,
@@ -81,10 +84,14 @@ class PremiumDialog extends StatelessWidget {
                   ),
                 ),
 
-                // Content
                 Flexible(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      24,
+                      0,
+                      24,
+                      24,
+                    ),
                     child: content,
                   ),
                 ),

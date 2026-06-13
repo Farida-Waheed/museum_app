@@ -58,7 +58,7 @@ class ExhibitListScreen extends StatelessWidget {
                 onPressed: () => context.read<ExhibitProvider>().loadExhibits(),
               )
             : ListView.builder(
-                padding: const EdgeInsets.fromLTRB(
+                padding: const EdgeInsetsDirectional.fromSTEB(
                   AppSpacing.screenHorizontalCompact,
                   78,
                   AppSpacing.screenHorizontalCompact,
@@ -120,7 +120,9 @@ class _HeaderCircleAction extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.09),
+                    color: AppColors.useLightSurfaces
+                        ? AppColors.cardGlass(0.94)
+                        : Colors.black.withValues(alpha: 0.09),
                     shape: BoxShape.circle,
                     border: Border.all(
                       color: AppColors.goldBorder(0.18),
@@ -128,7 +130,9 @@ class _HeaderCircleAction extends StatelessWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.10),
+                        color: AppColors.surfaceShadow(
+                          AppColors.useLightSurfaces ? 0.08 : 0.10,
+                        ),
                         blurRadius: 8,
                         offset: const Offset(0, 4),
                       ),
@@ -168,7 +172,7 @@ class _ExhibitListTile extends StatelessWidget {
     final isArabic = prefs.language == 'ar';
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsetsDirectional.only(bottom: 12),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(22),
@@ -179,6 +183,7 @@ class _ExhibitListTile extends StatelessWidget {
             opacity: 0.54,
           ),
           child: Row(
+            textDirection: Directionality.of(context),
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
@@ -187,10 +192,13 @@ class _ExhibitListTile extends StatelessWidget {
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: isArabic
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
                   children: [
                     Text(
                       exhibit.getName(prefs.language),
+                      textAlign: TextAlign.start,
                       style: AppTextStyles.premiumCardTitle(
                         context,
                       ).copyWith(fontSize: 17),
@@ -199,6 +207,7 @@ class _ExhibitListTile extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Row(
+                      textDirection: Directionality.of(context),
                       children: [
                         const Icon(
                           Icons.location_on_outlined,
@@ -208,6 +217,7 @@ class _ExhibitListTile extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           l10n.mainGallery,
+                          textAlign: TextAlign.start,
                           style: AppTextStyles.premiumMutedBody(
                             context,
                           ).copyWith(fontSize: 12),

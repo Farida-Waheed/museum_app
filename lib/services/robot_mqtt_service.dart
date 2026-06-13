@@ -18,26 +18,27 @@ enum RobotMqttConnectionState {
 }
 
 class RobotMqttService extends ChangeNotifier {
-  // Development placeholders only. Do not commit production broker secrets here.
+  // MQTT defaults for the Horus robot broker. These can still be overridden
+  // per build with --dart-define values.
   static const String devBrokerHost = String.fromEnvironment(
     'HORUS_MQTT_HOST',
-    defaultValue: '',
+    defaultValue: '0641cdc9967b4577adb5b093ac9430b8.s1.eu.hivemq.cloud',
   );
   static const int devBrokerPort = int.fromEnvironment(
     'HORUS_MQTT_PORT',
-    defaultValue: 1883,
+    defaultValue: 8883,
   );
   static const String devBrokerUsername = String.fromEnvironment(
     'HORUS_MQTT_USERNAME',
-    defaultValue: '',
+    defaultValue: 'rosbot',
   );
   static const String devBrokerPassword = String.fromEnvironment(
     'HORUS_MQTT_PASSWORD',
-    defaultValue: '',
+    defaultValue: 'Rosbot1',
   );
   static const bool devBrokerUseTls = bool.fromEnvironment(
     'HORUS_MQTT_TLS',
-    defaultValue: false,
+    defaultValue: true,
   );
 
   final String brokerHost;

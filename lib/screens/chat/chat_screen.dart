@@ -111,8 +111,10 @@ class _SuggestionChipsCard extends StatelessWidget {
           child: OutlinedButton(
             style:
                 TextButton.styleFrom(
-                  backgroundColor: AppColors.primaryGold.withValues(alpha: 0.16),
-                  foregroundColor: Colors.white,
+                  backgroundColor: AppColors.primaryGold.withValues(
+                    alpha: 0.16,
+                  ),
+                  foregroundColor: AppColors.resolvedTitleText,
                   side: BorderSide(
                     color: AppColors.primaryGold.withValues(alpha: 0.85),
                     width: 1,
@@ -274,7 +276,9 @@ class ChatBubble extends StatelessWidget {
 
     final bubbleColor = isUser
         ? AppColors.primaryGold
-        : (isDark ? AppColors.darkSurfaceSecondary : AppColors.websiteLightPopover);
+        : (isDark
+              ? AppColors.darkSurfaceSecondary
+              : AppColors.websiteLightPopover);
     final textColor = isUser
         ? AppColors.darkInk
         : (isDark ? AppColors.whiteTitle : AppColors.resolvedTitleText);
@@ -289,8 +293,8 @@ class ChatBubble extends StatelessWidget {
       backgroundColor: isUser
           ? AppColors.primaryGold.withValues(alpha: 0.14)
           : (isDark
-              ? AppColors.whiteTitle.withValues(alpha: 0.10)
-              : AppColors.cardGlass(0.80)),
+                ? AppColors.whiteTitle.withValues(alpha: 0.10)
+                : AppColors.cardGlass(0.80)),
       child: isUser
           ? const Icon(
               Icons.person_outline,
@@ -417,8 +421,8 @@ class _InfoCardBubble extends StatelessWidget {
       color: isUser
           ? AppColors.darkInk.withValues(alpha: 0.8)
           : (isDark
-              ? AppColors.whiteTitle.withValues(alpha: 0.9)
-              : AppColors.resolvedBodyText),
+                ? AppColors.whiteTitle.withValues(alpha: 0.9)
+                : AppColors.resolvedBodyText),
       fontSize: 14,
       height: 1.5,
     );
@@ -550,7 +554,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     if (!authProvider.isLoggedIn) {
       _typeBotMessage(
-        'Sign in to contact museum support and track your conversations.',
+        Localizations.localeOf(context).languageCode == 'ar'
+            ? 'سجل الدخول للتواصل مع دعم المتحف ومتابعة محادثاتك.'
+            : 'Sign in to contact museum support and track your conversations.',
       );
       return;
     }
@@ -641,7 +647,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     if (_isGuestPersonalQuestion(trimmed)) {
       setState(() => _isTyping = false);
       _typeBotMessage(
-        'Sign in and start a tour so I can help with your personal tickets, route, memories, and live tour progress.',
+        Localizations.localeOf(context).languageCode == 'ar'
+            ? 'سجل الدخول وابدأ جولة حتى أستطيع مساعدتك في تذاكرك ومسارك وذكرياتك وتقدم جولتك المباشر.'
+            : 'Sign in and start a tour so I can help with your personal tickets, route, memories, and live tour progress.',
       );
       return;
     }
@@ -685,7 +693,18 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         lower.contains('my next exhibit') ||
         lower.contains('my route') ||
         lower.contains('my session');
-    return asksPersonal;
+    final asksArabicPersonal =
+        text.contains('تذكرتي') ||
+        text.contains('تذاكري') ||
+        text.contains('دفعي') ||
+        text.contains('مساري') ||
+        text.contains('جولتي') ||
+        text.contains('روبوتي') ||
+        text.contains('ذكرياتي') ||
+        text.contains('صوري') ||
+        text.contains('موقعي') ||
+        text.contains('أين حورس');
+    return asksPersonal || asksArabicPersonal;
   }
 
   void _typeBotMessage(String fullText) {
@@ -836,7 +855,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         ? Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
+                padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 12, 0),
                 child: Align(
                   alignment: AlignmentDirectional.centerStart,
                   child: Text(
@@ -891,8 +910,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
               // INPUT AREA
               Container(
-                padding: const EdgeInsets.fromLTRB(0, 12, 0, 0),
+                padding: const EdgeInsetsDirectional.fromSTEB(0, 12, 0, 0),
                 child: Row(
+                  textDirection: Directionality.of(context),
                   children: [
                     Expanded(
                       child: TextField(
@@ -902,14 +922,18 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                             : TextDirection.ltr,
                         onSubmitted: _submit,
                         style: AppTextStyles.bodyPrimary(context).copyWith(
-                          color: isDark ? AppColors.whiteTitle : AppColors.darkInk,
+                          color: isDark
+                              ? AppColors.whiteTitle
+                              : AppColors.darkInk,
                         ),
                         decoration: InputDecoration(
                           hintText: l10n.chatInputHint,
                           hintStyle: AppTextStyles.bodyPrimary(context)
                               .copyWith(
                                 color: isDark
-                                    ? AppColors.whiteTitle.withValues(alpha: 0.54)
+                                    ? AppColors.whiteTitle.withValues(
+                                        alpha: 0.54,
+                                      )
                                     : AppColors.resolvedMutedText,
                               ),
                           fillColor: isDark
@@ -920,7 +944,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                             borderRadius: BorderRadius.circular(26),
                             borderSide: BorderSide.none,
                           ),
-                          contentPadding: const EdgeInsets.symmetric(
+                          contentPadding: const EdgeInsetsDirectional.symmetric(
                             horizontal: 20,
                             vertical: 14,
                           ),
@@ -935,8 +959,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                         backgroundColor: _canSend
                             ? AppColors.primaryGold
                             : (isDark
-                                ? AppColors.whiteTitle.withValues(alpha: 0.10)
-                                : AppColors.websiteLightBackground),
+                                  ? AppColors.whiteTitle.withValues(alpha: 0.10)
+                                  : AppColors.websiteLightBackground),
                         radius: 22,
                         child: IconButton(
                           onPressed: _canSend
@@ -1103,7 +1127,9 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                               vertical: 10,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.primaryGold.withValues(alpha: 0.18),
+                              color: AppColors.primaryGold.withValues(
+                                alpha: 0.18,
+                              ),
                               borderRadius: BorderRadius.circular(18),
                             ),
                             child: Text(
@@ -1142,9 +1168,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       appBar: AppBar(
         title: Text(
           l10n.askTheGuide.toUpperCase(),
-          style: AppTextStyles.displayScreenTitle(
-            context,
-          ).copyWith(
+          style: AppTextStyles.displayScreenTitle(context).copyWith(
             fontWeight: FontWeight.w900,
             fontSize: 18,
             color: AppColors.resolvedTitleText,

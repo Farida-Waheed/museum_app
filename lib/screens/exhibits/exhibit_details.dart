@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -86,18 +86,20 @@ class _ExhibitDetailScreenState extends State<ExhibitDetailScreen> {
       body: DecoratedBox(
         decoration: BoxDecoration(color: AppColors.resolvedBackground),
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(0, 0, 0, 144),
+          padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 144),
           children: [
             _ExhibitHero(exhibit: exhibit),
             Padding(
-              padding: const EdgeInsets.fromLTRB(
+              padding: const EdgeInsetsDirectional.fromSTEB(
                 AppSpacing.screenHorizontalCompact,
                 0,
                 AppSpacing.screenHorizontalCompact,
                 0,
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: prefs.language == 'ar'
+                    ? CrossAxisAlignment.end
+                    : CrossAxisAlignment.start,
                 children: [
                   _ExhibitDetailsPanel(
                     exhibit: exhibit,
@@ -135,14 +137,17 @@ class _ExhibitHero extends StatelessWidget {
             )
           else
             _ExhibitImageFallback(imageAsset: exhibit.imageAsset),
-          const DecoratedBox(
-            decoration: BoxDecoration(gradient: AppGradients.heroImageOverlay),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: AppGradients.resolvedHeroImageOverlay(),
+            ),
           ),
           PositionedDirectional(
             start: AppSpacing.screenHorizontalCompact,
             bottom: 24,
             child: Text(
-              'Grand Egyptian Museum',
+              AppLocalizations.of(context)!.grandEgyptianMuseum,
+              textAlign: TextAlign.start,
               style: AppTextStyles.metadata(
                 context,
               ).copyWith(color: AppColors.primaryGold),
@@ -163,21 +168,29 @@ class _ExhibitDetailsPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isArabic = language == 'ar';
     final rows = <_DetailRowData>[
-      _DetailRowData(l10n.gallery, exhibit.floor),
-      _DetailRowData(l10n.period, exhibit.category),
+      _DetailRowData(l10n.gallery, exhibit.getFloor(language)),
+      _DetailRowData(l10n.period, exhibit.getCategory(language)),
       _DetailRowData(
-        'Recommended time',
+        isArabic ? 'الوقت المقترح' : 'Recommended time',
         exhibit.recommendedDurationMin == null
             ? ''
+            : isArabic
+            ? '${exhibit.recommendedDurationMin} دقيقة'
             : '${exhibit.recommendedDurationMin} min',
       ),
-      _DetailRowData('Photo spot', exhibit.photoSpot ? 'Yes' : ''),
+      _DetailRowData(
+        isArabic ? 'نقطة تصوير' : 'Photo spot',
+        exhibit.photoSpot ? (isArabic ? 'نعم' : 'Yes') : '',
+      ),
     ].where((row) => row.value.trim().isNotEmpty).toList();
     final description = exhibit.getDescription(language).trim();
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: isArabic
+          ? CrossAxisAlignment.end
+          : CrossAxisAlignment.start,
       children: [
         if (rows.isNotEmpty) ...[
           Container(
@@ -195,6 +208,7 @@ class _ExhibitDetailsPanel extends StatelessWidget {
           const SizedBox(height: 24),
           Text(
             l10n.description.toUpperCase(),
+            textAlign: TextAlign.start,
             style: AppTextStyles.premiumSectionLabel(
               context,
             ).copyWith(color: AppColors.softGold),
@@ -206,6 +220,7 @@ class _ExhibitDetailsPanel extends StatelessWidget {
             decoration: AppDecorations.secondaryGlassCard(radius: 22),
             child: Text(
               description,
+              textAlign: TextAlign.start,
               style: AppTextStyles.premiumBody(
                 context,
               ).copyWith(height: 1.58, color: AppColors.resolvedBodyText),

@@ -72,3 +72,8 @@ flutter:
         - asset: assets/fonts/static/PlayfairDisplay-Regular.ttf
         - asset: assets/fonts/static/PlayfairDisplay-Bold.ttf 
           weight: 700
+    - family: HorusArabic
+      fonts:
+        - asset: assets/fonts/Tahoma.ttf
+        - asset: assets/fonts/Tahoma-Bold.ttf
+          weight: 700

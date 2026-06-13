@@ -171,9 +171,13 @@ class TourSessionRepository {
         transaction.update(_robotDoc(resolvedRobotId), {
           'status': 'available',
           'active_session_id': null,
+          'activeSessionId': null,
           'active_user_id': null,
+          'currentUserId': null,
           'active_robot_tour_ticket_id': null,
+          'activeRobotTourTicketId': null,
           'updated_at': now,
+          'updatedAt': now,
         });
       });
     } on FirebaseException catch (e) {

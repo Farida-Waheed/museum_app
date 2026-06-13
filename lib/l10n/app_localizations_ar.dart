@@ -1022,7 +1022,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get searchByExhibitName => 'ابحث باسم المعروض...';
 
   @override
-  String get tapToViewDetailsAudioGuide => 'اضغط لعرض التفاصيل والدليل الصوتي';
+  String get tapToViewDetailsAudioGuide => 'اضغط لعرض التفاصيل';
 
   @override
   String get noResultsFound => 'لا توجد نتائج';
@@ -1031,7 +1031,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noResultsFoundDesc => 'جرّب كلمة مختلفة أو تحقق من الهجاء.';
 
   @override
-  String get tapToViewDetailsAndAudioGuide => 'اضغط لعرض التفاصيل ودليل الصوت';
+  String get tapToViewDetailsAndAudioGuide => 'اضغط لعرض التفاصيل';
 
   @override
   String get currentTour => 'الجولة الحالية';

@@ -1038,8 +1038,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get searchByExhibitName => 'Search by exhibit name...';
 
   @override
-  String get tapToViewDetailsAudioGuide =>
-      'Tap to view details and audio guide';
+  String get tapToViewDetailsAudioGuide => 'Tap to view details';
 
   @override
   String get noResultsFound => 'No results found';
@@ -1049,8 +1048,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Try a different word or check the spelling.';
 
   @override
-  String get tapToViewDetailsAndAudioGuide =>
-      'Tap to view details and audio guide';
+  String get tapToViewDetailsAndAudioGuide => 'Tap to view details';
 
   @override
   String get currentTour => 'Current tour';

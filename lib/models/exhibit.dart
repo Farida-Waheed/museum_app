@@ -67,17 +67,19 @@ class Exhibit {
         ) ??
         _stringValue(data['descriptionEn']) ??
         '';
+    final id =
+        _stringValue(data['id']) ?? _stringValue(data['exhibitId']) ?? docId;
     final titleAr =
         _stringValue(data['title_ar']) ??
         _stringValue(data['nameAr']) ??
-        titleEn;
+        _ArabicExhibitCopy.title(id, titleEn);
     final descriptionAr =
         _stringValue(contentAr is Map ? contentAr['summary'] : null) ??
         _stringValue(data['descriptionAr']) ??
-        descriptionEn;
+        _ArabicExhibitCopy.description(id, titleEn, descriptionEn);
 
     return Exhibit(
-      id: _stringValue(data['id']) ?? _stringValue(data['exhibitId']) ?? docId,
+      id: id,
       nameEn: titleEn,
       nameAr: titleAr,
       descriptionEn: descriptionEn,
@@ -118,6 +120,10 @@ class Exhibit {
   String getName(String langCode) => langCode == 'ar' ? nameAr : nameEn;
   String getDescription(String langCode) =>
       langCode == 'ar' ? descriptionAr : descriptionEn;
+  String getCategory(String langCode) =>
+      langCode == 'ar' ? _ArabicExhibitCopy.period(category) : category;
+  String getFloor(String langCode) =>
+      langCode == 'ar' ? _ArabicExhibitCopy.gallery(floor) : floor;
 
   // Helper to get Offset for the Map
   Offset get position => Offset(x, y);
@@ -144,4 +150,105 @@ class Exhibit {
     if (value is List) return value.whereType<String>().toList();
     return const [];
   }
+}
+
+class _ArabicExhibitCopy {
+  static String title(String id, String englishTitle) {
+    final normalized = englishTitle.trim();
+    final mapped = _titleById[id] ?? _titleByEnglish[normalized];
+    return mapped ?? normalized;
+  }
+
+  static String description(
+    String id,
+    String englishTitle,
+    String englishDescription,
+  ) {
+    final mapped =
+        _descriptionById[id] ?? _descriptionByEnglish[englishTitle.trim()];
+    return mapped ?? englishDescription;
+  }
+
+  static String period(String value) {
+    switch (value.trim()) {
+      case 'New Kingdom':
+        return 'الدولة الحديثة';
+      case 'Ptolemaic Period':
+        return 'العصر البطلمي';
+      case '18th Dynasty':
+        return 'الأسرة الثامنة عشرة';
+      case '19th Dynasty':
+        return 'الأسرة التاسعة عشرة';
+      default:
+        return value;
+    }
+  }
+
+  static String gallery(String value) {
+    if (value.trim().isEmpty) return value;
+    switch (value.trim()) {
+      case 'Grand Egyptian Museum (GEM), Giza, Egypt':
+      case 'Grand Egyptian Museum':
+        return 'المتحف المصري الكبير';
+      case 'Main exhibition gallery':
+        return 'قاعة العرض الرئيسية';
+      default:
+        return value;
+    }
+  }
+
+  static const Map<String, String> _titleById = {
+    'artifact_001': 'التمثال الضخم لرمسيس الثاني',
+    'artifact_002': 'تمثال ضخم لملك بطلمي',
+    'artifact_003': 'تمثال ضخم لملكة بطلمية',
+    'artifact_004': 'عمود الملك مرنبتاح',
+    'artifact_005': 'تمثال جالس لسنوسرت الأول',
+    'artifact_006': 'أنوبيس على صندوق',
+    'artifact_007': 'صندوق الأواني الكانوبية لتوت عنخ آمون',
+    'artifact_008': 'تابوت كانوبي صغير لتوت عنخ آمون',
+    'artifact_012': 'مقصورة كانوبية على زحافة',
+    'artifact_013': 'رأس بقرة',
+    'artifact_014': 'أقراط على شكل رأس بطة',
+    'artifact_015': 'إناء عطر مزخرف',
+    'artifact_016': 'أقراط احتفالية',
+    'artifact_017': 'صندوق شعر مزخرف بالزهور',
+    'artifact_018': 'العرش الذهبي لتوت عنخ آمون',
+    'artifact_019': 'تمثال حارس لتوت عنخ آمون',
+    'artifact_020': 'تمثال حارس لتوت عنخ آمون بغطاء النمس',
+    'artifact_021': 'صندوق مجوهرات عاجي',
+    'artifact_023': 'مسند رأس على شكل أسد',
+    'artifact_024': 'كأس اللوتس لتوت عنخ آمون',
+    'artifact_025': 'نموذج لتوت عنخ آمون على سرير جنائزي',
+    'artifact_026': 'مروحة صيد النعام',
+    'artifact_027': 'التابوت الخارجي لتوت عنخ آمون',
+    'artifact_028': 'صندوق حمل طقسي',
+    'artifact_029': 'إكليل توت عنخ آمون الملكي',
+    'artifact_030': 'القناع الذهبي الجنائزي لتوت عنخ آمون',
+  };
+
+  static const Map<String, String> _titleByEnglish = {
+    'Colossal Statue of Ramesses II': 'التمثال الضخم لرمسيس الثاني',
+    'Colossus of a Ptolemaic King': 'تمثال ضخم لملك بطلمي',
+    'Colossus of a Ptolemaic Queen': 'تمثال ضخم لملكة بطلمية',
+    'Column of King Merenptah': 'عمود الملك مرنبتاح',
+    'Seated Statue of Senwosret I': 'تمثال جالس لسنوسرت الأول',
+  };
+
+  static const Map<String, String> _descriptionById = {
+    'artifact_001':
+        'يُعد التمثال الضخم لرمسيس الثاني من أشهر التماثيل الملكية في مصر القديمة. يعكس حجمه الهائل قوة الملك ومكانته الإلهية ودور منف القديمة كمركز سياسي وديني مهم.',
+    'artifact_002':
+        'ينتمي هذا التمثال الضخم إلى العصر البطلمي، حين حكمت مصر أسرة ذات أصول يونانية تبنت تقاليد الفراعنة لتأكيد شرعيتها أمام المصريين.',
+    'artifact_003':
+        'صُنع تمثال الملكة البطلمية في فترة امتزجت فيها التقاليد المصرية واليونانية. يبرز التمثال مكانة النساء الملكيات ودورهن السياسي والديني.',
+    'artifact_004':
+        'يرتبط هذا العمود بعهد الملك مرنبتاح، ابن رمسيس الثاني وخليفته. كانت الأعمدة الملكية تحمل الأسماء والألقاب وتؤكد قوة الملك داخل المعابد.',
+    'artifact_005':
+        'يمثل هذا التمثال الجالس الملك سنوسرت الأول، أحد ملوك الدولة الوسطى. يعكس الهدوء والاتزان في النحت الملكي المصري وفكرة الحكم المستقر.',
+  };
+
+  static const Map<String, String> _descriptionByEnglish = {
+    'Colossal Statue of Ramesses II':
+        'يُعد التمثال الضخم لرمسيس الثاني من أشهر التماثيل الملكية في مصر القديمة.',
+  };
 }

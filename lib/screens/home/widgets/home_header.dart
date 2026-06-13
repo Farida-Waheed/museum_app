@@ -54,6 +54,7 @@ class HomeHeader extends StatelessWidget {
                       alignment: Alignment.center,
                       children: [
                         Row(
+                          textDirection: Directionality.of(context),
                           children: [
                             _HeaderButton(
                               icon: Icons.menu_rounded,
@@ -118,15 +119,27 @@ class _HeaderProtectionLayer extends StatelessWidget {
                     end: Alignment.bottomCenter,
                     colors: AppColors.useLightSurfaces
                         ? [
-                            AppColors.websiteLightForeground.withValues(alpha: 0.06 * scrollStrength),
-                            AppColors.websiteLightForeground.withValues(alpha: 0.08 * scrollStrength),
-                            AppColors.websiteLightForeground.withValues(alpha: 0.04 * scrollStrength),
+                            AppColors.websiteLightForeground.withValues(
+                              alpha: 0.06 * scrollStrength,
+                            ),
+                            AppColors.websiteLightForeground.withValues(
+                              alpha: 0.08 * scrollStrength,
+                            ),
+                            AppColors.websiteLightForeground.withValues(
+                              alpha: 0.04 * scrollStrength,
+                            ),
                             Colors.transparent,
                           ]
                         : [
-                            AppColors.darkInk.withValues(alpha: 0.12 * scrollStrength),
-                            AppColors.darkInk.withValues(alpha: 0.18 * scrollStrength),
-                            AppColors.darkInk.withValues(alpha: 0.08 * scrollStrength),
+                            AppColors.darkInk.withValues(
+                              alpha: 0.12 * scrollStrength,
+                            ),
+                            AppColors.darkInk.withValues(
+                              alpha: 0.18 * scrollStrength,
+                            ),
+                            AppColors.darkInk.withValues(
+                              alpha: 0.08 * scrollStrength,
+                            ),
                             Colors.transparent,
                           ],
                     stops: const [0.0, 0.36, 0.68, 1.0],

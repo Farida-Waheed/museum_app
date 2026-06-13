@@ -36,10 +36,9 @@ class AppColors {
   static Color get resolvedDivider =>
       _useLightSurfaces ? websiteLightBorder : darkDivider;
 
-  static Color dialogBarrier([double alpha = 0.42]) =>
-      _useLightSurfaces
-          ? darkInk.withOpacity(alpha)
-          : Colors.black.withOpacity(alpha);
+  static Color dialogBarrier([double alpha = 0.42]) => _useLightSurfaces
+      ? darkInk.withOpacity(alpha)
+      : Colors.black.withOpacity(alpha);
 
   static Color surfaceShadow([double alpha = 0.12]) =>
       darkInk.withOpacity(alpha);
@@ -125,7 +124,9 @@ class AppColors {
           );
 
   static Color goldBorder([double opacity = 0.22]) =>
-      mutedGoldBorder.withValues(alpha: opacity);
+      (_useLightSurfaces ? primaryGold : mutedGoldBorder).withValues(
+        alpha: _useLightSurfaces ? opacity.clamp(0.18, 0.42) : opacity,
+      );
 
   static Color softGlow([double opacity = 0.10]) =>
       primaryGold.withValues(alpha: opacity);
@@ -185,6 +186,23 @@ class AppGradients {
     stops: [0.0, 0.28, 0.76, 1.0],
   );
 
+  static LinearGradient resolvedHeroImageOverlay() {
+    if (AppColors.useLightSurfaces) {
+      return LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          AppColors.websiteLightBackground.withValues(alpha: 0.08),
+          AppColors.darkInk.withValues(alpha: 0.10),
+          AppColors.websiteLightBackground.withValues(alpha: 0.72),
+          AppColors.websiteLightBackground,
+        ],
+        stops: const [0.0, 0.34, 0.78, 1.0],
+      );
+    }
+    return heroImageOverlay;
+  }
+
   static const LinearGradient onboardingOverlay = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
@@ -202,7 +220,11 @@ class AppDecorations {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [AppColors.websiteLightBackground, AppColors.websiteLightCard, Color(0xFFEFE5D4)],
+          colors: [
+            AppColors.websiteLightBackground,
+            AppColors.websiteLightPopover,
+            AppColors.websiteLightBackground,
+          ],
         ),
       );
     }
@@ -234,13 +256,15 @@ class AppDecorations {
       ),
       boxShadow: [
         BoxShadow(
-          color: AppColors.darkInk.withValues(alpha: light ? 0.08 : 0.24),
+          color: AppColors.darkInk.withValues(alpha: light ? 0.10 : 0.24),
           blurRadius: 18,
           offset: const Offset(0, 10),
         ),
         BoxShadow(
-          color: AppColors.bronzeGlow(highlighted ? 0.10 : 0.06),
-          blurRadius: 24,
+          color: AppColors.bronzeGlow(
+            light ? 0.04 : (highlighted ? 0.10 : 0.06),
+          ),
+          blurRadius: light ? 18 : 24,
         ),
         if (highlighted)
           BoxShadow(
@@ -263,7 +287,7 @@ class AppDecorations {
       border: Border.all(color: AppColors.goldBorder(0.16), width: 1),
       boxShadow: [
         BoxShadow(
-          color: AppColors.darkInk.withValues(alpha: light ? 0.06 : 0.18),
+          color: AppColors.darkInk.withValues(alpha: light ? 0.09 : 0.18),
           blurRadius: 14,
           offset: const Offset(0, 7),
         ),

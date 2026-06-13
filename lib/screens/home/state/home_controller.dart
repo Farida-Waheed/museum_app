@@ -125,10 +125,8 @@ class HomeController {
       isTourCompleted: isCompleted,
       currentExhibitName: currentExhibit == null
           ? null
-          : (lang == 'ar' ? currentExhibit.nameAr : currentExhibit.nameEn),
-      nextStopName: nextExhibit == null
-          ? null
-          : (lang == 'ar' ? nextExhibit.nameAr : nextExhibit.nameEn),
+          : currentExhibit.getName(lang),
+      nextStopName: nextExhibit == null ? null : nextExhibit.getName(lang),
       nextStopLocation: nextExhibit == null
           ? null
           : (lang == 'ar' ? 'القاعة الذهبية' : 'Golden Hall'),

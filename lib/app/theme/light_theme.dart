@@ -5,10 +5,10 @@ import '../../core/constants/colors.dart';
 ThemeData getLightTheme(String languageCode) {
   final bool isArabic = languageCode == 'ar';
   final String? bodyFont = isArabic
-      ? GoogleFonts.notoSansArabic().fontFamily
+      ? 'HorusArabic'
       : GoogleFonts.inter().fontFamily;
   final String? headingFont = isArabic
-      ? GoogleFonts.amiri().fontFamily
+      ? 'HorusArabic'
       : GoogleFonts.cinzel().fontFamily;
 
   return ThemeData(
@@ -95,10 +95,14 @@ ThemeData getLightTheme(String languageCode) {
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: AppColors.websiteLightCard,
-      labelStyle:
-          TextStyle(fontFamily: bodyFont, color: AppColors.websiteLightMutedForeground),
-      hintStyle:
-          TextStyle(fontFamily: bodyFont, color: AppColors.websiteLightMutedForeground),
+      labelStyle: TextStyle(
+        fontFamily: bodyFont,
+        color: AppColors.websiteLightMutedForeground,
+      ),
+      hintStyle: TextStyle(
+        fontFamily: bodyFont,
+        color: AppColors.websiteLightMutedForeground,
+      ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(color: Color(0x268C6A2F)),

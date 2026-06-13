@@ -88,6 +88,7 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final light = AppColors.useLightSurfaces;
     return AnimatedBuilder(
       animation: _glowCtrl,
       builder: (context, child) {
@@ -121,7 +122,9 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.darkInk.withValues(
-                        alpha: widget.subtle ? 0.18 : 0.6,
+                        alpha: light
+                            ? (widget.subtle ? 0.10 : 0.18)
+                            : (widget.subtle ? 0.18 : 0.6),
                       ),
                       blurRadius: widget.subtle ? 10 : 24,
                       offset: Offset(0, widget.subtle ? 5 : 12),

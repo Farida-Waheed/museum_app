@@ -1,4 +1,4 @@
-﻿import 'dart:ui';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -30,15 +30,25 @@ class HomeFeaturedArtifactCard extends StatelessWidget {
             children: [
               Image.asset(artifact.imageAsset, fit: BoxFit.cover),
               Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0x26000000),
-                      Color(0x5C000000),
-                      Color(0xD9000000),
-                    ],
+                    colors: AppColors.useLightSurfaces
+                        ? [
+                            AppColors.websiteLightBackground.withValues(
+                              alpha: 0.02,
+                            ),
+                            AppColors.darkInk.withValues(alpha: 0.12),
+                            AppColors.websiteLightBackground.withValues(
+                              alpha: 0.86,
+                            ),
+                          ]
+                        : const [
+                            Color(0x26000000),
+                            Color(0x5C000000),
+                            Color(0xD9000000),
+                          ],
                   ),
                 ),
               ),

@@ -629,25 +629,37 @@ class _PermissionItem extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              ElevatedButton(
-                onPressed: isGranted ? null : onEnable,
-                style: AppDecorations.primaryButton().copyWith(
-                  textStyle: WidgetStatePropertyAll(
-                    AppTextStyles.buttonLabel(
-                      context,
-                    ).copyWith(inherit: false, fontSize: 13),
-                  ),
-                  shape: WidgetStatePropertyAll(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                  ),
-                  padding: const WidgetStatePropertyAll(
-                    EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                  ),
-                  minimumSize: const WidgetStatePropertyAll(Size(0, 42)),
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  minWidth: 96,
+                  maxWidth: 148,
+                  minHeight: 42,
                 ),
-                child: Text(l10n.enable),
+                child: ElevatedButton(
+                  onPressed: isGranted ? null : onEnable,
+                  style: AppDecorations.primaryButton().copyWith(
+                    textStyle: WidgetStatePropertyAll(
+                      AppTextStyles.buttonLabel(
+                        context,
+                      ).copyWith(inherit: false, fontSize: 13),
+                    ),
+                    shape: WidgetStatePropertyAll(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                    ),
+                    padding: const WidgetStatePropertyAll(
+                      EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    ),
+                    minimumSize: const WidgetStatePropertyAll(Size(96, 42)),
+                    maximumSize: const WidgetStatePropertyAll(Size(148, 48)),
+                  ),
+                  child: Text(
+                    l10n.enable,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ),
             ],
           ),

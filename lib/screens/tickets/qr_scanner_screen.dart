@@ -227,7 +227,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
           result = _ScanResult(
             isValid: false,
             title: _pairingErrorTitle(l10n, e.code),
-            message: _pairingErrorMessage(l10n, e.code),
+            message: _pairingErrorMessage(l10n, e.code, code),
             primaryLabel: l10n.done,
           );
         } catch (_) {
@@ -327,12 +327,13 @@ class _QrScannerScreenState extends State<QrScannerScreen>
   String _pairingErrorMessage(
     AppLocalizations l10n,
     RobotPairingFailureCode code,
+    String scannedCode,
   ) {
     switch (code) {
       case RobotPairingFailureCode.signInRequired:
         return l10n.qrSignInRequiredMessage;
       case RobotPairingFailureCode.robotTourTicketRequired:
-        return 'You need a valid Horus-Bot tour ticket to pair with this robot.';
+        return 'No confirmed robot tour ticket found. Please confirm payment for your Horus-Bot ticket first.';
       case RobotPairingFailureCode.robotTourTicketExpired:
         return 'Your robot tour ticket has expired. Please book a new Horus-Bot tour.';
       case RobotPairingFailureCode.robotTourTicketCompleted:
@@ -340,19 +341,26 @@ class _QrScannerScreenState extends State<QrScannerScreen>
       case RobotPairingFailureCode.ambiguousRobotTourTicket:
         return 'Please select a robot tour ticket from My Tickets before pairing.';
       case RobotPairingFailureCode.robotNotFound:
+        final parsedRobotId = _robotPairingService.parseRobotId(scannedCode);
+        final robotCode = _robotPairingService.robotCodeForParsedId(
+          parsedRobotId,
+        );
+        if (parsedRobotId != null && robotCode != null) {
+          return 'Robot document not found. Checked $robotCode and $parsedRobotId.';
+        }
         return l10n.qrRobotNotFoundMessage;
       case RobotPairingFailureCode.robotUnavailable:
-        return l10n.qrRobotUnavailableMessage;
+        return 'Robot is offline/not connected.';
       case RobotPairingFailureCode.robotBusy:
-        return l10n.qrRobotBusyMessage;
+        return 'Robot is already assigned to another session.';
       case RobotPairingFailureCode.permissionDenied:
-        return l10n.qrPairingPermissionDeniedMessage;
+        return 'Firestore permission denied during robot pairing.';
       case RobotPairingFailureCode.network:
         return l10n.qrPairingNetworkMessage;
       case RobotPairingFailureCode.invalidQr:
         return l10n.notHorusBotQr;
       case RobotPairingFailureCode.unknown:
-        return l10n.qrPairingUnknownMessage;
+        return 'Pairing transaction failed. Please try again.';
     }
   }
 

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/museum_ticket.dart';
 import '../models/robot_tour_ticket.dart';
@@ -31,6 +32,16 @@ class RobotPairingService {
     String? robotTourTicketId,
   }) async {
     final parsedRobotId = parseRobotId(scannedCode);
+    final rawRobotCode = robotCodeForParsedId(parsedRobotId);
+    _logPairing(
+      'scan received',
+      {
+        'rawQr': scannedCode,
+        'parsedRobotId': parsedRobotId,
+        'rawRobotCode': rawRobotCode,
+        'preferredRobotTourTicketId': robotTourTicketId,
+      },
+    );
     if (parsedRobotId == null) {
       throw const RobotPairingException(RobotPairingFailureCode.invalidQr);
     }
@@ -39,12 +50,26 @@ class RobotPairingService {
     }
 
     try {
+      final robotCandidates = _robotIdCandidates(parsedRobotId);
+      _logPairing(
+        'robot candidates',
+        {'candidates': robotCandidates.toList(growable: false)},
+      );
       final restorablePairing = await _findRestorableInProgressPairing(
         userId: userId,
-        robotIdCandidates: _robotIdCandidates(parsedRobotId),
+        robotIdCandidates: robotCandidates,
         preferredTicketId: robotTourTicketId,
       );
       if (restorablePairing != null) {
+        _logPairing(
+          'restored existing pairing',
+          {
+            'sessionId': restorablePairing.sessionId,
+            'robotId': restorablePairing.robotId,
+            'robotTourTicketId': restorablePairing.robotTourTicketId,
+            'museumTicketId': restorablePairing.museumTicketId,
+          },
+        );
         return restorablePairing;
       }
 
@@ -57,6 +82,17 @@ class RobotPairingService {
           RobotPairingFailureCode.robotTourTicketRequired,
         );
       }
+      _logPairing(
+        'selected robot tour ticket',
+        {
+          'robotTourTicketDocId': pairableTicket.documentId,
+          'ticketId': pairableTicket.ticket.id,
+          'bookingId': pairableTicket.ticket.bookingId,
+          'museumTicketId': pairableTicket.ticket.museumTicketId,
+          'paymentStatus': pairableTicket.data['payment_status'],
+          'status': pairableTicket.data['status'],
+        },
+      );
 
       final robotTourTicket = pairableTicket.ticket;
       final selectedExhibitIds = _selectedExhibitIds(robotTourTicket);
@@ -68,12 +104,21 @@ class RobotPairingService {
       final sessionRef = _firestore.collection('tourSessions').doc();
       final sessionId = sessionRef.id;
       final robotRef = await _robotDocumentRef(parsedRobotId);
+      _logPairing(
+        'robot lookup result',
+        {
+          'parsedRobotId': parsedRobotId,
+          'selectedRobotDocPath': robotRef?.path,
+        },
+      );
       if (robotRef == null) {
         throw const RobotPairingException(
           RobotPairingFailureCode.robotNotFound,
         );
       }
       final robotId = robotRef.id;
+      final robotCode = rawRobotCode ?? robotCodeForParsedId(robotId) ?? robotId;
+      final shortRobotId = parsedRobotId;
       final robotTicketRef = _firestore
           .collection('robotTourTickets')
           .doc(pairableTicket.documentId);
@@ -90,6 +135,16 @@ class RobotPairingService {
           RobotPairingFailureCode.robotTourTicketRequired,
         );
       }
+      _logPairing(
+        'transaction starting',
+        {
+          'sessionId': sessionId,
+          'robotDocPath': robotRef.path,
+          'robotTourTicketPath': robotTicketRef.path,
+          'linkedMuseumTicketId': museumTicketId,
+          'bookingId': bookingId,
+        },
+      );
 
       await _firestore.runTransaction((transaction) async {
         final robotTicketSnapshot = await transaction.get(robotTicketRef);
@@ -128,9 +183,10 @@ class RobotPairingService {
         final activeUserId =
             _stringValue(robotData['active_user_id']) ??
             _stringValue(robotData['currentUserId']);
-        final isOnline =
-            _boolValue(robotData['is_online']) ??
-            _boolValue(robotData['online']);
+        final activeRobotTourTicketId =
+            _stringValue(robotData['active_robot_tour_ticket_id']) ??
+            _stringValue(robotData['activeRobotTourTicketId']);
+        final isConnected = _isRobotConnected(robotData);
         final isActive =
             _boolValue(robotData['is_active']) ??
             _boolValue(robotData['active']) ??
@@ -139,19 +195,21 @@ class RobotPairingService {
             robotStatus == 'available' || robotStatus == 'active';
         if (!canAcceptPairing ||
             activeSessionId != null ||
-            activeUserId != null) {
+            activeUserId != null ||
+            activeRobotTourTicketId != null) {
           throw RobotPairingException(
             robotStatus == 'paired' ||
                     robotStatus == 'busy' ||
                     robotStatus == 'assigned' ||
                     robotStatus == 'in_tour' ||
                     activeSessionId != null ||
-                    activeUserId != null
+                    activeUserId != null ||
+                    activeRobotTourTicketId != null
                 ? RobotPairingFailureCode.robotBusy
                 : RobotPairingFailureCode.robotUnavailable,
           );
         }
-        if (isOnline == false) {
+        if (!isConnected) {
           throw const RobotPairingException(
             RobotPairingFailureCode.robotUnavailable,
           );
@@ -159,6 +217,16 @@ class RobotPairingService {
         if (isActive == false) {
           throw const RobotPairingException(
             RobotPairingFailureCode.robotUnavailable,
+          );
+        }
+        if (_boolValue(robotData['mqttEnabled']) == false) {
+          _logPairing(
+            'mqtt disabled',
+            {
+              'robotDocPath': robotRef.path,
+              'message':
+                  'MQTT disabled for robot document; physical robot activation may require Firestore listener.',
+            },
           );
         }
 
@@ -171,6 +239,9 @@ class RobotPairingService {
           'museum_ticket_id': museumTicketId,
           'robot_tour_ticket_id': pairableTicket.documentId,
           'robotId': robotId,
+          'robot_id': robotId,
+          'robot_code': robotCode,
+          'short_robot_id': shortRobotId,
           'status': 'active',
           'current_exhibit_id': currentExhibitId,
           'current_exhibit_index': 0,
@@ -203,11 +274,26 @@ class RobotPairingService {
         transaction.update(robotRef, {
           'status': 'assigned',
           'active_session_id': sessionId,
+          'activeSessionId': sessionId,
           'active_user_id': userId,
+          'currentUserId': userId,
           'active_robot_tour_ticket_id': pairableTicket.documentId,
+          'activeRobotTourTicketId': pairableTicket.documentId,
+          'robotId': robotId,
+          'robot_code': robotCode,
           'updated_at': now,
+          'updatedAt': now,
         });
       });
+      _logPairing(
+        'transaction committed',
+        {
+          'sessionId': sessionId,
+          'robotId': robotId,
+          'robotTourTicketId': pairableTicket.documentId,
+          'museumTicketId': museumTicketId,
+        },
+      );
 
       return RobotPairingResult(
         sessionId: sessionId,
@@ -221,6 +307,14 @@ class RobotPairingService {
     } on RobotPairingException {
       rethrow;
     } on FirebaseException catch (e) {
+      _logPairing(
+        'firebase error',
+        {
+          'code': e.code,
+          'message': e.message,
+          'plugin': e.plugin,
+        },
+      );
       if (e.code == 'permission-denied') {
         throw const RobotPairingException(
           RobotPairingFailureCode.permissionDenied,
@@ -328,7 +422,17 @@ class RobotPairingService {
   }
 
   Set<String> _robotIdCandidates(String parsedRobotId) {
-    return {parsedRobotId, 'ROBOT-$parsedRobotId'};
+    final robotCode = robotCodeForParsedId(parsedRobotId);
+    return {
+      if (robotCode != null) robotCode,
+      parsedRobotId,
+    };
+  }
+
+  String? robotCodeForParsedId(String? parsedRobotId) {
+    final id = parsedRobotId?.trim().toUpperCase();
+    if (id == null || id.isEmpty) return null;
+    return id.startsWith('ROBOT-') ? id : 'ROBOT-$id';
   }
 
   Future<DocumentReference<Map<String, dynamic>>?> _robotDocumentRef(
@@ -337,6 +441,13 @@ class RobotPairingService {
     for (final id in _robotIdCandidates(parsedRobotId)) {
       final ref = _firestore.collection('robots').doc(id);
       final snapshot = await ref.get();
+      _logPairing(
+        'robot candidate checked',
+        {
+          'path': ref.path,
+          'exists': snapshot.exists,
+        },
+      );
       if (snapshot.exists) return ref;
     }
     return null;
@@ -661,6 +772,20 @@ class RobotPairingService {
     return null;
   }
 
+  bool _isRobotConnected(Map<String, dynamic> data) {
+    final connectionState = _stringValue(data['robotConnectionState'])
+        ?.toLowerCase()
+        .replaceAll('-', '_');
+    if (connectionState != null) {
+      return connectionState == 'connected' || connectionState == 'online';
+    }
+    final explicitOnline =
+        _boolValue(data['is_online']) ??
+        _boolValue(data['isOnline']) ??
+        _boolValue(data['online']);
+    return explicitOnline ?? true;
+  }
+
   int? _intValue(Object? value) {
     if (value is int) return value;
     if (value is num) return value.toInt();
@@ -683,6 +808,10 @@ class RobotPairingService {
           .toList();
     }
     return const [];
+  }
+
+  void _logPairing(String message, Map<String, Object?> details) {
+    debugPrint('[Horus-Bot pairing] $message: $details');
   }
 
   String? _nextExhibit(List<String> route, String? currentExhibitId) {
