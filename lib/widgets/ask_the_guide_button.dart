@@ -3,29 +3,27 @@ import 'package:provider/provider.dart';
 
 import '../core/constants/colors.dart';
 import '../core/constants/text_styles.dart';
-import '../l10n/app_localizations.dart';
 import '../models/app_session_provider.dart' as session;
-import '../models/auth_provider.dart';
 import '../models/tour_provider.dart';
 import '../screens/chat/chat_screen.dart';
 
-class AskTheGuideButton extends StatefulWidget {
+class AskHorusFloatingChip extends StatefulWidget {
   final String screen;
   final String? currentExhibitId;
   final bool subtle;
 
-  const AskTheGuideButton({
+  const AskHorusFloatingChip({
     super.key,
     this.screen = 'home',
     this.currentExhibitId,
-    this.subtle = false,
+    this.subtle = true,
   });
 
   @override
-  State<AskTheGuideButton> createState() => _AskTheGuideButtonState();
+  State<AskHorusFloatingChip> createState() => _AskHorusFloatingChipState();
 }
 
-class _AskTheGuideButtonState extends State<AskTheGuideButton>
+class _AskHorusFloatingChipState extends State<AskHorusFloatingChip>
     with SingleTickerProviderStateMixin {
   bool _pressed = false;
   bool _isHovered = false;
@@ -42,38 +40,6 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
   }
 
   void _openChat() {
-    final authProvider = context.read<AuthProvider>();
-    if (!authProvider.isLoggedIn) {
-      showDialog(
-        context: context,
-        barrierColor: AppColors.dialogBarrier(0.46),
-        builder: (_) => ChatScreen(
-          isPopup: true,
-          screen: widget.screen,
-          currentExhibitId: widget.currentExhibitId,
-        ),
-      );
-      return;
-    }
-
-    final sessionProvider = context.read<session.AppSessionProvider>();
-    final tourProvider = context.read<TourProvider>();
-    final canAsk =
-        sessionProvider.hasRestorableTourSession ||
-        tourProvider.tourLifecycleState == TourLifecycleState.active ||
-        tourProvider.tourLifecycleState == TourLifecycleState.paused;
-    if (!canAsk) {
-      final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.askDuringActiveTourOnly),
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: AppColors.resolvedElevated,
-        ),
-      );
-      return;
-    }
-
     showDialog(
       context: context,
       barrierColor: AppColors.dialogBarrier(0.46),
@@ -87,8 +53,15 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final light = AppColors.useLightSurfaces;
+    final sessionProvider = context.watch<session.AppSessionProvider>();
+    final tourProvider = context.watch<TourProvider>();
+    final activeTour =
+        sessionProvider.tourLifecycleState == session.TourLifecycleState.active ||
+        sessionProvider.tourLifecycleState == session.TourLifecycleState.paused ||
+        tourProvider.tourLifecycleState == TourLifecycleState.active ||
+        tourProvider.tourLifecycleState == TourLifecycleState.paused;
+    final label = activeTour ? 'Ask the Robot Guide' : 'Ask Horus';
     return AnimatedBuilder(
       animation: _glowCtrl,
       builder: (context, child) {
@@ -107,41 +80,36 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 decoration: BoxDecoration(
-                  color: widget.subtle
-                      ? AppColors.cardGlass(0.46)
-                      : AppColors.resolvedElevated,
-                  borderRadius: BorderRadius.circular(widget.subtle ? 26 : 30),
+                  color: AppColors.useLightSurfaces
+                      ? AppColors.cardGlass(0.88)
+                      : AppColors.cardGlass(0.56),
+                  borderRadius: BorderRadius.circular(999),
                   border: Border.all(
                     color: AppColors.primaryGold.withValues(
-                      alpha: widget.subtle
-                          ? 0.30
-                          : 0.6 + (_glowCtrl.value * 0.4),
+                      alpha: light ? 0.36 : 0.46,
                     ),
-                    width: widget.subtle ? 1.0 : (_isHovered ? 1.5 : 1.1),
+                    width: 1.05,
                   ),
                   boxShadow: [
                     BoxShadow(
                       color: AppColors.darkInk.withValues(
-                        alpha: light
-                            ? (widget.subtle ? 0.10 : 0.18)
-                            : (widget.subtle ? 0.18 : 0.6),
+                        alpha: light ? 0.10 : 0.24,
                       ),
-                      blurRadius: widget.subtle ? 10 : 24,
-                      offset: Offset(0, widget.subtle ? 5 : 12),
+                      blurRadius: 14,
+                      offset: const Offset(0, 7),
                     ),
-                    if (!widget.subtle)
-                      BoxShadow(
-                        color: AppColors.primaryGold.withValues(
-                          alpha: 0.2 + (_glowCtrl.value * 0.3),
-                        ),
-                        blurRadius: _isHovered ? 30 : 22,
-                        spreadRadius: _isHovered ? 8 : 5,
+                    BoxShadow(
+                      color: AppColors.primaryGold.withValues(
+                        alpha: 0.06 + (_glowCtrl.value * 0.04),
                       ),
+                      blurRadius: 16,
+                    ),
                   ],
                 ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: widget.subtle ? 17 : 18,
-                  vertical: widget.subtle ? 10 : 12,
+                constraints: const BoxConstraints(minHeight: 42, maxHeight: 48),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                  vertical: 10,
                 ),
                 child: Row(
                   textDirection: Directionality.of(context),
@@ -150,15 +118,17 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
                     Icon(
                       Icons.record_voice_over_outlined,
                       color: AppColors.primaryGold,
-                      size: widget.subtle ? 18 : 24,
+                      size: 17,
                     ),
-                    SizedBox(width: widget.subtle ? 8 : 10),
+                    const SizedBox(width: 7),
                     Text(
-                      l10n.askTheGuide,
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.buttonLabel(context).copyWith(
                         color: AppColors.resolvedTitleText,
-                        fontSize: widget.subtle ? 13 : 14,
-                        fontWeight: FontWeight.w800,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
                   ],
@@ -168,6 +138,28 @@ class _AskTheGuideButtonState extends State<AskTheGuideButton>
           ),
         );
       },
+    );
+  }
+}
+
+class AskTheGuideButton extends StatelessWidget {
+  const AskTheGuideButton({
+    super.key,
+    this.screen = 'home',
+    this.currentExhibitId,
+    this.subtle = true,
+  });
+
+  final String screen;
+  final String? currentExhibitId;
+  final bool subtle;
+
+  @override
+  Widget build(BuildContext context) {
+    return AskHorusFloatingChip(
+      screen: screen,
+      currentExhibitId: currentExhibitId,
+      subtle: subtle,
     );
   }
 }

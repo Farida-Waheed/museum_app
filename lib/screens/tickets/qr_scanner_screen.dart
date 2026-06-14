@@ -198,6 +198,8 @@ class _QrScannerScreenState extends State<QrScannerScreen>
             'Pairing committed in QR flow: robotId=${pairing.robotId} '
             'sessionId=${pairing.sessionId}',
           );
+          await _confirmRobotPickedUpSession(pairing);
+          if (!mounted) return;
           sessionProvider.completeRobotConnection(
             robotId: pairing.robotId,
             sessionId: pairing.sessionId,
@@ -255,7 +257,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
           result = _ScanResult(
             isValid: false,
             title: _pairingErrorTitle(l10n, e.code),
-            message: _pairingErrorMessage(l10n, e.code, code),
+            message: _pairingErrorMessage(l10n, e, code),
             primaryLabel: l10n.done,
           );
         } catch (e) {
@@ -332,16 +334,6 @@ class _QrScannerScreenState extends State<QrScannerScreen>
       'Pairing flow sending start_tour: topic='
       '${mqttService.commandTopic(pairing.robotId)} sessionId=${pairing.sessionId}',
     );
-    final connected = await mqttService
-        .connectForSession(robotId: pairing.robotId, sessionId: pairing.sessionId)
-        .timeout(const Duration(seconds: 12), onTimeout: () => false);
-    if (!connected) {
-      debugPrint(
-        'Pairing completed but MQTT connect failed for ${pairing.robotId}.',
-      );
-      return;
-    }
-
     final command = RobotCommand(
       type: RobotCommandType.startTour,
       robotId: pairing.robotId,
@@ -350,16 +342,50 @@ class _QrScannerScreenState extends State<QrScannerScreen>
       payload: const <String, dynamic>{},
     );
     debugPrint('Pairing flow command JSON: ${command.toJson()}');
-    final published = await mqttService
-        .publishCommand(command)
-        .timeout(const Duration(seconds: 12), onTimeout: () => false);
-    if (!published) {
+    final ack = await mqttService
+        .publishCommandAndWaitForAck(command)
+        .timeout(const Duration(seconds: 15), onTimeout: () => null);
+    if (ack == null) {
       debugPrint(
-        'Pairing completed but start_tour MQTT publish failed '
+        'Pairing completed but start_tour MQTT ack was not received '
         'for ${pairing.sessionId}.',
       );
-    } else {
-      debugPrint('Pairing flow start_tour MQTT publish succeeded.');
+      return;
+    }
+    if (ack.status == 'rejected' || ack.status == 'failed') {
+      final errorCode = ack.errorCode ?? ack.status;
+      debugPrint(
+        'Pairing flow start_tour rejected: $errorCode ${ack.message ?? ''}',
+      );
+      throw RobotPairingException(
+        RobotPairingFailureCode.commandRejected,
+        detail: errorCode,
+      );
+    }
+    debugPrint('Pairing flow start_tour MQTT ack: ${ack.status}.');
+  }
+
+  Future<void> _confirmRobotPickedUpSession(RobotPairingResult pairing) async {
+    final mqttService = context.read<RobotMqttService>();
+    final connected = await mqttService
+        .connectForSession(
+          robotId: pairing.robotId,
+          sessionId: pairing.sessionId,
+        )
+        .timeout(const Duration(seconds: 12), onTimeout: () => false);
+    if (!connected) {
+      throw const RobotPairingException(RobotPairingFailureCode.network);
+    }
+
+    final confirmed = await mqttService.waitForActiveSessionStatus(
+      robotId: pairing.robotId,
+      sessionId: pairing.sessionId,
+      timeout: const Duration(seconds: 15),
+    );
+    if (!confirmed) {
+      throw const RobotPairingException(
+        RobotPairingFailureCode.mqttSessionNotConfirmed,
+      );
     }
   }
 
@@ -380,8 +406,15 @@ class _QrScannerScreenState extends State<QrScannerScreen>
         return l10n.qrRobotTicketRequiredTitle;
       case RobotPairingFailureCode.robotNotFound:
         return l10n.qrRobotNotFoundTitle;
+      case RobotPairingFailureCode.robotConnectionStateNotConnected:
+      case RobotPairingFailureCode.robotMqttDisabled:
+      case RobotPairingFailureCode.robotLastSeenMissing:
+      case RobotPairingFailureCode.robotLastSeenStale:
+      case RobotPairingFailureCode.mqttSessionNotConfirmed:
       case RobotPairingFailureCode.robotUnavailable:
         return l10n.qrRobotUnavailableTitle;
+      case RobotPairingFailureCode.commandRejected:
+        return 'Robot command rejected';
       case RobotPairingFailureCode.robotBusy:
         return l10n.qrRobotBusyTitle;
       case RobotPairingFailureCode.permissionDenied:
@@ -395,9 +428,10 @@ class _QrScannerScreenState extends State<QrScannerScreen>
 
   String _pairingErrorMessage(
     AppLocalizations l10n,
-    RobotPairingFailureCode code,
+    RobotPairingException error,
     String scannedCode,
   ) {
+    final code = error.code;
     switch (code) {
       case RobotPairingFailureCode.signInRequired:
         return l10n.qrSignInRequiredMessage;
@@ -415,9 +449,24 @@ class _QrScannerScreenState extends State<QrScannerScreen>
           parsedRobotId,
         );
         if (parsedRobotId != null && robotCode != null) {
-          return 'Robot document not found. Checked $robotCode and $parsedRobotId.';
+          return 'Robot document missing: robots/$robotCode was not found.';
         }
         return l10n.qrRobotNotFoundMessage;
+      case RobotPairingFailureCode.robotConnectionStateNotConnected:
+        return 'Robot is not connected. robotConnectionState is '
+            '"${error.detail ?? 'missing'}", expected "connected".';
+      case RobotPairingFailureCode.robotMqttDisabled:
+        return 'Robot MQTT is disabled or missing. mqttEnabled must be true.';
+      case RobotPairingFailureCode.robotLastSeenMissing:
+        return 'Robot heartbeat is missing. lastSeenAt must exist and be recent.';
+      case RobotPairingFailureCode.robotLastSeenStale:
+        return 'Robot heartbeat is stale. lastSeenAt is '
+            '${error.detail ?? 'more than 45'} seconds old; it must be '
+            'within 45 seconds.';
+      case RobotPairingFailureCode.mqttSessionNotConfirmed:
+        return 'Robot did not report this activeSessionId on MQTT status within 15 seconds.';
+      case RobotPairingFailureCode.commandRejected:
+        return 'Robot rejected the command with errorCode: ${error.detail ?? 'unknown'}.';
       case RobotPairingFailureCode.robotUnavailable:
         return 'Robot is offline/not connected.';
       case RobotPairingFailureCode.robotBusy:

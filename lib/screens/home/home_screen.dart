@@ -1202,12 +1202,11 @@ class _HomeScreenState extends State<HomeScreen> {
               PositionedDirectional(
                 end: 12,
                 bottom: 104,
-                child: AskTheGuideButton(
+                child: AskHorusFloatingChip(
                   screen: 'home',
                   currentExhibitId: context
                       .watch<TourProvider>()
                       .currentExhibitId,
-                  subtle: true,
                 ),
               ),
             ],

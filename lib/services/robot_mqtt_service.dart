@@ -36,7 +36,7 @@ class RobotMqttService extends ChangeNotifier {
   );
   static const String devBrokerPassword = String.fromEnvironment(
     'HORUS_MQTT_PASSWORD',
-    defaultValue: 'Rosbot1',
+    defaultValue: 'Rosbot12',
   );
   static const bool devBrokerUseTls = bool.fromEnvironment(
     'HORUS_MQTT_TLS',
@@ -254,6 +254,61 @@ class RobotMqttService extends ChangeNotifier {
     }
   }
 
+  Future<bool> waitForActiveSessionStatus({
+    required String robotId,
+    required String sessionId,
+    Duration timeout = const Duration(seconds: 15),
+  }) async {
+    if (robotId != bridgeRobotId || sessionId.trim().isEmpty) return false;
+    try {
+      await statusUpdates.firstWhere((status) {
+        final statusRobotId = _stringValue(status['robotId']);
+        final activeSessionId = _stringValue(status['activeSessionId']);
+        return (statusRobotId == null || statusRobotId == robotId) &&
+            activeSessionId == sessionId;
+      }).timeout(timeout);
+      return true;
+    } on TimeoutException {
+      debugPrint(
+        'MQTT status did not confirm activeSessionId=$sessionId '
+        'within ${timeout.inSeconds}s.',
+      );
+      return false;
+    }
+  }
+
+  Future<RobotCommandAck?> publishCommandAndWaitForAck(
+    RobotCommand command, {
+    Duration timeout = const Duration(seconds: 15),
+  }) async {
+    final completer = Completer<RobotCommandAck?>();
+    late final StreamSubscription<RobotCommandAck> subscription;
+    Timer? timer;
+    void complete(RobotCommandAck? ack) {
+      if (completer.isCompleted) return;
+      timer?.cancel();
+      unawaited(subscription.cancel());
+      completer.complete(ack);
+    }
+
+    subscription = acks.listen((ack) {
+      if (ack.commandId == command.commandId) complete(ack);
+    });
+    timer = Timer(timeout, () {
+      debugPrint(
+        'MQTT ack timed out for ${command.type.wireName} '
+        '(${command.commandId}).',
+      );
+      complete(null);
+    });
+
+    final published = await publishCommand(command);
+    if (!published) {
+      complete(null);
+    }
+    return completer.future;
+  }
+
   String commandTopic(String robotId) => 'horus/robots/$robotId/commands';
   String ackTopic(String robotId) => 'horus/robots/$robotId/acks';
   String statusTopic(String robotId) => 'horus/robots/$robotId/status';
@@ -327,6 +382,11 @@ class RobotMqttService extends ChangeNotifier {
       debugPrint('MQTT message ignored: invalid JSON: $e');
       return null;
     }
+  }
+
+  String? _stringValue(Object? value) {
+    if (value is String && value.trim().isNotEmpty) return value.trim();
+    return null;
   }
 
   void _setConnectionState(RobotMqttConnectionState state) {

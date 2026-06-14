@@ -13,6 +13,12 @@ enum RobotPairingFailureCode {
   robotTourTicketCompleted,
   ambiguousRobotTourTicket,
   robotNotFound,
+  robotConnectionStateNotConnected,
+  robotMqttDisabled,
+  robotLastSeenMissing,
+  robotLastSeenStale,
+  mqttSessionNotConfirmed,
+  commandRejected,
   robotUnavailable,
   robotBusy,
   permissionDenied,
@@ -55,12 +61,33 @@ class RobotPairingService {
         'robot candidates',
         {'candidates': robotCandidates.toList(growable: false)},
       );
+      final robotRef = await _robotDocumentRef(parsedRobotId);
+      _logPairing(
+        'robot lookup result',
+        {
+          'parsedRobotId': parsedRobotId,
+          'selectedRobotDocPath': robotRef?.path,
+        },
+      );
+      if (robotRef == null) {
+        throw const RobotPairingException(
+          RobotPairingFailureCode.robotNotFound,
+        );
+      }
+
       final restorablePairing = await _findRestorableInProgressPairing(
         userId: userId,
         robotIdCandidates: robotCandidates,
         preferredTicketId: robotTourTicketId,
       );
       if (restorablePairing != null) {
+        final robotSnapshot = await robotRef.get();
+        if (!robotSnapshot.exists) {
+          throw const RobotPairingException(
+            RobotPairingFailureCode.robotNotFound,
+          );
+        }
+        _validateRobotBridgeOnline(robotSnapshot.data() ?? {});
         _logPairing(
           'restored existing pairing',
           {
@@ -103,19 +130,6 @@ class RobotPairingService {
       );
       final sessionRef = _firestore.collection('tourSessions').doc();
       final sessionId = sessionRef.id;
-      final robotRef = await _robotDocumentRef(parsedRobotId);
-      _logPairing(
-        'robot lookup result',
-        {
-          'parsedRobotId': parsedRobotId,
-          'selectedRobotDocPath': robotRef?.path,
-        },
-      );
-      if (robotRef == null) {
-        throw const RobotPairingException(
-          RobotPairingFailureCode.robotNotFound,
-        );
-      }
       final robotId = robotRef.id;
       final robotCode = rawRobotCode ?? robotCodeForParsedId(robotId) ?? robotId;
       final shortRobotId = parsedRobotId;
@@ -176,59 +190,14 @@ class RobotPairingService {
         }
 
         final robotData = robotSnapshot.data() ?? {};
-        final robotStatus = robotData['status']?.toString();
-        final activeSessionId =
-            _stringValue(robotData['active_session_id']) ??
-            _stringValue(robotData['activeSessionId']);
-        final activeUserId =
-            _stringValue(robotData['active_user_id']) ??
-            _stringValue(robotData['currentUserId']);
-        final activeRobotTourTicketId =
-            _stringValue(robotData['active_robot_tour_ticket_id']) ??
-            _stringValue(robotData['activeRobotTourTicketId']);
-        final isConnected = _isRobotConnected(robotData);
-        final isActive =
-            _boolValue(robotData['is_active']) ??
-            _boolValue(robotData['active']) ??
-            true;
-        final canAcceptPairing =
-            robotStatus == 'available' || robotStatus == 'active';
-        if (!canAcceptPairing ||
-            activeSessionId != null ||
-            activeUserId != null ||
-            activeRobotTourTicketId != null) {
-          throw RobotPairingException(
-            robotStatus == 'paired' ||
-                    robotStatus == 'busy' ||
-                    robotStatus == 'assigned' ||
-                    robotStatus == 'in_tour' ||
-                    activeSessionId != null ||
-                    activeUserId != null ||
-                    activeRobotTourTicketId != null
-                ? RobotPairingFailureCode.robotBusy
-                : RobotPairingFailureCode.robotUnavailable,
-          );
+        final activeSessionId = _activeSessionIdValue(
+          robotData['activeSessionId'],
+        );
+        if (activeSessionId != null) {
+          throw const RobotPairingException(RobotPairingFailureCode.robotBusy);
         }
-        if (!isConnected) {
-          throw const RobotPairingException(
-            RobotPairingFailureCode.robotUnavailable,
-          );
-        }
-        if (isActive == false) {
-          throw const RobotPairingException(
-            RobotPairingFailureCode.robotUnavailable,
-          );
-        }
-        if (_boolValue(robotData['mqttEnabled']) == false) {
-          _logPairing(
-            'mqtt disabled',
-            {
-              'robotDocPath': robotRef.path,
-              'message':
-                  'MQTT disabled for robot document; physical robot activation may require Firestore listener.',
-            },
-          );
-        }
+
+        _validateRobotBridgeOnline(robotData);
 
         final now = FieldValue.serverTimestamp();
 
@@ -272,17 +241,7 @@ class RobotPairingService {
         });
 
         transaction.update(robotRef, {
-          'status': 'assigned',
-          'active_session_id': sessionId,
           'activeSessionId': sessionId,
-          'active_user_id': userId,
-          'currentUserId': userId,
-          'active_robot_tour_ticket_id': pairableTicket.documentId,
-          'activeRobotTourTicketId': pairableTicket.documentId,
-          'robotId': robotId,
-          'robot_code': robotCode,
-          'updated_at': now,
-          'updatedAt': now,
         });
       });
       _logPairing(
@@ -438,19 +397,18 @@ class RobotPairingService {
   Future<DocumentReference<Map<String, dynamic>>?> _robotDocumentRef(
     String parsedRobotId,
   ) async {
-    for (final id in _robotIdCandidates(parsedRobotId)) {
-      final ref = _firestore.collection('robots').doc(id);
-      final snapshot = await ref.get();
-      _logPairing(
-        'robot candidate checked',
-        {
-          'path': ref.path,
-          'exists': snapshot.exists,
-        },
-      );
-      if (snapshot.exists) return ref;
-    }
-    return null;
+    final robotCode = robotCodeForParsedId(parsedRobotId);
+    if (robotCode == null) return null;
+    final ref = _firestore.collection('robots').doc(robotCode);
+    final snapshot = await ref.get();
+    _logPairing(
+      'robot document checked',
+      {
+        'path': ref.path,
+        'exists': snapshot.exists,
+      },
+    );
+    return snapshot.exists ? ref : null;
   }
 
   Future<_PairableRobotTicket?> _selectPairableRobotTourTicket(
@@ -766,24 +724,58 @@ class RobotPairingService {
     return null;
   }
 
+  String? _activeSessionIdValue(Object? value) {
+    if (value is String) {
+      final trimmed = value.trim();
+      return trimmed.isEmpty ? null : trimmed;
+    }
+    return null;
+  }
+
   bool? _boolValue(Object? value) {
     if (value is bool) return value;
     if (value is String) return bool.tryParse(value);
     return null;
   }
 
-  bool _isRobotConnected(Map<String, dynamic> data) {
-    final connectionState = _stringValue(data['robotConnectionState'])
-        ?.toLowerCase()
-        .replaceAll('-', '_');
-    if (connectionState != null) {
-      return connectionState == 'connected' || connectionState == 'online';
+  void _validateRobotBridgeOnline(Map<String, dynamic> robotData) {
+    final status = _stringValue(robotData['status']);
+    if (status != 'available') {
+      throw const RobotPairingException(
+        RobotPairingFailureCode.robotUnavailable,
+      );
     }
-    final explicitOnline =
-        _boolValue(data['is_online']) ??
-        _boolValue(data['isOnline']) ??
-        _boolValue(data['online']);
-    return explicitOnline ?? true;
+
+    final connectionState = _stringValue(robotData['robotConnectionState']);
+    if (connectionState != 'connected') {
+      throw RobotPairingException(
+        RobotPairingFailureCode.robotConnectionStateNotConnected,
+        detail: connectionState ?? 'missing',
+      );
+    }
+
+    if (_boolValue(robotData['mqttEnabled']) != true) {
+      throw const RobotPairingException(
+        RobotPairingFailureCode.robotMqttDisabled,
+      );
+    }
+
+    final lastSeenAt = _dateValue(robotData['lastSeenAt']);
+    if (lastSeenAt == null) {
+      throw const RobotPairingException(
+        RobotPairingFailureCode.robotLastSeenMissing,
+      );
+    }
+    final secondsSinceLastSeen = DateTime.now()
+        .toUtc()
+        .difference(lastSeenAt.toUtc())
+        .inSeconds;
+    if (secondsSinceLastSeen > 45) {
+      throw RobotPairingException(
+        RobotPairingFailureCode.robotLastSeenStale,
+        detail: secondsSinceLastSeen.toString(),
+      );
+    }
   }
 
   int? _intValue(Object? value) {
@@ -859,6 +851,7 @@ class RobotPairingResult {
 
 class RobotPairingException implements Exception {
   final RobotPairingFailureCode code;
+  final String? detail;
 
-  const RobotPairingException(this.code);
+  const RobotPairingException(this.code, {this.detail});
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -530,7 +531,103 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
   String _id() => DateTime.now().microsecondsSinceEpoch.toString();
 
+  AskHorusMode _askHorusMode({
+    AuthProvider? authProvider,
+    session.AppSessionProvider? sessionProvider,
+    TourProvider? tourProvider,
+  }) {
+    final auth =
+        authProvider ?? Provider.of<AuthProvider>(context, listen: false);
+    if (!auth.isLoggedIn) return AskHorusMode.guest;
+
+    final appSession =
+        sessionProvider ??
+        Provider.of<session.AppSessionProvider>(context, listen: false);
+    final tour =
+        tourProvider ?? Provider.of<TourProvider>(context, listen: false);
+
+    final activeTour =
+        appSession.tourLifecycleState == session.TourLifecycleState.active ||
+        appSession.tourLifecycleState == session.TourLifecycleState.paused ||
+        tour.tourLifecycleState == TourLifecycleState.active ||
+        tour.tourLifecycleState == TourLifecycleState.paused;
+    if (activeTour) return AskHorusMode.activeTour;
+
+    final completedTour =
+        appSession.tourLifecycleState ==
+            session.TourLifecycleState.completed ||
+        tour.tourLifecycleState == TourLifecycleState.completed;
+    if (completedTour) return AskHorusMode.completedTour;
+
+    return AskHorusMode.loggedIn;
+  }
+
+  String _modeTitle(AskHorusMode mode) {
+    switch (mode) {
+      case AskHorusMode.guest:
+        return 'Ask Horus Preview';
+      case AskHorusMode.activeTour:
+        return 'Ask the Robot Guide';
+      case AskHorusMode.completedTour:
+      case AskHorusMode.loggedIn:
+        return 'Ask Horus';
+    }
+  }
+
+  String _modeSubtitle(AskHorusMode mode) {
+    switch (mode) {
+      case AskHorusMode.guest:
+        return 'Ask about the museum, tickets, and how the app works.';
+      case AskHorusMode.loggedIn:
+        return 'Ask about tickets, booking, facilities, exhibits, and app help.';
+      case AskHorusMode.activeTour:
+        return 'Ask about the current exhibit, next stop, or your tour.';
+      case AskHorusMode.completedTour:
+        return 'Ask about your visit summary, memories, or booking another tour.';
+    }
+  }
+
+  bool _isRobotQuestion(String text) {
+    final lower = text.toLowerCase();
+    return lower.contains('current exhibit') ||
+        lower.contains('next exhibit') ||
+        lower.contains('next stop') ||
+        lower.contains('this artifact') ||
+        lower.contains('this exhibit') ||
+        lower.contains('explain') ||
+        lower.contains('tell me about') ||
+        lower.contains('story') ||
+        lower.contains('history') ||
+        lower.contains('المعرض الحالي') ||
+        lower.contains('المحطة التالية') ||
+        lower.contains('اشرح') ||
+        lower.contains('حدثني') ||
+        lower.contains('قصة');
+  }
+
+  String _robotUnavailableMessage() {
+    return Localizations.localeOf(context).languageCode == 'ar'
+        ? 'تعذر الوصول إلى دليل الروبوت الآن، لكن يمكنني مساعدتك بمعلومات عامة عن المتحف والتطبيق.'
+        : 'I could not reach the robot guide right now, but I can still help with general museum and app information.';
+  }
+
+  String _askingRobotMessage() {
+    return Localizations.localeOf(context).languageCode == 'ar'
+        ? 'سأسأل دليل الروبوت عن ذلك.'
+        : 'Let me ask the robot guide about this.';
+  }
+
   String _modeGreeting(AppLocalizations l10n) {
+    final mode = _askHorusMode();
+    if (Localizations.localeOf(context).languageCode != 'ar') {
+      return mode == AskHorusMode.activeTour
+          ? 'Tour mode: Ask Horus about this exhibit, the next stop, or the robot guide.'
+          : 'Ask Horus about tickets, prices, facilities, exhibits, and app help.';
+    }
+    return mode == AskHorusMode.activeTour
+        ? 'وضع الجولة: اسأل حورس عن المعروض الحالي، المحطة التالية، أو دليل الروبوت.'
+        : 'اسأل حورس عن التذاكر، الأسعار، المرافق، المعروضات، واستخدام التطبيق.';
+
     final prefs = Provider.of<UserPreferencesModel>(context, listen: false);
     final sessionProvider = Provider.of<session.AppSessionProvider>(
       context,
@@ -671,17 +768,29 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       return;
     }
 
+    final mode = _askHorusMode();
     if (_isGuestPersonalQuestion(trimmed)) {
       setState(() => _isTyping = false);
       _typeBotMessage(
         Localizations.localeOf(context).languageCode == 'ar'
             ? 'سجل الدخول وابدأ جولة حتى أستطيع مساعدتك في تذاكرك ومسارك وذكرياتك وتقدم جولتك المباشر.'
-            : 'Sign in and start a tour so I can help with your personal tickets, route, memories, and live tour progress.',
+            : 'Please log in to view or manage your tickets and bookings.',
       );
       return;
     }
 
-    unawaited(_sendSessionQuestionToFirestore(trimmed));
+    if (mode == AskHorusMode.activeTour && _isRobotQuestion(trimmed)) {
+      unawaited(
+        _sendSessionQuestionToFirestore(trimmed).then((sent) {
+          if (!mounted) return;
+          setState(() => _isTyping = false);
+          _typeBotMessage(
+            sent ? _askingRobotMessage() : _robotUnavailableMessage(),
+          );
+        }),
+      );
+      return;
+    }
 
     final contextData = ChatContextBuilder.build(
       context,
@@ -695,6 +804,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       final response = await _assistantService.generateAnswer(
         question: trimmed,
         context: contextData,
+        mode: mode,
       );
       if (!mounted) return;
       setState(() => _isTyping = false);
@@ -744,7 +854,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     _addMessage(botMsg);
   }
 
-  Future<void> _sendSessionQuestionToFirestore(String question) async {
+  Future<bool> _sendSessionQuestionToFirestore(String question) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final sessionProvider = Provider.of<session.AppSessionProvider>(
       context,
@@ -756,6 +866,8 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     final userId = authProvider.currentUser?.id;
     final sessionId =
         sessionProvider.activeSessionId ?? tourProvider.activeSessionId;
+    final robotId =
+        sessionProvider.connectedRobotId ?? tourProvider.connectedRobotId;
     final hasQuestionSession =
         sessionProvider.hasRestorableTourSession ||
         (tourProvider.activeSessionId != null &&
@@ -764,15 +876,22 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         userId == null ||
         sessionId == null ||
         !hasQuestionSession) {
-      return;
+      return false;
     }
+
+    final isActiveTour =
+        sessionProvider.tourLifecycleState == session.TourLifecycleState.active ||
+        sessionProvider.tourLifecycleState == session.TourLifecycleState.paused ||
+        tourProvider.tourLifecycleState == TourLifecycleState.active ||
+        tourProvider.tourLifecycleState == TourLifecycleState.paused;
+    if (!isActiveTour) return false;
+    if (robotId == null || robotId.isEmpty) return false;
 
     try {
       final createdQuestion = await _questionRepository.createAppQuestion(
         userId: userId,
         sessionId: sessionId,
-        robotId:
-            sessionProvider.connectedRobotId ?? tourProvider.connectedRobotId,
+        robotId: robotId,
         exhibitId:
             widget.currentExhibitId ??
             sessionProvider.currentExhibitId ??
@@ -781,17 +900,14 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         language: prefs.language,
       );
       _listenForQuestionAnswer(createdQuestion.questionId);
-      unawaited(
-        _sendAppQuestionToRobotBridge(
-          question: question,
-          sessionId: sessionId,
-          userId: userId,
-          robotId:
-              sessionProvider.connectedRobotId ?? tourProvider.connectedRobotId,
-        ),
+      return _sendAppQuestionToRobotBridge(
+        question: question,
+        sessionId: sessionId,
+        userId: userId,
+        robotId: robotId,
       );
     } on QuestionRepositoryException catch (e) {
-      if (!mounted) return;
+      if (!mounted) return false;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.message),
@@ -799,16 +915,17 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
           behavior: SnackBarBehavior.floating,
         ),
       );
+      return false;
     }
   }
 
-  Future<void> _sendAppQuestionToRobotBridge({
+  Future<bool> _sendAppQuestionToRobotBridge({
     required String question,
     required String sessionId,
     required String userId,
     required String? robotId,
   }) async {
-    if (kIsWeb || robotId == null || robotId.isEmpty) return;
+    if (kIsWeb || robotId == null || robotId.isEmpty) return false;
     final command = RobotCommand(
       type: RobotCommandType.appQuestion,
       sessionId: sessionId,
@@ -822,6 +939,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
     if (!published) {
       debugPrint('MQTT app_question publish skipped or failed.');
     }
+    return published;
   }
 
   void _listenForQuestionAnswer(String questionId) {
@@ -866,58 +984,26 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
         Provider.of<UserPreferencesModel>(context).language == "ar";
     final l10n = AppLocalizations.of(context)!;
     final authProvider = Provider.of<AuthProvider>(context);
-    final isGuest = !authProvider.isLoggedIn;
     final sessionProvider = Provider.of<session.AppSessionProvider>(context);
     final tourProvider = Provider.of<TourProvider>(context);
-    final canAskDuringTour =
-        isGuest ||
-        sessionProvider.hasRestorableTourSession ||
-        tourProvider.tourLifecycleState == TourLifecycleState.active ||
-        tourProvider.tourLifecycleState == TourLifecycleState.paused;
+    final mode = _askHorusMode(
+      authProvider: authProvider,
+      sessionProvider: sessionProvider,
+      tourProvider: tourProvider,
+    );
+    final modeTitle = _modeTitle(mode);
+    final modeSubtitle = _modeSubtitle(mode);
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final inactiveContent = Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.record_voice_over_outlined,
-              color: AppColors.primaryGold,
-              size: 48,
-            ),
-            const SizedBox(height: 18),
-            Text(
-              l10n.askTheGuide,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.titleLarge(
-                context,
-              ).copyWith(color: AppColors.resolvedTitleText),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              l10n.askDuringActiveTourOnly,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.bodyPrimary(
-                context,
-              ).copyWith(color: AppColors.resolvedMutedText, height: 1.5),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    final content = canAskDuringTour
-        ? Column(
+    final content = Column(
             children: [
               Padding(
                 padding: const EdgeInsetsDirectional.fromSTEB(12, 4, 12, 0),
                 child: Align(
                   alignment: AlignmentDirectional.centerStart,
                   child: Text(
-                    l10n.chatHeaderSubtitle,
+                    modeSubtitle,
                     textAlign: TextAlign.start,
                     style: AppTextStyles.metadata(
                       context,
@@ -1098,8 +1184,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
                 ),
               ),
             ],
-          )
-        : inactiveContent;
+          );
 
     final helperItems = {
       l10n.chatSuggestionTickets: l10n.chatSuggestionTicketsQuery,
@@ -1135,74 +1220,73 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
             offset: const Offset(0, -12),
             child: Material(
               color: Colors.transparent,
-              child: Container(
-                width: math.min(MediaQuery.of(context).size.width * 0.72, 280),
-                decoration: BoxDecoration(
-                  color: AppColors.resolvedElevated,
-                  borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: AppColors.primaryGold.withValues(alpha: 0.25),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.darkInk.withValues(alpha: 0.25),
-                      blurRadius: 16,
-                      offset: const Offset(0, 4),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(22),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                  child: Container(
+                    width: math.min(
+                      MediaQuery.of(context).size.width * 0.72,
+                      280,
                     ),
-                  ],
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 14,
-                ),
-                child: Column(
-                  crossAxisAlignment: isArabic
-                      ? CrossAxisAlignment.end
-                      : CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      l10n.quickHelpTopics,
-                      style: AppTextStyles.titleMedium(context).copyWith(
-                        color: AppColors.resolvedTitleText,
-                        fontWeight: FontWeight.w900,
-                      ),
+                    decoration: AppDecorations.secondaryGlassCard(
+                      radius: 22,
+                      opacity: 0.72,
                     ),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 10,
-                      runSpacing: 10,
-                      alignment: isArabic
-                          ? WrapAlignment.end
-                          : WrapAlignment.start,
-                      children: helperItems.entries.map((entry) {
-                        return InkWell(
-                          onTap: () => _submitQuickQuestion(entry.value),
-                          borderRadius: BorderRadius.circular(18),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.primaryGold.withValues(
-                                alpha: 0.18,
-                              ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 14,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: isArabic
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          l10n.quickHelpTopics,
+                          style: AppTextStyles.premiumSectionLabel(
+                            context,
+                          ).copyWith(color: AppColors.softGold),
+                        ),
+                        const SizedBox(height: 12),
+                        Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          alignment: isArabic
+                              ? WrapAlignment.end
+                              : WrapAlignment.start,
+                          children: helperItems.entries.map((entry) {
+                            return InkWell(
+                              onTap: () => _submitQuickQuestion(entry.value),
                               borderRadius: BorderRadius.circular(18),
-                            ),
-                            child: Text(
-                              entry.key,
-                              style: AppTextStyles.bodyPrimary(context)
-                                  .copyWith(
-                                    color: AppColors.resolvedTitleText,
-                                    fontWeight: FontWeight.w700,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                  vertical: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: AppColors.cardGlass(0.42),
+                                  borderRadius: BorderRadius.circular(18),
+                                  border: Border.all(
+                                    color: AppColors.goldBorder(0.34),
                                   ),
-                            ),
-                          ),
-                        );
-                      }).toList(),
+                                ),
+                                child: Text(
+                                  entry.key,
+                                  style: AppTextStyles.bodyPrimary(context)
+                                      .copyWith(
+                                        color: AppColors.resolvedTitleText,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -1212,7 +1296,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
 
     if (widget.isPopup) {
       return PremiumDialog(
-        title: l10n.askTheGuide,
+        title: modeTitle,
         icon: Image.asset("assets/icons/horus_eye.png", width: 24, height: 24),
         content: SizedBox(
           height: MediaQuery.of(context).size.height * 0.65,
@@ -1225,7 +1309,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       backgroundColor: AppColors.resolvedBackground,
       appBar: AppBar(
         title: Text(
-          l10n.askTheGuide.toUpperCase(),
+          modeTitle.toUpperCase(),
           style: AppTextStyles.displayScreenTitle(context).copyWith(
             fontWeight: FontWeight.w900,
             fontSize: 18,
@@ -1246,7 +1330,7 @@ class _ChatScreenState extends State<ChatScreen> with TickerProviderStateMixin {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: canAskDuringTour ? contentWithFloatingHelper : inactiveContent,
+        child: contentWithFloatingHelper,
       ),
       floatingActionButton: _showScrollBtn
           ? FloatingActionButton.small(

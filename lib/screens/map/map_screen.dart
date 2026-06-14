@@ -264,10 +264,9 @@ class _MapScreenState extends State<MapScreen>
       bottomNavigationBar: const BottomNav(currentIndex: 1),
       showChatButton: false,
       hideDefaultAppBar: true,
-      floatingActionButton: AskTheGuideButton(
+      floatingActionButton: AskHorusFloatingChip(
         screen: 'map',
         currentExhibitId: currentExhibitId,
-        subtle: true,
       ),
       body: Builder(
         builder: (shellContext) => Stack(
@@ -282,7 +281,27 @@ class _MapScreenState extends State<MapScreen>
                     AppSpacing.screenHorizontalCompact,
                     16,
                   ),
-                  decoration: AppDecorations.cinematicBackground(),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: AppColors.useLightSurfaces
+                          ? [
+                              AppColors.websiteLightBackground,
+                              AppColors.websiteLightPopover.withValues(
+                                alpha: 0.72,
+                              ),
+                              AppColors.websiteLightBackground.withValues(
+                                alpha: 0.0,
+                              ),
+                            ]
+                          : [
+                              AppColors.darkInk.withValues(alpha: 0.44),
+                              AppColors.darkInk.withValues(alpha: 0.20),
+                              AppColors.darkInk.withValues(alpha: 0.0),
+                            ],
+                    ),
+                  ),
                   child: Row(
                     textDirection: Directionality.of(context),
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

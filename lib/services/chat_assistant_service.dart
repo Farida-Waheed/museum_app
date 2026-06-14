@@ -4,10 +4,13 @@ import 'conversation_memory_service.dart';
 import 'museum_knowledge_service.dart';
 import 'robot_suggestion_service.dart';
 
+enum AskHorusMode { guest, loggedIn, activeTour, completedTour }
+
 abstract class ChatAiService {
   Future<String> generateAnswer({
     required String question,
     required ChatContext context,
+    AskHorusMode mode = AskHorusMode.loggedIn,
   });
 
   String buildPrompt({required ChatContext context});
@@ -83,6 +86,119 @@ class LocalMuseumChatService implements ChatAiService {
 
   bool _containsAny(String normalized, List<String> terms) {
     return terms.any(normalized.contains);
+  }
+
+  bool _isPersonalTicketIntent(String normalized) {
+    return _containsAny(normalized, [
+      'my ticket',
+      'my tickets',
+      'my booking',
+      'my bookings',
+      'my qr',
+      'my payment',
+      'payment status',
+      'my tour',
+      'my route',
+      'my memories',
+      'my summary',
+      'تذاكري',
+      'حجزي',
+      'حجوزاتي',
+      'تذكرتي',
+      'دفعي',
+      'جولتي',
+      'مساري',
+      'ذكرياتي',
+    ]);
+  }
+
+  bool _isDeepArtifactIntent(String normalized) {
+    return _containsAny(normalized, [
+      'tell',
+      'explain',
+      'more',
+      'story',
+      'history',
+      'meaning',
+      'why',
+      'details',
+      'deep',
+      'حدثني',
+      'اشرح',
+      'قصة',
+      'تاريخ',
+      'تفاصيل',
+      'لماذا',
+    ]);
+  }
+
+  bool _isMemoriesOrSummaryIntent(String normalized) {
+    return _containsAny(normalized, [
+      'memory',
+      'memories',
+      'summary',
+      'visit summary',
+      'photos',
+      'ذكريات',
+      'ملخص',
+      'صور',
+    ]);
+  }
+
+  bool _isWebsiteIntent(String normalized) {
+    return _containsAny(normalized, [
+      'website',
+      'web site',
+      'site',
+      'portal',
+      'online',
+      'الموقع',
+      'ويب',
+    ]);
+  }
+
+  bool _isCancelIntent(String normalized) {
+    return _containsAny(normalized, [
+      'cancel',
+      'cancellation',
+      'refund',
+      'إلغاء',
+      'الغاء',
+      'استرداد',
+    ]);
+  }
+
+  String _guestPersonalMessage(String language) {
+    return language == 'ar'
+        ? 'يرجى تسجيل الدخول لعرض أو إدارة تذاكرك وحجوزاتك.'
+        : 'Please log in to view or manage your tickets and bookings.';
+  }
+
+  String _deepArtifactRedirect(String language, Exhibit? exhibit) {
+    final short = exhibit == null
+        ? ''
+        : '${exhibit.getName(language)}: ${_knowledge.getShortExhibitOverview(exhibit, language)} ';
+    return language == 'ar'
+        ? '${short}يمكنك سؤال الروبوت عن شروحات أعمق للمعروضات عندما تبدأ جولتك. حالياً يمكنني عرض الوصف المختصر المتاح ومساعدتك في التحضير للزيارة.'
+        : '${short}You can ask the robot for deeper artifact explanations when your tour starts. For now, I can show the available short description and help you prepare your visit.';
+  }
+
+  String _answerCancellation(String language) {
+    return language == 'ar'
+        ? 'لإلغاء تذكرة، افتح تذاكري واختر الحجز المناسب ثم اتبع خيار الإلغاء إذا كان متاحاً قبل موعد الزيارة. قد تختلف إمكانية الإلغاء حسب حالة الدفع ووقت الزيارة.'
+        : 'To cancel a ticket, open My Tickets, choose the booking, and use the cancel option if it is available before the visit time. Availability can depend on payment status and visit timing.';
+  }
+
+  String _answerWebsite(String language) {
+    return language == 'ar'
+        ? 'يمكنك استخدام الموقع لمعرفة معلومات المتحف العامة، استكشاف الخدمات، ومتابعة روابط الحجز أو الحساب عند توفرها. داخل التطبيق ستجد التذاكر، الخريطة، المعروضات، الملف الشخصي، والإعدادات.'
+        : 'Use the website for general museum information, services, and account or booking entry points when available. In the app, use Tickets, Map, Exhibits, Profile, and Settings for visit tasks.';
+  }
+
+  String _answerMemoriesSummary(String language) {
+    return language == 'ar'
+        ? 'بعد انتهاء الجولة، افتح الذكريات أو ملخص الزيارة لمراجعة محطاتك، الصور، والنقاط البارزة. يمكنك أيضاً حجز زيارة أخرى من شاشة التذاكر.'
+        : 'After your tour, open Memories or Visit Summary to review stops, photos, and highlights. You can book another visit from the Tickets screen.';
   }
 
   bool _isBookingIntent(String normalized) {
@@ -383,6 +499,7 @@ class LocalMuseumChatService implements ChatAiService {
   Future<String> generateAnswer({
     required String question,
     required ChatContext context,
+    AskHorusMode mode = AskHorusMode.loggedIn,
   }) async {
     final language = context.language;
     final normalized = _normalize(question);
@@ -405,8 +522,20 @@ class LocalMuseumChatService implements ChatAiService {
       return answer;
     }
 
+    if (mode == AskHorusMode.guest && _isPersonalTicketIntent(normalized)) {
+      final answer = _guestPersonalMessage(language);
+      _memory.addAssistantMessage(answer);
+      return answer;
+    }
+
     if (_isBookingIntent(normalized)) {
       final answer = _answerBooking(language);
+      _memory.addAssistantMessage(answer);
+      return answer;
+    }
+
+    if (_isCancelIntent(normalized)) {
+      final answer = _answerCancellation(language);
       _memory.addAssistantMessage(answer);
       return answer;
     }
@@ -459,6 +588,19 @@ class LocalMuseumChatService implements ChatAiService {
       return answer;
     }
 
+    if (_isWebsiteIntent(normalized)) {
+      final answer = _answerWebsite(language);
+      _memory.addAssistantMessage(answer);
+      return answer;
+    }
+
+    if (mode == AskHorusMode.completedTour &&
+        _isMemoriesOrSummaryIntent(normalized)) {
+      final answer = _answerMemoriesSummary(language);
+      _memory.addAssistantMessage(answer);
+      return answer;
+    }
+
     if (_isHoursIntent(normalized)) {
       final answer = _knowledge.getMuseumHours(language: language);
       _memory.addAssistantMessage(answer);
@@ -481,11 +623,16 @@ class LocalMuseumChatService implements ChatAiService {
     matchedExhibit ??= _knowledge.findBestExhibitMatch(question);
 
     if (matchedExhibit != null &&
-        (normalized.contains('tell') ||
-            normalized.contains('explain') ||
-            normalized.contains('more') ||
-            normalized.contains('حدثني') ||
-            normalized.contains('اشرح'))) {
+        _isDeepArtifactIntent(normalized) &&
+        mode != AskHorusMode.activeTour) {
+      final answer = _deepArtifactRedirect(language, matchedExhibit);
+      _memory.addAssistantMessage(answer);
+      return answer;
+    }
+
+    if (matchedExhibit != null &&
+        _isDeepArtifactIntent(normalized) &&
+        mode == AskHorusMode.activeTour) {
       final answer = _composeExhibitResponse(
         matchedExhibit,
         question,

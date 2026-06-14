@@ -37,11 +37,11 @@ class HomeFeaturedArtifactCard extends StatelessWidget {
                     colors: AppColors.useLightSurfaces
                         ? [
                             AppColors.websiteLightBackground.withValues(
-                              alpha: 0.02,
+                              alpha: 0.00,
                             ),
-                            AppColors.darkInk.withValues(alpha: 0.12),
+                            AppColors.darkInk.withValues(alpha: 0.20),
                             AppColors.websiteLightBackground.withValues(
-                              alpha: 0.86,
+                              alpha: 0.94,
                             ),
                           ]
                         : const [
@@ -56,56 +56,75 @@ class HomeFeaturedArtifactCard extends StatelessWidget {
                 left: 18,
                 right: 18,
                 bottom: 18,
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                  child: Row(
-                    textDirection: isArabic
-                        ? TextDirection.rtl
-                        : TextDirection.ltr,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: isArabic
-                              ? CrossAxisAlignment.end
-                              : CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              artifact.title,
-                              maxLines: 2,
-                              overflow: TextOverflow.fade,
-                              textAlign: TextAlign.start,
-                              style: AppTextStyles.premiumScreenTitle(context)
-                                  .copyWith(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.useLightSurfaces
+                            ? AppColors.websiteLightBackground.withValues(
+                                alpha: 0.58,
+                              )
+                            : AppColors.darkInk.withValues(alpha: 0.34),
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(color: AppColors.goldBorder(0.14)),
+                      ),
+                      child: Row(
+                        textDirection: isArabic
+                            ? TextDirection.rtl
+                            : TextDirection.ltr,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: isArabic
+                                  ? CrossAxisAlignment.end
+                                  : CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  artifact.title,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.start,
+                                  style: AppTextStyles.premiumScreenTitle(
+                                    context,
+                                  ).copyWith(
                                     fontSize: 20,
                                     color: AppColors.resolvedTitleText,
                                   ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  artifact.subtitle,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.start,
+                                  style: AppTextStyles.premiumMutedBody(
+                                    context,
+                                  ).copyWith(color: AppColors.resolvedBodyText),
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  artifact.contextHint,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.start,
+                                  style: AppTextStyles.premiumMutedBody(context)
+                                      .copyWith(
+                                        fontSize: 13,
+                                        color: AppColors.primaryGold,
+                                      ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              artifact.subtitle,
-                              maxLines: 2,
-                              overflow: TextOverflow.fade,
-                              textAlign: TextAlign.start,
-                              style: AppTextStyles.premiumMutedBody(
-                                context,
-                              ).copyWith(color: AppColors.resolvedBodyText),
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              artifact.contextHint,
-                              maxLines: 2,
-                              overflow: TextOverflow.fade,
-                              textAlign: TextAlign.start,
-                              style: AppTextStyles.premiumMutedBody(context)
-                                  .copyWith(
-                                    fontSize: 13,
-                                    color: AppColors.primaryGold,
-                                  ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
