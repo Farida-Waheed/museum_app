@@ -127,7 +127,9 @@ class _QrScannerScreenState extends State<QrScannerScreen>
       await _scannerController.start();
       debugPrint('[QR scanner] scanner restarted for retry.');
     } catch (e, stackTrace) {
-      debugPrint('[QR scanner] failed to restart scanner for retry: $e\n$stackTrace');
+      debugPrint(
+        '[QR scanner] failed to restart scanner for retry: $e\n$stackTrace',
+      );
     }
   }
 
@@ -212,6 +214,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
               ? l10n.museumTicketInRobotMode
               : l10n.notHorusBotQr,
           primaryLabel: l10n.done,
+          reasonCode: RobotPairingFailureCode.invalidQr.name,
         );
       } else if (!authProvider.isLoggedIn || authProvider.currentUser == null) {
         debugPrint(
@@ -224,6 +227,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
           message: l10n.qrSignInRequiredMessage,
           primaryLabel: l10n.done,
           shouldMutateConnectionFailure: false,
+          reasonCode: RobotPairingFailureCode.signInRequired.name,
         );
       } else {
         try {
@@ -231,14 +235,13 @@ class _QrScannerScreenState extends State<QrScannerScreen>
             '[QR scanner] robot availability/pairing flow starting: '
             'robotId=$robotId ticketId=${widget.robotTourTicketId}',
           );
-          final pairing =
-              await _robotPairingService
-                  .pairRobot(
-                    userId: authProvider.currentUser!.id,
-                    scannedCode: code,
-                    robotTourTicketId: widget.robotTourTicketId,
-                  )
-                  .timeout(const Duration(seconds: 20));
+          final pairing = await _robotPairingService
+              .pairRobot(
+                userId: authProvider.currentUser!.id,
+                scannedCode: code,
+                robotTourTicketId: widget.robotTourTicketId,
+              )
+              .timeout(const Duration(seconds: 20));
           if (!mounted) return;
           debugPrint(
             'Pairing committed in QR flow: robotId=${pairing.robotId} '
@@ -279,6 +282,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
             message: l10n.qrRobotConnectedMessage,
             primaryLabel: l10n.qrOpenLiveTour,
             opensLiveTour: true,
+            sessionId: pairing.sessionId,
           );
         } on TimeoutException catch (_) {
           if (!mounted) return;
@@ -293,6 +297,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
             message:
                 'Robot pairing timed out before the session was created. Please try again.',
             primaryLabel: l10n.done,
+            reasonCode: 'timeout',
           );
         } on RobotPairingException catch (e) {
           if (!mounted) return;
@@ -305,6 +310,8 @@ class _QrScannerScreenState extends State<QrScannerScreen>
             title: _pairingErrorTitle(l10n, e.code),
             message: _pairingErrorMessage(l10n, e, code),
             primaryLabel: l10n.done,
+            reasonCode: e.code.name,
+            reasonDetail: e.detail,
           );
         } catch (e) {
           if (!mounted) return;
@@ -318,6 +325,8 @@ class _QrScannerScreenState extends State<QrScannerScreen>
             title: l10n.invalidQr,
             message: l10n.qrPairingUnknownMessage,
             primaryLabel: l10n.done,
+            reasonCode: RobotPairingFailureCode.unknown.name,
+            reasonDetail: e.toString(),
           );
         }
       }
@@ -325,9 +334,20 @@ class _QrScannerScreenState extends State<QrScannerScreen>
 
     if (!mounted) return;
     if (mode == QRScanMode.robotConnection) {
+      if (!result.isValid) {
+        debugPrint(
+          '[QR scanner] pairing result invalid details: '
+          'title=${result.title} message=${result.message} '
+          'reasonCode=${result.reasonCode} reasonDetail=${result.reasonDetail} '
+          'opensLiveTour=${result.opensLiveTour} sessionId=${result.sessionId}',
+        );
+      }
       debugPrint(
         '[QR scanner] pairing result dialog waiting for user confirmation: '
-        'isValid=${result.isValid} opensLiveTour=${result.opensLiveTour}',
+        'isValid=${result.isValid} opensLiveTour=${result.opensLiveTour} '
+        'title=${result.title} message=${result.message} '
+        'reasonCode=${result.reasonCode} reasonDetail=${result.reasonDetail} '
+        'sessionId=${result.sessionId}',
       );
     }
     showGeneralDialog(
@@ -869,6 +889,9 @@ class _ScanResult {
     required this.primaryLabel,
     this.opensLiveTour = false,
     this.shouldMutateConnectionFailure = true,
+    this.reasonCode,
+    this.reasonDetail,
+    this.sessionId,
   });
 
   final bool isValid;
@@ -877,6 +900,9 @@ class _ScanResult {
   final String primaryLabel;
   final bool opensLiveTour;
   final bool shouldMutateConnectionFailure;
+  final String? reasonCode;
+  final String? reasonDetail;
+  final String? sessionId;
 }
 
 class _ResultPopup extends StatelessWidget {

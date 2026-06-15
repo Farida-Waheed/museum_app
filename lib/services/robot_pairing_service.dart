@@ -40,39 +40,54 @@ class RobotPairingService {
     String? robotTourTicketId,
   }) async {
     var passedAvailabilityBeforeTransaction = false;
+    String? currentRobotDocPath;
+    Map<String, Object?>? currentRobotAvailabilityResult;
     final parsedRobotId = parseRobotId(scannedCode);
     final rawRobotCode = robotCodeForParsedId(parsedRobotId);
-    _logPairing(
-      'scan received',
-      {
-        'rawQr': scannedCode,
-        'parsedRobotId': parsedRobotId,
-        'rawRobotCode': rawRobotCode,
-        'preferredRobotTourTicketId': robotTourTicketId,
-      },
-    );
+    _logPairing('scan received', {
+      'userId': userId,
+      'rawQr': scannedCode,
+      'parsedRobotId': parsedRobotId,
+      'rawRobotCode': rawRobotCode,
+      'preferredRobotTourTicketId': robotTourTicketId,
+    });
     if (parsedRobotId == null) {
+      _logInvalidReturn('robot QR invalid', {
+        'userId': userId,
+        'preferredRobotTourTicketId': robotTourTicketId,
+        'robotDocPath': null,
+        'robotAvailabilityResult': null,
+      });
       throw const RobotPairingException(RobotPairingFailureCode.invalidQr);
     }
     if (userId.trim().isEmpty) {
+      _logInvalidReturn('no authenticated user', {
+        'userId': userId,
+        'preferredRobotTourTicketId': robotTourTicketId,
+        'robotDocPath': null,
+        'robotAvailabilityResult': null,
+      });
       throw const RobotPairingException(RobotPairingFailureCode.signInRequired);
     }
 
     try {
       final robotCandidates = _robotIdCandidates(parsedRobotId);
-      _logPairing(
-        'robot candidates',
-        {'candidates': robotCandidates.toList(growable: false)},
-      );
+      _logPairing('robot candidates', {
+        'candidates': robotCandidates.toList(growable: false),
+      });
       final robotRef = await _robotDocumentRef(parsedRobotId);
-      _logPairing(
-        'robot lookup result',
-        {
-          'parsedRobotId': parsedRobotId,
-          'selectedRobotDocPath': robotRef?.path,
-        },
-      );
+      currentRobotDocPath = robotRef?.path;
+      _logPairing('robot lookup result', {
+        'parsedRobotId': parsedRobotId,
+        'selectedRobotDocPath': robotRef?.path,
+      });
       if (robotRef == null) {
+        _logInvalidReturn('robot QR invalid', {
+          'userId': userId,
+          'preferredRobotTourTicketId': robotTourTicketId,
+          'robotDocPath': null,
+          'robotAvailabilityResult': null,
+        });
         throw const RobotPairingException(
           RobotPairingFailureCode.robotNotFound,
         );
@@ -81,18 +96,26 @@ class RobotPairingService {
       final initialRobotSnapshot = await _readRobotSnapshotFromServerWithRetry(
         robotRef,
       );
+      currentRobotAvailabilityResult = _robotAvailabilityLog(
+        initialRobotSnapshot.data() ?? {},
+      );
       _validateRobotBridgeOnline(
         initialRobotSnapshot.data() ?? {},
         requireNoActiveSession: false,
-      );
-      passedAvailabilityBeforeTransaction = true;
-      _logPairing(
-        'robot availability passed; entering ticket selection flow',
-        {
-          'robotDocPath': robotRef.path,
+        invalidContext: {
+          'userId': userId,
           'preferredRobotTourTicketId': robotTourTicketId,
+          'robotDocPath': robotRef.path,
+          'robotAvailabilityResult': currentRobotAvailabilityResult,
         },
       );
+      passedAvailabilityBeforeTransaction = true;
+      _logPairing('robot availability passed, entering ticket selection', {
+        'userId': userId,
+        'robotDocPath': robotRef.path,
+        'preferredRobotTourTicketId': robotTourTicketId,
+        'robotAvailabilityResult': currentRobotAvailabilityResult,
+      });
 
       final restorablePairing = await _findRestorableInProgressPairing(
         userId: userId,
@@ -100,63 +123,61 @@ class RobotPairingService {
         preferredTicketId: robotTourTicketId,
       );
       if (restorablePairing != null) {
-        _logPairing(
-          'flow returned early after robot availability',
-          {
-            'reason': 'restorable in-progress pairing found',
-            'sessionId': restorablePairing.sessionId,
-            'robotId': restorablePairing.robotId,
-            'robotTourTicketId': restorablePairing.robotTourTicketId,
-            'museumTicketId': restorablePairing.museumTicketId,
-            'transactionWillStart': false,
-          },
-        );
-        _logPairing(
-          'restored existing pairing',
-          {
-            'sessionId': restorablePairing.sessionId,
-            'robotId': restorablePairing.robotId,
-            'robotTourTicketId': restorablePairing.robotTourTicketId,
-            'museumTicketId': restorablePairing.museumTicketId,
-          },
-        );
+        _logPairing('flow returned early after robot availability', {
+          'reason': 'restorable in-progress pairing found',
+          'sessionId': restorablePairing.sessionId,
+          'robotId': restorablePairing.robotId,
+          'robotTourTicketId': restorablePairing.robotTourTicketId,
+          'museumTicketId': restorablePairing.museumTicketId,
+          'transactionWillStart': false,
+        });
+        _logPairing('restored existing pairing', {
+          'sessionId': restorablePairing.sessionId,
+          'robotId': restorablePairing.robotId,
+          'robotTourTicketId': restorablePairing.robotTourTicketId,
+          'museumTicketId': restorablePairing.museumTicketId,
+        });
         return restorablePairing;
       }
 
-      _logPairing(
-        'entering robot tour ticket selection after availability',
-        {
-          'userId': userId,
-          'preferredRobotTourTicketId': robotTourTicketId,
-        },
-      );
+      _logPairing('validating preferred robot tour ticket', {
+        'userId': userId,
+        'preferredRobotTourTicketId': robotTourTicketId,
+        'robotDocPath': robotRef.path,
+        'robotAvailabilityResult': currentRobotAvailabilityResult,
+      });
       final pairableTicket = await _selectPairableRobotTourTicket(
         userId,
         preferredTicketId: robotTourTicketId,
+        robotDocPath: robotRef.path,
+        robotAvailabilityResult: currentRobotAvailabilityResult,
       );
       if (pairableTicket == null) {
-        _logPairing(
-          'flow returned early after robot availability',
-          {
-            'reason': 'no pairable robot tour ticket',
-            'transactionWillStart': false,
-          },
-        );
+        _logInvalidReturn('no eligible robot tour ticket', {
+          'userId': userId,
+          'preferredRobotTourTicketId': robotTourTicketId,
+          'robotDocPath': robotRef.path,
+          'robotAvailabilityResult': currentRobotAvailabilityResult,
+        });
+        _logPairing('flow returned early after robot availability', {
+          'reason': 'no pairable robot tour ticket',
+          'transactionWillStart': false,
+        });
         throw const RobotPairingException(
           RobotPairingFailureCode.robotTourTicketRequired,
         );
       }
-      _logPairing(
-        'selected robot tour ticket',
-        {
-          'robotTourTicketDocId': pairableTicket.documentId,
-          'ticketId': pairableTicket.ticket.id,
-          'bookingId': pairableTicket.ticket.bookingId,
-          'museumTicketId': pairableTicket.ticket.museumTicketId,
-          'paymentStatus': pairableTicket.data['payment_status'],
-          'status': pairableTicket.data['status'],
-        },
-      );
+      _logPairing('selected robot tour ticket', {
+        'userId': userId,
+        'preferredRobotTourTicketId': robotTourTicketId,
+        'robotDocPath': robotRef.path,
+        'robotAvailabilityResult': currentRobotAvailabilityResult,
+        'robotTourTicketDocId': pairableTicket.documentId,
+        ..._ticketDiagnosticData(
+          pairableTicket.documentId,
+          pairableTicket.data,
+        ),
+      });
 
       final robotTourTicket = pairableTicket.ticket;
       final selectedExhibitIds = _selectedExhibitIds(robotTourTicket);
@@ -168,7 +189,8 @@ class RobotPairingService {
       final sessionRef = _firestore.collection('tourSessions').doc();
       final sessionId = sessionRef.id;
       final robotId = robotRef.id;
-      final robotCode = rawRobotCode ?? robotCodeForParsedId(robotId) ?? robotId;
+      final robotCode =
+          rawRobotCode ?? robotCodeForParsedId(robotId) ?? robotId;
       final shortRobotId = parsedRobotId;
       final robotTicketRef = _firestore
           .collection('robotTourTickets')
@@ -182,36 +204,66 @@ class RobotPairingService {
           ? selectedExhibitIds[1]
           : null;
       if (bookingId.isEmpty || museumTicketId.isEmpty) {
-        _logPairing(
-          'flow returned early after robot availability',
+        _logInvalidReturn(
+          bookingId.isEmpty ? 'bookingId missing' : 'museumTicketId missing',
           {
-            'reason': 'pairable robot tour ticket missing booking or museum ticket id',
-            'bookingIdEmpty': bookingId.isEmpty,
-            'museumTicketIdEmpty': museumTicketId.isEmpty,
-            'robotTourTicketDocId': pairableTicket.documentId,
-            'transactionWillStart': false,
+            'userId': userId,
+            'preferredRobotTourTicketId': robotTourTicketId,
+            'robotDocPath': robotRef.path,
+            'robotAvailabilityResult': currentRobotAvailabilityResult,
+            ..._ticketDiagnosticData(
+              pairableTicket.documentId,
+              pairableTicket.data,
+            ),
           },
         );
+        _logPairing('flow returned early after robot availability', {
+          'reason':
+              'pairable robot tour ticket missing booking or museum ticket id',
+          'bookingIdEmpty': bookingId.isEmpty,
+          'museumTicketIdEmpty': museumTicketId.isEmpty,
+          'robotTourTicketDocId': pairableTicket.documentId,
+          'transactionWillStart': false,
+        });
         throw const RobotPairingException(
           RobotPairingFailureCode.robotTourTicketRequired,
         );
       }
       passedAvailabilityBeforeTransaction = false;
-      _logPairing(
-        'transaction starting',
-        {
-          'sessionId': sessionId,
-          'robotDocPath': robotRef.path,
-          'robotTourTicketPath': robotTicketRef.path,
-          'linkedMuseumTicketId': museumTicketId,
-          'bookingId': bookingId,
-        },
-      );
+      _logPairing('transaction starting', {
+        'userId': userId,
+        'preferredRobotTourTicketId': robotTourTicketId,
+        'sessionId': sessionId,
+        'robotDocPath': robotRef.path,
+        'robotAvailabilityResult': currentRobotAvailabilityResult,
+        'robotTourTicketPath': robotTicketRef.path,
+        'linkedMuseumTicketId': museumTicketId,
+        'bookingId': bookingId,
+        ..._ticketDiagnosticData(
+          pairableTicket.documentId,
+          pairableTicket.data,
+        ),
+      });
 
       final finalRobotSnapshot = await _readRobotSnapshotFromServerWithRetry(
         robotRef,
       );
-      _validateRobotBridgeOnline(finalRobotSnapshot.data() ?? {});
+      currentRobotAvailabilityResult = _robotAvailabilityLog(
+        finalRobotSnapshot.data() ?? {},
+      );
+      _validateRobotBridgeOnline(
+        finalRobotSnapshot.data() ?? {},
+        invalidContext: {
+          'userId': userId,
+          'preferredRobotTourTicketId': robotTourTicketId,
+          'robotDocPath': robotRef.path,
+          'robotAvailabilityResult': currentRobotAvailabilityResult,
+          ..._ticketDiagnosticData(
+            pairableTicket.documentId,
+            pairableTicket.data,
+          ),
+        },
+      );
 
       final transactionWrites = <_FirestoreWriteDebugEntry>[];
       try {
@@ -221,12 +273,39 @@ class RobotPairingService {
             robotTicketRef,
           );
           if (!robotTicketSnapshot.exists) {
+            _logInvalidReturn('preferred robot tour ticket not found', {
+              'userId': userId,
+              'preferredRobotTourTicketId': robotTourTicketId,
+              'robotDocPath': robotRef.path,
+              'robotAvailabilityResult': currentRobotAvailabilityResult,
+              'ticketDocumentId': pairableTicket.documentId,
+            });
             throw const RobotPairingException(
               RobotPairingFailureCode.robotTourTicketRequired,
             );
           }
           final robotTicketData = robotTicketSnapshot.data() ?? {};
           if (!_isUnpairedActiveRobotTicket(robotTicketData, userId)) {
+            _logInvalidReturn(
+              _firstInvalidReason(
+                    _robotTicketInvalidReasons(robotTicketData, userId),
+                  ) ??
+                  'preferred ticket not paid/confirmed',
+              {
+                'userId': userId,
+                'preferredRobotTourTicketId': robotTourTicketId,
+                'robotDocPath': robotRef.path,
+                'robotAvailabilityResult': currentRobotAvailabilityResult,
+                ..._ticketDiagnosticData(
+                  robotTicketSnapshot.id,
+                  robotTicketData,
+                ),
+                'allInvalidReasons': _robotTicketInvalidReasons(
+                  robotTicketData,
+                  userId,
+                ),
+              },
+            );
             throw RobotPairingException(_ticketFailureCode(robotTicketData));
           }
           final museumTicketRef = _firestore
@@ -238,6 +317,24 @@ class RobotPairingService {
           );
           if (!museumTicketSnapshot.exists ||
               !_isActiveMuseumTicket(museumTicketSnapshot.data(), userId)) {
+            _logInvalidReturn(
+              !museumTicketSnapshot.exists
+                  ? 'linked museum ticket missing'
+                  : 'linked museum ticket inactive/cancelled/expired',
+              {
+                'userId': userId,
+                'preferredRobotTourTicketId': robotTourTicketId,
+                'robotDocPath': robotRef.path,
+                'robotAvailabilityResult': currentRobotAvailabilityResult,
+                ..._ticketDiagnosticData(
+                  pairableTicket.documentId,
+                  robotTicketData,
+                ),
+                'linkedMuseumTicketDocumentId': museumTicketId,
+                'linkedMuseumTicketExists': museumTicketSnapshot.exists,
+                'linkedMuseumTicketData': museumTicketSnapshot.data(),
+              },
+            );
             throw RobotPairingException(
               _ticketFailureCode(museumTicketSnapshot.data()),
             );
@@ -245,6 +342,12 @@ class RobotPairingService {
 
           final robotSnapshot = await _transactionGet(transaction, robotRef);
           if (!robotSnapshot.exists) {
+            _logInvalidReturn('robot QR invalid', {
+              'userId': userId,
+              'preferredRobotTourTicketId': robotTourTicketId,
+              'robotDocPath': robotRef.path,
+              'robotAvailabilityResult': currentRobotAvailabilityResult,
+            });
             throw const RobotPairingException(
               RobotPairingFailureCode.robotNotFound,
             );
@@ -255,94 +358,97 @@ class RobotPairingService {
             robotData['activeSessionId'],
           );
           if (activeSessionId != null) {
-            throw const RobotPairingException(RobotPairingFailureCode.robotBusy);
+            _logInvalidReturn('robot busy', {
+              'userId': userId,
+              'preferredRobotTourTicketId': robotTourTicketId,
+              'robotDocPath': robotRef.path,
+              'robotAvailabilityResult': _robotAvailabilityLog(robotData),
+              ..._ticketDiagnosticData(
+                pairableTicket.documentId,
+                robotTicketData,
+              ),
+            });
+            throw const RobotPairingException(
+              RobotPairingFailureCode.robotBusy,
+            );
           }
 
-          _validateRobotBridgeOnline(robotData);
+          _validateRobotBridgeOnline(
+            robotData,
+            invalidContext: {
+              'userId': userId,
+              'preferredRobotTourTicketId': robotTourTicketId,
+              'robotDocPath': robotRef.path,
+              'robotAvailabilityResult': _robotAvailabilityLog(robotData),
+              ..._ticketDiagnosticData(
+                pairableTicket.documentId,
+                robotTicketData,
+              ),
+            },
+          );
 
           final now = FieldValue.serverTimestamp();
 
-          _transactionSet(
-            transaction,
-            sessionRef,
-            {
-              'session_id': sessionId,
-              'userId': userId,
-              'booking_id': bookingId,
-              'museum_ticket_id': museumTicketId,
-              'robot_tour_ticket_id': pairableTicket.documentId,
-              'robotId': robotId,
-              'robot_id': robotId,
-              'robot_code': robotCode,
-              'short_robot_id': shortRobotId,
-              'status': 'active',
-              'current_exhibit_id': currentExhibitId,
-              'current_exhibit_index': 0,
-              'next_exhibit_id': nextExhibitId,
-              'visitedExhibitIds': currentExhibitId == null
-                  ? <String>[]
-                  : <String>[currentExhibitId],
-              'selected_exhibits': selectedExhibitIds,
-              ...plannerMetadata,
-              'route_id': robotTourTicket.routeId,
-              'route_title_en': robotTourTicket.routeTitleEn,
-              'route_title_ar': robotTourTicket.routeTitleAr,
-              'preferred_language': robotTourTicket.languageCode,
-              'pace': _paceValue(pairableTicket.data, robotTourTicket),
-              'started_at': now,
-              'paired_at': now,
-              'completed_at': null,
-              'created_at': now,
-              'updated_at': now,
-            },
-            transactionWrites,
-          );
+          _transactionSet(transaction, sessionRef, {
+            'session_id': sessionId,
+            'userId': userId,
+            'booking_id': bookingId,
+            'museum_ticket_id': museumTicketId,
+            'robot_tour_ticket_id': pairableTicket.documentId,
+            'robotId': robotId,
+            'robot_id': robotId,
+            'robot_code': robotCode,
+            'short_robot_id': shortRobotId,
+            'status': 'active',
+            'current_exhibit_id': currentExhibitId,
+            'current_exhibit_index': 0,
+            'next_exhibit_id': nextExhibitId,
+            'visitedExhibitIds': currentExhibitId == null
+                ? <String>[]
+                : <String>[currentExhibitId],
+            'selected_exhibits': selectedExhibitIds,
+            ...plannerMetadata,
+            'route_id': robotTourTicket.routeId,
+            'route_title_en': robotTourTicket.routeTitleEn,
+            'route_title_ar': robotTourTicket.routeTitleAr,
+            'preferred_language': robotTourTicket.languageCode,
+            'pace': _paceValue(pairableTicket.data, robotTourTicket),
+            'started_at': now,
+            'paired_at': now,
+            'completed_at': null,
+            'created_at': now,
+            'updated_at': now,
+          }, transactionWrites);
 
-          _transactionUpdate(
-            transaction,
-            robotTicketRef,
-            {
-              'status': 'in_progress',
-              'paired_robot_id': robotId,
-              'session_id': sessionId,
-              'paired_at': now,
-              'updated_at': now,
-            },
-            transactionWrites,
-          );
+          _transactionUpdate(transaction, robotTicketRef, {
+            'status': 'in_progress',
+            'paired_robot_id': robotId,
+            'session_id': sessionId,
+            'paired_at': now,
+            'updated_at': now,
+          }, transactionWrites);
 
-          _transactionUpdate(
-            transaction,
-            robotRef,
-            {
-              'activeSessionId': sessionId,
-            },
-            transactionWrites,
-          );
+          _transactionUpdate(transaction, robotRef, {
+            'activeSessionId': sessionId,
+          }, transactionWrites);
 
-          _logPairing(
-            'firestore transaction queued writes final',
-            {
-              'queuedWriteCount': transactionWrites.length,
-              'queuedWrites': transactionWrites
-                  .map((entry) => entry.toLogMap())
-                  .toList(growable: false),
-            },
-          );
+          _logPairing('firestore transaction queued writes final', {
+            'queuedWriteCount': transactionWrites.length,
+            'queuedWrites': transactionWrites
+                .map((entry) => entry.toLogMap())
+                .toList(growable: false),
+          });
         });
       } catch (e, stackTrace) {
         _logFirestoreTransactionFailure(transactionWrites, e, stackTrace);
         rethrow;
       }
-      _logPairing(
-        'transaction committed',
-        {
-          'sessionId': sessionId,
-          'robotId': robotId,
-          'robotTourTicketId': pairableTicket.documentId,
-          'museumTicketId': museumTicketId,
-        },
-      );
+      _logPairing('transaction committed', {
+        'sessionId': sessionId,
+        'robotId': robotId,
+        'robotTourTicketId': pairableTicket.documentId,
+        'museumTicketId': museumTicketId,
+      });
 
       return RobotPairingResult(
         sessionId: sessionId,
@@ -355,6 +461,14 @@ class RobotPairingService {
       );
     } on RobotPairingException catch (e, stackTrace) {
       if (passedAvailabilityBeforeTransaction) {
+        _logInvalidReturn('catch block before transaction: ${e.code.name}', {
+          'userId': userId,
+          'preferredRobotTourTicketId': robotTourTicketId,
+          'robotDocPath': currentRobotDocPath,
+          'robotAvailabilityResult': currentRobotAvailabilityResult,
+          'failureCode': e.code.name,
+          'detail': e.detail,
+        });
         _logPairing(
           'exception between robot availability and transaction starting',
           {
@@ -367,19 +481,27 @@ class RobotPairingService {
       rethrow;
     } on FirebaseException catch (e, stackTrace) {
       if (passedAvailabilityBeforeTransaction) {
+        _logInvalidReturn(
+          'catch block before transaction: firebase ${e.code}',
+          {
+            'userId': userId,
+            'preferredRobotTourTicketId': robotTourTicketId,
+            'robotDocPath': currentRobotDocPath,
+            'robotAvailabilityResult': currentRobotAvailabilityResult,
+            'firebaseCode': e.code,
+            'firebaseMessage': e.message,
+          },
+        );
         _logPairing(
           'exception between robot availability and transaction starting',
           _firestoreExceptionLog(e, stackTrace),
         );
       }
-      _logPairing(
-        'firebase error',
-        {
-          'code': e.code,
-          'message': e.message,
-          'plugin': e.plugin,
-        },
-      );
+      _logPairing('firebase error', {
+        'code': e.code,
+        'message': e.message,
+        'plugin': e.plugin,
+      });
       if (e.code == 'permission-denied') {
         throw const RobotPairingException(
           RobotPairingFailureCode.permissionDenied,
@@ -393,6 +515,17 @@ class RobotPairingService {
       throw const RobotPairingException(RobotPairingFailureCode.unknown);
     } catch (e, stackTrace) {
       if (passedAvailabilityBeforeTransaction) {
+        _logInvalidReturn(
+          'catch block before transaction: unexpected exception',
+          {
+            'userId': userId,
+            'preferredRobotTourTicketId': robotTourTicketId,
+            'robotDocPath': currentRobotDocPath,
+            'robotAvailabilityResult': currentRobotAvailabilityResult,
+            'exceptionType': e.runtimeType.toString(),
+            'exception': e.toString(),
+          },
+        );
         _logPairing(
           'exception between robot availability and transaction starting',
           _firestoreExceptionLog(e, stackTrace),
@@ -496,10 +629,7 @@ class RobotPairingService {
 
   Set<String> _robotIdCandidates(String parsedRobotId) {
     final robotCode = robotCodeForParsedId(parsedRobotId);
-    return {
-      if (robotCode != null) robotCode,
-      parsedRobotId,
-    };
+    return {if (robotCode != null) robotCode, parsedRobotId};
   }
 
   String? robotCodeForParsedId(String? parsedRobotId) {
@@ -514,27 +644,22 @@ class RobotPairingService {
     final robotCode = robotCodeForParsedId(parsedRobotId);
     if (robotCode == null) return null;
     final ref = _firestore.collection('robots').doc(robotCode);
-    _logPairing(
-      'robot document path',
-      {
-        'path': ref.path,
-        'expectedPath': 'robots/ROBOT-HORUS-001',
-        'robotIdExact': robotCode,
-      },
-    );
+    _logPairing('robot document path', {
+      'path': ref.path,
+      'expectedPath': 'robots/ROBOT-HORUS-001',
+      'robotIdExact': robotCode,
+    });
     final snapshot = await ref.get(const GetOptions(source: Source.server));
-    _logPairing(
-      'robot document checked',
-      {
-        'path': ref.path,
-        'exists': snapshot.exists,
-        'isFromCache': snapshot.metadata.isFromCache,
-      },
-    );
+    _logPairing('robot document checked', {
+      'path': ref.path,
+      'exists': snapshot.exists,
+      'isFromCache': snapshot.metadata.isFromCache,
+    });
     return snapshot.exists ? ref : null;
   }
 
-  Future<DocumentSnapshot<Map<String, dynamic>>> _readRobotSnapshotFromServerWithRetry(
+  Future<DocumentSnapshot<Map<String, dynamic>>>
+  _readRobotSnapshotFromServerWithRetry(
     DocumentReference<Map<String, dynamic>> robotRef,
   ) async {
     DocumentSnapshot<Map<String, dynamic>>? lastSnapshot;
@@ -565,60 +690,48 @@ class RobotPairingService {
     int attempt,
   ) {
     final data = snapshot.data();
-    _logPairing(
-      'robot server snapshot raw availability fields',
-      {
-        'attempt': attempt,
-        'path': robotRef.path,
-        'exists': snapshot.exists,
-        'isFromCache': snapshot.metadata.isFromCache,
-        'robotConnectionState': data?['robotConnectionState'],
-        'mqttEnabled': data?['mqttEnabled'],
-        'lastSeenAt': data?['lastSeenAt'],
-        'activeSessionId': data?['activeSessionId'],
-        'status': data?['status'],
-      },
-    );
+    _logPairing('robot server snapshot raw availability fields', {
+      'attempt': attempt,
+      'path': robotRef.path,
+      'exists': snapshot.exists,
+      'isFromCache': snapshot.metadata.isFromCache,
+      'robotConnectionState': data?['robotConnectionState'],
+      'mqttEnabled': data?['mqttEnabled'],
+      'lastSeenAt': data?['lastSeenAt'],
+      'activeSessionId': data?['activeSessionId'],
+      'status': data?['status'],
+    });
   }
 
   Future<DocumentSnapshot<Map<String, dynamic>>> _transactionGet(
     Transaction transaction,
     DocumentReference<Map<String, dynamic>> ref,
   ) async {
-    _logPairing(
-      'firestore transaction get starting',
-      {
+    _logPairing('firestore transaction get starting', {
+      'collectionPath': ref.parent.path,
+      'documentId': ref.id,
+      'documentPath': ref.path,
+      'operationType': 'transaction.get',
+    });
+    try {
+      final snapshot = await transaction.get(ref);
+      _logPairing('firestore transaction get succeeded', {
         'collectionPath': ref.parent.path,
         'documentId': ref.id,
         'documentPath': ref.path,
         'operationType': 'transaction.get',
-      },
-    );
-    try {
-      final snapshot = await transaction.get(ref);
-      _logPairing(
-        'firestore transaction get succeeded',
-        {
-          'collectionPath': ref.parent.path,
-          'documentId': ref.id,
-          'documentPath': ref.path,
-          'operationType': 'transaction.get',
-          'exists': snapshot.exists,
-          'data': snapshot.data(),
-        },
-      );
+        'exists': snapshot.exists,
+        'data': snapshot.data(),
+      });
       return snapshot;
     } catch (e, stackTrace) {
-      _logPairing(
-        'firestore transaction get failed',
-        {
-          'collectionPath': ref.parent.path,
-          'documentId': ref.id,
-          'documentPath': ref.path,
-          'operationType': 'transaction.get',
-          ..._firestoreExceptionLog(e, stackTrace),
-        },
-      );
+      _logPairing('firestore transaction get failed', {
+        'collectionPath': ref.parent.path,
+        'documentId': ref.id,
+        'documentPath': ref.path,
+        'operationType': 'transaction.get',
+        ..._firestoreExceptionLog(e, stackTrace),
+      });
       rethrow;
     }
   }
@@ -698,13 +811,10 @@ class RobotPairingService {
     Object exception,
     StackTrace stackTrace,
   ) {
-    _logPairing(
-      'firestore write failed',
-      {
-        ...entry.toLogMap(),
-        ..._firestoreExceptionLog(exception, stackTrace),
-      },
-    );
+    _logPairing('firestore write failed', {
+      ...entry.toLogMap(),
+      ..._firestoreExceptionLog(exception, stackTrace),
+    });
   }
 
   void _logFirestoreTransactionFailure(
@@ -712,17 +822,14 @@ class RobotPairingService {
     Object exception,
     StackTrace stackTrace,
   ) {
-    _logPairing(
-      'firestore transaction failed',
-      {
-        'operationType': 'transaction.commit',
-        'queuedWriteCount': queuedWrites.length,
-        'queuedWrites': queuedWrites
-            .map((entry) => entry.toLogMap())
-            .toList(growable: false),
-        ..._firestoreExceptionLog(exception, stackTrace),
-      },
-    );
+    _logPairing('firestore transaction failed', {
+      'operationType': 'transaction.commit',
+      'queuedWriteCount': queuedWrites.length,
+      'queuedWrites': queuedWrites
+          .map((entry) => entry.toLogMap())
+          .toList(growable: false),
+      ..._firestoreExceptionLog(exception, stackTrace),
+    });
   }
 
   Map<String, Object?> _firestoreExceptionLog(
@@ -743,6 +850,8 @@ class RobotPairingService {
   Future<_PairableRobotTicket?> _selectPairableRobotTourTicket(
     String userId, {
     String? preferredTicketId,
+    String? robotDocPath,
+    Map<String, Object?>? robotAvailabilityResult,
   }) async {
     final snapshot = await _firestore
         .collection('robotTourTickets')
@@ -754,6 +863,44 @@ class RobotPairingService {
       final data = doc.data();
       return doc.id == preferred || _stringValue(data['id']) == preferred;
     }).toList();
+    final preferred = preferredTicketId?.trim();
+    if (preferred != null && preferred.isNotEmpty && allTickets.isEmpty) {
+      final preferredSnapshot = await _firestore
+          .collection('robotTourTickets')
+          .doc(preferred)
+          .get();
+      final preferredData = preferredSnapshot.data();
+      if (preferredSnapshot.exists &&
+          preferredData != null &&
+          preferredData['userId'] != userId) {
+        _logInvalidReturn('preferred ticket not owned by current user', {
+          'userId': userId,
+          'preferredRobotTourTicketId': preferredTicketId,
+          'robotDocPath': robotDocPath,
+          'robotAvailabilityResult': robotAvailabilityResult,
+          ..._ticketDiagnosticData(preferredSnapshot.id, preferredData),
+        });
+      } else {
+        _logInvalidReturn('preferred robot tour ticket not found', {
+          'userId': userId,
+          'preferredRobotTourTicketId': preferredTicketId,
+          'robotDocPath': robotDocPath,
+          'robotAvailabilityResult': robotAvailabilityResult,
+        });
+      }
+    }
+    for (final doc in allTickets) {
+      final reasons = _robotTicketInvalidReasons(doc.data(), userId);
+      if (reasons.isEmpty) continue;
+      _logInvalidReturn(reasons.first, {
+        'userId': userId,
+        'preferredRobotTourTicketId': preferredTicketId,
+        'robotDocPath': robotDocPath,
+        'robotAvailabilityResult': robotAvailabilityResult,
+        ..._ticketDiagnosticData(doc.id, doc.data()),
+        'allInvalidReasons': reasons,
+      });
+    }
     final tickets = allTickets
         .where((doc) => _isUnpairedActiveRobotTicket(doc.data(), userId))
         .map(
@@ -765,17 +912,28 @@ class RobotPairingService {
         )
         .toList();
     if (tickets.isEmpty) {
-      await _throwSpecificTicketFailure(allTickets);
+      await _throwSpecificTicketFailure(
+        allTickets,
+        userId: userId,
+        preferredTicketId: preferredTicketId,
+        robotDocPath: robotDocPath,
+        robotAvailabilityResult: robotAvailabilityResult,
+      );
       return null;
     }
 
-    final preferred = preferredTicketId?.trim();
     if (preferred != null && preferred.isNotEmpty) {
       for (final ticket in tickets) {
         if (ticket.documentId == preferred || ticket.ticket.id == preferred) {
           return ticket;
         }
       }
+      _logInvalidReturn('preferred robot tour ticket not found', {
+        'userId': userId,
+        'preferredRobotTourTicketId': preferredTicketId,
+        'robotDocPath': robotDocPath,
+        'robotAvailabilityResult': robotAvailabilityResult,
+      });
       return null;
     }
 
@@ -792,10 +950,24 @@ class RobotPairingService {
   }
 
   Future<void> _throwSpecificTicketFailure(
-    List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
-  ) async {
+    List<QueryDocumentSnapshot<Map<String, dynamic>>> docs, {
+    required String userId,
+    String? preferredTicketId,
+    String? robotDocPath,
+    Map<String, Object?>? robotAvailabilityResult,
+  }) async {
     for (final doc in docs) {
       if (_isCompletedTicketData(doc.data())) {
+        _logInvalidReturn(
+          'preferred ticket status not active/valid/confirmed',
+          {
+            'userId': userId,
+            'preferredRobotTourTicketId': preferredTicketId,
+            'robotDocPath': robotDocPath,
+            'robotAvailabilityResult': robotAvailabilityResult,
+            ..._ticketDiagnosticData(doc.id, doc.data()),
+          },
+        );
         throw const RobotPairingException(
           RobotPairingFailureCode.robotTourTicketCompleted,
         );
@@ -803,6 +975,13 @@ class RobotPairingService {
     }
     for (final doc in docs) {
       if (_isExpiredTicketData(doc.data())) {
+        _logInvalidReturn('preferred ticket expired/past visit', {
+          'userId': userId,
+          'preferredRobotTourTicketId': preferredTicketId,
+          'robotDocPath': robotDocPath,
+          'robotAvailabilityResult': robotAvailabilityResult,
+          ..._ticketDiagnosticData(doc.id, doc.data()),
+        });
         throw const RobotPairingException(
           RobotPairingFailureCode.robotTourTicketExpired,
         );
@@ -817,6 +996,14 @@ class RobotPairingService {
           .get();
       final status = _stringValue(session.data()?['status']);
       if (status == 'completed') {
+        _logInvalidReturn('preferred ticket already has session_id', {
+          'userId': userId,
+          'preferredRobotTourTicketId': preferredTicketId,
+          'robotDocPath': robotDocPath,
+          'robotAvailabilityResult': robotAvailabilityResult,
+          ..._ticketDiagnosticData(doc.id, doc.data()),
+          'linkedSessionStatus': status,
+        });
         throw const RobotPairingException(
           RobotPairingFailureCode.robotTourTicketCompleted,
         );
@@ -1073,9 +1260,14 @@ class RobotPairingService {
   void _validateRobotBridgeOnline(
     Map<String, dynamic> robotData, {
     bool requireNoActiveSession = true,
+    Map<String, Object?> invalidContext = const {},
   }) {
     final status = _stringValue(robotData['status']);
     if (status != 'available') {
+      _logInvalidReturn('robot unavailable', {
+        ...invalidContext,
+        'robotAvailabilityResult': _robotAvailabilityLog(robotData),
+      });
       throw const RobotPairingException(
         RobotPairingFailureCode.robotUnavailable,
       );
@@ -1083,6 +1275,10 @@ class RobotPairingService {
 
     final connectionState = _stringValue(robotData['robotConnectionState']);
     if (connectionState != 'connected') {
+      _logInvalidReturn('robot unavailable', {
+        ...invalidContext,
+        'robotAvailabilityResult': _robotAvailabilityLog(robotData),
+      });
       throw RobotPairingException(
         RobotPairingFailureCode.robotConnectionStateNotConnected,
         detail: connectionState ?? 'missing',
@@ -1091,6 +1287,10 @@ class RobotPairingService {
 
     final mqttEnabled = robotData['mqttEnabled'];
     if (mqttEnabled != true) {
+      _logInvalidReturn('robot unavailable', {
+        ...invalidContext,
+        'robotAvailabilityResult': _robotAvailabilityLog(robotData),
+      });
       throw RobotPairingException(
         RobotPairingFailureCode.robotMqttDisabled,
         detail: _rawValue(mqttEnabled),
@@ -1099,6 +1299,10 @@ class RobotPairingService {
 
     final lastSeenAt = _dateValue(robotData['lastSeenAt']);
     if (lastSeenAt == null) {
+      _logInvalidReturn('robot unavailable', {
+        ...invalidContext,
+        'robotAvailabilityResult': _robotAvailabilityLog(robotData),
+      });
       throw const RobotPairingException(
         RobotPairingFailureCode.robotLastSeenMissing,
       );
@@ -1108,6 +1312,12 @@ class RobotPairingService {
         .difference(lastSeenAt.toUtc())
         .inSeconds;
     if (secondsSinceLastSeen > 45) {
+      _logInvalidReturn('robot unavailable', {
+        ...invalidContext,
+        'robotAvailabilityResult': _robotAvailabilityLog(robotData),
+        'secondsSinceLastSeen': secondsSinceLastSeen,
+        'currentTimeForExpiryCheck': DateTime.now().toIso8601String(),
+      });
       throw RobotPairingException(
         RobotPairingFailureCode.robotLastSeenStale,
         detail: secondsSinceLastSeen.toString(),
@@ -1116,6 +1326,10 @@ class RobotPairingService {
 
     if (requireNoActiveSession &&
         _activeSessionIdValue(robotData['activeSessionId']) != null) {
+      _logInvalidReturn('robot busy', {
+        ...invalidContext,
+        'robotAvailabilityResult': _robotAvailabilityLog(robotData),
+      });
       throw const RobotPairingException(RobotPairingFailureCode.robotBusy);
     }
   }
@@ -1148,6 +1362,88 @@ class RobotPairingService {
     if (value == null) return 'null';
     if (value is String) return value;
     return value.toString();
+  }
+
+  Map<String, Object?> _robotAvailabilityLog(Map<String, dynamic> data) {
+    return {
+      'status': data['status'],
+      'robotConnectionState': data['robotConnectionState'],
+      'mqttEnabled': data['mqttEnabled'],
+      'activeSessionId': data['activeSessionId'],
+      'lastSeenAt': data['lastSeenAt'],
+    };
+  }
+
+  Map<String, Object?> _ticketDiagnosticData(
+    String ticketDocumentId,
+    Map<String, dynamic> data,
+  ) {
+    return {
+      'ticketDocumentId': ticketDocumentId,
+      'ticketId': data['id'],
+      'ticketStatus': data['status'],
+      'payment_status': data['payment_status'],
+      'paymentStatus': data['paymentStatus'],
+      'paired_robot_id': data['paired_robot_id'],
+      'pairedRobotId': data['pairedRobotId'],
+      'session_id': data['session_id'],
+      'sessionId': data['sessionId'],
+      'booking_id': data['booking_id'],
+      'bookingId': data['bookingId'],
+      'museum_ticket_id': data['museum_ticket_id'],
+      'museumTicketId': data['museumTicketId'],
+      'visit_date': data['visit_date'],
+      'visitDate': data['visitDate'],
+      'visit_time': data['visit_time'],
+      'visitTime': data['visitTime'],
+      'timeSlot': data['timeSlot'],
+      'currentTimeForExpiryCheck': DateTime.now().toIso8601String(),
+    };
+  }
+
+  List<String> _robotTicketInvalidReasons(
+    Map<String, dynamic> data,
+    String userId,
+  ) {
+    final reasons = <String>[];
+    if (data['userId'] != userId) {
+      reasons.add('preferred ticket not owned by current user');
+    }
+    if (!_isPaymentConfirmed(data['payment_status'] ?? data['paymentStatus'])) {
+      reasons.add('preferred ticket not paid/confirmed');
+    }
+    if (!_isUsableStatus(data['status'])) {
+      reasons.add('preferred ticket status not active/valid/confirmed');
+    }
+    if (_stringValue(data['paired_robot_id'] ?? data['pairedRobotId']) !=
+        null) {
+      reasons.add('preferred ticket already paired');
+    }
+    if (_stringValue(data['session_id'] ?? data['sessionId']) != null) {
+      reasons.add('preferred ticket already has session_id');
+    }
+    if (_isPastVisitDateTime(
+      data['visit_date'] ?? data['visitDate'],
+      data['visit_time'] ?? data['visitTime'] ?? data['timeSlot'],
+    )) {
+      reasons.add('preferred ticket expired/past visit');
+    }
+    if (_stringValue(data['booking_id'] ?? data['bookingId']) == null) {
+      reasons.add('bookingId missing');
+    }
+    if (_stringValue(data['museum_ticket_id'] ?? data['museumTicketId']) ==
+        null) {
+      reasons.add('museumTicketId missing');
+    }
+    return reasons;
+  }
+
+  String? _firstInvalidReason(List<String> reasons) {
+    return reasons.isEmpty ? null : reasons.first;
+  }
+
+  void _logInvalidReturn(String reason, Map<String, Object?> details) {
+    debugPrint('[Horus-Bot pairing] INVALID RETURN: $reason: $details');
   }
 
   void _logPairing(String message, Map<String, Object?> details) {
