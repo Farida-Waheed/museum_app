@@ -39,6 +39,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
     with TickerProviderStateMixin {
   bool _isScanned = false;
   late final AnimationController _scanAnim;
+  final MobileScannerController _scannerController = MobileScannerController();
   final TextEditingController _manualRobotCodeController =
       TextEditingController(text: 'ROBOT-HORUS-001');
   final RobotPairingService _robotPairingService = RobotPairingService();
@@ -56,6 +57,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
 
   @override
   void dispose() {
+    unawaited(_scannerController.dispose());
     _manualRobotCodeController.dispose();
     _scanAnim.dispose();
     super.dispose();
@@ -87,12 +89,45 @@ class _QrScannerScreenState extends State<QrScannerScreen>
     if (_isScanned) return;
     final barcodes = capture.barcodes;
     for (final barcode in barcodes) {
-      if (barcode.rawValue != null) {
+      final code = barcode.rawValue;
+      if (code != null) {
+        _isScanned = true;
+        final isRobotPairingQr =
+            widget.mode == QRScanMode.robotConnection &&
+            _robotPairingService.parseRobotId(code) != null;
+        if (isRobotPairingQr) {
+          debugPrint(
+            '[QR scanner] first valid robot QR detected; scanner locked '
+            'before pairing starts.',
+          );
+          unawaited(_stopScannerAfterFirstRobotQr());
+        }
         HapticFeedback.heavyImpact();
-        setState(() => _isScanned = true);
-        _showResultDialog(barcode.rawValue!);
+        if (mounted) setState(() {});
+        _showResultDialog(code);
         break;
       }
+    }
+  }
+
+  Future<void> _stopScannerAfterFirstRobotQr() async {
+    try {
+      await _scannerController.stop();
+      debugPrint('[QR scanner] scanner stopped after first valid robot QR.');
+    } catch (e, stackTrace) {
+      debugPrint(
+        '[QR scanner] failed to stop scanner after first valid robot QR: '
+        '$e\n$stackTrace',
+      );
+    }
+  }
+
+  Future<void> _restartScannerForRetry() async {
+    try {
+      await _scannerController.start();
+      debugPrint('[QR scanner] scanner restarted for retry.');
+    } catch (e, stackTrace) {
+      debugPrint('[QR scanner] failed to restart scanner for retry: $e\n$stackTrace');
     }
   }
 
@@ -165,6 +200,9 @@ class _QrScannerScreenState extends State<QrScannerScreen>
     } else {
       final robotId = _robotPairingService.parseRobotId(code);
       if (robotId == null) {
+        debugPrint(
+          '[QR scanner] robot pairing flow returned early: invalid robot QR.',
+        );
         sessionProvider.failRobotConnection();
         tourProvider.setConnectionState(tour.RobotConnectionState.disconnected);
         result = _ScanResult(
@@ -176,6 +214,10 @@ class _QrScannerScreenState extends State<QrScannerScreen>
           primaryLabel: l10n.done,
         );
       } else if (!authProvider.isLoggedIn || authProvider.currentUser == null) {
+        debugPrint(
+          '[QR scanner] robot pairing flow returned early after QR parse: '
+          'user is not signed in.',
+        );
         result = _ScanResult(
           isValid: false,
           title: l10n.qrSignInRequiredTitle,
@@ -185,6 +227,10 @@ class _QrScannerScreenState extends State<QrScannerScreen>
         );
       } else {
         try {
+          debugPrint(
+            '[QR scanner] robot availability/pairing flow starting: '
+            'robotId=$robotId ticketId=${widget.robotTourTicketId}',
+          );
           final pairing =
               await _robotPairingService
                   .pairRobot(
@@ -278,6 +324,12 @@ class _QrScannerScreenState extends State<QrScannerScreen>
     }
 
     if (!mounted) return;
+    if (mode == QRScanMode.robotConnection) {
+      debugPrint(
+        '[QR scanner] pairing result dialog waiting for user confirmation: '
+        'isValid=${result.isValid} opensLiveTour=${result.opensLiveTour}',
+      );
+    }
     showGeneralDialog(
       context: context,
       barrierDismissible: false,
@@ -303,11 +355,17 @@ class _QrScannerScreenState extends State<QrScannerScreen>
                 Navigator.pop(context);
               } else if (!result.isValid) {
                 setState(() => _isScanned = false);
+                if (mode == QRScanMode.robotConnection) {
+                  unawaited(_restartScannerForRetry());
+                }
               }
             },
             onRetry: () {
               Navigator.pop(context);
               setState(() => _isScanned = false);
+              if (mode == QRScanMode.robotConnection) {
+                unawaited(_restartScannerForRetry());
+              }
             },
           ),
         );
@@ -521,7 +579,10 @@ class _QrScannerScreenState extends State<QrScannerScreen>
         textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
         child: Stack(
           children: [
-            MobileScanner(onDetect: _handleScan),
+            MobileScanner(
+              controller: _scannerController,
+              onDetect: _handleScan,
+            ),
             const IgnorePointer(
               child: QrScannerOverlayWidget(
                 borderColor: AppColors.primaryGold,

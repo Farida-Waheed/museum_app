@@ -39,6 +39,7 @@ class RobotPairingService {
     required String scannedCode,
     String? robotTourTicketId,
   }) async {
+    var passedAvailabilityBeforeTransaction = false;
     final parsedRobotId = parseRobotId(scannedCode);
     final rawRobotCode = robotCodeForParsedId(parsedRobotId);
     _logPairing(
@@ -84,6 +85,14 @@ class RobotPairingService {
         initialRobotSnapshot.data() ?? {},
         requireNoActiveSession: false,
       );
+      passedAvailabilityBeforeTransaction = true;
+      _logPairing(
+        'robot availability passed; entering ticket selection flow',
+        {
+          'robotDocPath': robotRef.path,
+          'preferredRobotTourTicketId': robotTourTicketId,
+        },
+      );
 
       final restorablePairing = await _findRestorableInProgressPairing(
         userId: userId,
@@ -91,6 +100,17 @@ class RobotPairingService {
         preferredTicketId: robotTourTicketId,
       );
       if (restorablePairing != null) {
+        _logPairing(
+          'flow returned early after robot availability',
+          {
+            'reason': 'restorable in-progress pairing found',
+            'sessionId': restorablePairing.sessionId,
+            'robotId': restorablePairing.robotId,
+            'robotTourTicketId': restorablePairing.robotTourTicketId,
+            'museumTicketId': restorablePairing.museumTicketId,
+            'transactionWillStart': false,
+          },
+        );
         _logPairing(
           'restored existing pairing',
           {
@@ -103,11 +123,25 @@ class RobotPairingService {
         return restorablePairing;
       }
 
+      _logPairing(
+        'entering robot tour ticket selection after availability',
+        {
+          'userId': userId,
+          'preferredRobotTourTicketId': robotTourTicketId,
+        },
+      );
       final pairableTicket = await _selectPairableRobotTourTicket(
         userId,
         preferredTicketId: robotTourTicketId,
       );
       if (pairableTicket == null) {
+        _logPairing(
+          'flow returned early after robot availability',
+          {
+            'reason': 'no pairable robot tour ticket',
+            'transactionWillStart': false,
+          },
+        );
         throw const RobotPairingException(
           RobotPairingFailureCode.robotTourTicketRequired,
         );
@@ -148,10 +182,21 @@ class RobotPairingService {
           ? selectedExhibitIds[1]
           : null;
       if (bookingId.isEmpty || museumTicketId.isEmpty) {
+        _logPairing(
+          'flow returned early after robot availability',
+          {
+            'reason': 'pairable robot tour ticket missing booking or museum ticket id',
+            'bookingIdEmpty': bookingId.isEmpty,
+            'museumTicketIdEmpty': museumTicketId.isEmpty,
+            'robotTourTicketDocId': pairableTicket.documentId,
+            'transactionWillStart': false,
+          },
+        );
         throw const RobotPairingException(
           RobotPairingFailureCode.robotTourTicketRequired,
         );
       }
+      passedAvailabilityBeforeTransaction = false;
       _logPairing(
         'transaction starting',
         {
@@ -308,9 +353,25 @@ class RobotPairingService {
         currentExhibitId: currentExhibitId,
         nextExhibitId: nextExhibitId,
       );
-    } on RobotPairingException {
+    } on RobotPairingException catch (e, stackTrace) {
+      if (passedAvailabilityBeforeTransaction) {
+        _logPairing(
+          'exception between robot availability and transaction starting',
+          {
+            'failureCode': e.code.name,
+            'detail': e.detail,
+            'stackTrace': stackTrace.toString(),
+          },
+        );
+      }
       rethrow;
-    } on FirebaseException catch (e) {
+    } on FirebaseException catch (e, stackTrace) {
+      if (passedAvailabilityBeforeTransaction) {
+        _logPairing(
+          'exception between robot availability and transaction starting',
+          _firestoreExceptionLog(e, stackTrace),
+        );
+      }
       _logPairing(
         'firebase error',
         {
@@ -330,6 +391,14 @@ class RobotPairingService {
         throw const RobotPairingException(RobotPairingFailureCode.network);
       }
       throw const RobotPairingException(RobotPairingFailureCode.unknown);
+    } catch (e, stackTrace) {
+      if (passedAvailabilityBeforeTransaction) {
+        _logPairing(
+          'exception between robot availability and transaction starting',
+          _firestoreExceptionLog(e, stackTrace),
+        );
+      }
+      rethrow;
     }
   }
 
