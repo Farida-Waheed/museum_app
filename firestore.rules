@@ -51,9 +51,32 @@ service cloud.firestore {
         && !(resource.data.status in ['used', 'cancelled', 'canceled', 'declined', 'rejected', 'archived', 'inactive', 'disabled', 'expired']);
     }
 
-    function ownedRobotTourTicketCancelUpdate() {
+    function pairedRobotTicketCancelCleanup(ticketId) {
+      return resource.data.status in ['paired', 'in_progress']
+        && resource.data.session_id is string
+        && resource.data.session_id != ''
+        && resource.data.paired_robot_id is string
+        && resource.data.paired_robot_id != ''
+        && exists(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id))
+        && get(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.status == 'assigned'
+        && existsAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id))
+        && getAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id)).data.status == 'cancelled'
+        && getAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id)).data.userId == request.auth.uid
+        && getAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id)).data.robot_tour_ticket_id == ticketId
+        && existsAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id))
+        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.status == 'available'
+        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.active_session_id == null
+        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.activeSessionId == null
+        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.active_user_id == null
+        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.currentUserId == null
+        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.active_robot_tour_ticket_id == null
+        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.activeRobotTourTicketId == null;
+    }
+
+    function ownedRobotTourTicketCancelUpdate(ticketId) {
       return ownedCancelUpdateBase()
-        && !(resource.data.status in ['paired', 'in_progress', 'completed', 'cancelled', 'canceled', 'declined', 'rejected', 'archived', 'inactive', 'disabled', 'expired']);
+        && !(resource.data.status in ['completed', 'cancelled', 'canceled', 'declined', 'rejected', 'archived', 'inactive', 'disabled', 'expired'])
+        && (!(resource.data.status in ['paired', 'in_progress']) || pairedRobotTicketCancelCleanup(ticketId));
     }
 
     function usableTicketStatus(status) {
@@ -152,8 +175,58 @@ service cloud.firestore {
       return validFinalRobotAssign(robotId) || validLegacyRobotPair();
     }
 
-    function validRobotRelease() {
-      return validFinalRobotRelease() || validLegacyRobotRelease();
+    function validRobotRelease(robotId) {
+      return validBridgeRobotRelease(robotId) || validFinalRobotRelease() || validLegacyRobotRelease();
+    }
+
+    function robotIdMatchesBridgeContract(robotId) {
+      return robotId == 'ROBOT-HORUS-001'
+        || (('robotId' in request.resource.data) && request.resource.data.robotId == robotId);
+    }
+
+    function bridgeRobotUnpaired() {
+      return !('activeSessionId' in resource.data)
+        || resource.data.activeSessionId == null
+        || (resource.data.activeSessionId is string && resource.data.activeSessionId.matches('^\\s*$'));
+    }
+
+    function bridgeRobotSessionOwner(sessionId, robotId) {
+      return existsAfter(/databases/$(database)/documents/tourSessions/$(sessionId))
+        && getAfter(/databases/$(database)/documents/tourSessions/$(sessionId)).data.userId == request.auth.uid
+        && getAfter(/databases/$(database)/documents/tourSessions/$(sessionId)).data.robotId == robotId;
+    }
+
+    function bridgeSessionRobotTourTicketId(sessionId) {
+      return getAfter(/databases/$(database)/documents/tourSessions/$(sessionId)).data.robotTourTicketId == null
+        ? getAfter(/databases/$(database)/documents/tourSessions/$(sessionId)).data.robot_tour_ticket_id
+        : getAfter(/databases/$(database)/documents/tourSessions/$(sessionId)).data.robotTourTicketId;
+    }
+
+    function validBridgeRobotPair(robotId) {
+      return signedIn()
+        && robotIdMatchesBridgeContract(robotId)
+        && resource.data.status == 'available'
+        && resource.data.robotConnectionState == 'connected'
+        && resource.data.mqttEnabled == true
+        && bridgeRobotUnpaired()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['activeSessionId', 'updatedAt', 'updated_at'])
+        && request.resource.data.activeSessionId is string
+        && !request.resource.data.activeSessionId.matches('^\\s*$')
+        && bridgeRobotSessionOwner(request.resource.data.activeSessionId, robotId);
+    }
+
+    function validBridgeRobotRelease(robotId) {
+      return signedIn()
+        && robotIdMatchesBridgeContract(robotId)
+        && resource.data.activeSessionId is string
+        && resource.data.activeSessionId != ''
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['activeSessionId', 'updatedAt', 'updated_at'])
+        && request.resource.data.activeSessionId == null
+        && exists(/databases/$(database)/documents/tourSessions/$(resource.data.activeSessionId))
+        && get(/databases/$(database)/documents/tourSessions/$(resource.data.activeSessionId)).data.userId == request.auth.uid
+        && get(/databases/$(database)/documents/tourSessions/$(resource.data.activeSessionId)).data.robotId == robotId;
     }
 
     function validLegacyRobotRelease() {
@@ -211,12 +284,9 @@ service cloud.firestore {
         && request.resource.data.session_id != ''
         && existsAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.session_id))
         && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.session_id)).data.userId == request.auth.uid
-        && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.session_id)).data.robot_tour_ticket_id == ticketId
+        && bridgeSessionRobotTourTicketId(request.resource.data.session_id) == ticketId
         && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.session_id)).data.robotId == request.resource.data.paired_robot_id
-        && existsAfter(/databases/$(database)/documents/robots/$(request.resource.data.paired_robot_id))
-        && getAfter(/databases/$(database)/documents/robots/$(request.resource.data.paired_robot_id)).data.active_session_id == request.resource.data.session_id
-        && getAfter(/databases/$(database)/documents/robots/$(request.resource.data.paired_robot_id)).data.active_user_id == request.auth.uid
-        && getAfter(/databases/$(database)/documents/robots/$(request.resource.data.paired_robot_id)).data.active_robot_tour_ticket_id == ticketId;
+        && request.resource.data.paired_robot_id == 'ROBOT-HORUS-001';
     }
 
     function validRobotTourTicketStartUpdate(ticketId) {
@@ -331,7 +401,7 @@ service cloud.firestore {
     match /robotTourTickets/{ticketId} {
       allow read: if ownsExisting() || isAdminOrCashier();
       allow create: if bookingContractCreateValid();
-      allow update: if ownedRobotTourTicketCancelUpdate()
+      allow update: if ownedRobotTourTicketCancelUpdate(ticketId)
         || adminPaymentUpdate()
         || validRobotTourTicketPairUpdate(ticketId)
         || validRobotTourTicketStartUpdate(ticketId)
@@ -372,9 +442,10 @@ service cloud.firestore {
 
     match /robots/{robotId} {
       allow read: if signedIn();
-      allow update: if validRobotPair(robotId)
+      allow update: if validBridgeRobotPair(robotId)
+        || validRobotPair(robotId)
         || validFinalRobotStart()
-        || validRobotRelease();
+        || validRobotRelease(robotId);
       allow create, delete: if false;
     }
   }

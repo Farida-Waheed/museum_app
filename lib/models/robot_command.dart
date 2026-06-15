@@ -1,7 +1,7 @@
+import 'dart:math';
+
 enum RobotCommandType {
   startTour('start_tour'),
-  pause('pause'),
-  resume('resume'),
   skip('skip'),
   endTour('end_tour'),
   findRobot('find_robot'),
@@ -21,7 +21,9 @@ enum RobotCommandType {
 }
 
 class RobotCommand {
-  static const String flutterSource = 'flutter_app';
+  static final RegExp uuidPattern = RegExp(
+    r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
+  );
 
   final String commandId;
   final RobotCommandType type;
@@ -29,7 +31,6 @@ class RobotCommand {
   final String robotId;
   final String userId;
   final DateTime sentAt;
-  final String source;
   final Map<String, dynamic> payload;
 
   RobotCommand({
@@ -39,7 +40,6 @@ class RobotCommand {
     required this.robotId,
     required this.userId,
     DateTime? sentAt,
-    this.source = flutterSource,
     this.payload = const <String, dynamic>{},
   }) : commandId = commandId ?? _generatedCommandId(),
        sentAt = sentAt ?? DateTime.now().toUtc();
@@ -51,8 +51,7 @@ class RobotCommand {
       'sessionId': sessionId,
       'robotId': robotId,
       'userId': userId,
-      'sentAt': sentAt.toIso8601String(),
-      'source': source,
+      'sentAt': sentAt.toUtc().toIso8601String(),
       'payload': payload,
     };
   }
@@ -65,9 +64,15 @@ class RobotCommand {
       robotId: _stringValue(json['robotId']) ?? '',
       userId: _stringValue(json['userId']) ?? '',
       sentAt: _dateValue(json['sentAt']),
-      source: _stringValue(json['source']) ?? flutterSource,
       payload: _mapValue(json['payload']),
     );
+  }
+
+  bool get hasValidCommandId => uuidPattern.hasMatch(commandId);
+
+  bool isStale({DateTime? now}) {
+    final referenceTime = (now ?? DateTime.now()).toUtc();
+    return referenceTime.difference(sentAt.toUtc()).inSeconds > 120;
   }
 
   static String? _stringValue(Object? value) {
@@ -88,6 +93,16 @@ class RobotCommand {
   }
 
   static String _generatedCommandId() {
-    return 'cmd_${DateTime.now().microsecondsSinceEpoch}';
+    final random = Random.secure();
+    final bytes = List<int>.generate(16, (_) => random.nextInt(256));
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    String hex(int value) => value.toRadixString(16).padLeft(2, '0');
+    final chars = bytes.map(hex).join();
+    return '${chars.substring(0, 8)}-'
+        '${chars.substring(8, 12)}-'
+        '${chars.substring(12, 16)}-'
+        '${chars.substring(16, 20)}-'
+        '${chars.substring(20)}';
   }
 }

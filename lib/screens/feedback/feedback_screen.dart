@@ -151,7 +151,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsetsDirectional.fromSTEB(20, 24, 20, 24),
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 92, 20, 28),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -181,7 +181,7 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                         context,
                       ).copyWith(fontSize: 11),
                     ),
-                    const SizedBox(height: 100),
+                    const SizedBox(height: 140),
                   ],
                 ),
               ),
@@ -222,7 +222,7 @@ class _HeaderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: AppDecorations.secondaryGlassCard(radius: 24),
+      decoration: AppDecorations.premiumGlassCard(radius: 24, opacity: 0.58),
       child: Row(
         children: [
           Container(
@@ -286,7 +286,7 @@ class _RatingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(24),
-      decoration: AppDecorations.secondaryGlassCard(radius: 24),
+      decoration: AppDecorations.premiumGlassCard(radius: 24, opacity: 0.58),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -383,7 +383,7 @@ class _CommentCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(24),
-      decoration: AppDecorations.secondaryGlassCard(radius: 24),
+      decoration: AppDecorations.premiumGlassCard(radius: 24, opacity: 0.58),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -438,32 +438,49 @@ class _SubmitBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 22),
       decoration: BoxDecoration(
-        color: AppColors.cardGlass(0.66),
-        border: Border(top: BorderSide(color: AppColors.goldBorder(0.16))),
+        color: AppColors.useLightSurfaces
+            ? AppColors.websiteLightBackground.withValues(alpha: 0.96)
+            : AppColors.cinematicNav,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.darkInk.withValues(
+              alpha: AppColors.useLightSurfaces ? 0.10 : 0.34,
+            ),
+            blurRadius: 22,
+            offset: const Offset(0, -8),
+          ),
+        ],
       ),
       child: SafeArea(
         top: false,
-        child: SizedBox(
-          width: double.infinity,
-          height: 56,
-          child: ElevatedButton(
-            onPressed: isSubmitting ? null : onSubmit,
-            style: AppDecorations.primaryButton(),
-            child: isSubmitting
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      color: AppColors.darkInk,
-                      strokeWidth: 2.5,
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: AppDecorations.premiumGlassCard(
+            radius: 24,
+            opacity: 0.62,
+          ),
+          child: SizedBox(
+            width: double.infinity,
+            height: 54,
+            child: ElevatedButton(
+              onPressed: isSubmitting ? null : onSubmit,
+              style: AppDecorations.primaryButton(),
+              child: isSubmitting
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: AppColors.darkInk,
+                        strokeWidth: 2.5,
+                      ),
+                    )
+                  : Text(
+                      l10n.submitFeedback,
+                      style: AppTextStyles.buttonLabel(context),
                     ),
-                  )
-                : Text(
-                    l10n.submitFeedback,
-                    style: AppTextStyles.buttonLabel(context),
-                  ),
+            ),
           ),
         ),
       ),

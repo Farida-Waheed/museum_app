@@ -113,12 +113,12 @@ class AppColors {
   static const Color black = Colors.black;
 
   static Color cardGlass([double opacity = 0.72]) =>
-      (_useLightSurfaces ? const Color(0xFFFFFBF3) : cardGlassBase).withValues(
+      (_useLightSurfaces ? const Color(0xFFF4EBDD) : cardGlassBase).withValues(
         alpha: _useLightSurfaces ? opacity.clamp(0.86, 1.0) : opacity,
       );
 
   static Color secondaryGlass([double opacity = 0.62]) =>
-      (_useLightSurfaces ? const Color(0xFFF2E8D8) : secondaryCardBase)
+      (_useLightSurfaces ? const Color(0xFFECE1D0) : secondaryCardBase)
           .withValues(
             alpha: _useLightSurfaces ? opacity.clamp(0.84, 1.0) : opacity,
           );
@@ -194,7 +194,7 @@ class AppGradients {
         colors: [
           AppColors.websiteLightBackground.withValues(alpha: 0.08),
           AppColors.darkInk.withValues(alpha: 0.10),
-          AppColors.websiteLightBackground.withValues(alpha: 0.72),
+          AppColors.websiteLightBackground.withValues(alpha: 0.84),
           AppColors.websiteLightBackground,
         ],
         stops: const [0.0, 0.34, 0.78, 1.0],
@@ -256,9 +256,9 @@ class AppDecorations {
       ),
       boxShadow: [
         BoxShadow(
-          color: AppColors.darkInk.withValues(alpha: light ? 0.10 : 0.24),
-          blurRadius: 18,
-          offset: const Offset(0, 10),
+          color: AppColors.darkInk.withValues(alpha: light ? 0.08 : 0.24),
+          blurRadius: light ? 16 : 18,
+          offset: Offset(0, light ? 8 : 10),
         ),
         BoxShadow(
           color: AppColors.bronzeGlow(
@@ -287,9 +287,9 @@ class AppDecorations {
       border: Border.all(color: AppColors.goldBorder(0.16), width: 1),
       boxShadow: [
         BoxShadow(
-          color: AppColors.darkInk.withValues(alpha: light ? 0.09 : 0.18),
-          blurRadius: 14,
-          offset: const Offset(0, 7),
+          color: AppColors.darkInk.withValues(alpha: light ? 0.07 : 0.18),
+          blurRadius: light ? 13 : 14,
+          offset: Offset(0, light ? 6 : 7),
         ),
       ],
     );

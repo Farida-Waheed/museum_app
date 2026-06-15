@@ -81,6 +81,19 @@ class TicketProvider with ChangeNotifier {
   double get orderTotal => _currentOrderDraft.total;
   int get draftVisitorCount => _currentOrderDraft.visitorCount;
   bool get isDraftWithinVisitorLimit => _currentOrderDraft.isWithinVisitorLimit;
+  bool get isDraftChildOnlyBooking {
+    var adultCount = 0;
+    var childCount = 0;
+    for (final item in _currentOrderDraft.museumLineItems) {
+      if (item.category.ageGroup == VisitorAgeGroup.adult) {
+        adultCount += item.quantity;
+      } else if (item.category.ageGroup == VisitorAgeGroup.child) {
+        childCount += item.quantity;
+      }
+    }
+    return childCount > 0 && adultCount == 0;
+  }
+
   bool get isPersonalizedDraftComplete {
     if (_currentOrderDraft.robotTourType != RobotTourType.personalized) {
       return true;
@@ -115,6 +128,7 @@ class TicketProvider with ChangeNotifier {
   bool get canCheckoutDraft =>
       _currentOrderDraft.hasMuseumEntry &&
       isDraftWithinVisitorLimit &&
+      !isDraftChildOnlyBooking &&
       _currentOrderDraft.hasRobotTour &&
       isStandardDraftComplete &&
       isPersonalizedDraftComplete;
@@ -409,6 +423,11 @@ class TicketProvider with ChangeNotifier {
       notifyListeners();
       return null;
     }
+    if (isDraftChildOnlyBooking) {
+      _ticketError = 'Children must be accompanied by at least one adult.';
+      notifyListeners();
+      return null;
+    }
     if (!_currentOrderDraft.isVisitTimeFuture()) {
       _ticketError = 'Please choose a future visit time.';
       notifyListeners();
@@ -490,6 +509,11 @@ class TicketProvider with ChangeNotifier {
         BookingPricing.maxVisitorsPerBooking) {
       _ticketError =
           'Each Horus-Bot booking can include up to ${BookingPricing.maxVisitorsPerBooking} visitors.';
+      notifyListeners();
+      return null;
+    }
+    if (isDraftChildOnlyBooking) {
+      _ticketError = 'Children must be accompanied by at least one adult.';
       notifyListeners();
       return null;
     }
@@ -663,8 +687,8 @@ class TicketProvider with ChangeNotifier {
       return false;
     }
     if (!isBookingCancellable(set)) {
-      _ticketError = isWithinCancellationDeadline(set)
-          ? 'Cancellation is available up to 24 hours before your visit.'
+      _ticketError = isVisitStartedOrPast(set)
+          ? 'This booking can no longer be cancelled.'
           : 'Unable to cancel this booking.';
       notifyListeners();
       return false;
@@ -734,8 +758,11 @@ class TicketProvider with ChangeNotifier {
     if (_isNetworkMessage(message)) {
       return 'Connection issue. Please check your internet connection and try again.';
     }
-    if (message ==
-        'Cancellation is available up to 24 hours before your visit.') {
+    if (message == 'This booking can no longer be cancelled.' ||
+        message == 'This booking has already been completed.' ||
+        message ==
+            'This tour is already in progress and cannot be cancelled.' ||
+        message == 'Unable to cancel this booking.') {
       return message;
     }
     if (message == 'Please sign in to view tickets.') return message;
@@ -751,22 +778,45 @@ class TicketProvider with ChangeNotifier {
     final museumTicket = set.museumTicket;
     final robotTicket = set.robotTourTicket;
     if (museumTicket == null || robotTicket == null) return false;
-    if (!_isUsableTicketStatus(museumTicket.status)) {
+    if (!_isCancellableTicketStatus(museumTicket.status)) {
       return false;
     }
-    if (!_isUsableTicketStatus(robotTicket.status) ||
-        robotTicket.status == TicketStatus.paired ||
-        robotTicket.status == TicketStatus.in_progress ||
-        robotTicket.status == TicketStatus.completed) {
+    if (!_isCancellableTicketStatus(robotTicket.status)) {
       return false;
     }
-    return !isWithinCancellationDeadline(set);
+    return !isVisitStartedOrPast(set) &&
+        (_isPendingPayment(set.paymentRecord.status) ||
+            _isConfirmedPayment(set.paymentRecord.status) ||
+            _isPendingPayment(museumTicket.paymentStatus) ||
+            _isConfirmedPayment(museumTicket.paymentStatus) ||
+            _isPendingPayment(robotTicket.paymentStatus) ||
+            _isConfirmedPayment(robotTicket.paymentStatus));
   }
 
-  bool isWithinCancellationDeadline(PurchasedTicketSet set) {
+  bool isVisitStartedOrPast(PurchasedTicketSet set) {
     final startsAt = _visitStartsAt(set);
     if (startsAt == null) return true;
-    return startsAt.difference(DateTime.now()) <= const Duration(hours: 24);
+    return !DateTime.now().isBefore(startsAt);
+  }
+
+  bool _isPendingPayment(String status) {
+    final normalized = status.trim().toLowerCase().replaceAll('-', '_');
+    return normalized == 'pay_at_counter' ||
+        normalized == 'pending' ||
+        normalized == 'unpaid' ||
+        normalized == 'awaiting_payment';
+  }
+
+  bool _isConfirmedPayment(String status) {
+    final normalized = status.trim().toLowerCase().replaceAll('-', '_');
+    return normalized == 'paid' || normalized == 'confirmed';
+  }
+
+  bool _isCancellableTicketStatus(TicketStatus status) {
+    return status == TicketStatus.active ||
+        status == TicketStatus.pending ||
+        status == TicketStatus.paired ||
+        status == TicketStatus.in_progress;
   }
 
   DateTime? _visitStartsAt(PurchasedTicketSet set) {

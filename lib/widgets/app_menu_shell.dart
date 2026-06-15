@@ -55,9 +55,9 @@ class _SideMenu extends StatelessWidget {
                   : AlignmentDirectional.centerEnd,
               colors: [
                 if (useLightSurfaces) ...[
-                  AppColors.websiteLightPopover.withOpacity(0.98),
-                  AppColors.websiteLightCard.withOpacity(0.98),
-                  AppColors.websiteLightBackground.withOpacity(0.96),
+                  AppColors.websiteLightPopover.withValues(alpha: 0.94),
+                  AppColors.cardGlass(0.88),
+                  AppColors.websiteLightBackground.withValues(alpha: 0.18),
                 ] else ...[
                   Colors.black.withValues(alpha: 0.90),
                   Colors.black.withValues(alpha: 0.74),
@@ -67,10 +67,19 @@ class _SideMenu extends StatelessWidget {
               stops: const [0.0, 0.76, 1.0],
             ),
           ),
-          child: SafeArea(
-            child: Directionality(
-              textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
-              child: Column(
+          child: ClipRRect(
+            borderRadius: BorderRadiusDirectional.horizontal(
+              end: Radius.circular(useLightSurfaces ? 30 : 0),
+            ),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(
+                sigmaX: useLightSurfaces ? 16 : 0,
+                sigmaY: useLightSurfaces ? 16 : 0,
+              ),
+              child: SafeArea(
+                child: Directionality(
+                  textDirection: isArabic ? TextDirection.rtl : TextDirection.ltr,
+                  child: Column(
                 crossAxisAlignment: isArabic
                     ? CrossAxisAlignment.end
                     : CrossAxisAlignment.start,
@@ -155,10 +164,20 @@ class _SideMenu extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Divider(
-                    height: 1,
-                    thickness: 1,
-                    color: AppColors.goldBorder(0.12),
+                  Container(
+                    height: 18,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          AppColors.primaryGold.withValues(
+                            alpha: useLightSurfaces ? 0.06 : 0.10,
+                          ),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
                   ),
                   Expanded(
                     child: ListView(
@@ -227,6 +246,8 @@ class _SideMenu extends StatelessWidget {
                     ),
                   ),
                 ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -315,17 +336,19 @@ class _ShellBrandTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Image.asset('assets/icons/horus_eye.png', width: 18, height: 18),
         const SizedBox(width: 8),
         Flexible(
           child: Text(
             title.toUpperCase(),
-            maxLines: 1,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
             style: AppTextStyles.premiumBrandTitle(context).copyWith(
-              fontSize: 17.5,
+              fontSize: 16.5,
+              height: 1.08,
               shadows: [
                 if (!AppColors.useLightSurfaces)
                   Shadow(
@@ -438,32 +461,27 @@ class _ShellFloatingHeader extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SizedBox(
-                      height: 50,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Row(
-                            textDirection: Directionality.of(context),
-                            children: [
-                              _ShellCircleButton(
-                                icon: leadingIcon,
-                                onTap: onLeading,
-                                scrollStrength: scrollStrength,
-                              ),
-                              const Spacer(),
-                              if (actions != null && actions!.isNotEmpty)
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: actions!,
-                                )
-                              else
-                                const SizedBox(width: 44, height: 44),
-                            ],
+                    Row(
+                      textDirection: Directionality.of(context),
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        _ShellCircleButton(
+                          icon: leadingIcon,
+                          onTap: onLeading,
+                          scrollStrength: scrollStrength,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: IgnorePointer(
+                            child: _ShellBrandTitle(title: title),
                           ),
-                          IgnorePointer(child: _ShellBrandTitle(title: title)),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(width: 12),
+                        if (actions != null && actions!.isNotEmpty)
+                          Row(mainAxisSize: MainAxisSize.min, children: actions!)
+                        else
+                          const SizedBox(width: 44, height: 44),
+                      ],
                     ),
                     if (subHeader != null) ...[
                       const SizedBox(height: 10),
@@ -601,7 +619,7 @@ class AppMenuShellState extends State<AppMenuShell>
       floatingActionButton:
           widget.floatingActionButton ??
           (widget.showChatButton
-              ? const AskTheGuideButton(subtle: true)
+              ? const AskHorusFloatingChip()
               : null),
       body: AnimatedBuilder(
         animation: _menuController,

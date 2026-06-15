@@ -46,7 +46,7 @@ class _SupportInboxScreenState extends State<SupportInboxScreen> {
               : ListView.separated(
                   padding: const EdgeInsetsDirectional.fromSTEB(
                     20,
-                    78,
+                    104,
                     20,
                     120,
                   ),
@@ -80,30 +80,33 @@ class _EmptySupportState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(24),
-          decoration: AppDecorations.premiumGlassCard(radius: 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
+      child: SingleChildScrollView(
+        padding: const EdgeInsetsDirectional.fromSTEB(28, 104, 28, 128),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: AppSpacing.iconCircle,
+              height: AppSpacing.iconCircle,
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: AppGradients.premiumGold,
+              ),
+              child: const Icon(
                 Icons.support_agent_outlined,
-                color: AppColors.primaryGold,
-                size: 48,
+                color: AppColors.darkInk,
+                size: 27,
               ),
-              const SizedBox(height: 16),
-              Text(
-                message,
-                textAlign: TextAlign.center,
-                style: AppTextStyles.titleLarge(
-                  context,
-                ).copyWith(color: AppColors.resolvedTitleText),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.premiumScreenTitle(
+                context,
+              ).copyWith(color: AppColors.resolvedTitleText, fontSize: 24),
+            ),
+          ],
         ),
       ),
     );

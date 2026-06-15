@@ -156,6 +156,14 @@ class _TicketScreenState extends State<TicketScreen> {
       );
       return;
     }
+    if (ticketProvider.isDraftChildOnlyBooking) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Children must be accompanied by at least one adult.'),
+        ),
+      );
+      return;
+    }
     if (!draft.isVisitTimeFuture()) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

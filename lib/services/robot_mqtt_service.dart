@@ -18,6 +18,8 @@ enum RobotMqttConnectionState {
 }
 
 class RobotMqttService extends ChangeNotifier {
+  static const String bridgeRobotId = 'ROBOT-HORUS-001';
+
   // MQTT defaults for the Horus robot broker. These can still be overridden
   // per build with --dart-define values.
   static const String devBrokerHost = String.fromEnvironment(
@@ -34,7 +36,7 @@ class RobotMqttService extends ChangeNotifier {
   );
   static const String devBrokerPassword = String.fromEnvironment(
     'HORUS_MQTT_PASSWORD',
-    defaultValue: 'Rosbot1',
+    defaultValue: 'Rosbot12',
   );
   static const bool devBrokerUseTls = bool.fromEnvironment(
     'HORUS_MQTT_TLS',
@@ -94,6 +96,13 @@ class RobotMqttService extends ChangeNotifier {
       debugPrint('MQTT connect skipped: robotId or sessionId is missing.');
       return false;
     }
+    if (robotId != bridgeRobotId) {
+      debugPrint(
+        'MQTT connect skipped: robotId "$robotId" does not match '
+        '$bridgeRobotId.',
+      );
+      return false;
+    }
 
     _activeRobotId = robotId;
     _activeSessionId = sessionId;
@@ -110,6 +119,12 @@ class RobotMqttService extends ChangeNotifier {
       clientId: clientId,
       brokerPort: brokerPort,
       useTls: useTls,
+    );
+    client.setProtocolV311();
+    debugPrint(
+      'MQTT connecting: protocol=MQTT v3.1.1 host=$brokerHost '
+      'port=$brokerPort tls=$useTls username=$username '
+      'robotId=$robotId sessionId=$sessionId clientId=$clientId',
     );
     client.keepAlivePeriod = 30;
     client.logging(on: false);
@@ -175,6 +190,27 @@ class RobotMqttService extends ChangeNotifier {
       return false;
     }
 
+    if (command.robotId != bridgeRobotId) {
+      debugPrint(
+        'MQTT publish skipped: robotId "${command.robotId}" does not match '
+        '$bridgeRobotId.',
+      );
+      return false;
+    }
+    if (!command.hasValidCommandId) {
+      debugPrint(
+        'MQTT publish skipped: commandId is not a UUID: '
+        '${command.commandId}.',
+      );
+      return false;
+    }
+    if (command.isStale()) {
+      debugPrint(
+        'MQTT publish skipped: ${command.commandId} is older than 120 seconds.',
+      );
+      return false;
+    }
+
     if (!isConnected) {
       final connected = await connectForSession(
         robotId: command.robotId,
@@ -191,6 +227,13 @@ class RobotMqttService extends ChangeNotifier {
     final client = _client;
     if (client == null) {
       debugPrint('MQTT publish failed: client is unavailable.');
+      return false;
+    }
+    if (command.isStale()) {
+      debugPrint(
+        'MQTT publish skipped after reconnect: ${command.commandId} is older '
+        'than 120 seconds.',
+      );
       return false;
     }
 
@@ -211,6 +254,61 @@ class RobotMqttService extends ChangeNotifier {
     }
   }
 
+  Future<bool> waitForActiveSessionStatus({
+    required String robotId,
+    required String sessionId,
+    Duration timeout = const Duration(seconds: 15),
+  }) async {
+    if (robotId != bridgeRobotId || sessionId.trim().isEmpty) return false;
+    try {
+      await statusUpdates.firstWhere((status) {
+        final statusRobotId = _stringValue(status['robotId']);
+        final activeSessionId = _stringValue(status['activeSessionId']);
+        return (statusRobotId == null || statusRobotId == robotId) &&
+            activeSessionId == sessionId;
+      }).timeout(timeout);
+      return true;
+    } on TimeoutException {
+      debugPrint(
+        'MQTT status did not confirm activeSessionId=$sessionId '
+        'within ${timeout.inSeconds}s.',
+      );
+      return false;
+    }
+  }
+
+  Future<RobotCommandAck?> publishCommandAndWaitForAck(
+    RobotCommand command, {
+    Duration timeout = const Duration(seconds: 15),
+  }) async {
+    final completer = Completer<RobotCommandAck?>();
+    late final StreamSubscription<RobotCommandAck> subscription;
+    Timer? timer;
+    void complete(RobotCommandAck? ack) {
+      if (completer.isCompleted) return;
+      timer?.cancel();
+      unawaited(subscription.cancel());
+      completer.complete(ack);
+    }
+
+    subscription = acks.listen((ack) {
+      if (ack.commandId == command.commandId) complete(ack);
+    });
+    timer = Timer(timeout, () {
+      debugPrint(
+        'MQTT ack timed out for ${command.type.wireName} '
+        '(${command.commandId}).',
+      );
+      complete(null);
+    });
+
+    final published = await publishCommand(command);
+    if (!published) {
+      complete(null);
+    }
+    return completer.future;
+  }
+
   String commandTopic(String robotId) => 'horus/robots/$robotId/commands';
   String ackTopic(String robotId) => 'horus/robots/$robotId/acks';
   String statusTopic(String robotId) => 'horus/robots/$robotId/status';
@@ -223,7 +321,7 @@ class RobotMqttService extends ChangeNotifier {
     final client = _client;
     if (client == null || !isConnected) return;
     client.subscribe(ackTopic(robotId), MqttQos.atLeastOnce);
-    client.subscribe(statusTopic(robotId), MqttQos.atLeastOnce);
+    client.subscribe(statusTopic(robotId), MqttQos.atMostOnce);
     client.subscribe(eventTopic(sessionId), MqttQos.atLeastOnce);
   }
 
@@ -284,6 +382,11 @@ class RobotMqttService extends ChangeNotifier {
       debugPrint('MQTT message ignored: invalid JSON: $e');
       return null;
     }
+  }
+
+  String? _stringValue(Object? value) {
+    if (value is String && value.trim().isNotEmpty) return value.trim();
+    return null;
   }
 
   void _setConnectionState(RobotMqttConnectionState state) {

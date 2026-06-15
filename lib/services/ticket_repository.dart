@@ -33,6 +33,12 @@ class TicketRepository {
   CollectionReference<Map<String, dynamic>> get _robotTourTickets =>
       _firestore.collection('robotTourTickets');
 
+  CollectionReference<Map<String, dynamic>> get _tourSessions =>
+      _firestore.collection('tourSessions');
+
+  CollectionReference<Map<String, dynamic>> get _robots =>
+      _firestore.collection('robots');
+
   Future<TicketCheckoutResult> checkoutDraft({
     required String userId,
     required TicketOrderDraft draft,
@@ -42,6 +48,11 @@ class TicketRepository {
         draft.visitorCount > BookingPricing.maxVisitorsPerBooking) {
       throw const TicketRepositoryException(
         'Each Horus-Bot booking can include up to 10 visitors.',
+      );
+    }
+    if (_isChildOnlyBooking(draft)) {
+      throw const TicketRepositoryException(
+        'Children must be accompanied by at least one adult.',
       );
     }
     if (!draft.isVisitTimeFuture()) {
@@ -403,10 +414,40 @@ class TicketRepository {
         uid,
         'robot tour ticket',
       );
+      final robotTicket = robotDoc.data()!;
+      final sessionId = _stringValue(robotTicket['session_id']);
+      DocumentSnapshot<Map<String, dynamic>>? sessionDoc;
+      if (sessionId != null) {
+        final ref = _tourSessions.doc(sessionId);
+        sessionDoc = await _getDoc(
+          ref,
+          _TicketFirestoreOperation(
+            label: 'read linked tour session before cancellation',
+            paths: [ref.path],
+          ),
+        );
+      }
+      final session = sessionDoc?.data();
+      final robotId =
+          _stringValue(robotTicket['paired_robot_id']) ??
+          _stringValue(session?['robotId'] ?? session?['robot_id']);
+      DocumentSnapshot<Map<String, dynamic>>? assignedRobotDoc;
+      if (robotId != null) {
+        final ref = _robots.doc(robotId);
+        assignedRobotDoc = await _getDoc(
+          ref,
+          _TicketFirestoreOperation(
+            label: 'read linked robot before cancellation',
+            paths: [ref.path],
+          ),
+        );
+      }
       _validateCancellationEligibility(
         booking: booking,
         museumTicket: museumDoc.data()!,
-        robotTicket: robotDoc.data()!,
+        robotTicket: robotTicket,
+        session: session,
+        robot: assignedRobotDoc?.data(),
       );
       final museumRef = museumDoc.reference;
       final robotRef = robotDoc.reference;
@@ -427,11 +468,38 @@ class TicketRepository {
       batch.update(bookingRef, update);
       batch.update(museumRef, update);
       batch.update(robotRef, update);
+      if (sessionDoc?.exists == true && session != null) {
+        batch.update(sessionDoc!.reference, {
+          'status': TicketStatus.cancelled.name,
+          'updated_at': FieldValue.serverTimestamp(),
+        });
+      }
+      if (assignedRobotDoc?.exists == true &&
+          _stringValue(assignedRobotDoc!.data()?['status']) == 'assigned') {
+        batch.update(assignedRobotDoc.reference, {
+          'status': 'available',
+          'active_session_id': null,
+          'activeSessionId': null,
+          'active_user_id': null,
+          'currentUserId': null,
+          'active_robot_tour_ticket_id': null,
+          'activeRobotTourTicketId': null,
+          'updated_at': FieldValue.serverTimestamp(),
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      }
       await _commitBatch(
         batch,
         _TicketFirestoreOperation(
           label: 'cancel booking ticket set',
-          paths: [bookingRef.path, museumRef.path, robotRef.path],
+          paths: [
+            bookingRef.path,
+            museumRef.path,
+            robotRef.path,
+            if (sessionDoc?.exists == true) sessionDoc!.reference.path,
+            if (assignedRobotDoc?.exists == true)
+              assignedRobotDoc!.reference.path,
+          ],
           details:
               'requestedBookingId=$bookingId; '
               'resolvedBookingId=$resolvedBookingId; '
@@ -545,28 +613,61 @@ class TicketRepository {
     required Map<String, dynamic> booking,
     required Map<String, dynamic> museumTicket,
     required Map<String, dynamic> robotTicket,
+    Map<String, dynamic>? session,
+    Map<String, dynamic>? robot,
   }) {
+    final bookingStatus = _stringValue(booking['status']);
+    if (!_isCancellableStatus(bookingStatus)) {
+      throw const TicketRepositoryException('Unable to cancel this booking.');
+    }
+
     final museumStatus = _stringValue(museumTicket['status']);
     if (!_isCancellableStatus(museumStatus)) {
       throw const TicketRepositoryException('Unable to cancel this booking.');
     }
 
     final robotStatus = _stringValue(robotTicket['status']);
-    if (!_isCancellableStatus(robotStatus) ||
-        robotStatus == TicketStatus.paired.name ||
-        robotStatus == TicketStatus.in_progress.name ||
+    if (_isCompletedStatus(museumStatus) ||
+        _isCompletedStatus(robotStatus) ||
         _dateValue(robotTicket['completed_at'] ?? robotTicket['completedAt']) !=
             null ||
-        _stringValue(robotTicket['session_id']) != null) {
+        _isCompletedStatus(_stringValue(session?['status']))) {
+      throw const TicketRepositoryException(
+        'This booking has already been completed.',
+      );
+    }
+
+    if (!_isCancellableStatus(robotStatus)) {
       throw const TicketRepositoryException('Unable to cancel this booking.');
     }
 
     final startsAt = _visitStartsAt(booking);
-    if (startsAt == null ||
-        startsAt.difference(DateTime.now()) <= const Duration(hours: 24)) {
+    if (startsAt == null || !DateTime.now().isBefore(startsAt)) {
       throw const TicketRepositoryException(
-        'Cancellation is available up to 24 hours before your visit.',
+        'This booking can no longer be cancelled.',
       );
+    }
+
+    final sessionStatus = _stringValue(session?['status']);
+    final robotStatusValue = _stringValue(robot?['status']);
+    if ((sessionStatus == 'active' || sessionStatus == 'in_progress') &&
+        robotStatusValue != 'assigned') {
+      throw const TicketRepositoryException(
+        'This tour is already in progress and cannot be cancelled.',
+      );
+    }
+    if (robotStatusValue == 'in_tour') {
+      throw const TicketRepositoryException(
+        'This tour is already in progress and cannot be cancelled.',
+      );
+    }
+
+    final paymentStatus =
+        _stringValue(booking['payment_status']) ??
+        _stringValue(museumTicket['payment_status']) ??
+        _stringValue(robotTicket['payment_status']);
+    if (!_isPendingPayment(paymentStatus) && !_isPaymentConfirmedStatus(paymentStatus)) {
+      throw const TicketRepositoryException('Unable to cancel this booking.');
     }
   }
 
@@ -627,11 +728,46 @@ class TicketRepository {
     return normalized == 'paid' || normalized == 'confirmed';
   }
 
+  bool _isPaymentConfirmedStatus(String? status) {
+    final normalized = status?.trim().toLowerCase().replaceAll('-', '_');
+    return normalized == 'paid' || normalized == 'confirmed';
+  }
+
+  bool _isPendingPayment(String? status) {
+    final normalized = status?.trim().toLowerCase().replaceAll('-', '_');
+    return normalized == 'pay_at_counter' ||
+        normalized == 'pending' ||
+        normalized == 'unpaid' ||
+        normalized == 'awaiting_payment';
+  }
+
+  bool _isChildOnlyBooking(TicketOrderDraft draft) {
+    var adultCount = 0;
+    var childCount = 0;
+    for (final item in draft.museumLineItems) {
+      if (item.category.ageGroup == VisitorAgeGroup.adult) {
+        adultCount += item.quantity;
+      } else if (item.category.ageGroup == VisitorAgeGroup.child) {
+        childCount += item.quantity;
+      }
+    }
+    return childCount > 0 && adultCount == 0;
+  }
+
   bool _isCancellableStatus(String? status) {
     final normalized = status?.trim().toLowerCase().replaceAll('-', '_');
     return normalized == TicketStatus.active.name ||
         normalized == 'valid' ||
-        normalized == 'confirmed';
+        normalized == 'confirmed' ||
+        normalized == TicketStatus.pending.name ||
+        normalized == TicketStatus.paired.name ||
+        normalized == TicketStatus.in_progress.name;
+  }
+
+  bool _isCompletedStatus(String? status) {
+    final normalized = status?.trim().toLowerCase().replaceAll('-', '_');
+    return normalized == TicketStatus.completed.name ||
+        normalized == TicketStatus.used.name;
   }
 
   MuseumTicket _museumTicketFromDraft({

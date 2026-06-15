@@ -194,7 +194,6 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         sessionProvider.resumeTour();
       }
       setState(() => _isPaused = false);
-      unawaited(_publishRobotCommand(RobotCommandType.resume));
     } else {
       final sessionId = sessionProvider.activeSessionId;
       if (sessionId != null) {
@@ -209,7 +208,6 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         sessionProvider.pauseTour();
       }
       setState(() => _isPaused = true);
-      unawaited(_publishRobotCommand(RobotCommandType.pause));
     }
   }
 
@@ -682,10 +680,9 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         subHeader: const RobotStatusBanner(),
         showChatButton: false,
         hideDefaultAppBar: true,
-        floatingActionButton: AskTheGuideButton(
+        floatingActionButton: AskHorusFloatingChip(
           screen: 'live_tour',
           currentExhibitId: currentExhibitId,
-          subtle: true,
         ),
         body: _buildLockedState(
           context,
@@ -744,10 +741,9 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         subHeader: const RobotStatusBanner(),
         showChatButton: false,
         hideDefaultAppBar: true,
-        floatingActionButton: AskTheGuideButton(
+        floatingActionButton: AskHorusFloatingChip(
           screen: 'live_tour',
           currentExhibitId: currentExhibitId,
-          subtle: true,
         ),
         body: Builder(
           builder: (shellContext) => Stack(
@@ -787,10 +783,9 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
         subHeader: const RobotStatusBanner(),
         showChatButton: false,
         hideDefaultAppBar: true,
-        floatingActionButton: AskTheGuideButton(
+        floatingActionButton: AskHorusFloatingChip(
           screen: 'live_tour',
           currentExhibitId: currentExhibitId,
-          subtle: true,
         ),
         body: _buildLockedState(
           context,
@@ -826,10 +821,9 @@ class _LiveTourScreenState extends State<LiveTourScreen> {
       subHeader: const RobotStatusBanner(),
       showChatButton: false,
       hideDefaultAppBar: true,
-      floatingActionButton: AskTheGuideButton(
+      floatingActionButton: AskHorusFloatingChip(
         screen: 'live_tour',
         currentExhibitId: currentExhibitId,
-        subtle: true,
       ),
       body: Builder(
         builder: (shellContext) => Stack(
