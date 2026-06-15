@@ -456,7 +456,8 @@ class _QrScannerScreenState extends State<QrScannerScreen>
         return 'Robot is not connected. robotConnectionState is '
             '"${error.detail ?? 'missing'}", expected "connected".';
       case RobotPairingFailureCode.robotMqttDisabled:
-        return 'Robot MQTT is disabled or missing. mqttEnabled must be true.';
+        return 'Robot MQTT is disabled or missing. mqttEnabled must be true. '
+            'mqttEnabled from app read = ${error.detail ?? 'unknown'}';
       case RobotPairingFailureCode.robotLastSeenMissing:
         return 'Robot heartbeat is missing. lastSeenAt must exist and be recent.';
       case RobotPairingFailureCode.robotLastSeenStale:

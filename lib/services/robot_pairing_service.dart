@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
@@ -75,19 +77,20 @@ class RobotPairingService {
         );
       }
 
+      final initialRobotSnapshot = await _readRobotSnapshotFromServerWithRetry(
+        robotRef,
+      );
+      _validateRobotBridgeOnline(
+        initialRobotSnapshot.data() ?? {},
+        requireNoActiveSession: false,
+      );
+
       final restorablePairing = await _findRestorableInProgressPairing(
         userId: userId,
         robotIdCandidates: robotCandidates,
         preferredTicketId: robotTourTicketId,
       );
       if (restorablePairing != null) {
-        final robotSnapshot = await robotRef.get();
-        if (!robotSnapshot.exists) {
-          throw const RobotPairingException(
-            RobotPairingFailureCode.robotNotFound,
-          );
-        }
-        _validateRobotBridgeOnline(robotSnapshot.data() ?? {});
         _logPairing(
           'restored existing pairing',
           {
@@ -160,90 +163,132 @@ class RobotPairingService {
         },
       );
 
-      await _firestore.runTransaction((transaction) async {
-        final robotTicketSnapshot = await transaction.get(robotTicketRef);
-        if (!robotTicketSnapshot.exists) {
-          throw const RobotPairingException(
-            RobotPairingFailureCode.robotTourTicketRequired,
+      final finalRobotSnapshot = await _readRobotSnapshotFromServerWithRetry(
+        robotRef,
+      );
+      _validateRobotBridgeOnline(finalRobotSnapshot.data() ?? {});
+
+      final transactionWrites = <_FirestoreWriteDebugEntry>[];
+      try {
+        await _firestore.runTransaction((transaction) async {
+          final robotTicketSnapshot = await _transactionGet(
+            transaction,
+            robotTicketRef,
           );
-        }
-        final robotTicketData = robotTicketSnapshot.data() ?? {};
-        if (!_isUnpairedActiveRobotTicket(robotTicketData, userId)) {
-          throw RobotPairingException(_ticketFailureCode(robotTicketData));
-        }
-        final museumTicketRef = _firestore
-            .collection('museumTickets')
-            .doc(museumTicketId);
-        final museumTicketSnapshot = await transaction.get(museumTicketRef);
-        if (!museumTicketSnapshot.exists ||
-            !_isActiveMuseumTicket(museumTicketSnapshot.data(), userId)) {
-          throw RobotPairingException(
-            _ticketFailureCode(museumTicketSnapshot.data()),
+          if (!robotTicketSnapshot.exists) {
+            throw const RobotPairingException(
+              RobotPairingFailureCode.robotTourTicketRequired,
+            );
+          }
+          final robotTicketData = robotTicketSnapshot.data() ?? {};
+          if (!_isUnpairedActiveRobotTicket(robotTicketData, userId)) {
+            throw RobotPairingException(_ticketFailureCode(robotTicketData));
+          }
+          final museumTicketRef = _firestore
+              .collection('museumTickets')
+              .doc(museumTicketId);
+          final museumTicketSnapshot = await _transactionGet(
+            transaction,
+            museumTicketRef,
           );
-        }
+          if (!museumTicketSnapshot.exists ||
+              !_isActiveMuseumTicket(museumTicketSnapshot.data(), userId)) {
+            throw RobotPairingException(
+              _ticketFailureCode(museumTicketSnapshot.data()),
+            );
+          }
 
-        final robotSnapshot = await transaction.get(robotRef);
-        if (!robotSnapshot.exists) {
-          throw const RobotPairingException(
-            RobotPairingFailureCode.robotNotFound,
+          final robotSnapshot = await _transactionGet(transaction, robotRef);
+          if (!robotSnapshot.exists) {
+            throw const RobotPairingException(
+              RobotPairingFailureCode.robotNotFound,
+            );
+          }
+
+          final robotData = robotSnapshot.data() ?? {};
+          final activeSessionId = _activeSessionIdValue(
+            robotData['activeSessionId'],
           );
-        }
+          if (activeSessionId != null) {
+            throw const RobotPairingException(RobotPairingFailureCode.robotBusy);
+          }
 
-        final robotData = robotSnapshot.data() ?? {};
-        final activeSessionId = _activeSessionIdValue(
-          robotData['activeSessionId'],
-        );
-        if (activeSessionId != null) {
-          throw const RobotPairingException(RobotPairingFailureCode.robotBusy);
-        }
+          _validateRobotBridgeOnline(robotData);
 
-        _validateRobotBridgeOnline(robotData);
+          final now = FieldValue.serverTimestamp();
 
-        final now = FieldValue.serverTimestamp();
+          _transactionSet(
+            transaction,
+            sessionRef,
+            {
+              'session_id': sessionId,
+              'userId': userId,
+              'booking_id': bookingId,
+              'museum_ticket_id': museumTicketId,
+              'robot_tour_ticket_id': pairableTicket.documentId,
+              'robotId': robotId,
+              'robot_id': robotId,
+              'robot_code': robotCode,
+              'short_robot_id': shortRobotId,
+              'status': 'active',
+              'current_exhibit_id': currentExhibitId,
+              'current_exhibit_index': 0,
+              'next_exhibit_id': nextExhibitId,
+              'visitedExhibitIds': currentExhibitId == null
+                  ? <String>[]
+                  : <String>[currentExhibitId],
+              'selected_exhibits': selectedExhibitIds,
+              ...plannerMetadata,
+              'route_id': robotTourTicket.routeId,
+              'route_title_en': robotTourTicket.routeTitleEn,
+              'route_title_ar': robotTourTicket.routeTitleAr,
+              'preferred_language': robotTourTicket.languageCode,
+              'pace': _paceValue(pairableTicket.data, robotTourTicket),
+              'started_at': now,
+              'paired_at': now,
+              'completed_at': null,
+              'created_at': now,
+              'updated_at': now,
+            },
+            transactionWrites,
+          );
 
-        transaction.set(sessionRef, {
-          'session_id': sessionId,
-          'userId': userId,
-          'booking_id': bookingId,
-          'museum_ticket_id': museumTicketId,
-          'robot_tour_ticket_id': pairableTicket.documentId,
-          'robotId': robotId,
-          'robot_id': robotId,
-          'robot_code': robotCode,
-          'short_robot_id': shortRobotId,
-          'status': 'active',
-          'current_exhibit_id': currentExhibitId,
-          'current_exhibit_index': 0,
-          'next_exhibit_id': nextExhibitId,
-          'visitedExhibitIds': currentExhibitId == null
-              ? <String>[]
-              : <String>[currentExhibitId],
-          'selected_exhibits': selectedExhibitIds,
-          ...plannerMetadata,
-          'route_id': robotTourTicket.routeId,
-          'route_title_en': robotTourTicket.routeTitleEn,
-          'route_title_ar': robotTourTicket.routeTitleAr,
-          'preferred_language': robotTourTicket.languageCode,
-          'pace': _paceValue(pairableTicket.data, robotTourTicket),
-          'started_at': now,
-          'paired_at': now,
-          'completed_at': null,
-          'created_at': now,
-          'updated_at': now,
+          _transactionUpdate(
+            transaction,
+            robotTicketRef,
+            {
+              'status': 'in_progress',
+              'paired_robot_id': robotId,
+              'session_id': sessionId,
+              'paired_at': now,
+              'updated_at': now,
+            },
+            transactionWrites,
+          );
+
+          _transactionUpdate(
+            transaction,
+            robotRef,
+            {
+              'activeSessionId': sessionId,
+            },
+            transactionWrites,
+          );
+
+          _logPairing(
+            'firestore transaction queued writes final',
+            {
+              'queuedWriteCount': transactionWrites.length,
+              'queuedWrites': transactionWrites
+                  .map((entry) => entry.toLogMap())
+                  .toList(growable: false),
+            },
+          );
         });
-
-        transaction.update(robotTicketRef, {
-          'status': 'in_progress',
-          'paired_robot_id': robotId,
-          'session_id': sessionId,
-          'paired_at': now,
-          'updated_at': now,
-        });
-
-        transaction.update(robotRef, {
-          'activeSessionId': sessionId,
-        });
-      });
+      } catch (e, stackTrace) {
+        _logFirestoreTransactionFailure(transactionWrites, e, stackTrace);
+        rethrow;
+      }
       _logPairing(
         'transaction committed',
         {
@@ -400,15 +445,230 @@ class RobotPairingService {
     final robotCode = robotCodeForParsedId(parsedRobotId);
     if (robotCode == null) return null;
     final ref = _firestore.collection('robots').doc(robotCode);
-    final snapshot = await ref.get();
+    _logPairing(
+      'robot document path',
+      {
+        'path': ref.path,
+        'expectedPath': 'robots/ROBOT-HORUS-001',
+        'robotIdExact': robotCode,
+      },
+    );
+    final snapshot = await ref.get(const GetOptions(source: Source.server));
     _logPairing(
       'robot document checked',
       {
         'path': ref.path,
         'exists': snapshot.exists,
+        'isFromCache': snapshot.metadata.isFromCache,
       },
     );
     return snapshot.exists ? ref : null;
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> _readRobotSnapshotFromServerWithRetry(
+    DocumentReference<Map<String, dynamic>> robotRef,
+  ) async {
+    DocumentSnapshot<Map<String, dynamic>>? lastSnapshot;
+    for (var attempt = 1; attempt <= 3; attempt += 1) {
+      final snapshot = await robotRef.get(
+        const GetOptions(source: Source.server),
+      );
+      lastSnapshot = snapshot;
+      _logRobotServerSnapshot(robotRef, snapshot, attempt);
+      if (!snapshot.exists) {
+        throw const RobotPairingException(
+          RobotPairingFailureCode.robotNotFound,
+        );
+      }
+      final data = snapshot.data() ?? {};
+      if (data['mqttEnabled'] == true) return snapshot;
+      if (attempt < 3) {
+        await Future<void>.delayed(const Duration(seconds: 2));
+      }
+    }
+
+    return lastSnapshot!;
+  }
+
+  void _logRobotServerSnapshot(
+    DocumentReference<Map<String, dynamic>> robotRef,
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    int attempt,
+  ) {
+    final data = snapshot.data();
+    _logPairing(
+      'robot server snapshot raw availability fields',
+      {
+        'attempt': attempt,
+        'path': robotRef.path,
+        'exists': snapshot.exists,
+        'isFromCache': snapshot.metadata.isFromCache,
+        'robotConnectionState': data?['robotConnectionState'],
+        'mqttEnabled': data?['mqttEnabled'],
+        'lastSeenAt': data?['lastSeenAt'],
+        'activeSessionId': data?['activeSessionId'],
+        'status': data?['status'],
+      },
+    );
+  }
+
+  Future<DocumentSnapshot<Map<String, dynamic>>> _transactionGet(
+    Transaction transaction,
+    DocumentReference<Map<String, dynamic>> ref,
+  ) async {
+    _logPairing(
+      'firestore transaction get starting',
+      {
+        'collectionPath': ref.parent.path,
+        'documentId': ref.id,
+        'documentPath': ref.path,
+        'operationType': 'transaction.get',
+      },
+    );
+    try {
+      final snapshot = await transaction.get(ref);
+      _logPairing(
+        'firestore transaction get succeeded',
+        {
+          'collectionPath': ref.parent.path,
+          'documentId': ref.id,
+          'documentPath': ref.path,
+          'operationType': 'transaction.get',
+          'exists': snapshot.exists,
+          'data': snapshot.data(),
+        },
+      );
+      return snapshot;
+    } catch (e, stackTrace) {
+      _logPairing(
+        'firestore transaction get failed',
+        {
+          'collectionPath': ref.parent.path,
+          'documentId': ref.id,
+          'documentPath': ref.path,
+          'operationType': 'transaction.get',
+          ..._firestoreExceptionLog(e, stackTrace),
+        },
+      );
+      rethrow;
+    }
+  }
+
+  void _transactionSet(
+    Transaction transaction,
+    DocumentReference<Map<String, dynamic>> ref,
+    Map<String, dynamic> payload,
+    List<_FirestoreWriteDebugEntry> queuedWrites,
+  ) {
+    final entry = _FirestoreWriteDebugEntry(
+      operationType: 'transaction.set',
+      collectionPath: ref.parent.path,
+      documentId: ref.id,
+      documentPath: ref.path,
+      payload: payload,
+    );
+    queuedWrites.add(entry);
+    _logFirestoreWriteAttempt(entry);
+    try {
+      transaction.set(ref, payload);
+    } catch (e, stackTrace) {
+      _logFirestoreWriteFailure(entry, e, stackTrace);
+      rethrow;
+    }
+  }
+
+  void _transactionUpdate(
+    Transaction transaction,
+    DocumentReference<Map<String, dynamic>> ref,
+    Map<String, dynamic> payload,
+    List<_FirestoreWriteDebugEntry> queuedWrites,
+  ) {
+    final entry = _FirestoreWriteDebugEntry(
+      operationType: 'transaction.update',
+      collectionPath: ref.parent.path,
+      documentId: ref.id,
+      documentPath: ref.path,
+      payload: payload,
+    );
+    queuedWrites.add(entry);
+    _logFirestoreWriteAttempt(entry);
+    try {
+      transaction.update(ref, payload);
+    } catch (e, stackTrace) {
+      _logFirestoreWriteFailure(entry, e, stackTrace);
+      rethrow;
+    }
+  }
+
+  Future<void> _updateDocumentWithDebugLogging(
+    DocumentReference<Map<String, dynamic>> ref,
+    Map<String, dynamic> payload,
+  ) async {
+    final entry = _FirestoreWriteDebugEntry(
+      operationType: 'update',
+      collectionPath: ref.parent.path,
+      documentId: ref.id,
+      documentPath: ref.path,
+      payload: payload,
+    );
+    _logFirestoreWriteAttempt(entry);
+    try {
+      await ref.update(payload);
+    } catch (e, stackTrace) {
+      _logFirestoreWriteFailure(entry, e, stackTrace);
+      rethrow;
+    }
+  }
+
+  void _logFirestoreWriteAttempt(_FirestoreWriteDebugEntry entry) {
+    _logPairing('firestore write attempt', entry.toLogMap());
+  }
+
+  void _logFirestoreWriteFailure(
+    _FirestoreWriteDebugEntry entry,
+    Object exception,
+    StackTrace stackTrace,
+  ) {
+    _logPairing(
+      'firestore write failed',
+      {
+        ...entry.toLogMap(),
+        ..._firestoreExceptionLog(exception, stackTrace),
+      },
+    );
+  }
+
+  void _logFirestoreTransactionFailure(
+    List<_FirestoreWriteDebugEntry> queuedWrites,
+    Object exception,
+    StackTrace stackTrace,
+  ) {
+    _logPairing(
+      'firestore transaction failed',
+      {
+        'operationType': 'transaction.commit',
+        'queuedWriteCount': queuedWrites.length,
+        'queuedWrites': queuedWrites
+            .map((entry) => entry.toLogMap())
+            .toList(growable: false),
+        ..._firestoreExceptionLog(exception, stackTrace),
+      },
+    );
+  }
+
+  Map<String, Object?> _firestoreExceptionLog(
+    Object exception,
+    StackTrace stackTrace,
+  ) {
+    final firebaseException = exception is FirebaseException ? exception : null;
+    return {
+      'exceptionType': exception.runtimeType.toString(),
+      'firebaseCode': firebaseException?.code,
+      'firebaseMessage': firebaseException?.message,
+      'firebasePlugin': firebaseException?.plugin,
+      'exception': exception.toString(),
+      'stackTrace': stackTrace.toString(),
+    };
   }
 
   Future<_PairableRobotTicket?> _selectPairableRobotTourTicket(
@@ -692,7 +952,10 @@ class RobotPairingService {
     }
     if (updates.isEmpty) return;
     updates['updated_at'] = FieldValue.serverTimestamp();
-    await _firestore.collection('tourSessions').doc(sessionId).update(updates);
+    await _updateDocumentWithDebugLogging(
+      _firestore.collection('tourSessions').doc(sessionId),
+      updates,
+    );
   }
 
   void _putIfMissingValue(
@@ -738,7 +1001,10 @@ class RobotPairingService {
     return null;
   }
 
-  void _validateRobotBridgeOnline(Map<String, dynamic> robotData) {
+  void _validateRobotBridgeOnline(
+    Map<String, dynamic> robotData, {
+    bool requireNoActiveSession = true,
+  }) {
     final status = _stringValue(robotData['status']);
     if (status != 'available') {
       throw const RobotPairingException(
@@ -754,9 +1020,11 @@ class RobotPairingService {
       );
     }
 
-    if (_boolValue(robotData['mqttEnabled']) != true) {
-      throw const RobotPairingException(
+    final mqttEnabled = robotData['mqttEnabled'];
+    if (mqttEnabled != true) {
+      throw RobotPairingException(
         RobotPairingFailureCode.robotMqttDisabled,
+        detail: _rawValue(mqttEnabled),
       );
     }
 
@@ -775,6 +1043,11 @@ class RobotPairingService {
         RobotPairingFailureCode.robotLastSeenStale,
         detail: secondsSinceLastSeen.toString(),
       );
+    }
+
+    if (requireNoActiveSession &&
+        _activeSessionIdValue(robotData['activeSessionId']) != null) {
+      throw const RobotPairingException(RobotPairingFailureCode.robotBusy);
     }
   }
 
@@ -802,6 +1075,12 @@ class RobotPairingService {
     return const [];
   }
 
+  String _rawValue(Object? value) {
+    if (value == null) return 'null';
+    if (value is String) return value;
+    return value.toString();
+  }
+
   void _logPairing(String message, Map<String, Object?> details) {
     debugPrint('[Horus-Bot pairing] $message: $details');
   }
@@ -814,6 +1093,32 @@ class RobotPairingService {
     final index = route.indexOf(currentExhibitId);
     if (index < 0 || index + 1 >= route.length) return null;
     return route[index + 1];
+  }
+}
+
+class _FirestoreWriteDebugEntry {
+  const _FirestoreWriteDebugEntry({
+    required this.operationType,
+    required this.collectionPath,
+    required this.documentId,
+    required this.documentPath,
+    required this.payload,
+  });
+
+  final String operationType;
+  final String collectionPath;
+  final String documentId;
+  final String documentPath;
+  final Map<String, dynamic> payload;
+
+  Map<String, Object?> toLogMap() {
+    return {
+      'collectionPath': collectionPath,
+      'documentId': documentId,
+      'documentPath': documentPath,
+      'operationType': operationType,
+      'payload': payload,
+    };
   }
 }
 
