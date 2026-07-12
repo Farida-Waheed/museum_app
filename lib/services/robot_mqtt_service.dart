@@ -43,11 +43,33 @@ class RobotMqttService extends ChangeNotifier {
     defaultValue: true,
   );
 
+  // MQTT-over-WebSocket fallback. Native MQTT (port 8883) is blocked on many
+  // restricted networks (corporate/guest/university wifi). WebSocket-over-TLS
+  // tunnels like HTTPS and traverses those networks. HiveMQ Cloud serves it on
+  // port 8884 at path /mqtt, alongside native MQTT on 8883 (the bridge can stay
+  // on 8883; the broker bridges the two). Defaults to enabled for robustness;
+  // override per build with --dart-define.
+  static const bool devBrokerUseWebSocket = bool.fromEnvironment(
+    'HORUS_MQTT_WEBSOCKET',
+    defaultValue: true,
+  );
+  static const int devBrokerWsPort = int.fromEnvironment(
+    'HORUS_MQTT_WS_PORT',
+    defaultValue: 8884,
+  );
+  static const String devBrokerWsPath = String.fromEnvironment(
+    'HORUS_MQTT_WS_PATH',
+    defaultValue: '/mqtt',
+  );
+
   final String brokerHost;
   final int brokerPort;
   final String username;
   final String password;
   final bool useTls;
+  final bool useWebSocket;
+  final int wsPort;
+  final String wsPath;
 
   MqttClient? _client;
   StreamSubscription<List<MqttReceivedMessage<MqttMessage>>>?
@@ -69,6 +91,9 @@ class RobotMqttService extends ChangeNotifier {
     this.username = devBrokerUsername,
     this.password = devBrokerPassword,
     this.useTls = devBrokerUseTls,
+    this.useWebSocket = devBrokerUseWebSocket,
+    this.wsPort = devBrokerWsPort,
+    this.wsPath = devBrokerWsPath,
   }) : _connectionState = brokerHost.trim().isEmpty
            ? RobotMqttConnectionState.disabled
            : RobotMqttConnectionState.disconnected;
@@ -114,16 +139,20 @@ class RobotMqttService extends ChangeNotifier {
 
     _setConnectionState(RobotMqttConnectionState.connecting);
     final clientId = 'horus_flutter_${DateTime.now().millisecondsSinceEpoch}';
+    final effectivePort = useWebSocket ? wsPort : brokerPort;
     final client = createRobotMqttClient(
       brokerHost: brokerHost,
       clientId: clientId,
-      brokerPort: brokerPort,
+      brokerPort: effectivePort,
       useTls: useTls,
+      useWebSocket: useWebSocket,
+      wsPath: wsPath,
     );
     client.setProtocolV311();
     debugPrint(
       'MQTT connecting: protocol=MQTT v3.1.1 host=$brokerHost '
-      'port=$brokerPort tls=$useTls username=$username '
+      'port=$effectivePort tls=$useTls webSocket=$useWebSocket '
+      '${useWebSocket ? 'wsPath=$wsPath ' : ''}username=$username '
       'robotId=$robotId sessionId=$sessionId clientId=$clientId',
     );
     client.keepAlivePeriod = 30;

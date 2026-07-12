@@ -91,10 +91,11 @@ class TourSessionRepository {
           'status': 'in_progress',
           'updated_at': now,
         });
-        transaction.update(_robotDoc(robotId), {
-          'status': 'in_tour',
-          'updated_at': now,
-        });
+        // Bridge model: the robot's `status` is owned by the ROS2 bridge. The app
+        // does NOT write the robot doc here — the tour start is signalled to the
+        // robot over MQTT (start_tour command), and the robot updates its own
+        // status. The pairing mutex (`activeSessionId`) is already set from
+        // pairing and stays until release.
       });
     } on FirebaseException catch (e) {
       throw TourSessionRepositoryException(_friendlyError(e));
@@ -168,16 +169,14 @@ class TourSessionRepository {
             'updated_at': now,
           });
         }
+        // Bridge model: releasing the robot means clearing the pairing mutex
+        // only. The robot's `status` is owned by the ROS2 bridge (it returns
+        // itself to 'available' after handling end_tour over MQTT). Writing
+        // status or the legacy active_* fields here would be rejected by
+        // validBridgeRobotRelease in firestore.rules.
         transaction.update(_robotDoc(resolvedRobotId), {
-          'status': 'available',
-          'active_session_id': null,
           'activeSessionId': null,
-          'active_user_id': null,
-          'currentUserId': null,
-          'active_robot_tour_ticket_id': null,
-          'activeRobotTourTicketId': null,
           'updated_at': now,
-          'updatedAt': now,
         });
       });
     } on FirebaseException catch (e) {
@@ -302,17 +301,13 @@ class TourSessionRepository {
     final snapshot = await _robotDoc(session.robotId).get();
     final data = snapshot.data();
     if (!snapshot.exists || data == null) return false;
-    final robotSessionId =
-        _stringValue(data['active_session_id']) ??
-        _stringValue(data['activeSessionId']);
-    final robotUserId =
-        _stringValue(data['active_user_id']) ??
-        _stringValue(data['currentUserId']);
-    final robotStatus = _stringValue(data['status']);
-    return robotSessionId == session.sessionId &&
-        robotUserId == session.userId &&
-        robotStatus != 'available' &&
-        robotStatus != 'offline';
+    // Bridge model: `activeSessionId` is the single pairing mutex. The robot's
+    // `status` is owned by the bridge and stays 'available' while paired, so we
+    // must not gate restore on it (the old check required status != 'available'
+    // and an active_user_id the bridge never writes, which made restore always
+    // fail). Ownership is already verified by the session's own userId.
+    final robotSessionId = _stringValue(data['activeSessionId']);
+    return robotSessionId == session.sessionId;
   }
 
   String? _stringValue(Object? value) {

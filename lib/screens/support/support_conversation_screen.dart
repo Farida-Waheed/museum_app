@@ -72,7 +72,7 @@ class _SupportConversationScreenState extends State<SupportConversationScreen> {
                       child: ListView(
                         padding: const EdgeInsetsDirectional.fromSTEB(
                           16,
-                          20,
+                          78,
                           16,
                           16,
                         ),

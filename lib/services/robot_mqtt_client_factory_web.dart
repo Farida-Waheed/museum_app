@@ -6,11 +6,13 @@ MqttClient createRobotMqttClient({
   required String clientId,
   required int brokerPort,
   required bool useTls,
+  bool useWebSocket = true,
+  String wsPath = '/mqtt',
 }) {
   final scheme = useTls ? 'wss' : 'ws';
   final server =
       brokerHost.startsWith('ws://') || brokerHost.startsWith('wss://')
       ? brokerHost
-      : '$scheme://$brokerHost/mqtt';
+      : '$scheme://$brokerHost$wsPath';
   return MqttBrowserClient.withPort(server, clientId, brokerPort);
 }

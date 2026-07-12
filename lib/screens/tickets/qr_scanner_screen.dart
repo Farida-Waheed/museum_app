@@ -38,6 +38,8 @@ class QrScannerScreen extends StatefulWidget {
 class _QrScannerScreenState extends State<QrScannerScreen>
     with TickerProviderStateMixin {
   bool _isScanned = false;
+  Timer? _scanDebounceTimer;
+  String? _pendingScanCode;
   late final AnimationController _scanAnim;
   final MobileScannerController _scannerController = MobileScannerController();
   final TextEditingController _manualRobotCodeController =
@@ -57,6 +59,7 @@ class _QrScannerScreenState extends State<QrScannerScreen>
 
   @override
   void dispose() {
+    _scanDebounceTimer?.cancel();
     unawaited(_scannerController.dispose());
     _manualRobotCodeController.dispose();
     _scanAnim.dispose();
@@ -90,11 +93,22 @@ class _QrScannerScreenState extends State<QrScannerScreen>
     final barcodes = capture.barcodes;
     for (final barcode in barcodes) {
       final code = barcode.rawValue;
-      if (code != null) {
+      if (code == null) continue;
+
+      if (_pendingScanCode == code) return;
+
+      _pendingScanCode = code;
+      _scanDebounceTimer?.cancel();
+      _scanDebounceTimer = Timer(const Duration(milliseconds: 700), () {
+        if (!mounted || _isScanned) return;
+        final pendingCode = _pendingScanCode;
+        _pendingScanCode = null;
+        if (pendingCode == null) return;
+
         _isScanned = true;
         final isRobotPairingQr =
             widget.mode == QRScanMode.robotConnection &&
-            _robotPairingService.parseRobotId(code) != null;
+            _robotPairingService.parseRobotId(pendingCode) != null;
         if (isRobotPairingQr) {
           debugPrint(
             '[QR scanner] first valid robot QR detected; scanner locked '
@@ -104,9 +118,9 @@ class _QrScannerScreenState extends State<QrScannerScreen>
         }
         HapticFeedback.heavyImpact();
         if (mounted) setState(() {});
-        _showResultDialog(code);
-        break;
-      }
+        _showResultDialog(pendingCode);
+      });
+      break;
     }
   }
 
@@ -249,6 +263,11 @@ class _QrScannerScreenState extends State<QrScannerScreen>
           );
           await _confirmRobotPickedUpSession(pairing);
           if (!mounted) return;
+          // Bridge model: pairing lands the session in 'paired' (ready) state.
+          // We mark the robot connected and prepare the ready-to-start tour, but
+          // we do NOT start the tour or send start_tour here. The visitor starts
+          // the tour from the live tour screen, which transitions the session to
+          // 'active' and sends the start_tour command at that point.
           sessionProvider.completeRobotConnection(
             robotId: pairing.robotId,
             sessionId: pairing.sessionId,
@@ -260,21 +279,6 @@ class _QrScannerScreenState extends State<QrScannerScreen>
             sessionId: pairing.sessionId,
             selectedExhibitIds: pairing.selectedExhibitIds,
             nextExhibitId: pairing.nextExhibitId,
-          );
-          if (pairing.currentExhibitId != null) {
-            sessionProvider.startActiveTour(
-              currentExhibitId: pairing.currentExhibitId!,
-              nextExhibitId: pairing.nextExhibitId,
-            );
-            tourProvider.startTour(
-              context: context,
-              initialExhibitId: pairing.currentExhibitId,
-              nextExhibitId: pairing.nextExhibitId,
-            );
-          }
-          await _sendStartTourCommand(
-            pairing: pairing,
-            userId: authProvider.currentUser!.id,
           );
           result = _ScanResult(
             isValid: true,
@@ -540,8 +544,8 @@ class _QrScannerScreenState extends State<QrScannerScreen>
         return 'Robot heartbeat is missing. lastSeenAt must exist and be recent.';
       case RobotPairingFailureCode.robotLastSeenStale:
         return 'Robot heartbeat is stale. lastSeenAt is '
-            '${error.detail ?? 'more than 45'} seconds old; it must be '
-            'within 45 seconds.';
+            '${error.detail ?? 'too many'} seconds old; the robot heartbeat '
+            'is not updating recently enough.';
       case RobotPairingFailureCode.mqttSessionNotConfirmed:
         return 'Robot did not report this activeSessionId on MQTT status within 15 seconds.';
       case RobotPairingFailureCode.commandRejected:

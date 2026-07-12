@@ -10,11 +10,15 @@ MqttClient createRobotMqttClient({
   required String clientId,
   required int brokerPort,
   required bool useTls,
+  bool useWebSocket = false,
+  String wsPath = '/mqtt',
 }) {
   return platform_factory.createRobotMqttClient(
     brokerHost: brokerHost,
     clientId: clientId,
     brokerPort: brokerPort,
     useTls: useTls,
+    useWebSocket: useWebSocket,
+    wsPath: wsPath,
   );
 }

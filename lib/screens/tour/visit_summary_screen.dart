@@ -134,7 +134,7 @@ class _SummaryContent extends StatelessWidget {
         .toList();
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 34),
+      padding: const EdgeInsetsDirectional.fromSTEB(22, 78, 22, 120),
       child: Column(
         children: [
           Container(

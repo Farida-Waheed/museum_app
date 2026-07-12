@@ -52,25 +52,23 @@ service cloud.firestore {
     }
 
     function pairedRobotTicketCancelCleanup(ticketId) {
+      // Bridge model: the robot's `status` is owned by the ROS2 bridge, so the
+      // cancel cleanup only asserts the pairing mutex (`activeSessionId`) was held
+      // by this session and is cleared afterwards. We never read or require the
+      // robot `status`, and never touch the final-model fields.
       return resource.data.status in ['paired', 'in_progress']
         && resource.data.session_id is string
         && resource.data.session_id != ''
         && resource.data.paired_robot_id is string
         && resource.data.paired_robot_id != ''
         && exists(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id))
-        && get(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.status == 'assigned'
+        && get(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.activeSessionId == resource.data.session_id
         && existsAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id))
         && getAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id)).data.status == 'cancelled'
         && getAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id)).data.userId == request.auth.uid
         && getAfter(/databases/$(database)/documents/tourSessions/$(resource.data.session_id)).data.robot_tour_ticket_id == ticketId
         && existsAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id))
-        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.status == 'available'
-        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.active_session_id == null
-        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.activeSessionId == null
-        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.active_user_id == null
-        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.currentUserId == null
-        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.active_robot_tour_ticket_id == null
-        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.activeRobotTourTicketId == null;
+        && getAfter(/databases/$(database)/documents/robots/$(resource.data.paired_robot_id)).data.activeSessionId == null;
     }
 
     function ownedRobotTourTicketCancelUpdate(ticketId) {
@@ -102,18 +100,7 @@ service cloud.firestore {
     }
 
     function validTourSessionCreate(sessionId) {
-      return validFinalTourSessionCreate(sessionId) || validLegacyTourSessionCreate();
-    }
-
-    function validLegacyTourSessionCreate() {
-      return ownsIncoming()
-        && request.resource.data.sessionId is string
-        && request.resource.data.robotId is string
-        && request.resource.data.museumTicketId is string
-        && request.resource.data.robotTourTicketId is string
-        && activeOwnedMuseumTicket(request.resource.data.museumTicketId)
-        && activeOwnedRobotTourTicket(request.resource.data.robotTourTicketId)
-        && request.resource.data.status in ['ready', 'active', 'paused'];
+      return validFinalTourSessionCreate(sessionId);
     }
 
     function validFinalTourSessionCreate(sessionId) {
@@ -134,49 +121,18 @@ service cloud.firestore {
         && request.resource.data.completed_at == null;
     }
 
-    function unassignedRobot() {
-      return (!('active_session_id' in resource.data) || resource.data.active_session_id == null || resource.data.active_session_id == '')
-        && (!('active_user_id' in resource.data) || resource.data.active_user_id == null || resource.data.active_user_id == '')
-        && (!('active_robot_tour_ticket_id' in resource.data) || resource.data.active_robot_tour_ticket_id == null || resource.data.active_robot_tour_ticket_id == '')
-        && (!('activeSessionId' in resource.data) || resource.data.activeSessionId == null || resource.data.activeSessionId == '')
-        && (!('currentUserId' in resource.data) || resource.data.currentUserId == null || resource.data.currentUserId == '')
-        && (!('activeRobotTourTicketId' in resource.data) || resource.data.activeRobotTourTicketId == null || resource.data.activeRobotTourTicketId == '');
-    }
-
-    function validFinalRobotAssign(robotId) {
-      return signedIn()
-        && resource.data.status == 'available'
-        && unassignedRobot()
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['status', 'active_session_id', 'activeSessionId', 'active_user_id', 'currentUserId', 'active_robot_tour_ticket_id', 'activeRobotTourTicketId', 'updated_at', 'updatedAt', 'robot_code', 'robotId'])
-        && request.resource.data.status == 'assigned'
-        && request.resource.data.active_session_id is string
-        && request.resource.data.active_session_id != ''
-        && request.resource.data.activeSessionId == request.resource.data.active_session_id
-        && request.resource.data.active_user_id == request.auth.uid
-        && request.resource.data.currentUserId == request.auth.uid
-        && request.resource.data.active_robot_tour_ticket_id is string
-        && request.resource.data.active_robot_tour_ticket_id != ''
-        && request.resource.data.activeRobotTourTicketId == request.resource.data.active_robot_tour_ticket_id
-        && request.resource.data.robotId == robotId
-        && request.resource.data.robot_code is string
-        && existsAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.active_session_id))
-        && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.active_session_id)).data.userId == request.auth.uid
-        && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.active_session_id)).data.robotId == robotId
-        && getAfter(/databases/$(database)/documents/tourSessions/$(request.resource.data.active_session_id)).data.robot_tour_ticket_id == request.resource.data.active_robot_tour_ticket_id;
-    }
-
-    function validLegacyRobotPair() {
-      return signedIn()
-        && false;
-    }
+    // Bridge model (single source of truth):
+    // The robot document's status/robotConnectionState/mqttEnabled/lastSeenAt are
+    // owned by the ROS2 bridge. The app only ever writes `activeSessionId` (set on
+    // pair, cleared on release) plus an updated_at timestamp. `activeSessionId` is
+    // the pairing mutex. The app never writes the robot's `status`.
 
     function validRobotPair(robotId) {
-      return validFinalRobotAssign(robotId) || validLegacyRobotPair();
+      return validBridgeRobotPair(robotId);
     }
 
     function validRobotRelease(robotId) {
-      return validBridgeRobotRelease(robotId) || validFinalRobotRelease() || validLegacyRobotRelease();
+      return validBridgeRobotRelease(robotId);
     }
 
     function robotIdMatchesBridgeContract(robotId) {
@@ -197,9 +153,14 @@ service cloud.firestore {
     }
 
     function bridgeSessionRobotTourTicketId(sessionId) {
-      return getAfter(/databases/$(database)/documents/tourSessions/$(sessionId)).data.robotTourTicketId == null
-        ? getAfter(/databases/$(database)/documents/tourSessions/$(sessionId)).data.robot_tour_ticket_id
-        : getAfter(/databases/$(database)/documents/tourSessions/$(sessionId)).data.robotTourTicketId;
+      // Use Map.get() with a default so a missing key returns null instead of
+      // raising a hard evaluation error. The pairing transaction writes the
+      // session with snake_case `robot_tour_ticket_id` only; dotted access to a
+      // non-existent `robotTourTicketId` would error and deny the whole commit.
+      return getAfter(/databases/$(database)/documents/tourSessions/$(sessionId)).data
+        .get('robotTourTicketId',
+          getAfter(/databases/$(database)/documents/tourSessions/$(sessionId)).data
+            .get('robot_tour_ticket_id', null));
     }
 
     function validBridgeRobotPair(robotId) {
@@ -227,41 +188,6 @@ service cloud.firestore {
         && exists(/databases/$(database)/documents/tourSessions/$(resource.data.activeSessionId))
         && get(/databases/$(database)/documents/tourSessions/$(resource.data.activeSessionId)).data.userId == request.auth.uid
         && get(/databases/$(database)/documents/tourSessions/$(resource.data.activeSessionId)).data.robotId == robotId;
-    }
-
-    function validLegacyRobotRelease() {
-      return signedIn()
-        && resource.data.status == 'paired'
-        && resource.data.currentUserId == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['status', 'activeSessionId', 'currentUserId', 'updatedAt'])
-        && request.resource.data.status == 'available'
-        && request.resource.data.activeSessionId == ''
-        && request.resource.data.currentUserId == '';
-    }
-
-    function validFinalRobotStart() {
-      return signedIn()
-        && resource.data.status == 'assigned'
-        && resource.data.active_user_id == request.auth.uid
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['status', 'updated_at'])
-        && request.resource.data.status == 'in_tour';
-    }
-
-    function validFinalRobotRelease() {
-      return signedIn()
-        && resource.data.status in ['assigned', 'in_tour']
-        && (resource.data.active_user_id == request.auth.uid || resource.data.currentUserId == request.auth.uid)
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['status', 'active_session_id', 'activeSessionId', 'active_user_id', 'currentUserId', 'active_robot_tour_ticket_id', 'activeRobotTourTicketId', 'updated_at', 'updatedAt'])
-        && request.resource.data.status == 'available'
-        && request.resource.data.active_session_id == null
-        && request.resource.data.activeSessionId == null
-        && request.resource.data.active_user_id == null
-        && request.resource.data.currentUserId == null
-        && request.resource.data.active_robot_tour_ticket_id == null
-        && request.resource.data.activeRobotTourTicketId == null;
     }
 
     function unpairedExistingTicket() {
@@ -442,9 +368,9 @@ service cloud.firestore {
 
     match /robots/{robotId} {
       allow read: if signedIn();
-      allow update: if validBridgeRobotPair(robotId)
-        || validRobotPair(robotId)
-        || validFinalRobotStart()
+      // Bridge model: the app may only set or clear `activeSessionId`. The robot's
+      // status/connection fields are owned by the ROS2 bridge, never the client.
+      allow update: if validRobotPair(robotId)
         || validRobotRelease(robotId);
       allow create, delete: if false;
     }

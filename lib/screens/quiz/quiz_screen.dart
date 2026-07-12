@@ -280,7 +280,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
   Widget _buildProgressHeader(bool isArabic) {
     return Padding(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsetsDirectional.fromSTEB(24, 78, 24, 24),
       child: Column(
         children: [
           Row(

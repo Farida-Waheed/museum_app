@@ -34,6 +34,11 @@ class RobotPairingService {
 
   final FirebaseFirestore _firestore;
 
+  // TEMPORARY (testing): how old the robot heartbeat (lastSeenAt) may be before
+  // pairing is rejected as stale. Production value is 45 seconds; raised while
+  // the ROS2 heartbeat cadence is being sorted out. Revert to 45 before release.
+  static const int _maxHeartbeatStalenessSeconds = 900;
+
   Future<RobotPairingResult> pairRobot({
     required String userId,
     required String scannedCode,
@@ -399,13 +404,16 @@ class RobotPairingService {
             'robot_id': robotId,
             'robot_code': robotCode,
             'short_robot_id': shortRobotId,
-            'status': 'active',
-            'current_exhibit_id': currentExhibitId,
+            // Bridge model: pairing lands the session in 'paired' (ready) state.
+            // The tour only becomes 'active' when the visitor taps Start Tour,
+            // which is also when the robot is told to start over MQTT. Keeping
+            // current_exhibit_id/started_at null here satisfies the paired branch
+            // of validFinalTourSessionCreate in firestore.rules.
+            'status': 'paired',
+            'current_exhibit_id': null,
             'current_exhibit_index': 0,
             'next_exhibit_id': nextExhibitId,
-            'visitedExhibitIds': currentExhibitId == null
-                ? <String>[]
-                : <String>[currentExhibitId],
+            'visitedExhibitIds': <String>[],
             'selected_exhibits': selectedExhibitIds,
             ...plannerMetadata,
             'route_id': robotTourTicket.routeId,
@@ -413,7 +421,7 @@ class RobotPairingService {
             'route_title_ar': robotTourTicket.routeTitleAr,
             'preferred_language': robotTourTicket.languageCode,
             'pace': _paceValue(pairableTicket.data, robotTourTicket),
-            'started_at': now,
+            'started_at': null,
             'paired_at': now,
             'completed_at': null,
             'created_at': now,
@@ -421,7 +429,7 @@ class RobotPairingService {
           }, transactionWrites);
 
           _transactionUpdate(transaction, robotTicketRef, {
-            'status': 'in_progress',
+            'status': 'paired',
             'paired_robot_id': robotId,
             'session_id': sessionId,
             'paired_at': now,
@@ -430,6 +438,7 @@ class RobotPairingService {
 
           _transactionUpdate(transaction, robotRef, {
             'activeSessionId': sessionId,
+            'updated_at': now,
           }, transactionWrites);
 
           _logPairing('firestore transaction queued writes final', {
@@ -540,10 +549,17 @@ class RobotPairingService {
     required Set<String> robotIdCandidates,
     String? preferredTicketId,
   }) async {
+    // Bridge model: a freshly paired ticket is 'paired'; it only becomes
+    // 'in_progress' once the visitor starts the tour. Both are restorable, so a
+    // visitor who paired but backgrounded the app before pressing Start can
+    // resume instead of being told the robot is busy.
     final snapshot = await _firestore
         .collection('robotTourTickets')
         .where('userId', isEqualTo: userId)
-        .where('status', isEqualTo: TicketStatus.in_progress.name)
+        .where(
+          'status',
+          whereIn: [TicketStatus.paired.name, TicketStatus.in_progress.name],
+        )
         .get();
     for (final doc in snapshot.docs) {
       final data = doc.data();
@@ -574,6 +590,29 @@ class RobotPairingService {
           _stringValue(sessionData['status']) == 'completed' ||
           _stringValue(sessionData['status']) == 'cancelled') {
         continue;
+      }
+
+      // Bridge model: the robot's `activeSessionId` is the pairing mutex. Only
+      // restore if the robot still holds THIS session; otherwise the bridge has
+      // already released it (or paired someone else) and we must not resurrect a
+      // dead pairing.
+      final robotCode = robotCodeForParsedId(pairedRobotId);
+      if (robotCode != null) {
+        final robotSnapshot = await _firestore
+            .collection('robots')
+            .doc(robotCode)
+            .get(const GetOptions(source: Source.server));
+        final robotActiveSessionId = _activeSessionIdValue(
+          robotSnapshot.data()?['activeSessionId'],
+        );
+        if (robotActiveSessionId != sessionId) {
+          _logPairing('restore skipped: robot no longer holds this session', {
+            'sessionId': sessionId,
+            'robotActiveSessionId': robotActiveSessionId,
+            'robotCode': robotCode,
+          });
+          continue;
+        }
       }
 
       final ticket = RobotTourTicket.fromFirestore(doc.id, data);
@@ -1311,7 +1350,7 @@ class RobotPairingService {
         .toUtc()
         .difference(lastSeenAt.toUtc())
         .inSeconds;
-    if (secondsSinceLastSeen > 45) {
+    if (secondsSinceLastSeen > _maxHeartbeatStalenessSeconds) {
       _logInvalidReturn('robot unavailable', {
         ...invalidContext,
         'robotAvailabilityResult': _robotAvailabilityLog(robotData),

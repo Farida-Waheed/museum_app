@@ -174,7 +174,7 @@ class _TourCustomizationScreenState extends State<TourCustomizationScreen> {
                 child: ListView(
                   padding: const EdgeInsetsDirectional.fromSTEB(
                     20,
-                    24,
+                    78,
                     20,
                     120,
                   ),
