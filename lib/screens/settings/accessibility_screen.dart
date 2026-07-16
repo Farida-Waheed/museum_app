@@ -191,6 +191,67 @@ class _AccessibilityScreenState extends State<AccessibilityScreen> {
 
               const SizedBox(height: 32),
 
+              // 1b. PERSONALIZE ACCESSIBILITY — links to the unified profile page
+              // so this permissions/display screen and the accessibility profile
+              // form one journey rather than competing surfaces.
+              InkWell(
+                borderRadius: BorderRadius.circular(24),
+                onTap: () => Navigator.pushNamed(
+                  context,
+                  AppRoutes.accessibilityProfile,
+                ),
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: AppDecorations.secondaryGlassCard(radius: 24),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryGold.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.accessibility_new_rounded,
+                          color: AppColors.primaryGold,
+                          size: 26,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.accessibility,
+                              style: AppTextStyles.bodyPrimary(context).copyWith(
+                                color: titleColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              l10n.adjustSettings,
+                              style: AppTextStyles.metadata(context)
+                                  .copyWith(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Icon(
+                        isArabic
+                            ? Icons.chevron_left_rounded
+                            : Icons.chevron_right_rounded,
+                        color: AppColors.primaryGold,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
               // 2. PERMISSIONS
               _SectionTitle(title: l10n.permissionsCenter.toUpperCase()),
               Container(

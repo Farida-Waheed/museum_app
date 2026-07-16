@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-
+  audio_session: ^0.2.2
   # Default Icon font
   cupertino_icons: ^1.0.8
 
@@ -28,6 +28,13 @@ dependencies:
 
   # 4. Audio (Plays the robot voice narration)
   audioplayers: ^6.0.0
+
+  # 4b. Voice Communication Engine (Phase 3) — text-to-speech + speech
+  # recognition. Both are used ONLY inside lib/voice/engine adapters
+  # (FlutterTtsEngine, SpeechToTextRecognizer); the rest of the app depends on
+  # the abstract TtsEngine / SpeechRecognizer interfaces, never these plugins.
+  flutter_tts: ^4.2.0
+  speech_to_text: ^7.0.0
 
   # 5. Scanner and Permissions (Moved from dev_dependencies)
   mobile_scanner: ^5.2.3

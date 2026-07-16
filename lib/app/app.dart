@@ -4,6 +4,7 @@ import '../l10n/app_localizations.dart';
 
 import '../core/constants/colors.dart';
 import '../models/user_preferences.dart';
+import '../accessibility/accessibility.dart';
 import 'theme/light_theme.dart';
 import 'theme/dark_theme.dart';
 import 'theme/high_contrast.dart';
@@ -37,13 +38,23 @@ class MuseumApp extends StatelessWidget {
         }
 
         // Language-aware theme selection
-        final ThemeData activeTheme = prefs.isHighContrast
+        final ThemeData baseTheme = prefs.isHighContrast
             ? getHighContrastTheme(prefs.language)
             : getLightTheme(prefs.language);
 
-        final ThemeData activeDarkTheme = prefs.isHighContrast
+        final ThemeData baseDarkTheme = prefs.isHighContrast
             ? getHighContrastTheme(prefs.language)
             : getDarkTheme(prefs.language);
+
+        // Layer accessibility adaptations (larger targets, bold text, reduced
+        // motion) on top of the existing branded themes without redesigning
+        // them. Watches the controller so a profile change re-themes live.
+        final a11yProfile =
+            context.watch<AccessibilityController>().profile;
+        final ThemeData activeTheme =
+            AccessibilityThemeAdapter.apply(baseTheme, a11yProfile);
+        final ThemeData activeDarkTheme =
+            AccessibilityThemeAdapter.apply(baseDarkTheme, a11yProfile);
 
         final platformBrightness =
             WidgetsBinding.instance.platformDispatcher.platformBrightness;

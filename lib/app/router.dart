@@ -37,6 +37,7 @@ import '../screens/profile/memories_screen.dart';
 import '../screens/planner/tour_planner_screen.dart';
 import '../screens/events/events_screen.dart';
 import '../screens/achievements/achievements_screen.dart';
+import '../accessibility/accessibility.dart';
 import '../models/exhibit.dart';
 import '../models/exhibit_provider.dart';
 import '../l10n/app_localizations.dart';
@@ -72,6 +73,8 @@ class AppRoutes {
 
   static const String settings = '/settings';
   static const String accessibility = '/accessibility';
+  static const String accessibilitySetup = '/accessibility_setup';
+  static const String accessibilityProfile = '/accessibility_profile';
   static const String notificationSettings = '/notification_settings';
   static const String projectInfo = '/project_info';
   static const String team = '/team';
@@ -88,7 +91,8 @@ class AppRoutes {
       intro: (context) => const IntroScreen(),
       onboarding: (context) => const OnboardingScreen(),
       entryMode: (context) => const EntryModeScreen(),
-      mainHome: (context) => const HomeScreen(),
+      mainHome: (context) =>
+          const AccessibilitySetupGate(child: HomeScreen()),
       login: (context) => const LoginScreen(),
       register: (context) => const RegisterScreen(),
 
@@ -144,6 +148,12 @@ class AppRoutes {
 
       settings: (context) => const AccessibilityScreen(),
       accessibility: (context) => const AccessibilityScreen(),
+      accessibilitySetup: (context) {
+        final args = ModalRoute.of(context)?.settings.arguments;
+        final nextRoute = args is String ? args : null;
+        return AccessibilitySetupScreen(nextRoute: nextRoute);
+      },
+      accessibilityProfile: (context) => const AccessibilityProfileScreen(),
       notificationSettings: (context) => const NotificationSettingsScreen(),
       projectInfo: (context) {
         final args = ModalRoute.of(context)?.settings.arguments;

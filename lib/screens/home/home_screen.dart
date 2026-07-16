@@ -7,6 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import '../../app/router.dart';
+import '../../accessibility/accessibility.dart';
 import '../../core/constants/colors.dart';
 import '../../core/constants/text_styles.dart';
 import '../../l10n/app_localizations.dart';
@@ -1095,6 +1096,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: AppSpacing.sectionGap),
                       ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.screenHorizontal,
+                        ),
+                        child: AccessibilityStatusBanner(
+                          profileRoute: AppRoutes.accessibilityProfile,
+                          userName: snapshot.userName,
+                        ),
+                      ),
+                      const SizedBox(height: 22),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.screenHorizontal,
