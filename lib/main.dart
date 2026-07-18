@@ -14,8 +14,8 @@ import 'models/auth_provider.dart';
 import 'models/ticket_provider.dart';
 import 'accessibility/accessibility.dart';
 import 'voice/voice.dart';
-import 'voice/services/robot_speech_coordinator.dart';
 import 'voice/integration/robot_mqtt_speech_link.dart';
+import 'voice/integration/notification_voice_bridge.dart';
 import 'services/auth_service.dart';
 import 'services/robot_mqtt_service.dart';
 import 'core/notifications/notification_service.dart';
@@ -151,6 +151,17 @@ Future<void> main() async {
                       message.text,
                       language: controller.language,
                     );
+            // Voice-enable meaningful notifications: once a notification has
+            // actually displayed (inheriting every existing enabled / category /
+            // anti-spam gate), the bridge decides whether it is worth speaking
+            // and hands the text to the engine, which still gates playback on
+            // mute / profile / activity. Passive nudges and low-priority alerts
+            // are never spoken, honoring "avoid overwhelming the visitor".
+            final notificationVoiceBridge = NotificationVoiceBridge(
+              speak: (text) => controller.announce(text),
+            );
+            notificationService.onNotificationShown =
+                notificationVoiceBridge.announce;
             // Bring up the engines and apply the profile-derived config. Fire
             // and forget: initialize() is idempotent and degrades to a silent
             // experience if TTS is unavailable, so it never blocks startup.

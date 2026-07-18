@@ -37,6 +37,16 @@ class NotificationService {
   OnNotificationTapped? _onNotificationTapped;
   bool _initialized = false;
 
+  /// Voice seam (Phase 3): invoked with a notification the moment it is actually
+  /// displayed — i.e. AFTER every existing gate (notifications enabled, category
+  /// enabled, anti-spam) has passed — so meaningful alerts can be spoken through
+  /// the Voice Communication Engine. Kept as a plain callback so this service
+  /// never imports the voice module; `main.dart` binds it to the notification
+  /// voice bridge, which decides which notifications are worth announcing and
+  /// the engine decides whether to actually speak. Null when no engine is wired
+  /// (tests, headless), leaving notification behavior completely unchanged.
+  void Function(ImmediateNotification notification)? onNotificationShown;
+
   /// Initialize notification service
   /// Must be called before using any other methods
   Future<void> initialize({OnNotificationTapped? onNotificationTapped}) async {
@@ -143,6 +153,11 @@ class NotificationService {
     );
 
     _recordNotificationTime(notification);
+
+    // Notify the voice seam only once the notification has genuinely displayed,
+    // so spoken announcements inherit every gate above (enabled / category /
+    // anti-spam) and can never diverge from what the visitor actually sees.
+    onNotificationShown?.call(notification);
   }
 
   /// Schedule notification for future time
